@@ -1,4 +1,7 @@
 2004-01-21  Bob Doan  <bdoan@sicompos.com>
+	* NEWS: 1.1.7 release
+
+2004-01-21  Bob Doan  <bdoan@sicompos.com>
 	* AUTHORS: and cool people
 	* configure.in: check for iconv stuff.. nice patch from
 		H. Steuer <steuer@unixsystems.de>.. thanks dude

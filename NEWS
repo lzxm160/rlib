@@ -1,3 +1,21 @@
+1.1.7
+===
+- GLIB Integration (bob)
+- XML 2.6 fixes (chet)
+- Portability, cleanup Heri Steuer <steuer@unixsystems.de>
+- New Date, Time, and String Functions (chet)
+- Because of parsing reasons change "text" to "literal" (me)
+- RLIB XML Compiler and Loader (me)
+- Major pcode cleanup, syntax same everywhere (chet)
+- Work around newer PHP's API Bugs (me)
+- Be more careful about freeing memory (chet)
+- Correct prototypes for all functions (chet)
+- Process report variables is a different order so they always work (me, chet)
+- Added more constants.. make rlib pcode more sane (chet)
+- Fix spelling mistakes in for RLIB Syntax (chet)
+- A RLIB DTD (chet)
+- And lots of behind the scenes cleanups (me, chet)
+
 1.1.6
 ===
 - Start working on memo fields (chet)
