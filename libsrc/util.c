@@ -32,11 +32,11 @@
 #include "rlib.h"
 
 //man 3 llabs says the prototype is in stdlib.. no it aint!
-long long int llabs(long long int j);
+gint64 llabs(gint64 j);
 
 
 #ifdef ENABLE_CRASH
-static void myFaultHandler (int signum, siginfo_t *si, void *aptr) {
+static void myFaultHandler (gint signum, siginfo_t *si, gpointer aptr) {
 	struct rlimit rlim;
 	rlogit("** NUTS.. WE CRASHED\n");
 	getrlimit (RLIMIT_CORE, &rlim); //POSIBLY NOT NECESSARY
@@ -49,7 +49,7 @@ static void myFaultHandler (int signum, siginfo_t *si, void *aptr) {
 #endif
 
 
-static int useMyHandler = TRUE;
+static gint useMyHandler = TRUE;
 
 void init_signals() {
 #ifdef ENABLE_CRASH
@@ -69,19 +69,19 @@ void init_signals() {
 }
 
 
-int rutil_enableSignalHandler(int trueorfalse) {
-	int whatitwas = useMyHandler;
+gint rutil_enableSignalHandler(gint trueorfalse) {
+	gint whatitwas = useMyHandler;
 	useMyHandler = trueorfalse;
 	return whatitwas;
 }
 
 
-int vasprintf(char **, const char *, va_list);
+gint vasprintf(gchar **, const gchar *, va_list);
 
-char *strlwrexceptquoted (char *s) {
-	char c; 
-	char *ptr = s;
-	int quote=0;
+gchar *strlwrexceptquoted (char *s) {
+	gchar c; 
+	gchar *ptr = s;
+	gint quote=0;
 	while ((c = tolower(*s)) != '\0') {
 		if(*s == '\'') {
 			if(quote)
@@ -98,11 +98,11 @@ char *strlwrexceptquoted (char *s) {
 }
 
 
-char *rmwhitespacesexceptquoted(char *s) {
-	char *backptr = s;
-	char *orig = s;
-	int spacecount=0;
-	int quote=0;
+gchar *rmwhitespacesexceptquoted(gchar *s) {
+	gchar *backptr = s;
+	gchar *orig = s;
+	gint spacecount=0;
+	gint quote=0;
 	while(*s != '\0') {
 		if(*s == '\'') {
 			if(quote)
@@ -126,23 +126,23 @@ char *rmwhitespacesexceptquoted(char *s) {
 
 
 
-static void local_rlogit(const char *message) {
+static void local_rlogit(const gchar *message) {
 	fprintf(stderr, message);
 	return;
 }
 
 
-static void (*logMessage)(const char *msg) = local_rlogit;
+static void (*logMessage)(const gchar *msg) = local_rlogit;
 
 
-void rlogit_setmessagewriter(void (*msgwriter)(const char *msg)) {
+void rlogit_setmessagewriter(void (*msgwriter)(const gchar *msg)) {
 	logMessage = msgwriter;
 }
 
 
-void rlogit(const char *fmt, ...) {
+void rlogit(const gchar *fmt, ...) {
 	va_list vl;
-	char *result = NULL;
+	gchar *result = NULL;
 
 	va_start(vl, fmt);
 	vasprintf(&result, fmt, vl);
@@ -152,12 +152,12 @@ void rlogit(const char *fmt, ...) {
 	return;
 }
 
-long long tentothe(int n) {
-	long long ten[] = {1LL, 10LL, 100LL, 1000LL, 10000LL, 100000LL, 1000000LL, 10000000LL, 100000000LL, 1000000000LL, 10000000000LL, 100000000000LL, 1000000000000LL};
+gint64 tentothe(gint n) {
+	gint64 ten[] = {1LL, 10LL, 100LL, 1000LL, 10000LL, 100000LL, 1000000LL, 10000000LL, 100000000LL, 1000000000LL, 10000000000LL, 100000000000LL, 1000000000000LL};
 	return ten[n];
 }
 
-char hextochar(char c) {
+gchar hextochar(gchar c) {
 	c = toupper(c);
 	if(isalpha(c))
 		return c-'A'+10;
@@ -166,7 +166,7 @@ char hextochar(char c) {
 
 }
 
-char *colornames(char *str) {
+gchar *colornames(char *str) {
 	if(!isalpha(*str))
 		return str;
 	if(!strcasecmp(str, "black"))
@@ -207,18 +207,18 @@ char *colornames(char *str) {
 }
 
 
-void parsecolor(struct rgb *color, char *strx) {
-	char *str = colornames(strx);
+void parsecolor(struct rgb *color, gchar *strx) {
+	gchar *str = colornames(strx);
 	if(str != NULL && strlen(str) == 8) {
-		unsigned char r;
-		unsigned char g;
-		unsigned char b;
+		guchar r;
+		guchar g;
+		guchar b;
 		r = (hextochar(str[2]) << 4) | hextochar(str[3]);
 		g = (hextochar(str[4]) << 4) | hextochar(str[5]);
 		b = (hextochar(str[6]) << 4) | hextochar(str[7]);
-		color->r = (float)r/(float)0xFF;
-		color->g = (float)g/(float)0xFF;
-		color->b = (float)b/(float)0xFF;
+		color->r = (gfloat)r/(gfloat)0xFF;
+		color->g = (gfloat)g/(gfloat)0xFF;
+		color->b = (gfloat)b/(gfloat)0xFF;
 	} else {
 		color->r = -1;
 		color->g = -1;
@@ -226,8 +226,8 @@ void parsecolor(struct rgb *color, char *strx) {
 	}
 }
 
-struct tm * stod(struct tm *tm_date, char *str) {
-	int year, month, day;
+struct tm * stod(struct tm *tm_date, gchar *str) {
+	gint year, month, day;
 	sscanf(str, "%4d-%2d-%2d", &year, &month, &day);
 	bzero(tm_date, sizeof(struct tm));
 	tm_date->tm_year = year-1900;
@@ -236,18 +236,18 @@ struct tm * stod(struct tm *tm_date, char *str) {
 	return tm_date;
 }
 
-char month_dates[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
+gchar month_dates[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
 
-int daysinmonth(int year, int month) {
-	int maxday;
+gint daysinmonth(gint year, gint month) {
+	gint maxday;
 	maxday = month_dates[month];
 	if(month == 1 && year % 4 == 0 && year % 100 != 0)
 		maxday++;
 	return maxday;
 }
 
-void bumpday(int *year, int *month, int *day) {
-	int maxday;
+void bumpday(gint *year, gint *month, gint *day) {
+	gint maxday;
 	*day = *day + 1;
 	maxday = month_dates[(*month)];
 	if(*month == 1 && *year % 4 == 0 && *year % 100 != 0)
@@ -262,8 +262,8 @@ void bumpday(int *year, int *month, int *day) {
 	}
 }
 
-void bumpdaybackwords(int *year, int *month, int *day) {
-	int maxday;
+void bumpdaybackwords(gint *year, gint *month, gint *day) {
+	gint maxday;
 	*day = *day - 1;
 	if(*day == 0) {
 		maxday = month_dates[(*month)-1];
@@ -278,25 +278,25 @@ void bumpdaybackwords(int *year, int *month, int *day) {
 	}
 }
 
-char *strupr (char *s) {
-	char c;
-	char *ptr = s;
+gchar *strupr (gchar *s) {
+	gchar c;
+	gchar *ptr = s;
 	while ((c = toupper(*s)) != '\0')
 		*s++ = c;
 	return ptr;
 }
 
-char *strlwr (char *s) {
-	char c;
-	char *ptr = s;
+gchar *strlwr (gchar *s) {
+	gchar c;
+	gchar *ptr = s;
 	while ((c = tolower(*s)) != '\0')
 		*s++ = c;
 	return ptr;
 }
 
-char *strproper (char *s) {
-	char c;
-	char *ptr = s;
+gchar *strproper (gchar *s) {
+	gchar c;
+	gchar *ptr = s;
 	*s = toupper(*s);
 	s++;
 	while ((c = tolower(*s)) != '\0')
@@ -304,7 +304,7 @@ char *strproper (char *s) {
 	return ptr;
 }
 
-void make_more_space_if_necessary(char **str, int *size, int *total_size, int len) {
+void make_more_space_if_necessary(gchar **str, gint *size, gint *total_size, gint len) {
 	if(*total_size == 0) {
 		*str = rcalloc(MAXSTRLEN, 1);
 		*total_size = MAXSTRLEN;

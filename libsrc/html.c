@@ -25,9 +25,9 @@
 #include "rlib.h"
 
 struct _data {
-	char *data;
-	int size;
-	int total_size;
+	gchar *data;
+	gint size;
+	gint total_size;
 };
 
 struct _private {
@@ -35,18 +35,18 @@ struct _private {
 	struct rgb current_bg_color;
 	struct _data *top;
 	struct _data *bottom;
-	char *both;
-	int did_bg;
-	int bg_backwards;
-	int do_bg;
-	int length;
-	int page_number;
+	gchar *both;
+	gint did_bg;
+	gint bg_backwards;
+	gint do_bg;
+	gint length;
+	gint page_number;
 };
 
-static void print_text(rlib *r, char *text, int backwards) {
-	char *str_ptr;
-	int text_size = strlen(text);
-	int *size = NULL;
+static void print_text(rlib *r, gchar *text, gint backwards) {
+	gchar *str_ptr;
+	gint text_size = strlen(text);
+	gint *size = NULL;
 
 	if(backwards) {
 		make_more_space_if_necessary(&OUTPUT_PRIVATE(r)->bottom[OUTPUT_PRIVATE(r)->page_number].data, 
@@ -65,17 +65,17 @@ static void print_text(rlib *r, char *text, int backwards) {
 	*size = (*size) + text_size;
 }
 
-static float rlib_html_get_string_width(rlib *r, char *text) {
+static gfloat rlib_html_get_string_width(rlib *r, gchar *text) {
 	return 1;
 }
 
-static char *get_html_color(char *str, struct rgb *color) {
-	sprintf(str, "#%02x%02x%02x", (int)(color->r*0xFF), 
-		(int)(color->g*0xFF), (int)(color->b*0xFF));
+static gchar *get_html_color(gchar *str, struct rgb *color) {
+	sprintf(str, "#%02x%02x%02x", (gint)(color->r*0xFF), 
+		(gint)(color->g*0xFF), (gint)(color->b*0xFF));
 	return str;
 }
 
-static int convert_font_point(int point) {
+static gint convert_font_point(gint point) {
 	if(point <= 8)
 		return 1;
 	else if(point <= 10)
@@ -92,10 +92,10 @@ static int convert_font_point(int point) {
 		return 7;
 }
 
-static void rlib_html_print_text(rlib *r, float left_origin, float bottom_origin, char *text, int backwards, int col) {
-	int did_fg = 0;
-	int did_fp = 0;
-	char buf_font[MAXSTRLEN];
+static void rlib_html_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *text, gint backwards, gint col) {
+	gint did_fg = 0;
+	gint did_fp = 0;
+	gchar buf_font[MAXSTRLEN];
 
 	OUTPUT_PRIVATE(r)->bg_backwards = backwards;
 	
@@ -104,8 +104,8 @@ static void rlib_html_print_text(rlib *r, float left_origin, float bottom_origin
 	&& OUTPUT_PRIVATE(r)->current_bg_color.b >= 0 && !((OUTPUT_PRIVATE(r)->current_bg_color.r == 1.0 
 	&& OUTPUT_PRIVATE(r)->current_bg_color.g == 1.0 && OUTPUT_PRIVATE(r)->current_bg_color.b == 1.0)) &&
 	OUTPUT_PRIVATE(r)->do_bg) {
-		char buf[MAXSTRLEN];
-		char color[40];
+		gchar buf[MAXSTRLEN];
+		gchar color[40];
 		get_html_color(color, &OUTPUT_PRIVATE(r)->current_bg_color);
 		sprintf(buf, "<span style=\"background-color: %s\">", color);
 		print_text(r, buf, backwards);
@@ -122,8 +122,8 @@ static void rlib_html_print_text(rlib *r, float left_origin, float bottom_origin
 	if(OUTPUT_PRIVATE(r)->current_fg_color.r >= 0 && OUTPUT_PRIVATE(r)->current_fg_color.g >= 0 
 	&& OUTPUT_PRIVATE(r)->current_fg_color.b >= 0 && !(OUTPUT_PRIVATE(r)->current_fg_color.r == 0 
 	&& OUTPUT_PRIVATE(r)->current_fg_color.g == 0 && OUTPUT_PRIVATE(r)->current_fg_color.b == 0)) {
-		char buf[MAXSTRLEN];
-		char color[40];
+		gchar buf[MAXSTRLEN];
+		gchar color[40];
 		get_html_color(color, &OUTPUT_PRIVATE(r)->current_fg_color);
 		sprintf(buf, "<font %s color=\"%s\">", buf_font, color);
 		print_text(r, buf, backwards);
@@ -131,7 +131,7 @@ static void rlib_html_print_text(rlib *r, float left_origin, float bottom_origin
 	}
 
 	if(!did_fg && did_fp) { 
-		char buf[MAXSTRLEN];
+		gchar buf[MAXSTRLEN];
 		sprintf(buf, "<font %s>", buf_font);
 		print_text(r, buf, backwards);
 	}
@@ -145,7 +145,7 @@ static void rlib_html_print_text(rlib *r, float left_origin, float bottom_origin
 }
 
 
-static void rlib_html_set_fg_color(rlib *r, float red, float green, float blue) {
+static void rlib_html_set_fg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {
 	if(OUTPUT_PRIVATE(r)->current_fg_color.r != red || OUTPUT_PRIVATE(r)->current_fg_color.g != green 
 	|| OUTPUT_PRIVATE(r)->current_fg_color.b != blue) {
 		OUTPUT_PRIVATE(r)->current_fg_color.r = red;
@@ -154,7 +154,7 @@ static void rlib_html_set_fg_color(rlib *r, float red, float green, float blue) 
 	}
 }
 
-static void rlib_html_set_bg_color(rlib *r, float red, float green, float blue) {
+static void rlib_html_set_bg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {
 	if(OUTPUT_PRIVATE(r)->current_bg_color.r != red || OUTPUT_PRIVATE(r)->current_bg_color.g != green 
 	|| OUTPUT_PRIVATE(r)->current_bg_color.b != blue) {
 		OUTPUT_PRIVATE(r)->current_bg_color.r = red;
@@ -163,10 +163,10 @@ static void rlib_html_set_bg_color(rlib *r, float red, float green, float blue) 
 	}
 }
 
-static void rlib_html_hr(rlib *r, int backwards, float left_origin, float bottom_origin, float how_long, float how_tall, 
-struct rgb *color, float indent, float length) {
-	char buf[MAXSTRLEN];
-	char color_str[40];
+static void rlib_html_hr(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
+struct rgb *color, gfloat indent, gfloat length) {
+	gchar buf[MAXSTRLEN];
+	gchar color_str[40];
 	get_html_color(color_str, color);
 	
 	sprintf(buf,"<td height=\"%d\" bgcolor=\"%s\"></td>", (int)how_tall, color_str);
@@ -176,7 +176,8 @@ struct rgb *color, float indent, float length) {
 	print_text(r, "</tr></table>", backwards);
 }
 
-static void rlib_html_draw_cell_background_start(rlib *r, float left_origin, float bottom_origin, float how_long, float how_tall, struct rgb *color) {
+static void rlib_html_draw_cell_background_start(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
+struct rgb *color) {
 	OUTPUT(r)->rlib_set_bg_color(r, color->r, color->g, color->b);
 	OUTPUT_PRIVATE(r)->do_bg = TRUE;
 }
@@ -191,8 +192,8 @@ static void rlib_html_draw_cell_background_end(rlib *r) {
 }
 
 
-static void rlib_html_boxurl_start(rlib *r, float left_origin, float bottom_origin, float how_long, float how_tall, char *url) {
-	char buf[MAXSTRLEN];
+static void rlib_html_boxurl_start(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url) {
+	gchar buf[MAXSTRLEN];
 	sprintf(buf, "<a href=\"%s\">", url);
 	print_text(r, buf, FALSE);
 }
@@ -201,9 +202,9 @@ static void rlib_html_boxurl_end(rlib *r) {
 	print_text(r, "</a>", FALSE);
 }
 
-static void rlib_html_drawimage(rlib *r, float left_origin, float bottom_origin, char *nname, char *type, float nwidth, 
-	float nheight) {
-	char buf[MAXSTRLEN];
+static void rlib_html_drawimage(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *nname, gchar *type, gfloat nwidth, 
+gfloat nheight) {
+	gchar buf[MAXSTRLEN];
 
 	print_text(r, "<DIV>", FALSE);	
 	sprintf(buf, "<img src=\"%s\">", nname);
@@ -211,7 +212,7 @@ static void rlib_html_drawimage(rlib *r, float left_origin, float bottom_origin,
 	print_text(r, "</DIV>", FALSE);
 }
 
-static void rlib_html_set_font_point(rlib *r, int point) {
+static void rlib_html_set_font_point(rlib *r, gint point) {
 	if(r->current_font_point != point) {
 		r->current_font_point = point;
 	}
@@ -228,9 +229,9 @@ static void rlib_html_end_text(rlib *r) {}
 static void rlib_html_init_output(rlib *r) {}
 
 static void rlib_html_start_report(rlib *r) {
-	char buf[MAXSTRLEN];
-	int pages_accross = r->reports[r->current_report]->pages_accross;
-	int i;
+	gchar buf[MAXSTRLEN];
+	gint pages_accross = r->reports[r->current_report]->pages_accross;
+	gint i;
 
 	OUTPUT_PRIVATE(r)->bottom = rmalloc(sizeof(struct _data) * pages_accross);
 	OUTPUT_PRIVATE(r)->top = rmalloc(sizeof(struct _data) * pages_accross);
@@ -254,9 +255,9 @@ static void rlib_html_start_report(rlib *r) {
 }
 
 static void rlib_html_end_report(rlib *r) {
-	int i;
-	int pages_accross = r->reports[r->current_report]->pages_accross;
-	int sofar = OUTPUT_PRIVATE(r)->length;
+	gint i;
+	gint pages_accross = r->reports[r->current_report]->pages_accross;
+	gint sofar = OUTPUT_PRIVATE(r)->length;
 
 	print_text(r, "</pre></td></tr></table>", TRUE);
 
@@ -313,12 +314,12 @@ static long rlib_html_get_output_length(rlib *r) {
 	return OUTPUT_PRIVATE(r)->length;
 }
 
-static void rlib_html_set_working_page(rlib *r, int page) {
+static void rlib_html_set_working_page(rlib *r, gint page) {
 	OUTPUT_PRIVATE(r)->page_number = page-1;
 }
 
 
-static int rlib_html_free(rlib *r) {
+static gint rlib_html_free(rlib *r) {
 	rfree(OUTPUT_PRIVATE(r)->both);
 	rfree(OUTPUT_PRIVATE(r));
 	rfree(OUTPUT(r));

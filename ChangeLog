@@ -1,3 +1,34 @@
+2003-12-29  Bob Doan  <bdoan@sicompos.com>
+	* bindings/php/php.c: use glib data types
+	* inputs/mysql/mysql.c: likewise
+	* inputs/odbc/odbc.c: likewise
+	* inputs/postgre/postgre.c: likewise
+	* libsrc/api.c: likewise
+	* libsrc/breaks.c: likewise
+	* libsrc/csv.c: likewise
+	* libsrc/datasource.c: likewise
+	* libsrc/environment.c: likewise
+	* libsrc/formatstring.c: likewise
+	* libsrc/free.c: likewise
+	* libsrc/fxp.c: likewise
+	* libsrc/html.c: likewise
+	* libsrc/navigation.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/pcode.c: likewise
+	* libsrc/pcode_op_functions.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/ralloc.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rhashtable.c: likewise
+	* libsrc/rhashtable.h:likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/rlib_input.h: likewise
+	* libsrc/rvector.c: likewise
+	* libsrc/rvector.h: likewise
+	* libsrc/txt.c: likewise
+	* libsrc/util.c: likewise
+	
 2003-12-18  Chet Heilman <cheilman@sicompos.com>
 
 	* libsrc/breaks.c: (rlib_print_break_header_output): Change all 'surpress'

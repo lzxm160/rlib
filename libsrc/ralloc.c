@@ -21,17 +21,19 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <glib.h>
+
 #include "ralloc.h"
 
 #if DEBUG_RLIB_MEMORY
 static RVector *mem;
-static int nBadFrees;
+static gint nBadFrees;
 RVector *ralloc_getVector() {
 	return mem;
 }
 
 
-int ralloc_getBadFrees() {
+gint ralloc_getBadFrees() {
 	return nBadFrees;
 }
 
@@ -43,8 +45,8 @@ void ralloc_init() {
 }
 
 
-void *rmalloc(size_t size) {
-	void *p = malloc(size);
+gpointer rmalloc(size_t size) {
+	gpointer p = malloc(size);
 	if (mem && p) RVector_add(mem, p);
 	return p; 
 }
@@ -55,15 +57,15 @@ char *rstrdup(const char *s) {
 	return p; 
 }
 
-void *rcalloc(size_t nmemb, size_t size) {
-	void *p = calloc(nmemb, size);
+gpointer rcalloc(size_t nmemb, size_t size) {
+	gpointer p = calloc(nmemb, size);
 	if (mem && p) RVector_add(mem, p);
 	return p; 
 }
 
-void rfree(void *ptr) {
+void rfree(gpointer ptr) {
 	if (mem) {
-		int idx;
+		gint idx;
 		idx = RVector_find(mem, ptr);
 		if (idx >= 0) RVector_deleteAt(mem, idx);
 		else ++nBadFrees;
@@ -71,10 +73,10 @@ void rfree(void *ptr) {
 	free(ptr);
 }
 
-void *rrealloc(void *ptr, size_t size) {
-	void *p = realloc(ptr, size);
+gpointer rrealloc(gpointer ptr, size_t size) {
+	gpointer p = realloc(ptr, size);
 	if (mem) {
-		int idx;
+		gint idx;
 		idx = RVector_find(mem, ptr);
 		if (idx >= 0) RVector_deleteAt(mem, idx);
 		else ++nBadFrees;
@@ -87,19 +89,19 @@ void *rmalloc(size_t size) {
 	return malloc(size); 
 }
 
-char * rstrdup(const char *s) {
+gchar * rstrdup(const gchar *s) {
 	return strdup(s);
 }
 
-void *rcalloc(size_t nmemb, size_t size) {
+gpointer rcalloc(size_t nmemb, size_t size) {
 	return calloc(nmemb, size);
 }
 
-void rfree(void *ptr) {
+void rfree(gpointer ptr) {
 	free(ptr);
 }
 
-void *rrealloc(void *ptr, size_t size) {
+gpointer rrealloc(gpointer ptr, size_t size) {
 	return realloc(ptr, size);
 }
 

@@ -30,22 +30,22 @@
 #include "rlib.h"
 #include "pcode.h"
 
-int rlb_string_sprintf(char *dest, char *fmtstr, struct rlib_value *rval) {
-	char *value = RLIB_VALUE_GET_AS_STRING(rval);
+gint rlb_string_sprintf(gchar *dest, gchar *fmtstr, struct rlib_value *rval) {
+	gchar *value = RLIB_VALUE_GET_AS_STRING(rval);
 	return sprintf(dest, fmtstr, value);
 }
 
-int rlib_number_sprintf(char *dest, char *fmtstr, const struct rlib_value *rval, int special_format) {
-	int dec=0;
-	int left_mul=1;
-	int left_padzero=0;
-	int left_pad=0;
-	int right_mul=1;
-	int right_padzero=1;
-	int right_pad=0;
-	int where=0;
-	int commatize=0;
-	char *c;
+gint rlib_number_sprintf(gchar *dest, gchar *fmtstr, const struct rlib_value *rval, gint special_format) {
+	gint dec=0;
+	gint left_mul=1;
+	gint left_padzero=0;
+	gint left_pad=0;
+	gint right_mul=1;
+	gint right_padzero=1;
+	gint right_pad=0;
+	gint where=0;
+	gint commatize=0;
+	gchar *c;
 
 	for(c=fmtstr;*c && (*c != 'd');c++) {
 		if(*c=='$')
@@ -75,12 +75,12 @@ int rlib_number_sprintf(char *dest, char *fmtstr, const struct rlib_value *rval,
 		}	
 	}
 	if(rval != NULL) {
-		char fleft[20];
-		char fright[20];
-		char left_holding[20];
-		char right_holding[20];
-		int ptr=0;
-		long long left, right;
+		gchar fleft[20];
+		gchar fright[20];
+		gchar left_holding[20];
+		gchar right_holding[20];
+		gint ptr=0;
+		gint64 left, right;
 		left = RLIB_VALUE_GET_AS_NUMBER(rval) / RLIB_DECIMAL_PERCISION;
 		if(special_format)
 			left = llabs(left);
@@ -106,7 +106,7 @@ int rlib_number_sprintf(char *dest, char *fmtstr, const struct rlib_value *rval,
 		if(dec) {
 			ptr=0;
 			if(!special_format && RLIB_VALUE_GET_AS_NUMBER(rval) < 0 && left == 0) {
-				char tmp[MAXSTRLEN];
+				gchar tmp[MAXSTRLEN];
 				sprintf(tmp, "-%s", left_holding);
 				strcpy(left_holding, tmp);
 				strcpy(dest, left_holding);
@@ -136,7 +136,7 @@ int rlib_number_sprintf(char *dest, char *fmtstr, const struct rlib_value *rval,
 	return strlen(dest);
 }
 
-int rlib_format_string(rlib *r, struct report_field *rf, struct rlib_value *rval, char *buf) {
+gint rlib_format_string(rlib *r, struct report_field *rf, struct rlib_value *rval, gchar *buf) {
 	if(rf->format == NULL) {
 		if(RLIB_VALUE_IS_NUMBER(rval)) {
 			sprintf(buf, "%lld", RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(rval)));
@@ -149,8 +149,8 @@ int rlib_format_string(rlib *r, struct report_field *rf, struct rlib_value *rval
 			return FALSE;
 		}
 	} else {
+		gchar *formatstring;
 		struct rlib_value rval_fmtstr2, *rval_fmtstr=&rval_fmtstr2;
-		char *formatstring;
 		rval_fmtstr = rlib_execute_pcode(r, &rval_fmtstr2, rf->format_code, rval);
 		if(!RLIB_VALUE_IS_STRING(rval_fmtstr)) {
 			sprintf(buf, "!ERR_F_F");
@@ -160,11 +160,11 @@ int rlib_format_string(rlib *r, struct report_field *rf, struct rlib_value *rval
 			if(RLIB_VALUE_IS_DATE(rval)) {
 				strftime(buf, 100, formatstring, &RLIB_VALUE_GET_AS_DATE(rval));				
 			} else {	
-				int i=0,j=0,pos=0,fpos=0;
-				char fmtstr[20];
-				int special_format=0;
-				char *idx;
-				int len_formatstring;
+				gint i=0,j=0,pos=0,fpos=0;
+				gchar fmtstr[20];
+				gint special_format=0;
+				gchar *idx;
+				gint len_formatstring;
 				idx = index(formatstring, ':');
 				if(idx != NULL && RLIB_VALUE_IS_NUMBER(rval)) {
 					formatstring = rstrdup(formatstring);
@@ -187,7 +187,7 @@ int rlib_format_string(rlib *r, struct report_field *rf, struct rlib_value *rval
 						fmtstr[fpos] = '\0';
 						if(fmtstr[fpos-1] == 'd') {
 							if(RLIB_VALUE_IS_NUMBER(rval)) {
-								char tmp[50];
+								gchar tmp[50];
 								
 								rlib_number_sprintf(tmp, fmtstr, rval, special_format);
 								for(j=0;j<(int)strlen(tmp);j++)
@@ -198,7 +198,7 @@ int rlib_format_string(rlib *r, struct report_field *rf, struct rlib_value *rval
 							}
 						} else if(fmtstr[fpos-1] == 's') {
 							if(RLIB_VALUE_IS_STRING(rval)) {
-								char tmp[500];
+								gchar tmp[500];
 								rlb_string_sprintf(tmp, fmtstr, rval);
 								for(j=0;j<(int)strlen(tmp);j++)
 									buf[pos++] = tmp[j];

@@ -28,10 +28,10 @@
 #include "ralloc.h"
 #include "rlib.h"
 
-void utf8_to_8813(struct rlib_report *rep, char *dest, char *str) {
+void utf8_to_8813(struct rlib_report *rep, gchar *dest, gchar *str) {
 	size_t len = MAXSTRLEN;
 	size_t slen;
-	char *olddest = dest;
+	gchar *olddest = dest;
 	if(str != NULL && str[0] != 0) {
 		if(rep->cd != NULL) {
 			slen = strlen(str);
@@ -101,7 +101,7 @@ struct report_element * parse_line_array(struct rlib_report *rep, xmlDocPtr doc,
 	return e;
 }
 
-struct report_output * report_output_new(int type, void *data) {
+struct report_output * report_output_new(gint type, gpointer data) {
 	struct report_output *ro = rmalloc(sizeof(struct report_output));
 	ro->type = type;
 	ro->data = data;
@@ -341,7 +341,7 @@ static struct report_element * parse_report_variables(xmlDocPtr doc, xmlNsPtr ns
 	return e;
 }
 
-struct rlib_report * parse_report_file(char *filename) {
+struct rlib_report * parse_report_file(gchar *filename) {
 	xmlDocPtr doc;
 	struct rlib_report *ret;
 	xmlNsPtr ns = NULL;

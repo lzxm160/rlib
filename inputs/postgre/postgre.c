@@ -22,6 +22,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <glib.h>
+
 #include "libpq-fe.h"
  
 #include "ralloc.h"
@@ -31,20 +33,20 @@
 
 struct rlib_postgre_results {
 	PGresult *result;
-	char *name;
-	int row;
-	int tot_rows;
-	int tot_fields;
-	int isdone;
-	int last_action;
-	int *fields;
+	gchar *name;
+	gint row;
+	gint tot_rows;
+	gint tot_fields;
+	gint isdone;
+	gint last_action;
+	gint *fields;
 };
 
 struct _private {
 	PGconn *conn;
 };
 
-void * rlib_postgre_connect(void * input_ptr, char *conninfo) {
+gpointer rlib_postgre_connect(gpointer input_ptr, gchar *conninfo) {
 	struct input_filter *input = input_ptr;
 	PGconn *conn;
 
@@ -58,14 +60,14 @@ void * rlib_postgre_connect(void * input_ptr, char *conninfo) {
 	return conn;
 }
 
-static int rlib_postgre_input_close(void *input_ptr) {
+static gint rlib_postgre_input_close(gpointer input_ptr) {
 	struct input_filter *input = input_ptr;
 	PQfinish(INPUT_PRIVATE(input)->conn);
 	INPUT_PRIVATE(input)->conn = NULL;
 	return 0;
 }
 
-static PGresult * rlib_postgre_query(PGconn *conn, char *query) {
+static PGresult * rlib_postgre_query(PGconn *conn, gchar *query) {
 	PGresult *result = NULL;
 	result = PQexec(conn, query);
 
@@ -76,14 +78,14 @@ static PGresult * rlib_postgre_query(PGconn *conn, char *query) {
 	return result;
 }
 
-static int rlib_postgre_first(void *input_ptr, void *result_ptr) {
+static gint rlib_postgre_first(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_postgre_results *result = result_ptr;
 	result->row = 0;
 	result->isdone = FALSE;
 	return TRUE;
 }
 
-static int rlib_postgre_next(void *input_ptr, void *result_ptr) {
+static gint rlib_postgre_next(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_postgre_results *results = result_ptr;
 	if(results->row+1 < results->tot_rows) {
 		results->row++;
@@ -94,12 +96,12 @@ static int rlib_postgre_next(void *input_ptr, void *result_ptr) {
 	return FALSE;
 }
 
-static int rlib_postgre_isdone(void *input_ptr, void *result_ptr) {
+static gint rlib_postgre_isdone(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_postgre_results *result = result_ptr;
 	return result->isdone;
 }
 
-static int rlib_postgre_previous(void *input_ptr, void *result_ptr) {
+static gint rlib_postgre_previous(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_postgre_results *result = result_ptr;
 	if(result->row-1 > 0) {
 		result->row--;
@@ -110,34 +112,34 @@ static int rlib_postgre_previous(void *input_ptr, void *result_ptr) {
 	return FALSE;
 }
 
-static int rlib_postgre_last(void *input_ptr, void *result_ptr) {
+static gint rlib_postgre_last(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_postgre_results *result = result_ptr;
 	result->row = result->tot_rows-1;
 	return TRUE;
 }
 
-static char * rlib_postgre_get_field_value_as_string(void *input_ptr, void *result_ptr, void *field_ptr) {
+static gchar * rlib_postgre_get_field_value_as_string(gpointer input_ptr, gpointer result_ptr, gpointer field_ptr) {
 	struct rlib_postgre_results *results = result_ptr;
-	long field = (long)field_ptr;
+	gint field = (gint)field_ptr;
 	field -= 1;
 	return PQgetvalue(results->result, results->row, field);
 }
 
-static void * rlib_postgre_resolve_field_pointer(void *input_ptr, void *result_ptr, char *name) {
+static gpointer rlib_postgre_resolve_field_pointer(gpointer input_ptr, gpointer result_ptr, gchar *name) {
 	struct rlib_postgre_results *results = result_ptr;
-	int i=0;
+	gint i=0;
 	for (i = 0; i < results->tot_fields; i++)
 		if(!strcmp(PQfname(results->result, i), name)) {
-			return (void *)results->fields[i];
+			return (gpointer)results->fields[i];
 		}
 	return NULL;
 }
 
-void * postgre_new_result_from_query(void *input_ptr, char *query) {
+gpointer postgre_new_result_from_query(gpointer input_ptr, gchar *query) {
 	struct input_filter *input = input_ptr;
 	struct rlib_postgre_results *results;
 	PGresult *result;
-	unsigned int count,i;
+	guint count,i;
 	
 	if(input_ptr == NULL)
 		return NULL;
@@ -159,21 +161,21 @@ void * postgre_new_result_from_query(void *input_ptr, char *query) {
 	return results;
 }
 
-static void rlib_postgre_rlib_free_result(void *input_ptr, void *result_ptr) {
+static void rlib_postgre_rlib_free_result(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_postgre_results *results = result_ptr;
 	PQclear(results->result);
 	rfree(results->fields);
 	rfree(results);
 }
 
-static int rlib_postgre_free_input_filter(void *input_ptr) {
+static gint rlib_postgre_free_input_filter(gpointer input_ptr) {
 	struct input_filter *input = input_ptr;
 	rfree(input->private);
 	rfree(input);
 	return 0;
 }
 
-void * rlib_postgre_new_input_filter() {
+gpointer rlib_postgre_new_input_filter() {
 	struct input_filter *input;
 	
 	input = rmalloc(sizeof(struct input_filter));

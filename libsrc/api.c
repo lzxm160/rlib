@@ -48,8 +48,8 @@ rlib * rlib_init() {
 	return rlib_init_with_environment(NULL);
 }
 
-int rlib_add_query_as(rlib *r, char *input_source, char *sql, char *name) {
-	int i;
+gint rlib_add_query_as(rlib *r, gchar *input_source, gchar *sql, gchar *name) {
+	gint i;
 	if(r->queries_count > (RLIB_MAXIMUM_QUERIES-1)) {
 		return -1;
 	}
@@ -66,7 +66,7 @@ int rlib_add_query_as(rlib *r, char *input_source, char *sql, char *name) {
 	return r->queries_count;
 }
 
-int rlib_add_report(rlib *r, char *name, char *mainloop) {
+gint rlib_add_report(rlib *r, gchar *name, gchar *mainloop) {
 	if(r->reports_count > (RLIB_MAXIMUM_REPORTS-1)) {
 		return - 1;
 	}
@@ -77,8 +77,8 @@ int rlib_add_report(rlib *r, char *name, char *mainloop) {
 	return r->reports_count;
 }
 
-int rlib_execute(rlib *r) {
-	int i,j;
+gint rlib_execute(rlib *r) {
+	gint i,j;
 
 	for(i=0;i<r->queries_count;i++) {
 		r->results[i].input = r->queries[i].input;
@@ -117,7 +117,7 @@ int rlib_execute(rlib *r) {
 	return 0;
 }
 
-char * rlib_get_content_type_as_text(rlib *r) {
+gchar * rlib_get_content_type_as_text(rlib *r) {
 	if(r->format == RLIB_CONTENT_TYPE_PDF)
 		return RLIB_WEB_CONTENT_TYPE_PDF;
 	else if(r->format == RLIB_CONTENT_TYPE_HTML)
@@ -128,19 +128,19 @@ char * rlib_get_content_type_as_text(rlib *r) {
 		return RLIB_WEB_CONTENT_TYPE_TEXT;
 }
 
-int rlib_spool(rlib *r) {
+gint rlib_spool(rlib *r) {
 	OUTPUT(r)->rlib_spool_private(r);
 	return 0;
 }
 
-int rlib_set_output_format(rlib *r, int format) {
+gint rlib_set_output_format(rlib *r, int format) {
 	r->format = format;
 	return 0;
 }
 
-int rlib_add_resultset_follower(rlib *r, char *leader, char *follower) {
-	int ptr_leader = -1, ptr_follower = -1;
-	int x;
+gint rlib_add_resultset_follower(rlib *r, gchar *leader, gchar *follower) {
+	gint ptr_leader = -1, ptr_follower = -1;
+	gint x;
 
 	if(r->resultset_followers_count > (RLIB_MAXIMUM_FOLLOWERS-1)) {
 		return -1;
@@ -171,7 +171,7 @@ int rlib_add_resultset_follower(rlib *r, char *leader, char *follower) {
 	return 0;
 }
 
-int rlib_set_output_format_from_text(rlib *r, char *name) {
+gint rlib_set_output_format_from_text(rlib *r, gchar *name) {
 	if(!strcasecmp(name, "PDF"))
 		r->format = RLIB_FORMAT_PDF;
 	else if(!strcasecmp(name, "HTML"))
@@ -187,11 +187,11 @@ int rlib_set_output_format_from_text(rlib *r, char *name) {
 	return 0;
 }
 
-char *rlib_get_output(rlib *r) {
+gchar *rlib_get_output(rlib *r) {
 	return OUTPUT(r)->rlib_get_output(r);
 }
 
-long rlib_get_output_length(rlib *r) {
+gint rlib_get_output_length(rlib *r) {
 	return OUTPUT(r)->rlib_get_output_length(r);
 }
 
@@ -199,8 +199,8 @@ long rlib_get_output_length(rlib *r) {
 /**
  *	Add name/value pair to the memory constants.
  */
-int rlib_add_parameter(rlib *r, const char *name, const char *value) {
-	int result = 1;
+gint rlib_add_parameter(rlib *r, const gchar *name, const gchar *value) {
+	gint result = 1;
 	RHashtable *ht = r->htParameters;
 	
 	if (!ht) { //If no hashtable - add one
@@ -215,7 +215,7 @@ int rlib_add_parameter(rlib *r, const char *name, const char *value) {
 	return result;
 }
 
-int rlib_set_locale(rlib *r, char *locale) {
+gint rlib_set_locale(rlib *r, gchar *locale) {
 	setlocale (LC_NUMERIC, locale);
 	return TRUE;
 }
@@ -231,7 +231,8 @@ void rlib_trap() {
 
 
 #if HAVE_MYSQL
-int rlib_mysql_report(char *hostname, char *username, char *password, char *database, char *xmlfilename, char *sqlquery, char *outputformat) {
+gint rlib_mysql_report(gchar *hostname, gchar *username, gchar *password, gchar *database, gchar *xmlfilename, gchar *sqlquery, 
+gchar *outputformat) {
 	rlib *r;
 	r = rlib_init();
 	if(rlib_add_datasource_mysql(r, "mysql", hostname, username, password, database) == -1)
@@ -248,7 +249,7 @@ int rlib_mysql_report(char *hostname, char *username, char *password, char *data
 #endif
 
 #if HAVE_POSTGRE
-int rlib_postgre_report(char *connstr, char *xmlfilename, char *sqlquery, char *outputformat) {
+gint rlib_postgre_report(gchar *connstr, gchar *xmlfilename, gchar *sqlquery, gchar *outputformat) {
 	rlib *r;
 	r = rlib_init();
 	if(rlib_add_datasource_postgre(r, "postgre", connstr) == -1)

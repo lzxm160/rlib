@@ -27,20 +27,19 @@
 struct _private {
 	struct rgb current_color;
 	CPDFdoc *pdf;
-	char *buffer;
-	long length;
+	gchar *buffer;
+	gint length;
 };
 
-static float rlib_pdf_get_string_width(rlib *r, char *text) {
+static gfloat rlib_pdf_get_string_width(rlib *r, gchar *text) {
 	return cpdf_stringWidth(OUTPUT_PRIVATE(r)->pdf, text)/(72.0);
 }
 
-static void rlib_pdf_print_text(rlib *r, float left_origin, float bottom_origin, char *text, int backwards, int col) {
+static void rlib_pdf_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *text, gint backwards, gint col) {
 	cpdf_text(OUTPUT_PRIVATE(r)->pdf, left_origin, bottom_origin, 0, text);
 }
 
-
-static void rlib_pdf_set_fg_color(rlib *r, float red, float green, float blue) {
+static void rlib_pdf_set_fg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {
 	if(OUTPUT_PRIVATE(r)->current_color.r != red || OUTPUT_PRIVATE(r)->current_color.g != green 
 	|| OUTPUT_PRIVATE(r)->current_color.b != blue) {
 		if(red != -1 && green != -1 && blue != -1 )
@@ -51,7 +50,7 @@ static void rlib_pdf_set_fg_color(rlib *r, float red, float green, float blue) {
 	}
 }
 
-static void rlib_pdf_drawbox(rlib *r, float left_origin, float bottom_origin, float how_long, float how_tall, struct rgb *color) {
+static void rlib_pdf_drawbox(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, struct rgb *color) {
 	if(!(color->r == 1.0 && color->g == 1.0 && color->b == 1.0)) {
 		cpdf_endText(OUTPUT_PRIVATE(r)->pdf);
 		//the -.002 seems to get around decimal percision problems.. but should investigate this a big further	
@@ -63,8 +62,8 @@ static void rlib_pdf_drawbox(rlib *r, float left_origin, float bottom_origin, fl
 	}
 }
 
-static void rlib_pdf_hr(rlib *r, int backwards, float left_origin, float bottom_origin, float how_long, float how_tall, 
-struct rgb *color, float indent, float length) {
+static void rlib_pdf_hr(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
+struct rgb *color, gfloat indent, gfloat length) {
 	how_tall = how_tall / 72.0;
 	rlib_pdf_drawbox(r, left_origin, bottom_origin, how_long, how_tall, color);
 }
@@ -72,23 +71,23 @@ struct rgb *color, float indent, float length) {
 /*
 	What was the guy from ClibPDF Smoking....cpdf_SetActionURL origin is bottom right... /me sighs
 */
-static void rlib_pdf_boxurl_start(rlib *r, float left_origin, float bottom_origin, float how_long, float how_tall, char *url) {
+static void rlib_pdf_boxurl_start(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url) {
 	if(r->landscape) {
-		float new_left = get_page_width(r)-left_origin-how_long;
-		float new_bottom = bottom_origin;
+		gfloat new_left = get_page_width(r)-left_origin-how_long;
+		gfloat new_bottom = bottom_origin;
 		cpdf_setActionURL(OUTPUT_PRIVATE(r)->pdf, new_bottom, new_left, new_bottom+how_tall, new_left+how_long, url, NULL);
 	} else  {
-		float new_left = left_origin;
-		float new_bottom = bottom_origin;
+		gfloat new_left = left_origin;
+		gfloat new_bottom = bottom_origin;
 		cpdf_setActionURL(OUTPUT_PRIVATE(r)->pdf, new_left, new_bottom, new_left+how_long, new_bottom+how_tall, url, NULL);
 	}
 }
 
-static void rlib_pdf_drawimage(rlib *r, float left_origin, float bottom_origin, char *nname, char *type, float nwidth, 
-	float nheight) {
-	char pathbuf[MAXSTRLEN];
-	float xscale = 1.0, yscale = 1.0;
-	int realtype=JPEG_IMG;
+static void rlib_pdf_drawimage(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *nname, gchar *type, gfloat nwidth, 
+gfloat nheight) {
+	gchar pathbuf[MAXSTRLEN];
+	gfloat xscale = 1.0, yscale = 1.0;
+	gint realtype=JPEG_IMG;
 	if(!strcmp("gif", type))
 		realtype = GIF_IMG;
 	cpdf_endText(OUTPUT_PRIVATE(r)->pdf);
@@ -98,7 +97,7 @@ static void rlib_pdf_drawimage(rlib *r, float left_origin, float bottom_origin, 
 	OUTPUT(r)->rlib_set_bg_color(r, 0, 0, 0);
 }
 
-static void rlib_pdf_set_font_point(rlib *r, int point) {
+static void rlib_pdf_set_font_point(rlib *r, gint point) {
 	if(r->current_font_point != point) {
 		cpdf_setFont(OUTPUT_PRIVATE(r)->pdf, "Courier", "WinAnsiEncoding", point);		
 		r->current_font_point = point;
@@ -106,9 +105,9 @@ static void rlib_pdf_set_font_point(rlib *r, int point) {
 }
 
 static void rlib_pdf_start_new_page(rlib *r) {
-	int i=0;
-	int pages_accross = r->reports[r->current_report]->pages_accross;
-	int page_number = r->current_page_number * pages_accross;
+	gint i=0;
+	gint pages_accross = r->reports[r->current_report]->pages_accross;
+	gint page_number = r->current_page_number * pages_accross;
 	
 	for(i=0;i<pages_accross;i++) {
 		if(r->reports[r->current_report]->orientation == RLIB_ORIENTATION_LANDSCAPE) {
@@ -126,18 +125,18 @@ static void rlib_pdf_start_new_page(rlib *r) {
 	}
 }
 
-static void rlib_pdf_set_working_page(rlib *r, int page) {
-	int pages_accross = r->reports[r->current_report]->pages_accross;
-	int page_number = r->current_page_number * pages_accross;
+static void rlib_pdf_set_working_page(rlib *r, gint page) {
+	gint pages_accross = r->reports[r->current_report]->pages_accross;
+	gint page_number = r->current_page_number * pages_accross;
 	page--;
 	cpdf_setCurrentPage(OUTPUT_PRIVATE(r)->pdf, page_number + page);
 }
 
 
 static void rlib_pdf_end_text(rlib *r) {
-	int i=0;
-	int pages_accross = r->reports[r->current_report]->pages_accross;
-	int page_number = r->current_page_number * pages_accross;
+	gint i=0;
+	gint pages_accross = r->reports[r->current_report]->pages_accross;
+	gint page_number = r->current_page_number * pages_accross;
 
 	for(i=0;i<pages_accross;i++) {
 		cpdf_setCurrentPage(OUTPUT_PRIVATE(r)->pdf, page_number+i);

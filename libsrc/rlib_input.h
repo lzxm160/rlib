@@ -27,20 +27,20 @@
 #endif
 
 struct input_filter {
-	void *private;
-	int (*input_close)(void *);
-	void * (*new_result_from_query)(void *, char *);
-	int (*free)(void *);
+	gpointer private;
+	gint (*input_close)(gpointer);
+	gpointer (*new_result_from_query)(gpointer, gchar *);
+	gint (*free)(gpointer);
 	
-	int (*first)(void *, void *);
-	int (*next)(void *, void *);
-	int (*previous)(void *, void *);
-	int (*last)(void *, void *);
-	int (*isdone)(void *, void *);
+	gint (*first)(gpointer, gpointer);
+	gint (*next)(gpointer, gpointer);
+	gint (*previous)(gpointer, gpointer);
+	gint (*last)(gpointer, gpointer);
+	gint (*isdone)(gpointer, gpointer);
 
-	char * (*get_field_value_as_string)(void *, void *, void *);	
+	gchar * (*get_field_value_as_string)(gpointer, gpointer, gpointer);	
 
-	void * (*resolve_field_pointer)(void *, void *, char *);
+	gpointer (*resolve_field_pointer)(gpointer, gpointer, gchar *);
 
-	void (*free_result)(void *, void *);	
+	void (*free_result)(gpointer, gpointer);	
 };

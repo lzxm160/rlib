@@ -37,7 +37,7 @@
 	In this case r.pageno
 
 */
-int rlib_resolve_rlib_variable(rlib *r, char *name) {
+gint rlib_resolve_rlib_variable(rlib *r, gchar *name) {
 	if(strlen(name) >= 3 && name[0] == 'r' && name[1] == '.') {
 		name += 2;
 		if(!strcmp(name, "pageno"))
@@ -52,12 +52,12 @@ int rlib_resolve_rlib_variable(rlib *r, char *name) {
 	return 0;
 }
 
-char * rlib_resolve_field_value(rlib *r, struct rlib_resultset_field *rf) {
+gchar * rlib_resolve_field_value(rlib *r, struct rlib_resultset_field *rf) {
 	return INPUT(r, rf->resultset)->get_field_value_as_string(INPUT(r, rf->resultset), r->results[rf->resultset].result , rf->field);
 }
 
-int rlib_lookup_result(rlib *r, char *name) {
-	int i;
+gint rlib_lookup_result(rlib *r, gchar *name) {
+	gint i;
 	for(i=0;i<r->queries_count;i++) {
 		if(!strcmp(r->results[i].name, name))
 			return i;
@@ -65,16 +65,15 @@ int rlib_lookup_result(rlib *r, char *name) {
 	return -1;
 }
 
-
-int rlib_resolve_resultset_field(rlib *r, char *name, void **rtn_field, int *rtn_resultset) {
-	int resultset=0;
-	int found = FALSE;
-	char *right_side = NULL, *result_name = NULL;
+gint rlib_resolve_resultset_field(rlib *r, char *name, void **rtn_field, gint *rtn_resultset) {
+	gint resultset=0;
+	gint found = FALSE;
+	gchar *right_side = NULL, *result_name = NULL;
 
 	resultset = r->current_result;
 	right_side = memchr(name, '.', strlen(name));
 	if(right_side != NULL) {
-		int t;
+		gint t;
 		result_name = rmalloc(strlen(name) - strlen(right_side) + 1);
 		memcpy(result_name, name, strlen(name) - strlen(right_side));
 		result_name[strlen(name) - strlen(right_side)] = '\0';
@@ -98,7 +97,7 @@ int rlib_resolve_resultset_field(rlib *r, char *name, void **rtn_field, int *rtn
 	return found;
 }
 
-static int getalign(char *align) {
+static gint getalign(char *align) {
 	if(align == NULL)
 		return RLIB_ALIGN_LEFT;
 
@@ -183,8 +182,8 @@ static void rlib_image_resolve_pcode(rlib *r, struct report_image * ri) {
 }
 
 static void rlib_resolve_fields2(rlib *r, struct report_output_array *roa) {
+	gint j;
 	struct report_element *e;
-	int j;
 	
 	if(roa == NULL)
 		return;
@@ -232,7 +231,7 @@ static void rlib_resolve_outputs(rlib *r, struct report_element *e) {
 	Report variables are refereced as v.whatever
 	but when created in the <variables/> section they use there normal name.. ie.. whatever
 */
-struct report_variable *rlib_resolve_variable(rlib *r, char *name) {
+struct report_variable *rlib_resolve_variable(rlib *r, gchar *name) {
 	struct report_element *e;
 	if(strlen(name) >= 3 && name[0] == 'v' && name[1] == '.') {
 		name += 2;
@@ -334,10 +333,10 @@ void rlib_resolve_fields(rlib *r) {
 }
 
 
-char * rlib_resolve_memory_variable(rlib *r, char *name) {
+gchar * rlib_resolve_memory_variable(rlib *r, gchar *name) {
 	if(strlen(name) >= 3 && name[0] == 'm' && name[1] == '.') {
 		if (r->htParameters) {
-			char *result = RHashtable_get(r->htParameters, name + 2);
+			gchar *result = RHashtable_get(r->htParameters, name + 2);
 			if (result) return result;
 		}
 		return ENVIRONMENT(r)->rlib_resolve_memory_variable(name+2);

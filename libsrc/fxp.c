@@ -20,20 +20,20 @@
  
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <glib.h>
 
 #define DIV0(a,b) ((b) == 0 ? 0 : ((a)/(b)))
 #define MOD0(a,b) ((b) == 0 ? 0 : ((a)%(b)))
 
 //man 3 llabs says the prototype is in stdlib.. no it aint!
-long long int llabs(long long int j);
+gint64 llabs(gint64 j);
 
 
-long long rlib_fxp_mul(long long a, long long b, long long factor) {
-	long long wholea;
-	long long wholeb;
-	long long parta;
-	long long partb;
+gint64 rlib_fxp_mul(gint64 a, gint64 b, gint64 factor) {
+	gint64 wholea;
+	gint64 wholeb;
+	gint64 parta;
+	gint64 partb;
 
 	wholea = DIV0(a,factor);
 	wholeb = DIV0(b,factor);
@@ -42,8 +42,8 @@ long long rlib_fxp_mul(long long a, long long b, long long factor) {
 	return( (wholea*wholeb)*factor+(parta*wholeb+partb*wholea)+DIV0(parta*partb,factor));
 }
 
-long long rlib_fxp_div( long long num, long long denom, int places) {
-	long long result = 0l;
+gint64 rlib_fxp_div(gint64 num, gint64 denom, gint places) {
+	gint64 result = 0l;
 
 	if( denom != 0L) {
 		if( (llabs(denom)&0xFC00000000000000LL) ) {

@@ -25,23 +25,23 @@
 #include "rlib.h"
 
 struct _data {
-	char *data;
-	int size;
-	int total_size;
+	gchar *data;
+	gint size;
+	gint total_size;
 };
 
 struct _private {
 	struct _data *top;
 	struct _data *bottom;
-	char *both;
-	long length;
-	int page_number;
+	gchar *both;
+	gint length;
+	gint page_number;
 };
 
-static void print_text(rlib *r, char *text, int backwards) {
-	char *str_ptr;
-	int text_size = strlen(text);
-	int *size = NULL;
+static void print_text(rlib *r, gchar *text, gint backwards) {
+	gchar *str_ptr;
+	gint text_size = strlen(text);
+	gint *size = NULL;
 	if(backwards) {
 		make_more_space_if_necessary(&OUTPUT_PRIVATE(r)->bottom[OUTPUT_PRIVATE(r)->page_number].data, 
 			&OUTPUT_PRIVATE(r)->bottom[OUTPUT_PRIVATE(r)->page_number].size, 
@@ -59,11 +59,11 @@ static void print_text(rlib *r, char *text, int backwards) {
 	*size = (*size) + text_size;
 }
 
-static float rlib_txt_get_string_width(rlib *r, char *text) {
+static gfloat rlib_txt_get_string_width(rlib *r, gchar *text) {
 	return 1;
 }
 
-static void rlib_txt_print_text(rlib *r, float left_origin, float bottom_origin, char *text, int backwards, int col) {
+static void rlib_txt_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *text, gint backwards, gint col) {
 	print_text(r, text, backwards);
 }
 
@@ -86,8 +86,8 @@ static void rlib_txt_end_line(rlib *r, int backwards) {
 }
 
 static void rlib_txt_start_report(rlib *r) {
-	int pages_accross = r->reports[r->current_report]->pages_accross;
-	int i;
+	gint pages_accross = r->reports[r->current_report]->pages_accross;
+	gint i;
 
 	OUTPUT_PRIVATE(r)->bottom = rmalloc(sizeof(struct _data) * pages_accross);
 	OUTPUT_PRIVATE(r)->top = rmalloc(sizeof(struct _data) * pages_accross);
@@ -102,9 +102,9 @@ static void rlib_txt_start_report(rlib *r) {
 }
 
 static void rlib_txt_end_report(rlib *r) {
-	int i;
-	int pages_accross = r->reports[r->current_report]->pages_accross;
-	int sofar = OUTPUT_PRIVATE(r)->length;
+	gint i;
+	gint pages_accross = r->reports[r->current_report]->pages_accross;
+	gint sofar = OUTPUT_PRIVATE(r)->length;
 	for(i=0;i<pages_accross;i++) {
 		OUTPUT_PRIVATE(r)->both = rrealloc(OUTPUT_PRIVATE(r)->both, sofar + OUTPUT_PRIVATE(r)->top[i].size + OUTPUT_PRIVATE(r)->bottom[i].size);
 		memcpy(OUTPUT_PRIVATE(r)->both + sofar , OUTPUT_PRIVATE(r)->top[i].data, OUTPUT_PRIVATE(r)->top[i].size);
@@ -127,7 +127,7 @@ static void rlib_txt_end_page(rlib *r) {
 	rlib_init_page(r, FALSE);
 }
 
-static int rlib_txt_is_single_page(rlib *r) {
+static gint rlib_txt_is_single_page(rlib *r) {
 	return TRUE;
 }
 
@@ -150,16 +150,18 @@ static void rlib_txt_set_working_page(rlib *r, int page) {
 	OUTPUT_PRIVATE(r)->page_number = page-1;
 }
 
-static void rlib_txt_set_fg_color(rlib *r, float red, float green, float blue) {}
-static void rlib_txt_set_bg_color(rlib *r, float red, float green, float blue) {}
-static void rlib_txt_hr(rlib *r, int backwards, float left_origin, float bottom_origin, float how_long, float how_tall, struct rgb *color, float indent, float length) {}
-static void rlib_txt_draw_cell_background_start(rlib *r, float left_origin, float bottom_origin, float how_long, float how_tall, struct rgb *color) {}
+static void rlib_txt_set_fg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {}
+static void rlib_txt_set_bg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {}
+static void rlib_txt_hr(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
+struct rgb *color, gfloat indent, gfloat length) {}
+static void rlib_txt_draw_cell_background_start(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
+struct rgb *color) {}
 static void rlib_txt_draw_cell_background_end(rlib *r) {}
-static void rlib_txt_boxurl_start(rlib *r, float left_origin, float bottom_origin, float how_long, float how_tall, char *url) {}
+static void rlib_txt_boxurl_start(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url) {}
 static void rlib_txt_boxurl_end(rlib *r) {}
-static void rlib_txt_drawimage(rlib *r, float left_origin, float bottom_origin, char *nname, char *type, float nwidth, float nheight) {}
-static void rlib_txt_set_font_point(rlib *r, int point) {}
-static void rlib_txt_start_line(rlib *r, int backwards) {}
+static void rlib_txt_drawimage(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *nname, gchar *type, gfloat nwidth, gfloat nheight) {}
+static void rlib_txt_set_font_point(rlib *r, gint point) {}
+static void rlib_txt_start_line(rlib *r, gint backwards) {}
 static void rlib_txt_start_output_section(rlib *r) {}
 static void rlib_txt_end_output_section(rlib *r) {}
 

@@ -28,7 +28,7 @@
 #include "rhashtable.h"
 
 static void free_pcode(struct rlib_pcode *code) {
-	int i=0;
+	gint i=0;
 	
 	if(code == NULL)
 		return;
@@ -86,7 +86,7 @@ static void rlib_field_free_pcode(rlib *r, struct report_field *rf) {
 
 static void rlib_free_fields(rlib *r, struct report_output_array *roa) {
 	struct report_element *e, *save;
-	int j;
+	gint j;
 	
 	if(roa == NULL)
 		return;
@@ -138,7 +138,7 @@ static void rlib_free_output(rlib *r, struct report_element *e) {
 	}	
 }
 
-void rlib_free_report(rlib *r, int which) {
+void rlib_free_report(rlib *r, gint which) {
 	struct report_element *e, *prev;
 
 	rlib_free_output(r, r->reports[which]->report_header);
@@ -247,7 +247,7 @@ void free_results(rlib *r) {
 	}
 }
 
-int rlib_free(rlib *r) {
+gint rlib_free(rlib *r) {
 	int i;
 	rlib_free_tree(r);
 	xmlCleanupParser();

@@ -24,8 +24,8 @@
 #include "rlib.h"
 #include "rlib_input.h"
 
-static int rlib_navigate_followers(rlib *r, int my_leader, int way) {
-	int i, rtn = TRUE, follower = -1;
+static gint rlib_navigate_followers(rlib *r, gint my_leader, gint way) {
+	gint i, rtn = TRUE, follower = -1;
 	for(i=0;i<r->resultset_followers_count;i++) {
 		if(r->followers[i].leader == my_leader) {
 			follower = r->followers[i].follower;
@@ -47,8 +47,8 @@ static int rlib_navigate_followers(rlib *r, int my_leader, int way) {
 	return rtn;
 }
 
-int rlib_navigate_next(rlib *r, int resultset_num) {
-	int rtn;
+gint rlib_navigate_next(rlib *r, gint resultset_num) {
+	gint rtn;
 	rtn = INPUT(r, resultset_num)->next(INPUT(r, resultset_num), r->results[resultset_num].result);
 	if(rtn == TRUE)
 		return rlib_navigate_followers(r, resultset_num, RLIB_NAVIGATE_NEXT);
@@ -56,8 +56,8 @@ int rlib_navigate_next(rlib *r, int resultset_num) {
 		return FALSE;
 }
 
-int rlib_navigate_previous(rlib *r, int resultset_num) {
-	int rtn;
+gint rlib_navigate_previous(rlib *r, gint resultset_num) {
+	gint rtn;
 	rtn = INPUT(r, resultset_num)->previous(INPUT(r, resultset_num), r->results[resultset_num].result);
 	if(rtn == TRUE)
 		return rlib_navigate_followers(r, resultset_num, RLIB_NAVIGATE_PREVIOUS);
@@ -65,8 +65,8 @@ int rlib_navigate_previous(rlib *r, int resultset_num) {
 		return FALSE;
 }
 
-int rlib_navigate_first(rlib *r, int resultset_num) {
-	int rtn;
+gint rlib_navigate_first(rlib *r, gint resultset_num) {
+	gint rtn;
 	rtn = INPUT(r, resultset_num)->first(INPUT(r, resultset_num), r->results[resultset_num].result);
 	if(rtn == TRUE)
 		return rlib_navigate_followers(r, resultset_num, RLIB_NAVIGATE_FIRST);
@@ -74,8 +74,8 @@ int rlib_navigate_first(rlib *r, int resultset_num) {
 		return FALSE;
 }
 
-int rlib_navigate_last(rlib *r, int resultset_num) {
-	int rtn;
+gint rlib_navigate_last(rlib *r, gint resultset_num) {
+	gint rtn;
 	rtn = INPUT(r, resultset_num)->last(INPUT(r, resultset_num), r->results[resultset_num].result);
 	if(rtn == TRUE)
 		return rlib_navigate_followers(r, resultset_num, RLIB_NAVIGATE_LAST);

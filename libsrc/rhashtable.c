@@ -36,14 +36,14 @@
  * Default search and sort functions.
  * inputs are pointers to the data or datastruct pointer.
  */
-static int keycasecompare(const struct _ht_tuple **key, const struct _ht_tuple **htp) {
+static gint keycasecompare(const struct _ht_tuple **key, const struct _ht_tuple **htp) {
 	return strcasecmp((*key)->key, (*htp)->key);
 }
 
 
-static int keycompare(const struct _ht_tuple **key, const struct _ht_tuple **htp) {
-	const char *k1 = (*key)->key;
-	const char *k2 = (*htp)->key;
+static gint keycompare(const struct _ht_tuple **key, const struct _ht_tuple **htp) {
+	const gchar *k1 = (*key)->key;
+	const gchar *k2 = (*htp)->key;
 //printf("k1=%s, k2=%s\n", k1, k2);
 	return strcmp(k1, k2);
 }
@@ -93,12 +93,12 @@ RHashtable *RHashtable_new() {
  * returns 0 if OK, else non-0.
  * A duplicate key replaces the old value for that key with the new
  */
-int RHashtable_put(RHashtable *ht, const char *key, const void *value) {
+int RHashtable_put(RHashtable *ht, const gchar *key, const void * value) {
 	struct _ht_tuple htt;
-	int result = 1;
+	gint result = 1;
 	struct _ht_tuple *t;
 	RVector *v = ht->data;
-	int idx;
+	gint idx;
 
 	memset(&htt, 0, sizeof(htt));
 	htt.key = key;
@@ -135,10 +135,10 @@ int RHashtable_put(RHashtable *ht, const char *key, const void *value) {
  * if storevalues is true, the element is a CLONE of the element added,
  * not the actual same element.
  */
-void *RHashtable_get(RHashtable *ht, const char *key) {
+void *RHashtable_get(RHashtable *ht, const gchar *key) {
 	struct _ht_tuple htt;
 	RVector *v = ht->data;
-	int idx;
+	gint idx;
 	struct _ht_tuple *t;
 
 	memset(&htt, 0, sizeof(htt));
@@ -156,7 +156,7 @@ void *RHashtable_get(RHashtable *ht, const char *key) {
  * Sets whether keys are case insensitive or not - default with _new is
  * CASE SENSITIVE keys.
  */
-void RHashtable_setCaseInsensitive(RHashtable *ht, int yesorno) {
+void RHashtable_setCaseInsensitive(RHashtable *ht, gint yesorno) {
 	if (yesorno)
 		RVector_setCompareFunc(ht->data, keycasecompare);
 	else
@@ -168,7 +168,7 @@ void RHashtable_setCaseInsensitive(RHashtable *ht, int yesorno) {
  * If storevalues is true, both key and value data is stored in the hashtable.
  * if false, the value is stored as a POINTER - the key is still stored.
  */ 
-int RHashtable_setStoreValues(RHashtable *ht, int yesorno) {
+int RHashtable_setStoreValues(RHashtable *ht, gint yesorno) {
 	int result = 1;
 	
 	if (RVector_size(ht->data) == 0) {

@@ -27,14 +27,14 @@
 #define MAX_COL	100
 
 struct _private {
-	char col[MAX_COL][MAXSTRLEN];
-	char *top;
-	int top_size;
-	int top_total_size;
-	long length;
+	gchar col[MAX_COL][MAXSTRLEN];
+	gchar *top;
+	gint top_size;
+	gint top_total_size;
+	gint length;
 };
 
-static void print_text(rlib *r, char *text, int backwards, int col) {
+static void print_text(rlib *r, gchar *text, gint backwards, gint col) {
 	if(col < MAX_COL) {
 		if(OUTPUT_PRIVATE(r)->col[col][0] == 0)
 			memcpy(OUTPUT_PRIVATE(r)->col[col], text, strlen(text)+1);
@@ -43,29 +43,29 @@ static void print_text(rlib *r, char *text, int backwards, int col) {
 	}
 }
 
-static float rlib_csv_get_string_width(rlib *r, char *text) {
+static gfloat rlib_csv_get_string_width(rlib *r, gchar *text) {
 	return 1;
 }
 
-static void rlib_csv_print_text(rlib *r, float left_origin, float bottom_origin, char *text, int backwards, int col) {
+static void rlib_csv_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *text, gint backwards, gint col) {
 	if(col) {
 		print_text(r, text, backwards, col-1);
 	}
 }
 
 
-static void rlib_csv_set_fg_color(rlib *r, float red, float green, float blue) {}
-static void rlib_csv_set_bg_color(rlib *r, float red, float green, float blue) {}
-static void rlib_csv_hr(rlib *r, int backwards, float left_origin, float bottom_origin, float how_long, float how_tall, 
-struct rgb *color, float indent, float length) {}
-static void rlib_csv_draw_cell_background_start(rlib *r, float left_origin, float bottom_origin, float how_long, float how_tall, struct rgb *color) {}
+static void rlib_csv_set_fg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {}
+static void rlib_csv_set_bg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {}
+static void rlib_csv_hr(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
+struct rgb *color, gfloat indent, gfloat length) {}
+static void rlib_csv_draw_cell_background_start(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, struct rgb *color) {}
 static void rlib_csv_draw_cell_background_end(rlib *r) {}
-static void rlib_csv_boxurl_start(rlib *r, float left_origin, float bottom_origin, float how_long, float how_tall, char *url) {}
+static void rlib_csv_boxurl_start(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url) {}
 static void rlib_csv_boxurl_end(rlib *r) {}
-static void rlib_csv_drawimage(rlib *r, float left_origin, float bottom_origin, char *nname, char *type, float nwidth, 
+static void rlib_csv_drawimage(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *nname, gchar *type, gfloat nwidth, 
 	float nheight) {}
 
-static void rlib_csv_set_font_point(rlib *r, int point) {}
+static void rlib_csv_set_font_point(rlib *r, gint point) {}
 
 static void rlib_csv_start_new_page(rlib *r) {
 	r->reports[r->current_report]->position_bottom[0] = 11-GET_MARGIN(r)->bottom_margin;
@@ -87,13 +87,13 @@ static void rlib_csv_spool_private(rlib *r) {
 	ENVIRONMENT(r)->rlib_write_output(OUTPUT_PRIVATE(r)->top, strlen(OUTPUT_PRIVATE(r)->top));
 }
 
-static void rlib_csv_start_line(rlib *r, int backwards) {}
+static void rlib_csv_start_line(rlib *r, gint backwards) {}
 
-static void really_print_text(rlib *r, char *text) {
-	char buf[MAXSTRLEN];
-	char *str_ptr;
-	int text_size = strlen(text);
-	int *size;
+static void really_print_text(rlib *r, gchar *text) {
+	gchar buf[MAXSTRLEN];
+	gchar *str_ptr;
+	gint text_size = strlen(text);
+	gint *size;
 
 	if(text != NULL && text[0] != '\n') {
 		sprintf(buf, "\"%s\",", text);
@@ -111,20 +111,20 @@ static void really_print_text(rlib *r, char *text) {
 
 }
 
-static void rlib_csv_end_line(rlib *r, int backwards) {}
+static void rlib_csv_end_line(rlib *r, gint backwards) {}
 static void rlib_csv_start_report(rlib *r) {}
 static void rlib_csv_end_report(rlib *r) {}
 
 static void rlib_csv_start_output_section(rlib *r) {
-	int i;
+	gint i;
 	for(i=0;i<MAX_COL;i++) {
 		OUTPUT_PRIVATE(r)->col[i][0] = 0;
 	}
 }
 
 static void rlib_csv_end_output_section(rlib *r) {
-	int i;
-	int biggest = 0;
+	gint i;
+	gint biggest = 0;
 	for(i=0;i<MAX_COL;i++)
 		if(OUTPUT_PRIVATE(r)->col[i][0] != 0)
 			biggest = i;
@@ -156,7 +156,7 @@ static long rlib_csv_get_output_length(rlib *r) {
 	return OUTPUT_PRIVATE(r)->top_size;
 }
 
-static void rlib_csv_set_working_page(rlib *r, int page) {
+static void rlib_csv_set_working_page(rlib *r, gint page) {
 	return;
 }
 

@@ -25,7 +25,7 @@
 #include "rlib.h"
 #include "rlib_input.h"
 
-int rlib_add_datasource(rlib *r, char *input_name, struct input_filter *input) {
+gint rlib_add_datasource(rlib *r, gchar *input_name, struct input_filter *input) {
 	r->inputs[r->inputs_count].input = input;
 	r->inputs[r->inputs_count].name = input_name;
 	r->inputs[r->inputs_count].handle = NULL;
@@ -34,11 +34,12 @@ int rlib_add_datasource(rlib *r, char *input_name, struct input_filter *input) {
 }
 
 #if HAVE_MYSQL
-int rlib_add_datasource_mysql(rlib *r, char *input_name, char *database_host, char *database_user, char *database_password, char *database_database) {
-	void *handle;
-	void * (*rlib_mysql_new_input_filter)();
-	void * (*rlib_mysql_real_connect)(void *, char *, char *, char*, char *);
-	void *mysql;
+gint rlib_add_datasource_mysql(rlib *r, gchar *input_name, gchar *database_host, gchar *database_user, gchar *database_password, 
+gchar *database_database) {
+	gpointer handle;
+	gpointer (*rlib_mysql_new_input_filter)();
+	gpointer (*rlib_mysql_real_connect)(void *, char *, char *, char*, char *);
+	gpointer mysql;
 	
 	handle = dlopen ("libr-mysql.so", RTLD_LAZY);
 	if (!handle) {
@@ -65,11 +66,11 @@ int rlib_add_datasource_mysql(rlib *r, char *input_name, char *database_host, ch
 #endif
 
 #if HAVE_POSTGRE
-int rlib_add_datasource_postgre(rlib *r, char *input_name, char *conn) {
-	void *handle;
-	void * (*rlib_postgre_new_input_filter)();
-	void * (*rlib_postgre_connect)(void *, char *);
-	void *postgre;
+gint rlib_add_datasource_postgre(rlib *r, gchar *input_name, gchar *conn) {
+	gpointer handle;
+	gpointer (*rlib_postgre_new_input_filter)();
+	gpointer (*rlib_postgre_connect)(void *, char *);
+	gpointer postgre;
 
 	handle = dlopen ("libr-postgre.so", RTLD_LAZY);
 	if (!handle)
@@ -93,11 +94,11 @@ int rlib_add_datasource_postgre(rlib *r, char *input_name, char *conn) {
 #endif
 
 #if HAVE_ODBC
-int rlib_add_datasource_odbc(rlib *r, char *input_name, char *source, char *user, char *password) {
-	void *handle;
-	void * (*rlib_odbc_new_input_filter)();
-	void * (*rlib_odbc_connect)(void *, char *, char *, char *);
-	void *odbc;
+gint rlib_add_datasource_odbc(rlib *r, gchar *input_name, gchar *source, gchar *user, gchar *password) {
+	gpointer handle;
+	gpointer (*rlib_odbc_new_input_filter)();
+	gpointer (*rlib_odbc_connect)(void *, char *, char *, char *);
+	gpointer odbc;
 
 	handle = dlopen ("libr-odbc.so", RTLD_LAZY);
 	if (!handle)

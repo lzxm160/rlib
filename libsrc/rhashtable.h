@@ -28,24 +28,24 @@
 
 
 struct _ht_tuple {
-	const char *key;
-	char *value;
-	char keybuf;
+	const gchar *key;
+	gchar *value;
+	gchar keybuf;
 };
 
 
 struct rhashtable {
 	RVector *data;
-	int storevalues;
-	int (* keycompare)(const struct _ht_tuple **key, const struct _ht_tuple **ht);
+	gint storevalues;
+	gint (* keycompare)(const struct _ht_tuple **key, const struct _ht_tuple **ht);
 };
 typedef struct rhashtable RHashtable;
 
 void RHashtable_free(RHashtable *ht);
 RHashtable *RHashtable_new();
-int RHashtable_put(RHashtable *ht, const char *key, const void *value);
-void *RHashtable_get(RHashtable *ht, const char *key);
-void RHashtable_setCaseInsensitive(RHashtable *ht, int yesorno);
-int RHashtable_setStoreValues(RHashtable *ht, int yesorno);
+int RHashtable_put(RHashtable *ht, const gchar *key, const void * value);
+gpointer RHashtable_get(RHashtable *ht, const gchar *key);
+void RHashtable_setCaseInsensitive(RHashtable *ht, gint yesorno);
+int RHashtable_setStoreValues(RHashtable *ht, gint yesorno);
 
 #endif

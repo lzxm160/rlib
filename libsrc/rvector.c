@@ -25,6 +25,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <glib.h>
+
+
 #define NO	0
 #define YES (!NO)
 
@@ -32,19 +35,19 @@
 #include "rvector.h"
 #include "ralloc.h"
 
-static void error(char *msg) {
+static void error(gchar *msg) {
 }
 
 
-static int comp(const void *x, const void *y) {
-	return *(int *) x - *(int *) y;
+static gint comp(const gpointer x, const gpointer y) {
+	return *(gint *) x - *(gint *) y;
 }
 
 
 /**
  * returns a new Vector of the specified initial size and increment.
  */
-RVector *RVector_newOpt(int initsize, int incr, int (*compar)(), int noralloc) {
+RVector *RVector_newOpt(gint initsize, gint incr, gint (*compar)(), gint noralloc) {
 	RVector *v;
 	v = (noralloc)? (RVector *) calloc(1, sizeof(RVector))
 					: (RVector *) rcalloc(1, sizeof(RVector));
@@ -86,7 +89,7 @@ RVector *RVector_new() {
  * Adds the passed object to the Vector. The Vector is grown as needed to 
  * accomodate an indefinite number of elements.
  */
-void RVector_add(RVector *v, void *object) {
+void RVector_add(RVector *v, gpointer object) {
 	int newsize = v->maxentries + v->incr;
 	
 	if (v->nentries >= v->maxentries) {
@@ -119,7 +122,7 @@ void RVector_free(RVector *v) {
 }
 
 
-inline static int isValidIdx(int idx, int max) {
+inline static gint isValidIdx(gint idx, gint max) {
 	return ((idx >= 0) && (idx < max));
 }
 
@@ -127,7 +130,7 @@ inline static int isValidIdx(int idx, int max) {
 /**
  * Returns the element at the specified index in the array
  */
-void *RVector_get(RVector *v, int idx) {
+gpointer RVector_get(RVector *v, gint idx) {
 	if (isValidIdx(idx, v->nentries)) return v->data[idx];
 	return NULL;
 }
@@ -141,7 +144,7 @@ int RVector_size(RVector *v) {
 }
 
 
-void RVector_setCompareFunc(RVector *v, int (*comp)()) {
+void RVector_setCompareFunc(RVector *v, gint (*comp)()) {
 	v->comp = comp;
 }
 
@@ -150,7 +153,7 @@ void RVector_setCompareFunc(RVector *v, int (*comp)()) {
  * Sorts the Vector into order based on the 'compar' function.
  */
 void RVector_sort(RVector *v) {
-	qsort(v->data, v->nentries, sizeof(void *), v->comp);
+	qsort(v->data, v->nentries, sizeof(gpointer), v->comp);
 	v->isSorted = YES;
 }
 
@@ -160,7 +163,7 @@ void RVector_sort(RVector *v) {
  * 'keycompare' looking for key.
  * Returns the index of the sought element or -1 if not found.
  */
-int RVector_bsearch(RVector *v, const void *key) {
+int RVector_bsearch(RVector *v, const gpointer key) {
 	void **bresult = (void **) bsearch(&key, v->data, RVector_size(v), sizeof(void *), v->comp);
 	if (bresult != NULL) return bresult - v->data;
 	return -1;
@@ -171,8 +174,8 @@ int RVector_bsearch(RVector *v, const void *key) {
  * Find using a linear search, using the current comparison algorithm
  * Returns the index of the sought element or -1 if not found.
  */
-int RVector_find(RVector *v, const void *key) {
-	int i, lim;
+int RVector_find(RVector *v, const gpointer key) {
+	gint i, lim;
 	
 	for (i = 0, lim = v->nentries; i < lim; ++i) {
 		if (!v->comp(&v->data[i], &key)) return i;
@@ -193,8 +196,8 @@ int RVector_isSorted(RVector *v) {
  * Deletes the indexed entry in vector.
  * returns the value of the entry if successful, else NULL
  */
-void *RVector_deleteAt(RVector *v, int idx) {
-	void *result = NULL;
+gpointer RVector_deleteAt(RVector *v, int idx) {
+	gpointer result = NULL;
 	
 	if (isValidIdx(idx, v->nentries)) {
 		result = v->data[idx];
@@ -245,7 +248,7 @@ int RVectorIterator_hasNext(RVectorIterator *vi) {
 /**
  * returns the next element of the Vector or NULL if there is none.
  */
-void *RVectorIterator_next(RVectorIterator *vi) {
+gpointer RVectorIterator_next(RVectorIterator *vi) {
 	return (RVectorIterator_hasNext(vi))?
 				RVector_get(vi->v, vi->curidx++)
 				: NULL;

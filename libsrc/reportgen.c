@@ -32,15 +32,15 @@
 
 struct rgb COLOR_BLACK = {0, 0, 0};
 
-float get_page_width(rlib *r) {
+gfloat get_page_width(rlib *r) {
 	if(!r->landscape)
 		return (8.5);
 	else
 		return (11.0);
 }
 
-static float rlib_get_next_line(rlib *r, float x, float fp) {
-	float f;
+static gfloat rlib_get_next_line(rlib *r, gfloat x, gfloat fp) {
+	gfloat f;
 	if(r->landscape)
 		f = (8.5 - (x + RLIB_GET_LINE(fp)));
 	else
@@ -49,19 +49,19 @@ static float rlib_get_next_line(rlib *r, float x, float fp) {
 	return f;
 }
 
-static void rlib_advance_line(rlib *r, float *rlib_position, int font_point) {
+static void rlib_advance_line(rlib *r, gfloat *rlib_position, gint font_point) {
 	*rlib_position += RLIB_GET_LINE(font_point);
 }
 
-static float rlib_get_estimated_width(rlib *r, int len) {
-	char buf[2];
+static gfloat rlib_get_estimated_width(rlib *r, gint len) {
+	gchar buf[2];
 	buf[0] = 'W';
 	buf[1] = '\0';
 	return (OUTPUT(r)->rlib_get_string_width(r, buf)*len);
 }
 
-static float advance_margin(rlib *r, float margin, int chars) {
-	char buf[2];
+static gfloat advance_margin(rlib *r, gfloat margin, gint chars) {
+	gchar buf[2];
 	buf[0] = 'W';
 	buf[1] = '\0';
 	margin += (OUTPUT(r)->rlib_get_string_width(r, buf)*chars);
@@ -75,17 +75,21 @@ static float advance_margin(rlib *r, float margin, int chars) {
 #define STATUS_START 1
 #define STATUS_STOP	2
 
-static float rlib_output_extras_start(rlib *r, int backwards, float left_origin, float bottom_orgin, struct rlib_line_extra_data *extra_data) {
+static gfloat rlib_output_extras_start(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_orgin, 
+struct rlib_line_extra_data *extra_data) {
 	if(extra_data->found_link)
-		OUTPUT(r)->rlib_boxurl_start(r, left_origin, bottom_orgin, rlib_get_estimated_width(r, extra_data->width), RLIB_GET_LINE(extra_data->font_point), extra_data->link);
+		OUTPUT(r)->rlib_boxurl_start(r, left_origin, bottom_orgin, rlib_get_estimated_width(r, extra_data->width), 
+			RLIB_GET_LINE(extra_data->font_point), extra_data->link);
 
 	if(extra_data->running_bgcolor_status & STATUS_START) 
-		OUTPUT(r)->rlib_draw_cell_background_start(r, left_origin, bottom_orgin, extra_data->running_running_bg_total, RLIB_GET_LINE(extra_data->font_point), &extra_data->bgcolor);
+		OUTPUT(r)->rlib_draw_cell_background_start(r, left_origin, bottom_orgin, extra_data->running_running_bg_total, 
+			RLIB_GET_LINE(extra_data->font_point), &extra_data->bgcolor);
 
 	return extra_data->output_width;
 }
 
-static float rlib_output_extras_end(rlib *r, int backwards, float left_origin, float bottom_orgin, struct rlib_line_extra_data *extra_data) {
+static gfloat rlib_output_extras_end(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_orgin, 
+struct rlib_line_extra_data *extra_data) {
 	if(extra_data->running_bgcolor_status & STATUS_STOP)
 		OUTPUT(r)->rlib_draw_cell_background_end(r);	
 
@@ -96,12 +100,15 @@ static float rlib_output_extras_end(rlib *r, int backwards, float left_origin, f
 }
 
 
-static float rlib_output_extras(rlib *r, int backwards, float left_origin, float bottom_orgin, struct rlib_line_extra_data *extra_data) {
+static gfloat rlib_output_extras(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_orgin, 
+struct rlib_line_extra_data *extra_data) {
 	if(extra_data->found_link)
-		OUTPUT(r)->rlib_boxurl_start(r, left_origin, bottom_orgin, rlib_get_estimated_width(r, extra_data->width), RLIB_GET_LINE(extra_data->font_point), extra_data->link);
+		OUTPUT(r)->rlib_boxurl_start(r, left_origin, bottom_orgin, rlib_get_estimated_width(r, extra_data->width), 
+			RLIB_GET_LINE(extra_data->font_point), extra_data->link);
 
 	if(extra_data->running_bgcolor_status & STATUS_START) 
-		OUTPUT(r)->rlib_draw_cell_background_start(r, left_origin, bottom_orgin, extra_data->running_running_bg_total, RLIB_GET_LINE(extra_data->font_point), &extra_data->bgcolor);
+		OUTPUT(r)->rlib_draw_cell_background_start(r, left_origin, bottom_orgin, extra_data->running_running_bg_total, 
+			RLIB_GET_LINE(extra_data->font_point), &extra_data->bgcolor);
 
 	if(extra_data->running_bgcolor_status & STATUS_STOP)
 		OUTPUT(r)->rlib_draw_cell_background_end(r);	
@@ -112,9 +119,10 @@ static float rlib_output_extras(rlib *r, int backwards, float left_origin, float
 	return extra_data->output_width;
 }
 	
-static float rlib_output_text(rlib *r, int backwards, float left_origin, float bottom_orgin, struct rlib_line_extra_data *extra_data) {
-	float rtn_width;
-	char *text;
+static gfloat rlib_output_text(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_orgin, 
+struct rlib_line_extra_data *extra_data) {
+	gfloat rtn_width;
+	gchar *text;
 	
 	text = extra_data->formatted_string;
 
@@ -135,8 +143,9 @@ static float rlib_output_text(rlib *r, int backwards, float left_origin, float b
 	return rtn_width;
 }
 
-static float rlib_output_text_text(rlib *r, int backwards, float left_origin, float bottom_orgin, struct rlib_line_extra_data *extra_data, char *text) {
-	float rtn_width;
+static gfloat rlib_output_text_text(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_orgin, 
+struct rlib_line_extra_data *extra_data, gchar *text) {
+	gfloat rtn_width;
 	OUTPUT(r)->rlib_set_font_point(r, extra_data->font_point);
 	
 	if(extra_data->found_color)
@@ -154,7 +163,7 @@ static float rlib_output_text_text(rlib *r, int backwards, float left_origin, fl
 	return rtn_width;
 }
 
-char *align_text(rlib *r, char *rtn, int len, char *src, long align, long width) {
+gchar *align_text(rlib *r, gchar *rtn, gint len, gchar *src, gint align, gint width) {
 	strcpy(rtn, src);
 
 	if(!OUTPUT(r)->do_align)
@@ -163,14 +172,14 @@ char *align_text(rlib *r, char *rtn, int len, char *src, long align, long width)
 	if(align == RLIB_ALIGN_LEFT || width == -1) {
 	} else {
 		if(align == RLIB_ALIGN_RIGHT) {
-			int x = width-strlen(src);
+			gint x = width-strlen(src);
 			if(x > 0) {
 				memset(rtn, ' ', x);
 				strcpy(rtn+x, src);
 			}
 		}
 		if(align == RLIB_ALIGN_CENTER) {
-			int x = (width-strlen(src))/2;
+			gint x = (width-strlen(src))/2;
 			if(x > 0) {
 				memset(rtn, ' ', x);
 				strcpy(rtn+x, src);
@@ -180,26 +189,26 @@ char *align_text(rlib *r, char *rtn, int len, char *src, long align, long width)
 	return rtn;
 }
 	
-static int get_font_point(rlib *r, struct report_lines *rl) {
+static gint get_font_point(rlib *r, struct report_lines *rl) {
 	if(rl->font_point == -1)
 		return r->font_point;
 	else
 		return rl->font_point;
 }	
 
-float estimate_string_width_from_extra_data(rlib *r, struct rlib_line_extra_data *extra_data) {
-	float rtn_width;
+gfloat estimate_string_width_from_extra_data(rlib *r, struct rlib_line_extra_data *extra_data) {
+	gfloat rtn_width;
 	OUTPUT(r)->rlib_set_font_point(r, extra_data->font_point);
 	rtn_width = advance_margin(r, 0, extra_data->width);	
 	return rtn_width;
 }
 	
 void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_extra_data *extra_data) {
-	int i=0;
+	gint i=0;
+	gchar *text;
 	struct report_field *rf;
 	struct report_text *rt;
 	struct report_element *e = rl->e;
-	char *text;
 	struct rlib_value line_rval_color;
 	struct rlib_value line_rval_bgcolor;
 
@@ -214,7 +223,7 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 	for(; e != NULL; e=e->next) {
 		RLIB_VALUE_TYPE_NONE(&extra_data[i].rval_bgcolor);
 		if(e->type == REPORT_ELEMENT_FIELD) {
-			char buf[MAXSTRLEN];
+			gchar buf[MAXSTRLEN];
 
 			rf = e->data;
 
@@ -245,7 +254,7 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 			rlib_execute_pcode(r, &extra_data[i].rval_col, rf->col_code, NULL);
 		}
 		if(e->type == REPORT_ELEMENT_TEXT) {
-			char buf[MAXSTRLEN];
+			gchar buf[MAXSTRLEN];
 			rt = e->data;
 
 			if(rt->color_code != NULL)	
@@ -287,11 +296,11 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 		if(extra_data[i].width == -1)
 			extra_data[i].width = strlen(text);
 		else {
-			int slen = strlen(text);
+			gint slen = strlen(text);
 			if(slen > extra_data[i].width)
 				text[extra_data[i].width] = '\0';
 			else if(slen < extra_data[i].width && MAXSTRLEN != slen) {
-				int xx;
+				gint xx;
 				for(xx=0;xx<extra_data[i].width-slen;xx++) {
 					text[slen+xx] = ' ';
 				}
@@ -301,11 +310,11 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 				
 		extra_data[i].found_bgcolor = FALSE;
 		if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_bgcolor))) {
-			char *colorstring, *ocolor;
+			gchar *colorstring, *ocolor;
 			if(!RLIB_VALUE_IS_STRING((&extra_data[i].rval_bgcolor))) {
 				rlogit("RLIB ENCOUNTERED AN ERROR PROCESSING THE BGCOLOR FOR THIS VALUE [%s].. BGCOLOR VALUE WAS NOT OF TYPE STRING\n", text);
 			} else {
-				char *idx;
+				gchar *idx;
 				ocolor = colorstring = rstrdup(RLIB_VALUE_GET_AS_STRING((&extra_data[i].rval_bgcolor)));
 				if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_code)) && RLIB_VALUE_IS_NUMBER((&extra_data[i].rval_code)) && index(colorstring, ':')) {
 					colorstring = rstrdup(colorstring);
@@ -324,11 +333,11 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 	
 		extra_data[i].found_color = FALSE;
 		if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_color))) {
-			char *colorstring, *ocolor;
+			gchar *colorstring, *ocolor;
 			if(!RLIB_VALUE_IS_STRING((&extra_data[i].rval_color))) {
 				rlogit("RLIB ENCOUNTERED AN ERROR PROCESSING THE COLOR FOR THIS VALUE [%s].. COLOR VALUE WAS NOT OF TYPE STRING\n", text);
 			} else {
-				char *idx;
+				gchar *idx;
 				ocolor = colorstring = rstrdup(RLIB_VALUE_GET_AS_STRING((&extra_data[i].rval_color)));
 				if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_code)) && RLIB_VALUE_IS_NUMBER((&extra_data[i].rval_code)) && index(colorstring, ':')) {
 					idx = index(colorstring, ':');
@@ -369,10 +378,10 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 	}
 }	
 
-void find_stuff_in_common(rlib *r, struct rlib_line_extra_data *extra_data, int count) {
-	int i = 0;
+void find_stuff_in_common(rlib *r, struct rlib_line_extra_data *extra_data, gint count) {
+	gint i = 0;
 	struct rlib_line_extra_data *e_ptr = NULL, *save_ptr = NULL, *previous_ptr = NULL;
-	int state = STATE_NONE;
+	gint state = STATE_NONE;
 	
 	previous_ptr = &extra_data[i];
 	for(i=0;i<count;i++) {
@@ -406,7 +415,7 @@ void find_stuff_in_common(rlib *r, struct rlib_line_extra_data *extra_data, int 
 	}
 }
 
-static int rlib_check_is_not_suppressed(rlib *r, struct rlib_pcode *code) {
+static gint rlib_check_is_not_suppressed(rlib *r, struct rlib_pcode *code) {
 	struct rlib_value suppress;
 
 	if(code != NULL) {
@@ -416,7 +425,7 @@ static int rlib_check_is_not_suppressed(rlib *r, struct rlib_pcode *code) {
 			if(!RLIB_VALUE_IS_STRING((&suppress))) {
 				rlogit("RLIB ENCOUNTERED AN ERROR PROCESSING SURPRESS... VALUE WAS NOT OF TYPE STRING\n");
 			} else {
-				char *value = RLIB_VALUE_GET_AS_STRING((&suppress));
+				gchar *value = RLIB_VALUE_GET_AS_STRING((&suppress));
 				if(value != NULL) {
 					if(strcasecmp(value, "yes") == 0) {
 						rlib_value_free(&suppress);
@@ -436,9 +445,9 @@ static int rlib_check_is_not_suppressed(rlib *r, struct rlib_pcode *code) {
  * break the string txt into a RVector of individual strings that will fit
  * the width. Use RVector_size to count the # of lines returned.
  */
-RVector *wrap_memo_lines(char *txt, int width, const char *wrapchars) {
-	int len;
-	char *tptr, *endptr, *ptr;
+RVector *wrap_memo_lines(gchar *txt, gint width, const gchar *wrapchars) {
+	gint len;
+	gchar *tptr, *endptr, *ptr;
 	RVector *v = RVector_new();
 	
 	do {
@@ -469,7 +478,7 @@ RVector *wrap_memo_lines(char *txt, int width, const char *wrapchars) {
  * Frees all memory allocated for a memo lines vector
  */
 void free_memo_lines(RVector *v) {
-	int i, lim = RVector_size(v);
+	gint i, lim = RVector_size(v);
 
 	for (i = 0; i < lim; ++i) {
 		rfree(RVector_get(v, i));
@@ -478,10 +487,10 @@ void free_memo_lines(RVector *v) {
 }
 
 
-int calc_memo_lines(struct report_lines *rl) {
+gint calc_memo_lines(struct report_lines *rl) {
 	struct report_element *e;
 //	int hasmemo;
-	int nlines = 0;
+	gint nlines = 0;
 //	RVector *v;
 	
 	for (e = rl->e; e != NULL; e = e->next) {
@@ -497,14 +506,13 @@ int calc_memo_lines(struct report_lines *rl) {
 	return nlines;
 }
 
-
-static int print_report_output_private(rlib *r, struct report_output_array *roa, int backwards, int page) {
+static gint print_report_output_private(rlib *r, struct report_output_array *roa, gint backwards, gint page) {
 	struct report_element *e=NULL;
-	int j=0;
-	float margin=0, width=0;
-	float *rlib_position;
+	gint j=0;
+	gfloat margin=0, width=0;
+	gfloat *rlib_position;
 	struct rlib_line_extra_data *extra_data;
-	int output_count = 0;
+	gint output_count = 0;
 
 	if(roa == NULL)
 		return 0;
@@ -522,7 +530,7 @@ static int print_report_output_private(rlib *r, struct report_output_array *roa,
 
 		if(ro->type == REPORT_PRESENTATION_DATA_LINE) {
 			struct report_lines *rl = ro->data;
-			int count=0;
+			gint count=0;
 			
 			
 			if(rlib_check_is_not_suppressed(r, rl->suppress_code)) {
@@ -538,9 +546,9 @@ static int print_report_output_private(rlib *r, struct report_output_array *roa,
 				count = 0;
 
 				if(OUTPUT(r)->do_grouptext) {
-					char buf[MAXSTRLEN];
-					float fun_width=0;
-					int start_count=-1;
+					gchar buf[MAXSTRLEN];
+					gfloat fun_width=0;
+					gint start_count=-1;
 					for(e = rl->e; e != NULL; e=e->next) {
 						if(e->type == REPORT_ELEMENT_FIELD) {
 							struct report_field *rf = ((struct report_field *)e->data);
@@ -630,18 +638,18 @@ static int print_report_output_private(rlib *r, struct report_output_array *roa,
 				rfree(extra_data);
 			}
 		} else if(ro->type == REPORT_PRESENTATION_DATA_HR) {
+			gchar *colorstring;
 			struct rlib_value rval2, *rval=&rval2;
-			char *colorstring;
 			struct report_horizontal_line *rhl = ro->data;
 			if(rlib_check_is_not_suppressed(r, rhl->suppress_code)) {
 				rlib_execute_pcode(r, &rval2, rhl->bgcolor_code, NULL);
 				if(!RLIB_VALUE_IS_STRING(rval)) {
 					rlogit("RLIB ENCOUNTERED AN ERROR PROCESSING THE BGCOLOR FOR A HR.. COLOR VALUE WAS NOT OF TYPE STRING\n");
 				} else {
+					gfloat font_point;
+					gfloat indent;
+					gfloat length;
 					struct rgb bgcolor;
-					float font_point;
-					float indent;
-					float length;
 					output_count++;
 					colorstring = RLIB_VALUE_GET_AS_STRING(rval);
 					parsecolor(&bgcolor, colorstring);
@@ -675,10 +683,10 @@ static int print_report_output_private(rlib *r, struct report_output_array *roa,
 			if(!RLIB_VALUE_IS_STRING(rval_value) || !RLIB_VALUE_IS_NUMBER(rval_width) || !RLIB_VALUE_IS_NUMBER(rval_height)) {
 				rlogit("RLIB ENCOUNTERED AN ERROR PROCESSING THE BGCOLOR FOR A IMAGE\n");
 			} else {
-				float height = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(rval_height));
-				float width = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(rval_width));
-				char *name = RLIB_VALUE_GET_AS_STRING(rval_value);
-				char *type = RLIB_VALUE_GET_AS_STRING(rval_type);
+				gfloat height = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(rval_height));
+				gfloat width = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(rval_width));
+				gchar *name = RLIB_VALUE_GET_AS_STRING(rval_value);
+				gchar *type = RLIB_VALUE_GET_AS_STRING(rval_type);
 				output_count++;
 				OUTPUT(r)->rlib_drawimage(r, GET_MARGIN(r)->left_margin, rlib_get_next_line(r, *rlib_position, height), name, 
 					type, width, height);
@@ -692,11 +700,11 @@ static int print_report_output_private(rlib *r, struct report_output_array *roa,
 	return output_count;
 }	
 
-int print_report_outputs_private(rlib *r, struct report_element *e, int backwards) {
+gint print_report_outputs_private(rlib *r, struct report_element *e, gint backwards) {
 	struct report_output_array *roa;
-	long page;
-	int i;
-	int output_count = 0;
+	gint page;
+	gint i;
+	gint output_count = 0;
 	for(; e != NULL; e=e->next) {
 		roa = e->data;
 		page = roa->page;
@@ -713,8 +721,8 @@ int print_report_outputs_private(rlib *r, struct report_element *e, int backward
 	return output_count;
 }
 
-int print_report_output(rlib *r, struct report_element *e, int backwards) {
-	int output_count = 0;
+gint print_report_output(rlib *r, struct report_element *e, gint backwards) {
+	gint output_count = 0;
 	OUTPUT(r)->rlib_start_output_section(r);
 	output_count = print_report_outputs_private(r, e, backwards);
 	OUTPUT(r)->rlib_end_output_section(r);
@@ -722,9 +730,9 @@ int print_report_output(rlib *r, struct report_element *e, int backwards) {
 }
 
 
-int hack_print_report_outputs(rlib *r) {
+gint hack_print_report_outputs(rlib *r) {
 	struct report_element *e;
-	int output_count = 0;
+	gint output_count = 0;
 	OUTPUT(r)->rlib_start_output_section(r);
 
 	if(r->reports[r->current_report]->breaks != NULL) {
@@ -739,7 +747,7 @@ int hack_print_report_outputs(rlib *r) {
 }
 
 void rlib_handle_page_footer(rlib *r) {
-	int i;
+	gint i;
 
 	for(i=0; i < r->reports[r->current_report]->pages_accross; i++) {
 		r->reports[r->current_report]->bottom_size[i] = get_outputs_size(r, r->reports[r->current_report]->page_footer, i);
@@ -752,8 +760,8 @@ void rlib_handle_page_footer(rlib *r) {
 		r->reports[r->current_report]->position_bottom[i] -= r->reports[r->current_report]->bottom_size[i];
 }
 
-void rlib_init_page(rlib *r, char report_header) {
-	int i;
+void rlib_init_page(rlib *r, gchar report_header) {
+	gint i;
 	for(i=0;i<r->reports[r->current_report]->pages_accross;i++)
 		r->reports[r->current_report]->position_top[i] = GET_MARGIN(r)->top_margin;
 	r->current_font_point = -1;
@@ -770,9 +778,9 @@ void rlib_init_page(rlib *r, char report_header) {
 	OUTPUT(r)->rlib_init_end_page(r);
 }
 
-float get_output_size(rlib *r, struct report_output_array *roa) {
-	int j;
-	float total=0;
+gfloat get_output_size(rlib *r, struct report_output_array *roa) {
+	gint j;
+	gfloat total=0;
 	for(j=0;j<roa->count;j++) {
 		struct report_output *rd = roa->data[j];
 		if(rd->type == REPORT_PRESENTATION_DATA_LINE) {
@@ -788,8 +796,8 @@ float get_output_size(rlib *r, struct report_output_array *roa) {
 	return total;
 }
 
-float get_outputs_size(rlib *r, struct report_element *e, int page) {
-	float total=0;
+gfloat get_outputs_size(rlib *r, struct report_element *e, gint page) {
+	gfloat total=0;
 	struct report_output_array *roa;
 
 	for(; e != NULL; e=e->next) {
@@ -802,7 +810,7 @@ float get_outputs_size(rlib *r, struct report_element *e, int page) {
 }
 
 
-int will_this_fit(rlib *r, float total, int page) {
+gint will_this_fit(rlib *r, gfloat total, gint page) {
 	if(OUTPUT(r)->rlib_is_single_page(r))
 		return TRUE;
 	if(r->reports[r->current_report]->position_top[page-1]+total > r->reports[r->current_report]->position_bottom[page-1])
@@ -811,8 +819,8 @@ int will_this_fit(rlib *r, float total, int page) {
 		return TRUE;
 }
 
-int will_outputs_fit(rlib *r, struct report_element *e, int page) {
-	float size = 0;
+gint will_outputs_fit(rlib *r, struct report_element *e, gint page) {
+	gfloat size = 0;
 	struct report_output_array *roa;
 
 	if(OUTPUT(r)->rlib_is_single_page(r))
@@ -828,8 +836,8 @@ int will_outputs_fit(rlib *r, struct report_element *e, int page) {
 }
 
 
-int rlib_end_page_if_line_wont_fit(rlib *r, struct report_element *e) {
-	int i, fits=TRUE;	
+gint rlib_end_page_if_line_wont_fit(rlib *r, struct report_element *e) {
+	gint i, fits=TRUE;	
 	for(i=0;i<r->reports[r->current_report]->pages_accross;i++) {
 		if(!will_outputs_fit(r,e, i+1))
 			fits=FALSE;
@@ -840,7 +848,7 @@ int rlib_end_page_if_line_wont_fit(rlib *r, struct report_element *e) {
 }
 
 void rlib_print_report_footer(rlib *r) {
-	int i;
+	gint i;
 	if(r->reports[r->current_report]->report_footer != NULL) {
 		for(i=0;i<r->reports[r->current_report]->pages_accross;i++)
 			rlib_end_page_if_line_wont_fit(r, r->reports[r->current_report]->report_footer);
@@ -848,8 +856,8 @@ void rlib_print_report_footer(rlib *r) {
 	}
 }
 
-int rlib_fetch_first_rows(rlib *r) {
-	int i;
+gint rlib_fetch_first_rows(rlib *r) {
+	gint i;
 	for(i=0;i<r->queries_count;i++)
 		INPUT(r,i)->first(INPUT(r,i), r->results[i].result);
 	return 0;
@@ -927,9 +935,9 @@ void rlib_process_variables(rlib *r) {
 	
 }
 
-int make_report(rlib *r) {
-	int i = 0;
-	int report = 0;
+gint make_report(rlib *r) {
+	gint i = 0;
+	gint report = 0;
 	if(r->format == RLIB_FORMAT_HTML)
 		rlib_html_new_output_filter(r);
 	else if(r->format == RLIB_FORMAT_TXT)
@@ -967,8 +975,8 @@ int make_report(rlib *r) {
 		OUTPUT(r)->rlib_begin_text(r);
 		if(INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result) != TRUE) {
 			while (1) {
-				int page;
-				int output_count = 0;
+				gint page;
+				gint output_count = 0;
 				rlib_process_variables(r);
 				rlib_handle_break_headers(r);
 			
@@ -1013,7 +1021,7 @@ int make_report(rlib *r) {
 	return 0;
 }
 
-int rlib_finalize(rlib *r) {
+gint rlib_finalize(rlib *r) {
 	OUTPUT(r)->rlib_finalize_private(r);
 	return 0;
 }

@@ -23,11 +23,11 @@
 #include "ralloc.h"
 #include "rlib.h"
 
-static char * rlib_c_resolve_memory_variable(char *name) {
+static gchar * rlib_c_resolve_memory_variable(gchar *name) {
 	return "FIXME";
 }
 
-static int rlib_c_write_output(char *data, int len) {
+static gint rlib_c_write_output(gchar *data, gint len) {
 	return write(1, data, len);
 }
 

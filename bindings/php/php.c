@@ -53,7 +53,7 @@ ZEND_FUNCTION(rlib_set_locale);
 ZEND_MODULE_STARTUP_D(rlib);
 
 /*WRD: It appears we are thread safe here.. not sure yet*/
-static int le_link;
+static gint le_link;
 
 /* compiled function list so Zend knows what's in this module */
 zend_function_entry rlib_functions[] =
@@ -115,7 +115,7 @@ ZEND_GET_MODULE(rlib)
 */
 ZEND_FUNCTION(rlib_init) {
 	rlib_inout_pass *rip;
-	long resource_id;
+	gint resource_id;
 	
 	rip = emalloc(sizeof(rlib_inout_pass));
 	bzero(rip, sizeof(rlib_inout_pass));
@@ -131,11 +131,11 @@ ZEND_FUNCTION(rlib_init) {
 #if HAVE_MYSQL
 ZEND_FUNCTION(rlib_add_datasource_mysql) {
 	zval *z_rip = NULL;
-	long datasource_length, sql_host_length, sql_user_length, sql_password_length, sql_database_length;
-	char *datasource_name, *database_host, *database_user, *database_password, *database_database;
+	gint datasource_length, sql_host_length, sql_user_length, sql_password_length, sql_database_length;
+	gchar *datasource_name, *database_host, *database_user, *database_password, *database_database;
 	rlib_inout_pass *rip;
-	int id = -1;
-	int result = 0;
+	gint id = -1;
+	gint result = 0;
 	
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsssss", &z_rip,
 		&datasource_name, &datasource_length,
@@ -155,11 +155,11 @@ ZEND_FUNCTION(rlib_add_datasource_mysql) {
 #if HAVE_POSTGRE
 ZEND_FUNCTION(rlib_add_datasource_postgre) {
 	zval *z_rip = NULL;
-	long datasource_length, conn_length;
-	char *datasource_name, *conn;
+	gint datasource_length, conn_length;
+	gchar *datasource_name, *conn;
 	rlib_inout_pass *rip;
-	int id = -1;
-	int result = 0;
+	gint id = -1;
+	gint result = 0;
 	
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss", &z_rip,
 		&datasource_name, &datasource_length,
@@ -176,11 +176,11 @@ ZEND_FUNCTION(rlib_add_datasource_postgre) {
 #if HAVE_ODBC
 ZEND_FUNCTION(rlib_add_datasource_odbc) {
 	zval *z_rip = NULL;
-	long datasource_length, sql_odbc_length, sql_user_length, sql_password_length;
-	char *datasource_name, *database_odbc, *database_user, *database_password;
+	gint datasource_length, sql_odbc_length, sql_user_length, sql_password_length;
+	gchar *datasource_name, *database_odbc, *database_user, *database_password;
 	rlib_inout_pass *rip;
-	int id = -1;
-	int result = 0;
+	gint id = -1;
+	gint result = 0;
 	
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rssss", &z_rip,
 		&datasource_name, &datasource_length,
@@ -199,10 +199,10 @@ ZEND_FUNCTION(rlib_add_datasource_odbc) {
 
 ZEND_FUNCTION(rlib_add_query_as) {
 	zval *z_rip = NULL;
-	long whatever;
-	char *datasource_name, *sql, *name;
+	gint whatever;
+	gchar *datasource_name, *sql, *name;
 	rlib_inout_pass *rip;
-	int id = -1;
+	gint id = -1;
 	
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsss", &z_rip, 
 		&datasource_name, &whatever, &sql, &whatever, &name, &whatever) == FAILURE) {
@@ -216,10 +216,10 @@ ZEND_FUNCTION(rlib_add_query_as) {
 
 ZEND_FUNCTION(rlib_add_resultset_follower) {
 	zval *z_rip = NULL;
-	long whatever;
-	char *leader, *follower;
+	gint whatever;
+	gchar *leader, *follower;
 	rlib_inout_pass *rip;
-	int id = -1;
+	gint id = -1;
 	
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss", &z_rip, &leader, &whatever, &follower, &whatever) == FAILURE) {
 		return;
@@ -232,10 +232,10 @@ ZEND_FUNCTION(rlib_add_resultset_follower) {
 
 ZEND_FUNCTION(rlib_add_report) {
 	zval *z_rip = NULL;
-	long whatever, mainloop_count;
-	char *name, *mainloop;
+	gint whatever, mainloop_count;
+	gchar *name, *mainloop;
 	rlib_inout_pass *rip;
-	int id = -1;
+	gint id = -1;
 	
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|s", &z_rip, &name, &whatever, &mainloop, &mainloop_count) == FAILURE) {
 		return;
@@ -252,10 +252,10 @@ ZEND_FUNCTION(rlib_add_report) {
 
 ZEND_FUNCTION(rlib_set_output_format_from_text) {
 	zval *z_rip = NULL;
-	long whatever;
-	char *name;
+	gint whatever;
+	gchar *name;
 	rlib_inout_pass *rip;
-	int id = -1;
+	gint id = -1;
 	
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &z_rip, &name, &whatever) == FAILURE) {
 		return;
@@ -270,8 +270,8 @@ ZEND_FUNCTION(rlib_set_output_format_from_text) {
 ZEND_FUNCTION(rlib_execute) {
 	zval *z_rip = NULL;
 	rlib_inout_pass *rip;
-	int id = -1;
-	int result = 0;	
+	gint id = -1;
+	gint result = 0;	
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_rip) == FAILURE) {
 		return;
 	}
@@ -284,7 +284,7 @@ ZEND_FUNCTION(rlib_execute) {
 ZEND_FUNCTION(rlib_spool) {
 	zval *z_rip = NULL;
 	rlib_inout_pass *rip;
-	int id = -1;
+	gint id = -1;
 	
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_rip) == FAILURE) {
 		return;
@@ -303,7 +303,7 @@ ZEND_FUNCTION(rlib_spool) {
 ZEND_FUNCTION(rlib_free) {
 	zval *z_rip = NULL;
 	rlib_inout_pass *rip;
-	int id = -1;
+	gint id = -1;
 	
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_rip) == FAILURE) {
 		return;
@@ -318,9 +318,9 @@ ZEND_FUNCTION(rlib_free) {
 ZEND_FUNCTION(rlib_get_content_type) {
 	zval *z_rip = NULL;
 	rlib_inout_pass *rip;
-	int id = -1;
-	static char buf[MAXSTRLEN];
-	char *content_type;
+	gint id = -1;
+	static gchar buf[MAXSTRLEN];
+	gchar *content_type;
 	
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_rip) == FAILURE) {
 		return;
@@ -337,10 +337,10 @@ ZEND_FUNCTION(rlib_get_content_type) {
 
 ZEND_FUNCTION(rlib_add_parameter) {
 	zval *z_rip = NULL;
-	long whatever;
-	char *name, *value;
+	gint whatever;
+	gchar *name, *value;
 	rlib_inout_pass *rip;
-	int id = -1;
+	gint id = -1;
 	
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss", &z_rip, &name, &whatever, &value, &whatever) == FAILURE) {
 		return;
@@ -353,10 +353,10 @@ ZEND_FUNCTION(rlib_add_parameter) {
 
 ZEND_FUNCTION(rlib_set_locale) {
 	zval *z_rip = NULL;
-	long whatever;
-	char *locale;
+	gint whatever;
+	gchar *locale;
 	rlib_inout_pass *rip;
-	int id = -1;
+	gint id = -1;
 	
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &z_rip, &locale, &whatever) == FAILURE) {
 		return;
