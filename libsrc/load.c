@@ -369,7 +369,7 @@ struct rlib_part * load_report(gchar *filename) {
 
 	rep->report_header = read_output(&ptr);
 	rep->page_header = read_output(&ptr);
-	rep->detail.textlines = read_output(&ptr);
+	rep->detail.headers = read_output(&ptr);
 	rep->detail.fields = read_output(&ptr);
 	rep->page_footer = read_output(&ptr);
 	rep->report_footer = read_output(&ptr);

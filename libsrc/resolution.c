@@ -253,16 +253,17 @@ void rlib_resolve_report_fields(rlib *r, struct rlib_report *report) {
 	report->orientation_code = rlib_infix_to_pcode(r, report, report->xml_orientation);
 	report->font_size = -1;
 	report->font_size_code = rlib_infix_to_pcode(r, report, report->xml_font_size);
-	report->top_margin = DEFAULT_TOP_MARGIN;
+	report->top_margin = RLIB_DEFAULT_TOP_MARGIN;
 	report->top_margin_code = rlib_infix_to_pcode(r, report, report->xml_top_margin);
-	report->left_margin = DEFAULT_LEFT_MARGIN;
+	report->left_margin = RLIB_DEFAULT_LEFT_MARGIN;
 	report->left_margin_code = rlib_infix_to_pcode(r, report, report->xml_left_margin);
-	report->bottom_margin = DEFAULT_BOTTOM_MARGIN;
+	report->bottom_margin = RLIB_DEFAULT_BOTTOM_MARGIN;
 	report->bottom_margin_code = rlib_infix_to_pcode(r, report, report->xml_bottom_margin);
 	report->pages_accross = 1;
 	report->pages_across_code = rlib_infix_to_pcode(r, report, report->xml_pages_accross);
 	report->suppress_page_header_first_page = FALSE;
 	report->suppress_page_header_first_page_code = rlib_infix_to_pcode(r, report, report->xml_suppress_page_header_first_page);
+	report->height_code = rlib_infix_to_pcode(r, report, report->xml_height);
 		
 	report->position_top = g_malloc(report->pages_accross * sizeof(float));
 	report->position_bottom = g_malloc(report->pages_accross * sizeof(float));
@@ -273,7 +274,7 @@ void rlib_resolve_report_fields(rlib *r, struct rlib_report *report) {
 	rlib_resolve_outputs(r, report, report->page_footer);
 	rlib_resolve_outputs(r, report, report->report_footer);
 	rlib_resolve_outputs(r, report, report->detail.fields);
-	rlib_resolve_outputs(r, report, report->detail.textlines);
+	rlib_resolve_outputs(r, report, report->detail.headers);
 	rlib_resolve_outputs(r, report, report->alternate.nodata);
 
 	if(report->breaks != NULL) {
@@ -301,26 +302,48 @@ void rlib_resolve_report_fields(rlib *r, struct rlib_report *report) {
 	}
 }
 
+void rlib_resolve_part_td(rlib *r, struct rlib_part *part, struct rlib_element *e_td) {
+	struct rlib_element *e;
+	
+	for(e=e_td;e != NULL;e=e->next) {
+		struct rlib_part_td *td = e->data;
+		td->width_code = rlib_infix_to_pcode(r, NULL, td->xml_width);
+	}
+}
+
+void rlib_resolve_part_tr(rlib *r, struct rlib_part *part, struct rlib_element *e_tr) {
+	struct rlib_element *e;
+	
+	for(e=e_tr;e != NULL;e=e->next) {
+		struct rlib_part_tr *tr = e->data;
+		tr->layout_code = rlib_infix_to_pcode(r, NULL, tr->xml_layout);
+		tr->newpage_code = rlib_infix_to_pcode(r, NULL, tr->xml_newpage);
+		rlib_resolve_part_td(r, part, tr->e);
+	}	
+}
+
 void rlib_resolve_part_fields(rlib *r, struct rlib_part *part) {
 	part->orientation = RLIB_ORIENTATION_PORTRAIT;
 	part->orientation_code = rlib_infix_to_pcode(r, NULL, part->xml_orientation);
 	part->font_size = -1;
 	part->font_size_code = rlib_infix_to_pcode(r, NULL, part->xml_font_size);
-	part->top_margin = DEFAULT_TOP_MARGIN;
+	part->top_margin = RLIB_DEFAULT_TOP_MARGIN;
 	part->top_margin_code = rlib_infix_to_pcode(r, NULL, part->xml_top_margin);
-	part->left_margin = DEFAULT_LEFT_MARGIN;
+	part->left_margin = RLIB_DEFAULT_LEFT_MARGIN;
 	part->left_margin_code = rlib_infix_to_pcode(r, NULL, part->xml_left_margin);
-	part->bottom_margin = DEFAULT_BOTTOM_MARGIN;
+	part->bottom_margin = RLIB_DEFAULT_BOTTOM_MARGIN;
 	part->bottom_margin_code = rlib_infix_to_pcode(r, NULL, part->xml_bottom_margin);
-	part->paper = rlib_get_paper(r, RLIB_PAPER_LETTER);
+	part->paper = rlib_layout_get_paper(r, RLIB_PAPER_LETTER);
 	part->paper_type_code = rlib_infix_to_pcode(r, NULL, part->xml_paper_type);
 	part->pages_accross = 1;
 	part->pages_across_code = rlib_infix_to_pcode(r, NULL, part->xml_pages_accross);
+
 		
 	part->position_top = g_malloc(part->pages_accross * sizeof(float));
 	part->position_bottom = g_malloc(part->pages_accross * sizeof(float));
 	part->bottom_size = g_malloc(part->pages_accross * sizeof(float));
 
+	rlib_resolve_part_tr(r, part, part->tr_elements);
 	rlib_resolve_outputs(r, NULL, part->page_header);
 	rlib_resolve_outputs(r, NULL, part->page_footer);
 }

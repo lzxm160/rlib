@@ -122,7 +122,7 @@ static void rlib_txt_end_report(rlib *r, struct rlib_part *part, struct rlib_rep
 
 }
 
-static void rlib_txt_end_page(rlib *r, struct rlib_part *part, struct rlib_report *report) {
+static void rlib_txt_end_page(rlib *r, struct rlib_part *part) {
 	r->current_page_number++;
 	r->current_line_number = 1;
 }

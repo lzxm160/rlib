@@ -489,5 +489,3 @@ gchar *str2hex(const gchar *str) {
 	*ptr = '\0';
 	return result;
 }
-
-

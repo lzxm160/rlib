@@ -166,7 +166,7 @@ void rlib_free_report(rlib *r, struct rlib_report *report) {
 	rlib_free_output(r, report->page_footer);
 	rlib_free_output(r, report->report_footer);
 	rlib_free_output(r, report->detail.fields);
-	rlib_free_output(r, report->detail.textlines);
+	rlib_free_output(r, report->detail.headers);
 	rlib_free_output(r, report->alternate.nodata);
 
 	g_free(report->position_top);

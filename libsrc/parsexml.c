@@ -310,7 +310,7 @@ static void parse_detail(struct rlib_report *report, xmlDocPtr doc, xmlNsPtr ns,
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "FieldHeaders"))) {
-			r->textlines = parse_report_outputs(doc, ns, cur);
+			r->headers = parse_report_outputs(doc, ns, cur);
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "FieldDetails"))) {
 			r->fields = parse_report_outputs(doc, ns, cur);
 		} else if (ignoreElement(cur->name)) {
@@ -411,6 +411,8 @@ static void parse_report(struct rlib_part *part, struct rlib_report *report, xml
 	report->xml_top_margin = xmlGetProp(cur, (const xmlChar *) "topMargin");
 	report->xml_left_margin = xmlGetProp(cur, (const xmlChar *) "leftMargin");
 	report->xml_bottom_margin = xmlGetProp(cur, (const xmlChar *) "bottomMargin");
+	report->xml_height = xmlGetProp(cur, (const xmlChar *) "height");
+
 	if(xmlGetProp(cur, (const xmlChar *) "paperType") != NULL)
 		part->xml_paper_type = xmlGetProp(cur, (const xmlChar *) "paperType");
 	report->xml_pages_accross = xmlGetProp(cur, (const xmlChar *) "pagesAcross");
@@ -451,10 +453,10 @@ static struct rlib_element * parse_part_load(xmlDocPtr doc, xmlNsPtr ns, xmlNode
 	return e;
 }
 
-static struct rlib_element * parse_part_td(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
+static struct rlib_element * parse_part_td(struct rlib_part *part, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
 	struct rlib_element *e = g_new0(struct rlib_element, 1);
 	struct rlib_part_td *td = g_new0(struct rlib_part_td, 1);	
-	td->width =  xmlGetProp(cur, (const xmlChar *) "width");
+	td->xml_width =  xmlGetProp(cur, (const xmlChar *) "width");
 	e->data = td;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {      
@@ -466,6 +468,21 @@ static struct rlib_element * parse_part_td(xmlDocPtr doc, xmlNsPtr ns, xmlNodePt
 				for(;xxx->next != NULL; xxx=xxx->next) {};
 				xxx->next = parse_part_load(doc, ns, cur);				
 			}
+		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "Report"))) {
+				struct rlib_report *report;
+				struct rlib_element *e_report;
+				report = (struct rlib_report *) g_new0(struct rlib_report, 1);
+				parse_report(part, report, doc, ns, cur);
+				e_report = g_new0(struct rlib_element, 1);
+				e_report->data = report;
+				e_report->type = RLIB_ELEMENT_REPORT;				
+			if(td->e == NULL) {
+				td->e = e_report;
+			} else {
+				struct rlib_element *xxx = td->e;
+				for(;xxx->next != NULL; xxx=xxx->next) {};
+				xxx->next = e_report;
+			}		
 		} else if (ignoreElement(cur->name)) {
 			/* ignore comments, etc */
 		} else {
@@ -476,21 +493,22 @@ static struct rlib_element * parse_part_td(xmlDocPtr doc, xmlNsPtr ns, xmlNodePt
 	return e;
 }
 
-static struct rlib_element * parse_part_tr(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
+static struct rlib_element * parse_part_tr(struct rlib_part *part, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
 	struct rlib_element *e = g_new0(struct rlib_element, 1);
 	struct rlib_part_tr *tr = g_new0(struct rlib_part_tr, 1);
-	tr->height =  xmlGetProp(cur, (const xmlChar *) "height");
+	tr->xml_layout = xmlGetProp(cur, (const xmlChar *) "layout");
+	tr->xml_newpage = xmlGetProp(cur, (const xmlChar *) "newpage");
 		
 	cur = cur->xmlChildrenNode;
 	e->data = tr;
 	while (cur != NULL) {      
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "td"))) {
 			if(tr->e == NULL) {
-				tr->e = parse_part_td(doc, ns, cur);
+				tr->e = parse_part_td(part, doc, ns, cur);
 			} else {
 				struct rlib_element *xxx = tr->e;
 				for(;xxx->next != NULL; xxx=xxx->next) {};
-				xxx->next = parse_part_td(doc, ns, cur);				
+				xxx->next = parse_part_td(part, doc, ns, cur);				
 			}
 		} else if (ignoreElement(cur->name)) {
 			/* ignore comments, etc */
@@ -510,7 +528,6 @@ static void parse_part(struct rlib_part *part, xmlDocPtr doc, xmlNsPtr ns, xmlNo
 		return;
 
 	part->xml_name = xmlGetProp(cur, (const xmlChar *) "name");
-	part->xml_layout = xmlGetProp(cur, (const xmlChar *) "layout");
 	part->xml_pages_accross = xmlGetProp(cur, (const xmlChar *) "pages_accross");
 	part->xml_font_size = xmlGetProp(cur, (const xmlChar *) "fontSize");
 	part->xml_orientation = xmlGetProp(cur, (const xmlChar *) "orientation");
@@ -524,11 +541,11 @@ static void parse_part(struct rlib_part *part, xmlDocPtr doc, xmlNsPtr ns, xmlNo
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "tr"))) {
 		
 			if(part->tr_elements == NULL) {
-				part->tr_elements = parse_part_tr(doc, ns, cur);
+				part->tr_elements = parse_part_tr(part, doc, ns, cur);
 			} else {
 				struct rlib_element *xxx = part->tr_elements;
 				for(;xxx->next != NULL; xxx=xxx->next) {};
-				xxx->next = parse_part_tr(doc, ns, cur);				
+				xxx->next = parse_part_tr(part, doc, ns, cur);				
 			}
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "PageHeader"))) {
 			part->page_header = parse_report_outputs(doc, ns, cur);
@@ -545,7 +562,7 @@ void dump_part_td(struct rlib_element *e_td) {
 	struct rlib_element *e, *td_contents;
 	for(e=e_td;e != NULL;e=e->next) {
 		struct rlib_part_td *td = e->data;
-		rlogit("    TD %s\n", td->width);
+		rlogit("    TD %s\n", td->xml_width);
 		for(td_contents=td->e;td_contents != NULL;td_contents=td_contents->next) {
 			if(td_contents->type == RLIB_ELEMENT_PART) {
 				struct rlib_part *part = td_contents->data;
@@ -563,13 +580,13 @@ void dump_part_tr(struct rlib_element *e_tr) {
 	struct rlib_element *e;
 	for(e=e_tr;e != NULL;e=e->next) {
 		struct rlib_part_tr *tr = e->data;
-		rlogit("  TR %s\n", tr->height);
+		rlogit("  TR Layout = [%s] NewPage = [%s]\n", tr->xml_layout, tr->xml_newpage);
 		dump_part_td(tr->e);
 	}	
 }
 
 void dump_part(struct rlib_part *part) {
-	rlogit("Name: [%s] Layout: [%s] Pages Accross [%s]\n ", part->xml_name, part->xml_layout, part->xml_pages_accross);
+	rlogit("Name: [%s] Pages Accross [%s]\n ", part->xml_name, part->xml_pages_accross);
 	dump_part_tr(part->tr_elements);
 	rlogit("DONE!\n");
 }

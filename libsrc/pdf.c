@@ -326,7 +326,7 @@ static void rlib_pdf_spool_private(rlib *r) {
 #endif
 }
 
-static void rlib_pdf_end_page(rlib *r, struct rlib_part *part, struct rlib_report *report) {
+static void rlib_pdf_end_page(rlib *r, struct rlib_part *part) {
 	rlib_pdf_turn_text_off(r);
 	r->current_page_number++;
 	r->current_line_number = 1;

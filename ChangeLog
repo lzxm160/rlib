@@ -1,3 +1,26 @@
+2004-10-10  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/api.c: more work on parts
+	* libsrc/breaks.c: likewise
+	* libsrc/csv.c: likewise
+	* libsrc/free.c: likewise
+	* libsrc/html.c: likewise
+	* libsrc/layout.c: likewise
+	* libsrc/load.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/pcode.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/save.c: likewise
+	* libsrc/txt.c: likewise
+	* libsrc/util.c: likewise
+	* libsrc/util.h: likewise
+	* src/examples/php/fixed_part_test.php: likewise
+	* src/examples/php/fixed_part_test.xml: likewise
+	* src/examples/php/flow_part_test.php: likewise
+	* src/examples/php/flow_part_test.xml: likewise
+
 2004-10-09  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/api.c: flow parts for PDF are working nice
 	* libsrc/breaks.c: likewise

@@ -300,7 +300,7 @@ static void rlib_html_end_line(rlib *r, int backwards) {
 static void rlib_html_start_output_section(rlib *r) {}
 static void rlib_html_end_output_section(rlib *r) {}
 
-static void rlib_html_end_page(rlib *r, struct rlib_part *part, struct rlib_report *report) {
+static void rlib_html_end_page(rlib *r, struct rlib_part *part) {
 	r->current_line_number = 1;
 }
 

@@ -226,7 +226,7 @@ gint save_report(struct rlib_report *rep, gchar *filename) {
 	
 	write_output(fd, rep->report_header);
 	write_output(fd, rep->page_header);
-	write_output(fd, rep->detail.textlines);
+	write_output(fd, rep->detail.headers);
 	write_output(fd, rep->detail.fields);
 	write_output(fd, rep->page_footer);
 	write_output(fd, rep->report_footer);

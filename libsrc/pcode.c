@@ -762,3 +762,76 @@ struct rlib_value * rlib_execute_pcode(rlib *r, struct rlib_value *rval, struct 
 	*rval = *rlib_value_stack_pop(&value_stack);
 	return rval;		
 }
+
+gint rlib_execute_as_int(rlib *r, struct rlib_pcode *pcode, gint *result) {
+	struct rlib_value val;
+	gint isok = FALSE;
+
+	*result = 0;
+	if (pcode) {
+		rlib_execute_pcode(r, &val, pcode, NULL);
+		if (RLIB_VALUE_IS_NUMBER((&val))) {
+			*result = RLIB_VALUE_GET_AS_NUMBER((&val)) / RLIB_DECIMAL_PRECISION;
+			isok = TRUE;
+		} else {
+			gchar *whatgot = "don't know";
+			gchar *gotval = "";
+			if (RLIB_VALUE_IS_STRING((&val))) {
+				whatgot = "string";
+				gotval = RLIB_VALUE_GET_AS_STRING((&val));
+			}
+			rlogit("Expecting numeric value from pcode. Got %s=%s", whatgot, gotval);
+		}
+		rlib_value_free(&val);
+	}
+	return isok;
+}
+
+gint rlib_execute_as_boolean(rlib *r, struct rlib_pcode *pcode, gint *result) {
+	return rlib_execute_as_int(r, pcode, result)? TRUE : FALSE;
+}
+
+gint rlib_execute_as_string(rlib *r, struct rlib_pcode *pcode, gchar *buf, gint buf_len) {
+	struct rlib_value val;
+	gint isok = FALSE;
+
+	if (pcode) {
+		rlib_execute_pcode(r, &val, pcode, NULL);
+		if (RLIB_VALUE_IS_STRING((&val))) {
+			strncpy(buf, RLIB_VALUE_GET_AS_STRING((&val)), buf_len);
+			isok = TRUE;
+		} else {
+			rlogit("Expecting string value from pcode");
+		}
+		rlib_value_free(&val);
+	}
+	return isok;
+}
+
+gint rlib_execute_as_int_inlist(rlib *r, struct rlib_pcode *pcode, gint *result, gchar *list[]) {
+	struct rlib_value val;
+	gint isok = FALSE;
+
+	*result = 0;
+	if (pcode) {
+		rlib_execute_pcode(r, &val, pcode, NULL);
+		if (RLIB_VALUE_IS_NUMBER((&val))) {
+			*result = RLIB_VALUE_GET_AS_NUMBER((&val)) / RLIB_DECIMAL_PRECISION;
+			isok = TRUE;
+		} else if (RLIB_VALUE_IS_STRING((&val))) {
+			gint i;
+			gchar * str = RLIB_VALUE_GET_AS_STRING((&val));
+			for (i = 0; list[i]; ++i) {
+				if (g_strcasecmp(str, list[i])) {
+					*result = i;
+					isok = TRUE;
+					break;
+				}
+			}
+		} else {
+			rlogit("Expecting number or specific string from pcode");
+		}
+		rlib_value_free(&val);
+	}
+	return isok;
+}

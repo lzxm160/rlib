@@ -137,8 +137,7 @@ gint rlib_execute(rlib *r) {
 			r->parts[i] = parse_part_file(r->reportstorun[i].name);
 		xmlCleanupParser();		
 		if(r->parts[i] == NULL) {
-			//TODO:FREE REPORT AND ALL ABOVE REPORTS
-			rlogit("Failed to run a Report\n");
+			r_error("Failed to load a report file [%s]\n", r->reportstorun[i].name);
 			return -1;
 		}
 	}

@@ -93,6 +93,5 @@ gchar *str2hex(const gchar *str);
 void make_all_locales_utf8();
 char *make_utf8_locale(const char *encoding);
 
-
 #endif
 

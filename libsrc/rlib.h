@@ -91,10 +91,9 @@ long long int llabs(long long int j);
 #define RLIB_ORIENTATION_PORTRAIT	1
 #define RLIB_ORIENTATION_LANDSCAPE	2
 
-#define GET_MARGIN(r) (r->reports[r->current_report])
-#define DEFAULT_BOTTOM_MARGIN .2
-#define DEFAULT_LEFT_MARGIN	.2
-#define DEFAULT_TOP_MARGIN 	.2
+#define RLIB_DEFAULT_BOTTOM_MARGIN .2
+#define RLIB_DEFAULT_LEFT_MARGIN	.2
+#define RLIB_DEFAULT_TOP_MARGIN 	.2
 
 #define RLIB_FILE_XML_STR		400
 #define RLIB_FILE_OUTPUTS		500
@@ -118,6 +117,11 @@ long long int llabs(long long int j);
 #define RLIB_PAPER_FILM35MM   10
 
 #define RLIB_PDF_DPI 72.0
+
+#define RLIB_LAYOUT_FIXED 1
+#define RLIB_LAYOUT_FLOW  2
+
+#define RLIB_GET_LINE(a) ((float)(a/RLIB_PDF_DPI))
 
 struct rlib_paper {
 	char type;
@@ -321,7 +325,7 @@ struct rlib_report_break {
 };
 
 struct rlib_report_detail {
-	struct rlib_element *textlines;
+	struct rlib_element *headers;
 	struct rlib_element *fields;
 };
 
@@ -361,20 +365,24 @@ struct rlib_part_load {
 };
 
 struct rlib_part_td {
-	xmlChar *width;
+	xmlChar *xml_width;
 	struct rlib_pcode *width_code;
 	struct rlib_element *e;
 };
 
 struct rlib_part_tr {
-	xmlChar *height;
-	struct rlib_pcode *height_code;
+	xmlChar *xml_layout;
+	xmlChar *xml_newpage;
+
+	struct rlib_pcode *layout_code;
+	struct rlib_pcode *newpage_code;
+	gchar layout;
+
 	struct rlib_element *e;
 };
 
 struct rlib_part {
 	xmlChar *xml_name;
-	xmlChar *xml_layout;
 	xmlChar *xml_pages_accross;
 	xmlChar *xml_orientation;
 	xmlChar *xml_top_margin;
@@ -385,7 +393,6 @@ struct rlib_part {
 
 	struct rlib_element *tr_elements;
 	struct rlib_pcode *name_code;
-	struct rlib_pcode *layout_code;
 	struct rlib_pcode *pages_accross_code;
 	struct rlib_pcode *orientation_code;
 	struct rlib_pcode *top_margin_code;
@@ -409,7 +416,6 @@ struct rlib_part {
 	gfloat bottom_margin;
 	gfloat left_margin;
 	gint landscape;
-
 };
 
 struct rlib_report {
@@ -423,6 +429,7 @@ struct rlib_report {
 	xmlChar *xml_bottom_margin;
 	xmlChar *xml_pages_accross;
 	xmlChar *xml_suppress_page_header_first_page;
+	xmlChar *xml_height;
 	
 	gchar xml_encoding_name[ENCODING_NAME_SIZE]; //UTF8 if "", else whatever specified in xml
 	iconv_t cd;
@@ -457,6 +464,7 @@ struct rlib_report {
 	struct rlib_pcode *font_size_code;
 	struct rlib_pcode *query_code;
 	struct rlib_pcode *orientation_code;
+	struct rlib_pcode *height_code;
 	struct rlib_pcode *top_margin_code;
 	struct rlib_pcode *left_margin_code;
 	struct rlib_pcode *bottom_margin_code;
@@ -571,7 +579,7 @@ struct output_filter {
 	void (*drawimage)(rlib *, float, float, char *, char *, float, float);
 	void (*set_font_point)(rlib *, int);
 	void (*start_new_page)(rlib *, struct rlib_part *);
-	void (*end_page)(rlib *, struct rlib_part *, struct rlib_report *);
+	void (*end_page)(rlib *, struct rlib_part *);
 	void (*end_page_again)(rlib *, struct rlib_part *, struct rlib_report *);
 	void (*init_end_page)(rlib *);
 	void (*init_output)(rlib *);
@@ -652,22 +660,24 @@ gint rlib_value_free(struct rlib_value *rval);
 struct rlib_value * rlib_value_dup(struct rlib_value *orig);
 struct rlib_value * rlib_value_dup_contents(struct rlib_value *rval);
 struct rlib_value * rlib_value_new_error(struct rlib_value *rval);
+gint rlib_execute_as_int(rlib *r, struct rlib_pcode *pcode, gint *result);
+gint rlib_execute_as_boolean(rlib *r, struct rlib_pcode *pcode, gint *result);
+gint rlib_execute_as_string(rlib *r, struct rlib_pcode *pcode, gchar *buf, gint buf_len);
+gint rlib_execute_as_int_inlist(rlib *r, struct rlib_pcode *pcode, gint *result, gchar *list[]);
 
+/***** PROTOTYPES: reportgen.c ****************************************************/
 gchar *align_text(rlib *r, char *rtn, gint len, gchar *src, gint align, gint width);
-gint rlib_layout_report_output(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_element *e, gint backwards);
 gint will_outputs_fit(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_element *e, gint page);
 gint will_this_fit(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat total, gint page);
 gfloat get_output_size(rlib *r, struct rlib_report_output_array *roa);
-void rlib_print_report_footer(rlib *r, struct rlib_part *part, struct rlib_report *report);
 gint rlib_fetch_first_rows(rlib *r);
 gint rlib_end_page_if_line_wont_fit(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_element *e) ;
 gfloat get_outputs_size(rlib *r, struct rlib_element *e, gint page);
 void rlib_init_page(rlib *r, struct rlib_part *part, struct rlib_report *report, gchar report_header);
 gint make_report(rlib *r);
 gint rlib_finalize(rlib *r);
-struct rlib_paper * rlib_get_paper(rlib *r, gint paper_type);
-struct rlib_paper * rlib_get_paper_by_name(rlib *r, gchar *paper_name);
 void rlib_process_expression_variables(rlib *r, struct rlib_report *report);
+gint get_font_point(rlib *r, struct rlib_report_lines *rl);
 
 /***** PROTOTYPES: resolution.c ***********************************************/
 gint rlib_resolve_rlib_variable(rlib *r, gchar *name);
@@ -678,6 +688,7 @@ gint rlib_resolve_resultset_field(rlib *r, gchar *name, void **rtn_field, gint *
 struct rlib_report_variable *rlib_resolve_variable(rlib *r, struct rlib_report *report, gchar *name);
 void rlib_resolve_report_fields(rlib *r, struct rlib_report *report);
 void rlib_resolve_part_fields(rlib *r, struct rlib_part *part);
+
 /***** PROTOTYPES: navigation.c ***********************************************/
 gint rlib_navigate_next(rlib *r, gint resultset_num);
 gint rlib_navigate_first(rlib *r, gint resultset_num);
@@ -731,3 +742,9 @@ void rlib_set_pdf_font_directories(rlib *r, const gchar *d1, const gchar *d2);
 /***** PROTOTYPES: layout.c ***************************************************/
 gfloat rlib_layout_get_page_width(rlib *r, struct rlib_part *part);
 void rlib_layout_init_part_page(rlib *r, struct rlib_part *part);
+gint rlib_layout_report_output(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_element *e, gint backwards);
+struct rlib_paper * rlib_layout_get_paper(rlib *r, gint paper_type);
+struct rlib_paper * rlib_layout_get_paper_by_name(rlib *r, gchar *paper_name);
+gint rlib_layout_report_output_with_break_headers(rlib *r, struct rlib_part *part, struct rlib_report *report);
+void rlib_layout_init_report_page(rlib *r, struct rlib_part *part, struct rlib_report *report);
+void rlib_layout_report_footer(rlib *r, struct rlib_part *part, struct rlib_report *report);

@@ -134,7 +134,7 @@ static void rlib_csv_end_output_section(rlib *r) {
 	really_print_text(r, "\n");	
 }
 
-static void rlib_csv_end_page(rlib *r, struct rlib_part *part, struct rlib_report *report) {
+static void rlib_csv_end_page(rlib *r, struct rlib_part *part) {
 	r->current_page_number++;
 	r->current_line_number = 1;
 }
