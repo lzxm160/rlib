@@ -1,4 +1,7 @@
 2005-02-09  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/reportgen.c: Mike likes ReportHeader to come out w/ No Data.. I agree.. I put it back
+
+2005-02-09  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/reportgen.c: Lay out nodata correctly
 	* src/examples/php/images.php: nada
 

@@ -488,7 +488,10 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 
 	for(iterations=0;iterations<report->iterations;iterations++) {
 		if(r->queries_count <= 0 || INPUT(r,r->current_result)->first(INPUT(r,r->current_result), r->results[r->current_result].result) == FALSE) {
+			rlib_evaluate_report_attributes(r, report);
 			rlib_set_report_from_part(r, part, report, top_margin_offset);
+			report->left_margin += left_margin_offset + part->left_margin;
+			rlib_layout_report_output(r, part, report, report->report_header, FALSE);
 			rlib_layout_report_output(r, part, report, report->alternate.nodata, FALSE);
 		} else {
 			rlib_init_variables(r, report);
