@@ -1,3 +1,12 @@
+2005-01-26  Bob Doan  <bdoan@sicompos.com>
+
+	reviewed by: <delete if not using a buddy>
+
+	* configure.in:
+	* libsrc/parsexml.c: (parse_report), (parse_part_load),
+	(parse_part_td), (parse_part_file), (parse_report_file):
+	* src/examples/php/graph.xml:
+
 2005-01-20  Bob Doan  <bdoan@sicompos.com>
 	* NEWS: Release Time
 	* configure.in: Snow Patrol is a pretty good band.  Chceck them out

@@ -35,7 +35,7 @@ void dump_part(struct rlib_part *part);
 
 iconv_t cd = (void *)-1;
 
-static struct rlib_report * parse_report_file(rlib *r, gchar *filename);
+static struct rlib_report * parse_report_file(rlib *r, gchar *filename, gchar *query);
 
 void safestrncpy(gchar *dest, gchar *str, int n) {
 	if (!dest) return;
@@ -464,7 +464,7 @@ static void parse_metadata_item(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur, GHas
 	return;
 }
 
-static void parse_report(rlib *r, struct rlib_part *part, struct rlib_report *report, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
+static void parse_report(rlib *r, struct rlib_part *part, struct rlib_report *report, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur, gchar *query) {
 	report->doc = doc;
 	report->contents = NULL;
 	if (doc->encoding) 
@@ -477,7 +477,11 @@ static void parse_report(rlib *r, struct rlib_part *part, struct rlib_report *re
 		return;
 
 	report->xml_font_size = xmlGetProp(cur, (const xmlChar *) "fontSize");
-	report->xml_query = xmlGetProp(cur, (const xmlChar *) "query");
+	if(query == NULL)
+		report->xml_query = xmlGetProp(cur, (const xmlChar *) "query");
+	else
+		report->xml_query = query;
+		
 	report->xml_orientation = xmlGetProp(cur, (const xmlChar *) "orientation");
 	report->xml_top_margin = xmlGetProp(cur, (const xmlChar *) "topMargin");
 	report->xml_left_margin = xmlGetProp(cur, (const xmlChar *) "leftMargin");
@@ -522,9 +526,10 @@ static void parse_report(rlib *r, struct rlib_part *part, struct rlib_report *re
 
 static struct rlib_report * parse_part_load(rlib *r, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
 	struct rlib_report *report;
-	gchar *name;
+	gchar *name, *query;
 	name =  xmlGetProp(cur, (const xmlChar *) "name");
-	report = parse_report_file(r, name);
+	query =  xmlGetProp(cur, (const xmlChar *) "query");
+	report = parse_report_file(r, name, query);
 	return report;
 }
 
@@ -542,7 +547,7 @@ static struct rlib_part_td * parse_part_td(rlib *r, struct rlib_part *part, xmlD
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "Report"))) {
 			struct rlib_report *report;
 			report = (struct rlib_report *) g_new0(struct rlib_report, 1);
-			parse_report(r, part, report, doc, ns, cur);
+			parse_report(r, part, report, doc, ns, cur, NULL);
 			td->reports = g_slist_append(td->reports, report);
 		} else if (ignoreElement(cur->name)) {
 			/* ignore comments, etc */
@@ -685,7 +690,7 @@ struct rlib_part * parse_part_file(rlib *r, gchar *filename, gchar type) {
 		tr->part_deviations = g_slist_append(tr->part_deviations, td);
 		td->reports = NULL;
 		td->reports = g_slist_append(td->reports, report);
-		parse_report(r, part, report, doc, ns, cur);
+		parse_report(r, part, report, doc, ns, cur, NULL);
 		part->page_header = report->page_header;
 		part->report_header = report->report_header;
 		part->page_footer = report->page_footer;
@@ -728,7 +733,7 @@ struct rlib_part * parse_part_file(rlib *r, gchar *filename, gchar type) {
 	return part;
 }
 
-static struct rlib_report * parse_report_file(rlib *r, gchar *filename) {
+static struct rlib_report * parse_report_file(rlib *r, gchar *filename, gchar *query) {
 	xmlDocPtr doc;
 	struct rlib_report *report;
 	xmlNsPtr ns = NULL;
@@ -759,7 +764,7 @@ static struct rlib_report * parse_report_file(rlib *r, gchar *filename) {
 
 	
 	if((xmlStrcmp(cur->name, (const xmlChar *) "Report"))==0) {
-		parse_report(r, NULL, report, doc, ns, cur);
+		parse_report(r, NULL, report, doc, ns, cur, query);
 		found = TRUE;
 	}
 	
