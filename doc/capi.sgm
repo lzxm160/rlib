@@ -1,0 +1,139 @@
+<chapter label="5" id="capi">
+	<title>C API</title>
+	<sect1>
+		<title>rlib_init</title>
+		<para>
+			rlib * rlib_init(struct environment_filter *environment)
+		</para>
+		<para>
+			Create an instance of RLIB.  You will normally pass NULL to init.  However.. at some point we need to better
+			document what the environment_filter does... this is normally used for 3rd part bindings like PHP, PERL, or PYTHON.
+		</para>
+		<para>
+			Returns a pointer to a <emphasis>rlib</emphasis>
+		</para>
+	</sect1>
+	<sect1>
+		<title>rlib_add_datasource_mysql</title>
+		<para>
+			rlib_add_datasource_mysql(<emphasis>rlib * rlib_ptr</emphasis>, char *datasource_name, char *hostname, char *username, char *password, char *database)
+		</para>
+		<para>
+			Add a mysql datasource.  The datasource_name is used in rlib_add_query_as to tell rlib which datasource to run
+			the query with.
+		</para>
+		<para>
+			This function is only available if rlib is compiled with mysql support.
+		</para>
+	</sect1>
+	<sect1>
+		<title>rlib_add_datasource_postgre</title>
+		<para>
+			rlib_add_datasource_postgre(<emphasis>rlib * rlib_ptr</emphasis>, char *datasource_name, char *connection_string)
+		</para>
+		<para>
+			Add a postgre datasource.  The datasource_name is used in rlib_add_query_as to tell rlib which datasource to run
+			the query with.  The connection_string is the standard postgre connection string.. which might contain user and password
+			information, among other things.
+		</para>
+		<para>
+			This function is only available if rlib is compiled with postgre support.
+		</para>
+	</sect1>
+
+	<sect1>
+		<title>rlib_add_query_as</title>
+		<para>
+			rlib_add_query_as(<emphasis>rlib * rlib_ptr</emphasis>, char *datasource_name, char *query, char *rlib_query_name)
+		</para>
+		<para>
+			The query is added to an execution queue, but it is not executed at this time.  The name is important
+			because you can reference result sets directly in your rlib xml files.  The first query added is assumed
+			to be the main loop query.  The datasource name must match a datasource the your provided rlib, such as one
+			of the mysql or postgre datasources.
+		</para>
+	</sect1>
+	<sect1>
+		<title>rlib_add_report</title>
+		<para>
+			rlib_add_report(<emphasis>rlib *rlib_ptr</emphasis>, char *rlib_xml_file, char *rlib_query_name)
+		</para>
+		<para>
+			A report is added to the report execution queue but not compiled at this time.
+		</para>
+		<para>
+			rlib_query_name [OPTIONAL] - The name of the rlib_query to use in the main loop of the report.  Pass NULL if you 
+			don't need to specify the query name
+		</para>
+	</sect1>
+	<sect1>
+		<title>rlib_set_output_format</title>
+		<para>
+			rlib_set_output_format(<emphasis>rlib *rlib_ptr</emphasis>, int type)
+		</para>
+		<para>
+			Type can be one of the following: RLIB_FORMAT_PDF, RLIB_FORMAT_HTML, RLIB_FORMAT_TXT, RLIB_FORMAT_CSV
+		</para>
+	</sect1>
+	<sect1>
+		<title>rlib_execute</title>
+		<para>
+			rlib_execute(<emphasis>rlib *rlib_ptr</emphasis>)
+		</para>
+		<para>
+			Connects to the database, runs queries, compiles xmls and buffers up a report.
+		</para>
+	</sect1>
+	<sect1>
+		<title>rlib_get_content_type</title>
+		<para>
+			char *rlib_get_content_type(<emphasis>rlib *rlib_ptr</emphasis>)
+		</para>
+		<para>
+			This will return a string content type Use it with the <emphasis>php header function</emphasis>.
+			Even if you ask for a PDF you might not get a PDF because errors might occur. If this is the case, rlib
+			defaults to html and sends out error messages.
+		</para>
+	</sect1>
+	<sect1>
+		<title>rlib_spool</title>
+		<para>
+			rlib_spool(<emphasis>rlib * rlib_ptr</emphasis>)
+		</para>
+		<para>
+			Rlib will send the output out stdout.
+		</para>
+	</sect1>
+	<sect1>
+		<title>rlib_free</title>
+		<para>
+			rlib_free(<emphasis>rlib *rlib_ptr</emphasis>)
+		</para>
+		<para>
+			Free rlib's memory that it allocated
+		</para>
+	</sect1>
+	<sect1>
+		<title>SAMPLE</title>
+		<para>
+			Here is a example.
+		</para>
+		<para>
+			<programlisting>
+#include &lt;rlib.h&gt;
+
+char *query ="SELECT * FROM plu";
+rlib *r;
+
+r =	rlib_init();
+rlib_add_datasource_mysql(r, "mysql", "localhost", "user", "password", "database");
+rlib_add_query_as(r, "mysql", query, "woot");
+rlib_add_report(r, "report.xml");
+rlib_set_output_format(r, $format);
+rlib_execute(r);
+rlib_spool(r);			
+rlib_free(r);			
+			</programlisting>
+		</para>
+	</sect1>
+</chapter>

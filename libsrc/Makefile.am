@@ -26,7 +26,7 @@ libr_la_SOURCES = parsexml.c reportgen.c init.c resolution.c util.c pcode.c \
 	datasource.c csv.c ralloc.c environment.c free.c input.h pcode.h \
 	ralloc.h rlib.h 
 
-libr_la_LIBADD = $(LIBXML_LIBS) -lcpdf 
+libr_la_LIBADD = $(LIBXML_LIBS) -lcpdf -ldl
 
 INCLUDES = $(LIBXML_CFLAGS)
 

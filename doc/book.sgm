@@ -3,7 +3,8 @@
 <!ENTITY basictraining SYSTEM "basictraining.sgm">
 <!ENTITY symboltable SYSTEM "symboltable.sgm">
 <!ENTITY formating SYSTEM "formating.sgm">
-<!ENTITY api SYSTEM "api.sgm">
+<!ENTITY capi SYSTEM "capi.sgm">
+<!ENTITY phpapi SYSTEM "phpapi.sgm">
 <!ENTITY examples SYSTEM "examples.sgm">
 <!ENTITY gnulicense SYSTEM "gnulicense.sgm">
 ]>
@@ -39,7 +40,8 @@
 	&basictraining;
 	&symboltable;
 	&formating;
-	&api;
+	&capi;
+	&phpapi;
 	&examples;
 	&gnulicense;
 </book>

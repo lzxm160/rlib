@@ -20,7 +20,18 @@
 ##
 ## Process this file with automake to produce Makefile.in
 
-noinst_PROGRAMS = test1 test2
+if HAVE_MYSQL
+MYSQL_INPUT=test1
+endif
+
+if HAVE_POSTGRE
+POSTGRE_INPUT=test2
+endif
+
+noinst_PROGRAMS = \
+	$(MYSQL_INPUT) \
+	$(POSTGRE_INPUT)
+
 INCLUDES = $(POSTGRE_CFLAGS) $(LIBXML_CFLAGS) -I${top_srcdir}/libsrc/  
 
 test1_SOURCES= test1.c

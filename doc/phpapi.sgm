@@ -1,26 +1,55 @@
 <chapter label="5" id="api">
-	<title>API</title>
+	<title>PHP API</title>
 	<sect1>
 		<title>rlib_init</title>
 		<para>
-			rlib_init(mysql_host, mysql_user, mysql_password, mysql_database)
+			rlib_init()
 		</para>
 		<para>
-			All Parameters are strings and must be valid, no connection to the database is made at this time.
+			Start RLIB
 		</para>
 		<para>
 			Returns a pointer to a <emphasis>rlib</emphasis>
 		</para>
 	</sect1>
 	<sect1>
+		<title>rlib_add_datasource_mysql</title>
+		<para>
+			rlib_add_datasource_mysql(<emphasis>rlib</emphasis>, datasource_name, hostname, username, password, database)
+		</para>
+		<para>
+			Add a mysql datasource.  The datasource_name is used in rlib_add_query_as to tell rlib which datasource to run
+			the query with.
+		</para>
+		<para>
+			This function is only available if rlib is compiled with mysql support.
+		</para>
+	</sect1>
+	<sect1>
+		<title>rlib_add_datasource_postgre</title>
+		<para>
+			rlib_add_datasource_postgre(<emphasis>rlib</emphasis>, datasource_name, connection_string)
+		</para>
+		<para>
+			Add a postgre datasource.  The datasource_name is used in rlib_add_query_as to tell rlib which datasource to run
+			the query with.  The connection_string is the standard postgre connection string.. which might contain user and password
+			information, among other things.
+		</para>
+		<para>
+			This function is only available if rlib is compiled with postgre support.
+		</para>
+	</sect1>
+
+	<sect1>
 		<title>rlib_add_query_as</title>
 		<para>
-			rlib_add_query_as(<emphasis>rlib</emphasis>, query, rlib_query_name)
+			rlib_add_query_as(<emphasis>rlib</emphasis>, datasource_name, query, rlib_query_name)
 		</para>
 		<para>
 			The query is added to an execution queue, but it is not executed at this time.  The name is important
 			because you can reference result sets directly in your rlib xml files.  The first query added is assumed
-			to be the main loop query.
+			to be the main loop query.  The datasource name must match a datasource the your provided rlib, such as one
+			of the mysql or postgre datasources.
 		</para>
 	</sect1>
 	<sect1>
@@ -54,16 +83,6 @@
 		</para>
 	</sect1>
 	<sect1>
-		<title>rlib_finalize</title>
-		<para>
-			rlib_finalize(<emphasis>rlib</emphasis>)
-		</para>
-		<para>
-			If everything went well executing, this tells rlib you are done executing and you want it package up 
-			the finished product.
-		</para>
-	</sect1>
-	<sect1>
 		<title>rlib_get_content_type</title>
 		<para>
 			rlib_get_content_type(<emphasis>rlib</emphasis>)
@@ -84,23 +103,33 @@
 		</para>
 	</sect1>
 	<sect1>
+		<title>rlib_free</title>
+		<para>
+			rlib_free(<emphasis>rlib</emphasis>)
+		</para>
+		<para>
+			Free rlib's memory that it allocated
+		</para>
+	</sect1>
+	<sect1>
 		<title>SAMPLE</title>
 		<para>
 			Here is a example.
 		</para>
 		<para>
 			<programlisting>
-dl ("libr.so");
+dl ("libr-php.so");
 $query = "SELECT * FROM plu";
-$rlib =	rlib_init("localhost", "user", "password", "database");
+$rlib =	rlib_init();
+rlib_add_datasource_mysql($rlib, "mysql", "localhost", "user", "password", "database");
 $format = "PDF";
-rlib_add_query_as($rlib, $query, "topline");
+rlib_add_query_as($rlib, "mysql", $query, "topline");
 rlib_add_report($rlib, "report.xml");
 rlib_set_output_format($rlib, $format);
 rlib_execute($rlib);
-rlib_finalize($rlib);
 header(rlib_get_content_type($rlib));
 rlib_spool($rlib);			
+rlib_free($rlib);			
 			</programlisting>
 		</para>
 	</sect1>
