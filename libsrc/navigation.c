@@ -24,24 +24,54 @@
 #include "rlib.h"
 #include "rlib_input.h"
 
+static gint rlib_do_followers(rlib *r, gint i, gint way) {
+	gint follower;
+	gint rtn = TRUE;
+	follower = r->followers[i].follower;
+	if(way == RLIB_NAVIGATE_NEXT) {
+		if(rlib_navigate_next(r, follower) != TRUE)
+			rtn = FALSE;
+	} else if(way == RLIB_NAVIGATE_PREVIOUS) {
+		if(rlib_navigate_previous(r, follower) != TRUE)
+			rtn = FALSE;
+	} else if(way == RLIB_NAVIGATE_FIRST) {
+		if(rlib_navigate_first(r, follower) != TRUE)
+			rtn = FALSE;
+	} else if(way == RLIB_NAVIGATE_LAST) {
+		if(rlib_navigate_last(r, follower) != TRUE)
+			rtn = FALSE;
+	}
+	return rtn;
+}
+
 static gint rlib_navigate_followers(rlib *r, gint my_leader, gint way) {
-	gint i, rtn = TRUE, follower = -1;
+	gint i, rtn = TRUE;
 	for(i=0;i<r->resultset_followers_count;i++) {
 		if(r->followers[i].leader == my_leader) {
-			follower = r->followers[i].follower;
-			if(way == RLIB_NAVIGATE_NEXT) {
-				if(rlib_navigate_next(r, follower) != TRUE)
-					rtn = FALSE;
-			} else if(way == RLIB_NAVIGATE_PREVIOUS) {
-				if(rlib_navigate_previous(r, follower) != TRUE)
-					rtn = FALSE;
-			} else if(way == RLIB_NAVIGATE_FIRST) {
-				if(rlib_navigate_first(r, follower) != TRUE)
-					rtn = FALSE;
-			} else if(way == RLIB_NAVIGATE_LAST) {
-				if(rlib_navigate_last(r, follower) != TRUE)
-					rtn = FALSE;
+			if(r->followers[i].leader_code != NULL ) {
+				struct rlib_value rval_leader, rval_follower;
+				rlib_execute_pcode(r, &rval_leader, r->followers[i].leader_code, NULL);
+				rlib_execute_pcode(r, &rval_follower, r->followers[i].follower_code, NULL);
+				if( rvalcmp(&rval_leader,&rval_follower) == 0 )  {
+				
+				} else {
+					if(rlib_do_followers(r, i, way) == FALSE) {
+						rlib_do_followers(r, i, RLIB_NAVIGATE_FIRST);
+						do {
+							rlib_value_free(&rval_follower);
+							rlib_execute_pcode(r, &rval_follower, r->followers[i].follower_code, NULL);
+							if(rvalcmp(&rval_leader,&rval_follower) == 0 )
+								break;											
+						} while(rlib_do_followers(r, i, RLIB_NAVIGATE_NEXT) == TRUE);
+					
+					} 
+				}
+				rlib_value_free(&rval_leader);
+				rlib_value_free(&rval_follower);
+			} else {
+				rtn = rlib_do_followers(r, i, way);
 			}
+			
 		}
 	}
 	return rtn;

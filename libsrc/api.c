@@ -174,6 +174,7 @@ gint rlib_execute(rlib *r) {
 		}
 	}
 	rlib_resolve_metadata(r);
+	rlib_resolve_followers(r);
 	rlib_make_report(r);	
 	rlib_finalize(r);
 	return 0;
@@ -215,7 +216,7 @@ gint rlib_set_output_format(rlib *r, int format) {
 	return 0;
 }
 
-gint rlib_add_resultset_follower(rlib *r, gchar *leader, gchar *follower) {
+gint rlib_add_resultset_follower_n_to_1(rlib *r, gchar *leader, gchar *leader_field, gchar *follower, gchar *follower_field) {
 	gint ptr_leader = -1, ptr_follower = -1;
 	gint x;
 
@@ -243,9 +244,15 @@ gint rlib_add_resultset_follower(rlib *r, gchar *leader, gchar *follower) {
 		return -1;
 	}
 	r->followers[r->resultset_followers_count].leader = ptr_leader;
-	r->followers[r->resultset_followers_count++].follower = ptr_follower;
+	r->followers[r->resultset_followers_count].leader_field = g_strdup(leader_field);
+	r->followers[r->resultset_followers_count].follower = ptr_follower;
+	r->followers[r->resultset_followers_count++].follower_field = g_strdup(follower_field);
 
 	return 0;
+}
+
+gint rlib_add_resultset_follower(rlib *r, gchar *leader, gchar *follower) {
+	return rlib_add_resultset_follower_n_to_1(r, leader, NULL, follower, NULL);
 }
 
 gint rlib_set_output_format_from_text(rlib *r, gchar *name) {

@@ -130,13 +130,19 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 	GSList *list;
 	gchar axis[MAXSTRLEN], x_axis_label[MAXSTRLEN];
 	gfloat y_value;
-	gdouble y_min = 0;
-	gdouble y_max = 0;
+	gfloat stacked_y_value_max=0;
+	gfloat stacked_y_value_min=0;
+	gfloat y_value_try_max;
+	gfloat y_value_try_min;
+	gdouble y_min = 999999999;
+	gdouble y_max = -999999999;
 	gint data_plot_count = 0;
+	gint plot_count = 0;
 	gint row_count = 0;
 	gint y_ticks = 10;
 	gfloat tmp;
 	gfloat graph_width=300, graph_height=300;
+	gfloat last_height,last_height_neg,last_height_pos;
 	gfloat y_origin = 0;
 	gchar data_type = POSITIVE; 
 	
@@ -150,7 +156,8 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 		graph_height = tmp;
 	if(!rlib_execute_as_string(r, graph->type_code, type, MAXSTRLEN))
 		type[0] = 0;
-	if(!rlib_execute_as_string(r, graph->subtype_code, type, MAXSTRLEN))
+//MROTH
+	if(!rlib_execute_as_string(r, graph->subtype_code, subtype, MAXSTRLEN))
 		subtype[0] = 0;
 	if(!rlib_execute_as_string(r, graph->title_code, title, MAXSTRLEN))
 		title[0] = 0;
@@ -160,6 +167,11 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 		y_axis_title[0] = 0;
 
 	graph_type = determine_graph_type(type, subtype);	
+	if( graph_type == RLIB_GRAPH_TYPE_ROW_STACKED ) 
+		rlogit("----------------------> STACKED GRAPH TYPE\n");
+	else
+		rlogit("-----------------------------------------\n");
+
 			
 	OUTPUT(r)->graph_start(r, left_margin_offset, rlib_layout_get_next_line(r, part, part->position_top[0]+top_margin_offset, 0), graph_width, graph_height);
 	OUTPUT(r)->graph_title(r, title);
@@ -170,6 +182,8 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 	if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
 		while (1) {
 			data_plot_count = 0;
+			stacked_y_value_max = 0;
+			stacked_y_value_min = 0;
 			rlib_process_input_metadata(r);
 			for(list=graph->plots;list != NULL; list = g_slist_next(list)) {
 				plot = list->data;
@@ -177,23 +191,50 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 					if(strcmp(axis, "x") == 0) {
 				
 					} else if(strcmp(axis, "y") == 0) {
+
 						if(rlib_execute_as_float(r, plot->field_code, &y_value)) {
-							rlib_parsecolor(&color[data_plot_count%MAX_COLOR_POOL], color_pool[data_plot_count%MAX_COLOR_POOL]);
-							data_plot_count++;
-							if(row_count == 0) {
-								y_min = y_value;
-								y_max = y_value;
-							} else {
-								if(y_value < y_min)
-									y_min = y_value;
-								if(y_value > y_max)
-									y_max = y_value;
+						if( graph_type == RLIB_GRAPH_TYPE_ROW_STACKED ) { 
+							if( y_value >= 0 ) {
+								if( stacked_y_value_max < 0 ) 
+									stacked_y_value_max = y_value;
+								else
+									stacked_y_value_max += y_value;
+								stacked_y_value_min = y_value;
+							} else { 
+								if( stacked_y_value_min > 0 ) {
+									stacked_y_value_min = 0;
+								}
+								stacked_y_value_min += y_value;
+								stacked_y_value_max = y_value;
 							}
-						
+							y_value_try_max = stacked_y_value_max;
+							y_value_try_min = stacked_y_value_min;
+						} else {
+							y_value_try_max = y_value;
+							y_value_try_min = y_value;
 						}
-					}				
+	
+						rlib_parsecolor(&color[data_plot_count%MAX_COLOR_POOL], color_pool[data_plot_count%MAX_COLOR_POOL]);
+							data_plot_count++;
+		rlogit("DATAPLOT = %d YVALUE=%f YTRY_MAX=%f YTRY_MIN=%f\n",data_plot_count,y_value,y_value_try_max,y_value_try_min);
+/*****
+							if(row_count == 0 ) {
+								y_min = y_value_try_min;
+								y_max = y_value_try_max;
+							} else {
+****/
+								if(y_value_try_min < y_min)
+									y_min = y_value_try_min;
+								if(y_value_try_max > y_max)
+									y_max = y_value_try_max;
+	rlogit("CURRMAX=%f CURRMIN=%f\n",y_max,y_min);
+/**
+							}
+**/
+						}
+					} // IF AXIS=Y				
 				}
-			}
+			} // END FOREACH DATA_PLOT
 			row_count++;
 
 			if(rlib_navigate_next(r, r->current_result) == FALSE) 
@@ -233,13 +274,15 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 		while (1) {
 			rlib_process_input_metadata(r);
 			data_plot_count = 0;
+			last_height_pos=0;
+			last_height_neg=0;
+			last_height=0;
 			for(list=graph->plots;list != NULL; list = g_slist_next(list)) {
 				plot = list->data;
 				if(rlib_execute_as_string(r, plot->axis_code, axis, MAXSTRLEN)) {
 					if(strcmp(axis, "x") == 0) {
 						if(rlib_execute_as_string(r, plot->field_code, x_axis_label, MAXSTRLEN)) {
-							OUTPUT(r)->graph_label_x(r, row_count, x_axis_label);						
-						
+							OUTPUT(r)->graph_label_x(r, row_count, x_axis_label);
 						}																
 					} else if(strcmp(axis, "y") == 0) {
 						if(rlib_execute_as_float(r, plot->field_code, &y_value)) {
@@ -255,12 +298,26 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 								value = (y_value - y_origin) / (y_max - y_origin);
 							}
 							r_error("PLOTTING %lf %d\n", value, data_type);
-							OUTPUT(r)->graph_draw_bar(r, row_count, data_plot_count, value, &color[data_plot_count]);
+							plot_count = data_plot_count;
+							if( graph_type == RLIB_GRAPH_TYPE_ROW_STACKED ) { 
+								plot_count = 0;
+								if( value >= 0 ) 
+									last_height = last_height_pos;
+								else
+									last_height = last_height_neg;
+							} 
+							OUTPUT(r)->graph_draw_bar(r, row_count, plot_count, value, &color[data_plot_count],last_height);
+							if( graph_type == RLIB_GRAPH_TYPE_ROW_STACKED ) { 
+								if(value >= 0 ) 
+									last_height_pos += value;
+								else
+									last_height_neg += value;
+							}
 						}
 						data_plot_count++;
-					}				
+					} // END IF Y AXIS				
 				}
-			}
+			} // FOREACH DATA PLOT
 			row_count++;
 
 			if(rlib_navigate_next(r, r->current_result) == FALSE)

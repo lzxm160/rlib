@@ -582,6 +582,10 @@ struct input_filters {
 struct rlib_resultset_followers {
 	gint leader;
 	gint follower;
+	gchar *leader_field;
+	gchar *follower_field;
+	struct rlib_pcode *leader_code;
+	struct rlib_pcode *follower_code;
 };
 
 struct rlib_signal_functions {
@@ -715,7 +719,7 @@ struct output_filter {
 	void (*graph_set_data_plot_count)(rlib *r, int count);
 	void (*graph_label_x)(rlib *r, int iteration, gchar *label);
 	void (*graph_label_y)(rlib *r, int iteration, gchar *label, gboolean false_x);
-	void (*graph_draw_bar)(rlib *r, int iteration, int plot, gfloat height, struct rlib_rgb *);
+	void (*graph_draw_bar)(rlib *r, int iteration, int plot, gfloat height, struct rlib_rgb *,gfloat last_height);
 	void (*graph_hint_label_y)(rlib *r, gchar *string);
 	int (*free)(rlib *r);
 };
@@ -757,6 +761,7 @@ gint rlib_mysql_report(gchar *hostname, gchar *username, gchar *password, gchar 
 	gchar *outputformat);
 gint rlib_postgre_report(gchar *connstr, gchar *xmlfilename, gchar *sqlquery, gchar *outputformat);
 gint rlib_add_resultset_follower(rlib *r, gchar *leader, gchar *follower);
+gint rlib_add_resultset_follower_n_to_1(rlib *r, gchar *leader, gchar *leader_field, gchar *follower,gchar *follower_field );
 gint rlib_add_parameter(rlib *r, const gchar *name, const gchar *value);
 gint rlib_set_locale(rlib *r, gchar *locale);
 void rlib_init_profiler(void);
@@ -818,6 +823,7 @@ struct rlib_report_variable *rlib_resolve_variable(rlib *r, struct rlib_report *
 void rlib_resolve_report_fields(rlib *r, struct rlib_report *report);
 void rlib_resolve_part_fields(rlib *r, struct rlib_part *part);
 void rlib_resolve_metadata(rlib *r);
+void rlib_resolve_followers(rlib *r);
 void rlib_process_input_metadata(rlib *r);
 
 /***** PROTOTYPES: navigation.c ***********************************************/

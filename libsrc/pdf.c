@@ -592,14 +592,15 @@ static void pdf_graph_set_data_plot_count(rlib *r, gint count) {
 }
 
 
-static void pdf_graph_draw_bar(rlib *r, gint iteration, gint plot, gfloat height_percent, struct rlib_rgb *color) {
+static void pdf_graph_draw_bar(rlib *r, gint iteration, gint plot, gfloat height_percent, struct rlib_rgb *color,gfloat last_height) {
+
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
 	gfloat white_space = graph->x_width/graph->x_iterations;
 	gfloat bar_width = white_space *.6;
 	gfloat left = graph->x_start + (white_space * iteration) + (white_space *.2);
 	gfloat start = graph->y_start;
 	pdf_turn_text_off(r);
-	
+
 	if(graph->y_origin != graph->y_min)  {
 		gfloat n = fabs(graph->y_max)+fabs(graph->y_origin);
 		gfloat d = fabs(graph->y_min)+fabs(graph->y_max);
@@ -609,11 +610,14 @@ static void pdf_graph_draw_bar(rlib *r, gint iteration, gint plot, gfloat height
 		start += (real_height * graph->y_height);
 	}
 	
-	bar_width /= graph->data_plot_count;
+	//bar_width /= graph->data_plot_count;
+	bar_width /= 1;
 	left += (bar_width)*plot;	
 	bar_width -= (PDF_PIXEL * 4);
 	OUTPUT(r)->set_bg_color(r, color->r, color->g, color->b);
-	cpdf_rect(OUTPUT_PRIVATE(r)->pdf, left, start, bar_width, graph->y_height*height_percent);
+	//cpdf_rect(OUTPUT_PRIVATE(r)->pdf, left, start, bar_width, graph->y_height*(height_percent));
+	cpdf_rect(OUTPUT_PRIVATE(r)->pdf, left, start + last_height*graph->y_height, bar_width, graph->y_height*(height_percent));
+	///rlogit("DRAW_BAR START=%f Y_HEIGHT=%f HEIGHT_PERCENT=%f LAST_HEIGHT=%f TOTAL_HEIGHT=%f\n",start,graph->y_height,height_percent,last_height,total_height);	
 	cpdf_fill(OUTPUT_PRIVATE(r)->pdf);
 	OUTPUT(r)->set_bg_color(r, 0, 0, 0);
 }

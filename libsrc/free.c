@@ -337,6 +337,16 @@ void rlib_free_results_and_queries(rlib *r) {
 }
 
 
+gint rlib_free_follower(rlib *r ) {
+        gint i;
+        for(i=0; i<r->resultset_followers_count; i++) {
+                rlib_pcode_free(r->followers[i].leader_code);
+                rlib_pcode_free(r->followers[i].follower_code);
+        }
+
+	return TRUE;
+}
+
 gint rlib_free(rlib *r) {
 	int i;
 	rlib_char_encoder_destroy(&r->db_encoder);
@@ -361,6 +371,7 @@ gint rlib_free(rlib *r) {
 	OUTPUT(r)->free(r);
 	g_hash_table_freeze(r->outut_paramaters);
 	g_hash_table_freeze(r->input_metadata);
+	rlib_free_follower(r);
 	ENVIRONMENT(r)->free(r);
 				
 	g_free(r);

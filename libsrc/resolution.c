@@ -424,3 +424,13 @@ void process_metadata(gpointer name, gpointer value, gpointer user_data) {
 void rlib_process_input_metadata(rlib *r) {
 	g_hash_table_foreach(r->input_metadata, process_metadata, r);
 }
+
+void rlib_resolve_followers(rlib *r) {
+	gint i;
+	for(i=0; i<r->resultset_followers_count; i++) {
+        	r->followers[i].leader_code = 
+			rlib_infix_to_pcode(r, NULL, r->followers[i].leader_field, FALSE);
+        	r->followers[i].follower_code = 
+			rlib_infix_to_pcode(r, NULL, r->followers[i].follower_field, FALSE);
+	}
+}

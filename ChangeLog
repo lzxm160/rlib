@@ -1,3 +1,17 @@
+2004-12-17  Michael Roth  <mroth@sicompos.com>
+
+	* bindings/php/php.c: (ZEND_FUNCTION): add n_to_1 follower
+	* libsrc/api.c: (rlib_execute),
+	(rlib_add_resultset_follower_n_to_1),
+	(rlib_add_resultset_follower): add n_to_1 follower
+	* libsrc/free.c: (rlib_free_follower), (rlib_free): add n_to_1 follower
+	* libsrc/graphing.c: (rlib_graph): bar graph
+	* libsrc/navigation.c: (rlib_do_followers),
+	(rlib_navigate_followers): add n_to_1 follower
+	* libsrc/pdf.c: (pdf_graph_draw_bar): bar graph
+	* libsrc/resolution.c: (rlib_resolve_followers): add n_to_1 follower
+	* libsrc/rlib.h: add n_to_1 follower
+
 2004-12-13  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/layout.c: save report font size when the PART starts a new page
 	* libsrc/reportgen.c: don't try to center things larger then the width of the field

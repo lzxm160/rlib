@@ -45,6 +45,7 @@ ZEND_FUNCTION(rlib_add_datasource_odbc);
 ZEND_FUNCTION(rlib_add_datasource_array);
 ZEND_FUNCTION(rlib_add_query_as);
 ZEND_FUNCTION(rlib_add_resultset_follower);
+ZEND_FUNCTION(rlib_add_resultset_follower_n_to_1);
 ZEND_FUNCTION(rlib_add_report);
 ZEND_FUNCTION(rlib_add_report_from_buffer);
 ZEND_FUNCTION(rlib_query_refresh);
@@ -83,6 +84,7 @@ zend_function_entry rlib_functions[] =
 	ZEND_FE(rlib_add_datasource_array, NULL)
 	ZEND_FE(rlib_add_query_as, NULL)
 	ZEND_FE(rlib_add_resultset_follower, NULL)
+	ZEND_FE(rlib_add_resultset_follower_n_to_1, NULL)
 	ZEND_FE(rlib_add_report, NULL)
 	ZEND_FE(rlib_add_report_from_buffer, NULL)
 	ZEND_FE(rlib_query_refresh, NULL)
@@ -286,6 +288,22 @@ ZEND_FUNCTION(rlib_add_resultset_follower) {
 	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
 
 	rlib_add_resultset_follower(rip->r, estrdup(leader), estrdup(follower));
+}
+
+ZEND_FUNCTION(rlib_add_resultset_follower_n_to_1) {
+	zval *z_rip = NULL;
+	gint whatever;
+	gchar *leader, *follower, *leader_field,*follower_field;
+	rlib_inout_pass *rip;
+	gint id = -1;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rssss", &z_rip, &leader, &whatever,&leader_field,&whatever, &follower, &whatever, &follower_field, &whatever) == FAILURE) {
+		return;
+	}
+	
+	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
+
+	rlib_add_resultset_follower_n_to_1(rip->r, estrdup(leader),estrdup(leader_field), estrdup(follower), estrdup(follower_field) );
 }
 
 ZEND_FUNCTION(rlib_add_report) {
