@@ -360,7 +360,7 @@ struct rlib_report {
 	struct report_element *breaks;
 	struct report_alternate alternate;
 	gint mainloop_query;
-	iconv_t pdf_conversion;
+	iconv_t output_encoder;
 
 	struct rlib_pcode *font_size_code;
 	struct rlib_pcode *orientation_code;
@@ -412,7 +412,7 @@ struct rlib {
 	gchar pdf_encoding[256];
 	gchar pdf_fontname[256];
 	gboolean utf8;
-	iconv_t pdf_conversion;
+	iconv_t output_encoder;
 	time_t now; //set when rlib starts now will then be a constant over the time of the report
 	
 	struct rlib_queries queries[RLIB_MAXIMUM_QUERIES];
@@ -647,7 +647,7 @@ struct rlib_report * load_report(gchar *filename);
 /* temp/test stuff */
 void rlib_set_pdf_font(rlib *r, const char *encoding, const char *fontname);
 void rlib_set_pdf_font_directories(rlib *r, const char *d1, const char *d2);
-void rlib_set_pdf_conversion(rlib *r, int rptnum, const char *encoding);
+//void rlib_set_pdf_conversion(rlib *r, int rptnum, const char *encoding);
 
 /* rlib_datetime - should be a separate module (class) */
 void rlib_datetime_clear(struct rlib_datetime *t1);

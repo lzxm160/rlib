@@ -32,9 +32,9 @@ struct _private {
 
 
 static gfloat rlib_pdf_get_string_width(rlib *r, gchar *text) {
-	struct rlib_report *rr = r->reports[r->current_report]; //Should be a better way
-	if (rr->pdf_conversion != (iconv_t) -1) text = (gchar *) encode(rr->pdf_conversion, text);
-	else if(r->pdf_conversion != (iconv_t) -1) text = (gchar *) encode(r->pdf_conversion, text);
+//	struct rlib_report *rr = r->reports[r->current_report]; //Should be a better way
+//	if (rr->output_encoder != (iconv_t) -1) text = (gchar *) encode(rr->output_encoder, text);
+//	else if(r->output_encoder != (iconv_t) -1) text = (gchar *) encode(r->output_encoder, text);
 	return cpdf_stringWidth(OUTPUT_PRIVATE(r)->pdf, text)/(72.0);
 }
 
@@ -48,7 +48,7 @@ static void rlib_pdf_print_text(rlib *r, gfloat left_origin, gfloat bottom_origi
 	gunichar2 *unistr;
 
 	if (r->utf8) {
-//rlib_trap();				
+//rlib_trap();				output_encoder
 		cpdf_hexStringMode(pdf, YES);
 		unistr = g_utf8_to_utf16(tmp, -1, &itemsread, &itemswritten, &error);
 		buf = g_malloc(2 * sizeof(gunichar2) * (itemswritten + 2));
@@ -58,9 +58,9 @@ static void rlib_pdf_print_text(rlib *r, gfloat left_origin, gfloat bottom_origi
 		g_free(buf);
 		cpdf_hexStringMode(pdf, NO);
 	} else {
-		struct rlib_report *rr = r->reports[r->current_report]; //YECH!!
-		if (rr->pdf_conversion != (iconv_t) -1) t = (gchar *) encode(rr->pdf_conversion, t);
-		else if(r->pdf_conversion != (iconv_t) -1) t = (gchar *) encode(r->pdf_conversion, t);
+//		struct rlib_report *rr = r->reports[r->current_report]; //YECH!!
+//		if (rr->output_encoder != (iconv_t) -1) t = (gchar *) encode(rr->output_encoder, t);
+//		else if(r->output_encoder != (iconv_t) -1) t = (gchar *) encode(r->output_encoder, t);
 		cpdf_text(pdf, left_origin, bottom_origin, 0, t);
 	}
 }

@@ -1,4 +1,26 @@
 2004-02-23  Chet Heilman  <cheilman@sicompos.com>
+	* libsrc/api.c: (rlib_set_pdf_conversion),
+	(rlib_set_output_encoder):
+		change function to be generic vs. PDF oriented
+	* libsrc/parsexml.c: (parse_report_file):
+		Fix references for above.
+	* libsrc/pcode.c:
+		same
+	* libsrc/pcode.h:
+		same
+	* libsrc/pcode_op_functions.c: (rlib_datetime_makesamedate),
+	(rlib_datetime_makesametime), (rlib_datetime_format_date),
+	(rlib_pcode_operator_chgdateof), (rlib_pcode_operator_chgtimeof):
+		Add new functions to manipulate only date or time parts of a
+		datetime.
+	* libsrc/pdf.c: (rlib_pdf_get_string_width), (rlib_pdf_print_text):
+		move output encoding to rlib vs pdf driver.
+	* libsrc/reportgen.c: (rlib_output_text), (make_report):
+		same.
+	* libsrc/rlib.h:
+		Changes needed for above other changes.
+
+2004-02-23  Chet Heilman  <cheilman@sicompos.com>
 	* doc/formating.sgm:
 		Documentation for new formatting codes.
 	* doc/symboltable.sgm:

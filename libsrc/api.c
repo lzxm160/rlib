@@ -282,15 +282,33 @@ void rlib_set_pdf_font_directories(rlib *r, const char *d1, const char *d2) {
 }
 
 
-void rlib_set_pdf_conversion(rlib *r, int rptnum, const char *encoding) {
+gboolean rlib_set_pdf_conversion(rlib *r, int rptnum, const char *encoding) {
+	gint result = FALSE;
 	if ((rptnum >= 0) && (rptnum < r->reports_count)) {
 		struct rlib_report *rr = r->reports[rptnum];
-		if (rr->pdf_conversion != (iconv_t) -1) iconv_close(rr->pdf_conversion);
-		rr->pdf_conversion = (iconv_t) -1;
+		if (rr->output_encoder != (iconv_t) -1) iconv_close(rr->output_encoder);
+		rr->output_encoder = (iconv_t) -1;
 		if (encoding) {
-			rr->pdf_conversion = iconv_open(encoding, "UTF-8");
+			rr->output_encoder = iconv_open(encoding, "UTF-8");
+			if (rr->output_encoder != (iconv_t) -1) result = TRUE;
 		}
-	}	
+	}
+	return result;	
+}
+
+
+gboolean rlib_set_output_encoder(rlib *r, const char *encoding) {
+	gint result = FALSE;
+	if (r->output_encoder != (iconv_t) -1) iconv_close(r->output_encoder);
+	r->output_encoder = (iconv_t) -1;
+	if (encoding) {
+		if (g_strcasecmp(encoding, "UTF-8")
+				&& g_strcasecmp(encoding, "UTF8")) {
+			r->output_encoder = iconv_open(encoding, "UTF-8");
+			if (r->output_encoder != (iconv_t) -1) result = TRUE;
+		} else result = TRUE; //don't need to set it, it is already utf8
+	}
+	return result;	
 }
 
 

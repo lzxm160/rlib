@@ -95,6 +95,9 @@
 #define OP_DTOSF	48
 #define OP_DATEOF	49
 #define OP_TIMEOF	50
+#define OP_CHGDATEOF	51
+#define OP_CHGTIMEOF	52
+
 
 struct rlib_value_stack {
 	int count;
@@ -211,4 +214,6 @@ int rlib_pcode_operator_right(rlib *r, struct rlib_value_stack *vs, struct rlib_
 int rlib_pcode_operator_substring(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
 int rlib_pcode_operator_dateof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
 int rlib_pcode_operator_timeof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
+int rlib_pcode_operator_chgdateof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
+int rlib_pcode_operator_chgtimeof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
 

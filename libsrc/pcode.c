@@ -96,6 +96,9 @@ struct rlib_pcode_operator rlib_pcode_verbs[] = {
       {"dateof(", 	7, 0,	TRUE,	OP_DATEOF,  	TRUE, 	rlib_pcode_operator_dateof},
       {"timeof(", 	7, 0,	TRUE,	OP_TIMEOF,  	TRUE, 	rlib_pcode_operator_timeof},
 
+      {"chgdateof(", 	10, 0,	TRUE,	OP_CHGDATEOF,  	TRUE, 	rlib_pcode_operator_chgdateof},
+      {"chgtimeof(", 	10, 0,	TRUE,	OP_CHGTIMEOF,  	TRUE, 	rlib_pcode_operator_chgtimeof},
+
       { NULL, 	 	0, 0, FALSE,-1,			TRUE,		NULL}
 };
 

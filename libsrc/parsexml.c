@@ -423,7 +423,7 @@ struct rlib_report * parse_report_file(gchar *filename) {
 	ret->doc = doc;
 	ret->contents = NULL;
 	
-	ret->pdf_conversion = (iconv_t) -1; //Used by the pdf output to make utf8->whatever
+	ret->output_encoder = (iconv_t) -1; //Used by the pdf output to make utf8->whatever
 		
 //	ret->cd = iconv_open("ISO8859-1", "UTF-8"); //Internal code is now all utf8
 

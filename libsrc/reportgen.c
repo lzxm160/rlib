@@ -208,6 +208,11 @@ struct rlib_line_extra_data *extra_data) {
 	if(extra_data->found_color)
 		OUTPUT(r)->rlib_set_fg_color(r, extra_data->color.r, extra_data->color.g, extra_data->color.b);
 
+//Convert UTF8 to the desired character encoding, if specified.
+	if (r->output_encoder != (iconv_t) -1) {
+		text = (gchar *) encode(r->output_encoder, text);
+		
+	}
 	OUTPUT(r)->rlib_print_text(r, left_origin, bottom_orgin+(extra_data->font_point/300.0), text, backwards, extra_data->col);
 
 	rtn_width = extra_data->output_width;
@@ -1093,8 +1098,8 @@ gint make_report(rlib *r) {
 		rlib_csv_new_output_filter(r);
 	else {
 		rlib_pdf_new_output_filter(r);
-		r->pdf_conversion = iconv_open(lc_encoding, "UTF-8");
-		if (r->pdf_conversion == (iconv_t) -1) {
+		r->output_encoder = iconv_open(lc_encoding, "UTF-8");
+		if (r->output_encoder == (iconv_t) -1) {
 			r_error("Cannot convert UTF-8 to %s", lc_encoding);
 		}
 	}

@@ -55,6 +55,16 @@ void rlib_datetime_clear(struct rlib_datetime *t1) {
 }
 
 
+void rlib_datetime_makesamedate(struct rlib_datetime *target, struct rlib_datetime *chgto) {
+	target->date = chgto->date;
+}
+
+
+void rlib_datetime_makesametime(struct rlib_datetime *target, struct rlib_datetime *chgto) {
+	target->ltime = chgto->ltime;
+}
+
+
 gint rlib_datetime_compare(struct rlib_datetime *t1, struct rlib_datetime *t2) {
 	gint result = 0;
 	if (rlib_datetime_valid_date(t1) && rlib_datetime_valid_date(t2)) {
@@ -85,7 +95,7 @@ static void rlib_datetime_format_date(struct rlib_datetime *dt, char *buf, int m
 		g_date_strftime(buf, max, fmt, &dt->date);
 	} else {
 		strcpy(buf, "!ERR_DT_D");
-		rlogit("Invalid time in format time");
+		rlogit("Invalid date in format date");
 	}
 }
 
@@ -1180,6 +1190,52 @@ gboolean rlib_pcode_operator_timeof(rlib *r, struct rlib_value_stack *vs, struct
 	}
 	rlib_pcode_operator_fatal_execption("dateof", 1, v1, NULL, NULL);
 	rlib_value_free(v1);
+	rlib_value_stack_push(vs, rlib_value_new_error(&rval_rtn));		
+	return FALSE;
+}
+
+
+/*
+* function setdateof(date1, date2) - makes date of date1 = date of date2.
+* 	time of date1 is unchanged.
+*/
+gint rlib_pcode_operator_chgdateof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+	struct rlib_value *v1, *v2, rval_rtn;
+	v1 = rlib_value_stack_pop(vs);
+	v2 = rlib_value_stack_pop(vs);
+	if(RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_DATE(v2)) {
+		struct rlib_datetime *pd1 = &RLIB_VALUE_GET_AS_DATE(v1);
+		struct rlib_datetime d2 = RLIB_VALUE_GET_AS_DATE(v2);
+		rlib_datetime_makesamedate(&d2, pd1);
+		rlib_value_free(v1);
+		rlib_value_free(v2);
+		rlib_value_stack_push(vs, rlib_value_new_date(&rval_rtn, &d2));
+		return TRUE;
+	}
+	rlib_pcode_operator_fatal_execption("chgdateof", 2, v1, v2, NULL);
+	rlib_value_free(v1);
+	rlib_value_free(v2);
+	rlib_value_stack_push(vs, rlib_value_new_error(&rval_rtn));		
+	return FALSE;
+}
+
+
+gint rlib_pcode_operator_chgtimeof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+	struct rlib_value *v1, *v2, rval_rtn;
+	v1 = rlib_value_stack_pop(vs);
+	v2 = rlib_value_stack_pop(vs);
+	if(RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_DATE(v2)) {
+		struct rlib_datetime *pd1 = &RLIB_VALUE_GET_AS_DATE(v1);
+		struct rlib_datetime d2 = RLIB_VALUE_GET_AS_DATE(v2);
+		rlib_datetime_makesametime(&d2, pd1);
+		rlib_value_free(v1);
+		rlib_value_free(v2);
+		rlib_value_stack_push(vs, rlib_value_new_date(&rval_rtn, &d2));
+		return TRUE;
+	}
+	rlib_pcode_operator_fatal_execption("chgtimeof", 2, v1, v2, NULL);
+	rlib_value_free(v1);
+	rlib_value_free(v2);
 	rlib_value_stack_push(vs, rlib_value_new_error(&rval_rtn));		
 	return FALSE;
 }
