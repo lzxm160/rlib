@@ -1,4 +1,7 @@
 2004-07-26  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/api.c: and we need braces around the if now.. this just isn't my day :(
+
+2004-07-26  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/api.c: The actual content length would be nice.. not the pointer to the function.. doh!
 
 2004-07-26  Bob Doan  <bdoan@sicompos.com>
