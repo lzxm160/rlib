@@ -3,8 +3,8 @@
 <Part layout="'flow'" fontSize="14" orientation="landscape">
 	<PageHeader>
 		<Output>
-			<Line fontSize="26">
-				<literal link="'http://www.yahoo.com'">RLIB IS Graphing       </literal>
+			<Line fontSize="26" bgcolor="'yellow'">
+				<literal link="'http://rlib.sicompos.com'">RLIB IS Graphing       </literal>
 				<literal>YES!</literal>
 			</Line>
 			<HorizontalLine size="4" bgcolor="'black'"/>
@@ -153,12 +153,23 @@
 		<pd width="2"/>
 		<pd width="48">
 			<Report fontSize="12" orientation="landscape" query="'pie_data2'">
+				<Variables>
+					<Variable name="test" value="val(value)" type="sum" resetonbreak=""/>
+				</Variables>
+				<ReportHeader>
+					<Output>
+						<Line bgcolor="'0xe5e5e5'">
+							<literal col="1">HEADER Testing SUM (Delayed): </literal>
+							<field value="v.test" width="5" align="left" col="1" delayed="yes"/>
+						</Line>
+					</Output>
+				</ReportHeader>				
 				<Detail>
 					<FieldHeaders>
 						<Output>
 							<HorizontalLine size="1" bgcolor="'black'"/>
 							<Line bgcolor="'0xe5e5e5'">
-								<literal width="10" col="1">Food</literal>
+								<literal width="10" col="1">Food!</literal>
 								<literal width="1"/>
 								<literal width="5" col="1">Value</literal>
 							</Line>
@@ -176,6 +187,14 @@
 						</Output>
 					</FieldDetails>
 				</Detail>
+				<ReportFooter>
+					<Output>
+						<Line bgcolor="'0xe5e5e5'">
+							<literal col="1">Footer Testing SUM: </literal>
+							<field value="v.test" width="5" align="left" col="1"/>
+						</Line>
+					</Output>
+				</ReportFooter>				
 			</Report>
 		</pd>
 	</pr>

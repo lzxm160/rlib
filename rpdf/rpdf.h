@@ -27,7 +27,8 @@
 #define RPDF_MAX_CHARS 256
 
 #define RPDF_IMAGE_JPEG 1
-#define RPDF_IMAGE_GIF  2
+#define RPDF_IMAGE_PNG  2
+#define RPDF_IMAGE_GIF  3
 
 #define RPDF_TYPE_FONT       1
 #define RPDF_TYPE_TEXT       2

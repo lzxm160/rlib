@@ -147,6 +147,9 @@ static void rlib_free_graph(rlib *r, struct rlib_graph *graph) {
 	rlib_pcode_free(graph->y_axis_title_code);
 	rlib_pcode_free(graph->y_axis_mod_code);
 	rlib_pcode_free(graph->y_axis_title_right_code);
+	rlib_pcode_free(graph->y_axis_decimals_code);
+	rlib_pcode_free(graph->y_axis_decimals_code_right);
+
 	for(list=graph->plots;list != NULL; list = g_slist_next(list)) {
 		plot = list->data;
 		rlib_pcode_free(plot->axis_code);

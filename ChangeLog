@@ -1,3 +1,23 @@
+2005-03-23  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/free.c: mod axis support
+	* libsrc/graphing.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/layout.c: trim links works better
+	* libsrc/rlib.h: ..
+	* rpdf/rpdf.c: started to add png support
+	* rpdf/rpdf.h: likewise
+	* rpdf/test.c: likewise
+	* src/examples/php/graph.php: test
+	* src/examples/php/graph.xml: test
+
+2005-03-15  Bob Doan  <bdoan@sicompos.com>
+	* rpdf/test.c: add a little test program
+	* rpdf/Makefile.am: likewise
+	* rpdf/rpdf.c: likewise
+	* rpdf/rpdf.h: likewise
+	* src/examples/php/graph.xml: test delayed output
+
 2005-03-18  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/graphing.c: Mike's next idea
 

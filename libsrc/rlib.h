@@ -531,6 +531,8 @@ struct rlib_graph {
 	gchar *xml_y_axis_title;
 	gchar *xml_y_axis_mod;
 	gchar *xml_y_axis_title_right;
+	gchar *xml_y_axis_decimals;
+	gchar *xml_y_axis_decimals_right;
 	struct rlib_pcode *type_code;	
 	struct rlib_pcode *subtype_code;	
 	struct rlib_pcode *width_code;
@@ -540,6 +542,8 @@ struct rlib_graph {
 	struct rlib_pcode *y_axis_title_code;
 	struct rlib_pcode *y_axis_mod_code;
 	struct rlib_pcode *y_axis_title_right_code;
+	struct rlib_pcode *y_axis_decimals_code;
+	struct rlib_pcode *y_axis_decimals_code_right;
 	GSList *plots;
 };
 

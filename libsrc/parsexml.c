@@ -382,6 +382,9 @@ static void parse_graph(struct rlib_report *report, xmlDocPtr doc, xmlNsPtr ns, 
 	graph->xml_y_axis_title = xmlGetProp(cur, (const xmlChar *) "y_axis_title");
 	graph->xml_y_axis_mod = xmlGetProp(cur, (const xmlChar *) "y_axis_mod");
 	graph->xml_y_axis_title_right = xmlGetProp(cur, (const xmlChar *) "y_axis_title_right");
+	graph->xml_y_axis_decimals = xmlGetProp(cur, (const xmlChar *) "y_axis_decimals");
+	graph->xml_y_axis_decimals_right = xmlGetProp(cur, (const xmlChar *) "y_axis_decimals_right");
+		
 	graph->plots = NULL;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {

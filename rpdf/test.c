@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
 	rpdf_fill(pdf);
 	rpdf_stroke(pdf); 
 
-//	rpdf_image(pdf, 1, 1, 100, 100, RPDF_IMAGE_JPEG, "logo.jpg");
+	rpdf_image(pdf, 1, 1, 100, 100, RPDF_IMAGE_PNG, "test.png");
 
 	rpdf_new_page(pdf, RPDF_PAPER_LETTER, RPDF_PORTRAIT);
 //	rpdf_image(pdf, 1, 1, 100, 100, RPDF_IMAGE_JPEG, "logo.jpg");

@@ -172,16 +172,18 @@ static gfloat rlib_layout_estimate_string_width(rlib *r, gint len) {
 }
 
 static gfloat rlib_layout_output_extras_start(rlib *r, struct rlib_part *part, gint backwards, gfloat left_origin, gfloat bottom_orgin, 
-struct rlib_line_extra_data *extra_data) {
+struct rlib_line_extra_data *extra_data, gboolean ignore_links) {
 	
 	if(extra_data->is_bold)
 		OUTPUT(r)->start_bold(r);
 	if(extra_data->is_italics)
 		OUTPUT(r)->start_italics(r);
 
-	if(extra_data->running_link_status & STATUS_START)
-		OUTPUT(r)->start_boxurl(r, part, left_origin, bottom_orgin, extra_data->running_link_total, 
-			RLIB_GET_LINE(extra_data->font_point), extra_data->link, backwards);
+	if(!ignore_links) {
+		if(extra_data->running_link_status & STATUS_START)
+			OUTPUT(r)->start_boxurl(r, part, left_origin, bottom_orgin, extra_data->running_link_total, 
+				RLIB_GET_LINE(extra_data->font_point), extra_data->link, backwards);
+	}
 
 	if(extra_data->running_bgcolor_status & STATUS_START) 
 		OUTPUT(r)->start_draw_cell_background(r, left_origin, bottom_orgin, extra_data->running_bg_total, 
@@ -267,7 +269,7 @@ static gfloat rlib_layout_text_from_extra_data(rlib *r, gint backwards, gfloat l
 	return rtn_width;
 }
 
-static gfloat rlib_layout_output_extras_end(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_orgin, 
+static gfloat rlib_layout_output_extras_end(rlib *r, struct rlib_part *part, gint backwards, gfloat left_origin, gfloat bottom_orgin, 
 struct rlib_line_extra_data *extra_data) {
 
 
@@ -277,6 +279,7 @@ struct rlib_line_extra_data *extra_data) {
 	if(extra_data->running_link_status & STATUS_STOP) {
 		OUTPUT(r)->end_boxurl(r, backwards);
 		if(OUTPUT(r)->trim_links) {
+			rlib_layout_output_extras_start(r, part, backwards, 0, 0, extra_data, TRUE);
 			rlib_layout_text_from_extra_data(r, backwards, 0, 0, extra_data, TEXT_RIGHT);		
 		}
 	}
@@ -692,6 +695,12 @@ static void rlib_layout_find_common_properties_in_a_line(rlib *r, struct rlib_li
 			}
 		} else {
 			if(state == STATE_BGCOLOR) {
+				if(OUTPUT(r)->trim_links) {
+					e_ptr->running_bgcolor_status |= STATUS_START;
+					e_ptr->running_bgcolor_status |= STATUS_STOP;					
+					previous_ptr->running_bgcolor_status |= STATUS_START;
+					previous_ptr->running_bgcolor_status |= STATUS_STOP;
+				}
 				previous_ptr->running_link_status |= STATUS_STOP;
 				state = STATE_NONE;
 			}
@@ -809,13 +818,13 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 						if(e->type == RLIB_ELEMENT_FIELD) {
 							struct rlib_report_field *rf = ((struct rlib_report_field *)e->data);
 							rf->rval = &extra_data[count].rval_code;
-							rlib_layout_output_extras_start(r, part, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), &extra_data[count]);
+							rlib_layout_output_extras_start(r, part, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), &extra_data[count], FALSE);
 							width = rlib_layout_text_from_extra_data(r, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), &extra_data[count], TEXT_LEFT);
-							rlib_layout_output_extras_end(r, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), &extra_data[count]);
+							rlib_layout_output_extras_end(r, part, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), &extra_data[count]);
 						} else if(e->type == RLIB_ELEMENT_LITERAL) {
-							rlib_layout_output_extras_start(r, part, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), &extra_data[count]);
+							rlib_layout_output_extras_start(r, part, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), &extra_data[count], FALSE);
 							width = rlib_layout_text_from_extra_data(r, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), &extra_data[count], TEXT_LEFT);
-							rlib_layout_output_extras_end(r, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), &extra_data[count]);
+							rlib_layout_output_extras_end(r, part, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), &extra_data[count]);
 						} else if(e->type == RLIB_ELEMENT_IMAGE) {
 							gfloat height = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(&extra_data[count].rval_image_height));
 							gfloat width = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(&extra_data[count].rval_image_width));
@@ -968,8 +977,6 @@ gint rlib_layout_report_output_with_break_headers(rlib *r, struct rlib_part *par
 			}
 			if(!suppress || (suppress && !blank))
 				output_count += rlib_layout_report_outputs_across_pages(r, part, report, rb->header, FALSE);
-//HERE			
-//			output_count += rlib_layout_report_outputs_across_pages(r, part, report, rb->header, FALSE);
 		}		
 	}
 	rlib_layout_report_outputs_across_pages(r, part, report, report->detail.fields, FALSE);

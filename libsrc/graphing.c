@@ -142,28 +142,32 @@ gint determine_graph_type(gchar *type, gchar *subtype) {
 /*
 	This is beyond evil but it seems to works.  Someone who understands floats better should really do this
 */
-static void rlib_graph_label_y_axis(rlib *r, gint side, gboolean for_real, gint y_ticks, gdouble y_min, gdouble y_max, gdouble y_origin) {
+static void rlib_graph_label_y_axis(rlib *r, gint side, gboolean for_real, gint y_ticks, gdouble y_min, gdouble y_max, gdouble y_origin, gint decimal_hint) {
 	gint i,j,max=0;
 	gchar format[20];
 	gint max_slen = 0;
-	for(j=0;j<6;j++) {
-		gboolean bad = FALSE;
-		sprintf(format, "%%.0%df", j);
-		for(i=0;i<y_ticks;i++) {
-			gchar v1[50], v2[50];
-			gdouble val = y_min + (((y_max-y_min)/y_ticks)*i);
-			gdouble val2 = y_min + (((y_max-y_min)/y_ticks)*(i+1));
-			sprintf(v1, format, val);
-			sprintf(v2, format, val2);
-			if(strcmp(v1, v2) == 0) {
-				bad = TRUE;
-				break;
+	if(decimal_hint < 0) {
+		for(j=0;j<6;j++) {
+			gboolean bad = FALSE;
+			sprintf(format, "%%.0%df", j);
+			for(i=0;i<y_ticks;i++) {
+				gchar v1[50], v2[50];
+				gdouble val = y_min + (((y_max-y_min)/y_ticks)*i);
+				gdouble val2 = y_min + (((y_max-y_min)/y_ticks)*(i+1));
+				sprintf(v1, format, val);
+				sprintf(v2, format, val2);
+				if(strcmp(v1, v2) == 0) {
+					bad = TRUE;
+					break;
+				}
 			}
+			if(bad == FALSE)
+				break;
 		}
-		if(bad == FALSE)
-			break;
+		max = j;
+	} else {
+		max = decimal_hint;
 	}
-	max = j;
 		
 	sprintf(format, "%%.0%df", max);
 
@@ -174,8 +178,8 @@ static void rlib_graph_label_y_axis(rlib *r, gint side, gboolean for_real, gint 
 		if(strlen(label) > max_slen)
 			max_slen = strlen(label);
 	}
-	
-	sprintf(format, "%%%d.0%df", max_slen-max, max);
+
+	sprintf(format, "%%0%d.0%df", max_slen-max, max);
 
 	for(i=0;i<y_ticks+1;i++) {
 		gboolean special = FALSE;
@@ -234,6 +238,7 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	gint did_set = FALSE;
 	gint *goodIncs = goodIncs_normal;
 	gint numGoodIncs = numGoodIncs_normal;
+	gint left_axis_decimal_hint=-1, right_axis_decimal_hint=-1;
 	left_margin_offset += part->left_margin;
 
 		
@@ -255,6 +260,10 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 		y_axis_title_right[0] = 0;
 	if(rlib_execute_as_int(r, graph->y_axis_mod_code, &i))
 		y_axis_mod = i;
+	if(rlib_execute_as_int(r, graph->y_axis_decimals_code, &i))
+		left_axis_decimal_hint = i;
+	if(rlib_execute_as_int(r, graph->y_axis_decimals_code_right, &i))
+		right_axis_decimal_hint = i;
 
 	if(!rlib_will_this_fit(r, part, report, graph_height / RLIB_PDF_DPI, 1)) {
 		*top_margin_offset = 0;
@@ -273,7 +282,6 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	if(graph_type == RLIB_GRAPH_TYPE_ROW_STACKED || graph_type == RLIB_GRAPH_TYPE_ROW_PERCENT) 
 		divide_iterations = FALSE;
 			
-
 	row_count = 0;
 	rlib_fetch_first_rows(r);
 	if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
@@ -423,9 +431,9 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	
 	}
 
-	rlib_graph_label_y_axis(r, RLIB_SIDE_LEFT, FALSE, y_ticks, y_min[RLIB_SIDE_LEFT], y_max[RLIB_SIDE_LEFT], y_origin[RLIB_SIDE_LEFT]);
+	rlib_graph_label_y_axis(r, RLIB_SIDE_LEFT, FALSE, y_ticks, y_min[RLIB_SIDE_LEFT], y_max[RLIB_SIDE_LEFT], y_origin[RLIB_SIDE_LEFT], left_axis_decimal_hint);
 	if(have_right_side)
-		rlib_graph_label_y_axis(r, RLIB_SIDE_RIGHT, FALSE, y_ticks, y_min[RLIB_SIDE_RIGHT], y_max[RLIB_SIDE_RIGHT], y_origin[RLIB_SIDE_RIGHT]);
+		rlib_graph_label_y_axis(r, RLIB_SIDE_RIGHT, FALSE, y_ticks, y_min[RLIB_SIDE_RIGHT], y_max[RLIB_SIDE_RIGHT], y_origin[RLIB_SIDE_RIGHT], right_axis_decimal_hint);
 
 	if(is_pie_graph(graph_type)) {
 		OUTPUT(r)->graph_set_data_plot_count(r, row_count);
@@ -488,10 +496,10 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 		
 	if(!is_pie_graph(graph_type)) {
 		OUTPUT(r)->graph_set_limits(r, RLIB_SIDE_LEFT, y_min[RLIB_SIDE_LEFT], y_max[RLIB_SIDE_LEFT], y_origin[RLIB_SIDE_LEFT]);
-		rlib_graph_label_y_axis(r, RLIB_SIDE_LEFT, TRUE, y_ticks, y_min[RLIB_SIDE_LEFT], y_max[RLIB_SIDE_LEFT], y_origin[RLIB_SIDE_LEFT]);
+		rlib_graph_label_y_axis(r, RLIB_SIDE_LEFT, TRUE, y_ticks, y_min[RLIB_SIDE_LEFT], y_max[RLIB_SIDE_LEFT], y_origin[RLIB_SIDE_LEFT], left_axis_decimal_hint);
 		if(have_right_side) {
 			OUTPUT(r)->graph_set_limits(r, RLIB_SIDE_RIGHT, y_min[RLIB_SIDE_RIGHT], y_max[RLIB_SIDE_RIGHT], y_origin[RLIB_SIDE_RIGHT]);
-			rlib_graph_label_y_axis(r, RLIB_SIDE_RIGHT, TRUE, y_ticks, y_min[RLIB_SIDE_RIGHT], y_max[RLIB_SIDE_RIGHT], y_origin[RLIB_SIDE_RIGHT]);		
+			rlib_graph_label_y_axis(r, RLIB_SIDE_RIGHT, TRUE, y_ticks, y_min[RLIB_SIDE_RIGHT], y_max[RLIB_SIDE_RIGHT], y_origin[RLIB_SIDE_RIGHT], right_axis_decimal_hint);		
 		}
 	}
 

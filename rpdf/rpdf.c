@@ -329,8 +329,6 @@ static void rpdf_make_page_image_obj(gpointer data, gpointer user_data) {
 	
 	obj = obj_printf(obj, "/Length %ld\n", image->length);
 
-
-
 	rpdf_object_append(pdf, TRUE, obj, image->data, image->length);
 	g_free(image->metadata);
 	g_free(image);
@@ -755,6 +753,13 @@ gboolean rpdf_text(struct rpdf *pdf, gdouble x, gdouble y, gdouble angle, gchar 
 	return TRUE;
 }
 
+static gchar *stream_read_bytes(gchar *stream, gint *spot, gint num_bytes, gint size) {
+	if(*spot >= size)
+		return NULL;
+	*spot = *spot + num_bytes;
+	return stream + (*spot) - num_bytes;
+}
+
 static guint stream_read_byte(gchar *stream, gint *spot, gint size) {
 	guchar data = stream[*spot];
 	if(*spot >= size)
@@ -775,6 +780,15 @@ static guint16 stream_read_two_bytes(gchar *stream, gint *spot, gint size) {
 	if(*spot >= size)
 		return -1;
 
+	return data;
+}
+
+static gint64 stream_read_long(gchar *stream, gint *spot, gint size) {
+	gint64 data;
+	if(*spot >= size)
+		return -1;
+	data = ((gint64)stream[*spot] << 24) + ((gint64)stream[*spot + 1] << 16) + ((gint64)stream[*spot + 2] << 8) + (gint64)stream[*spot + 3];
+	*spot = *spot + 4;
 	return data;
 }
 
@@ -839,12 +853,32 @@ gboolean rpdf_image(struct rpdf *pdf, gdouble x, gdouble y, gdouble width, gdoub
 	
 	read(fd, image->data, size);
 	close(fd);
-	 
-	
-	if(image_type == RPDF_IMAGE_JPEG) {
+
+	if(image_type == RPDF_IMAGE_PNG) {
+		gchar header[9];
+		sprintf(header, "%cPNG%c%c%c%c", 137,13,10,26,10);			
+		if(memcmp(stream_read_bytes(image->data,&read_spot,8,size), header, 8) != 0) {
+			g_free(image->data);
+			g_free(image);
+			return FALSE;
+		}
+		stream_read_bytes(image->data,&read_spot,4,size);
+fprintf(stderr, "SO FAR SO GOOD\n");	
+		if(memcmp(stream_read_bytes(image->data,&read_spot,4,size), "IHDR", 4) != 0) {
+			g_free(image->data);
+			g_free(image);
+			return FALSE;
+		}
+fprintf(stderr, "SO FAR SO GOOD 2\n");	
+
+fprintf(stderr, "WIDTH = %ld\n", stream_read_long(image->data,&read_spot,size));
+fprintf(stderr, "HEIGHT = %ld\n", stream_read_long(image->data,&read_spot,size));
+
+			
+	} else if(image_type == RPDF_IMAGE_JPEG) {
 		struct rpdf_image_jpeg *jpeg_info = g_new0(struct rpdf_image_jpeg, 1);
-		image->metadata = jpeg_info;
 		guint test1, test2;
+		image->metadata = jpeg_info;
 		test1 = stream_read_byte(image->data, &read_spot, size);
 		test2 = stream_read_byte(image->data, &read_spot, size);
 		if(test1 != 0xFF && test2 != M_SOI) {
