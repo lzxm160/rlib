@@ -24,7 +24,6 @@
 #include "ralloc.h"
 #include "rlib.h"
 #include "rlib_input.h"
-#include "rhashtable.h"
 
 
 rlib * rlib_init_with_environment(struct environment_filter *environment) {
@@ -198,18 +197,17 @@ gint rlib_get_output_length(rlib *r) {
 
 /**
  *	Add name/value pair to the memory constants.
+ *  Saves copies of the name and value, NOT pointers.
  */
 gint rlib_add_parameter(rlib *r, const gchar *name, const gchar *value) {
 	gint result = 1;
-	RHashtable *ht = r->htParameters;
+	GHashTable *ht = r->htParameters;
 	
 	if (!ht) { //If no hashtable - add one
-		ht = r->htParameters = RHashtable_new();
- 		//put a copy of value in the table instead of the pointer
- 		if (ht) RHashtable_setStoreValues(ht, TRUE); //put a copy of value in the table
+		ht = r->htParameters = g_hash_table_new(g_str_hash, g_str_equal);
 	}
 	if (ht) {
-		RHashtable_put(ht, name, value);
+		g_hash_table_insert(ht, g_strdup(name), g_strdup(value));
 		result = 0;
 	}
 	return result;

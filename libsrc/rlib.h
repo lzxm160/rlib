@@ -22,8 +22,6 @@
 #include <time.h>
 #include <glib.h>
 
-#include "rhashtable.h"
-
 #define RLIB_WEB_CONTENT_TYPE_HTML "Content-Type: text/html\n"
 #define RLIB_WEB_CONTENT_TYPE_TEXT "Content-Type: text/plain\n"
 #define RLIB_WEB_CONTENT_TYPE_PDF "Content-Type: application/pdf\n"
@@ -377,7 +375,7 @@ struct rlib {
 	struct output_filter *o;
 	struct input_filters inputs[MAX_INPUT_FILTERS];
 	struct environment_filter *environment;
-	RHashtable *htParameters;
+	GHashTable *htParameters;
 };
 typedef struct rlib rlib;
 
@@ -568,3 +566,4 @@ gint rlib_add_datasource_odbc(rlib *r, gchar *input_name, gchar *source, gchar *
 /***** PROTOTYPES: postgre.c **************************************************/
 gpointer rlib_postgre_new_input_filter();
 gpointer rlib_postgre_connect(gpointer input_ptr, gchar *conn);
+

@@ -336,7 +336,7 @@ void rlib_resolve_fields(rlib *r) {
 gchar * rlib_resolve_memory_variable(rlib *r, gchar *name) {
 	if(strlen(name) >= 3 && name[0] == 'm' && name[1] == '.') {
 		if (r->htParameters) {
-			gchar *result = RHashtable_get(r->htParameters, name + 2);
+			gchar *result = g_hash_table_lookup(r->htParameters, name + 2);
 			if (result) return result;
 		}
 		return ENVIRONMENT(r)->rlib_resolve_memory_variable(name+2);

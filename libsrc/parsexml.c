@@ -24,6 +24,7 @@
 
 #include <libxml/xmlversion.h>
 #include <libxml/xmlmemory.h>
+#include <libxml/xinclude.h>
 
 #include "ralloc.h"
 #include "rlib.h"
@@ -348,6 +349,7 @@ struct rlib_report * parse_report_file(gchar *filename) {
 	xmlNodePtr cur;
 
 	doc = xmlParseFile(filename);
+	xmlXIncludeProcess(doc);
 
 	if (doc == NULL)  {
 		rlogit("xmlParseError \n");

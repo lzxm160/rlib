@@ -18,14 +18,10 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include "rvector.h"
-
-
 void *rmalloc(size_t size);
 char *rstrdup(const char *s);
 void *rcalloc(size_t nmemb, size_t size);
 void rfree(void *ptr);
 void *rrealloc(void *ptr, size_t size);
-void ralloc_init(void);
-RVector *ralloc_getVector(void);
-int ralloc_getBadFrees(void);
+void ralloc_init_profiler(void);
+void ralloc_profile(void);

@@ -1,3 +1,21 @@
+2003-12-30  Chet Heilman <cheilman@sicompos.com>
+
+	* libsrc/Makefile.am: remove rhashtable and rvector
+	* libsrc/api.c: (rlib_add_parameter): use GHashTable
+	* libsrc/free.c: (ht_entry_free), (rlib_free): use GHashTable
+	* libsrc/parsexml.c: (parse_report_file): add XInclude processing
+	* libsrc/ralloc.c: (rmalloc), (rstrdup), (rcalloc), (rfree),
+	(rrealloc), (ralloc_init_profiler), (ralloc_profile): prep for removing
+	all of these functions except the profilers.
+	* libsrc/ralloc.h: same
+	* libsrc/reportgen.c: remove RVector 
+	* libsrc/resolution.c: (rlib_resolve_memory_variable): use GHashTable
+	* libsrc/rhashtable.c: deleted
+	* libsrc/rhashtable.h: same
+	* libsrc/rlib.h: use GHashTable
+	* libsrc/rvector.c: same
+	* libsrc/rvector.h: same
+
 2003-12-30  Bob Doan  <bdoan@sicompos.com>
 	* bindings/Makefile.am: add perl and java bindings
 	* bindings/java/Makefile.am: likewise

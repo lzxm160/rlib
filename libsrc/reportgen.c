@@ -440,7 +440,7 @@ static gint rlib_check_is_not_suppressed(rlib *r, struct rlib_pcode *code) {
 	return TRUE;
 }
 
-
+#if 0
 /**
  * break the string txt into a RVector of individual strings that will fit
  * the width. Use RVector_size to count the # of lines returned.
@@ -485,6 +485,7 @@ void free_memo_lines(RVector *v) {
 	}
 	RVector_free(v);
 }
+#endif
 
 
 gint calc_memo_lines(struct report_lines *rl) {

@@ -25,7 +25,6 @@
 #include "rlib.h"
 #include "pcode.h"
 #include "rlib_input.h"
-#include "rhashtable.h"
 
 static void free_pcode(struct rlib_pcode *code) {
 	gint i=0;
@@ -247,6 +246,13 @@ void free_results(rlib *r) {
 	}
 }
 
+
+static void ht_entry_free(gpointer key, gpointer val, gpointer userdata) {
+	if (key) g_free(key);
+	if (val) g_free(val);
+}
+
+
 gint rlib_free(rlib *r) {
 	int i;
 	rlib_free_tree(r);
@@ -260,7 +266,10 @@ gint rlib_free(rlib *r) {
 			dlclose(r->inputs[i].handle);
 	}
 
-	if (r->htParameters) RHashtable_free(r->htParameters);
+	if (r->htParameters) {
+		g_hash_table_foreach(r->htParameters, ht_entry_free, NULL);
+		g_hash_table_destroy(r->htParameters);
+	}
 	
 	OUTPUT(r)->rlib_free(r);
 	
