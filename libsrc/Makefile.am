@@ -30,7 +30,7 @@ libr_la_LIBADD = $(RLIB_LIBS) -ldl
 
 INCLUDES = $(RLIB_CFLAGS)
 
-include_HEADERS = rlib.h rlib_input.h
+include_HEADERS = rlib.h rlib_input.h containers.h
 
 libr_la_LDFLAGS = -release $(RLIB_VERSION)
 

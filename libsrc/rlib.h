@@ -468,6 +468,8 @@ gint rlib_postgre_report(gchar *connstr, gchar *xmlfilename, gchar *sqlquery, gc
 gint rlib_add_resultset_follower(rlib *r, gchar *leader, gchar *follower);
 gint rlib_add_parameter(rlib *r, const gchar *name, const gchar *value);
 gint rlib_set_locale(rlib *r, gchar *locale);
+void rlib_init_profiler();
+void rlib_dump_profile(gint profilenum, const gchar *filename);
 void rlib_trap(void); //For internals debugging only
 
 

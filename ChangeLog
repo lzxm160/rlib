@@ -1,4 +1,10 @@
 2003-12-31  Chet Heilman <cheilman@sicompos.com>
+	* libsrc/Makefile.am: Add containers.h to install.
+	* libsrc/api.c: (rlib_init_profiler), (rlib_dump_profile): Move functions
+	for memory profiling out of ralloc into main api.
+	* libsrc/rlib.h: add profiling prototypes.
+
+2003-12-31  Chet Heilman <cheilman@sicompos.com>
 	* libsrc/Makefile.am: Add containers.h and containers.c
 	* libsrc/api.c: (rlib_add_parameter): Use rlib_hashtable instead of
 	GHashTable.

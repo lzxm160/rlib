@@ -217,6 +217,30 @@ gint rlib_set_locale(rlib *r, gchar *locale) {
 }
 
 
+void rlib_init_profiler() {
+	g_mem_set_vtable(glib_mem_profiler_table);
+}
+
+
+void rlib_dump_profile(gint profilenum, const gchar *filename) {
+	FILE *temp = NULL;
+	FILE *newout = NULL;
+	
+	if (filename) {
+		fflush(stdout);
+		newout = fopen(filename, "a");
+		if (newout) {
+			temp = stdout;
+			stdout = newout;
+		}
+	}
+	printf("\nRLIB memory profile #%d:\n", profilenum);
+	g_mem_profile();
+	if (newout) fclose(newout);
+	if (temp) stdout = temp;
+}
+
+
 /**
  * put calls to this where you want to debug, then just set a breakpoint here.
  */
