@@ -1,4 +1,8 @@
 2005-02-08  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/graphing.c: fix colors
+	* libsrc/html.c: fix location of second y axis
+
+2005-02-08  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/navigation.c: correctly move followers
 	* libsrc/pcode.c: don't crash on null val string cmps
 	* libsrc/reportgen.c: don't process variables until after we KNOW we have good data

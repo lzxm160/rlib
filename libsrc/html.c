@@ -616,7 +616,13 @@ static void html_graph_tick_y(rlib *r, gint iterations) {
 	rlib_gd_line(OUTPUT_PRIVATE(r)->rgd, graph->x_start, graph->y_start, graph->x_start, graph->y_start - graph->height, NULL);
 
 	if(graph->y_label_width_right > 0) {
-		gint xstart = graph->x_start + ((graph->x_tick_width)*(graph->x_iterations-1));		
+		gint xstart;
+		
+		if(graph->x_axis_labels_are_under_tick)
+			xstart = graph->x_start + ((graph->x_tick_width)*(graph->x_iterations-1));		
+		else
+			xstart = graph->x_start + ((graph->x_tick_width)*(graph->x_iterations));		
+		
 		rlib_gd_line(OUTPUT_PRIVATE(r)->rgd, xstart, graph->y_start,xstart, graph->y_start - graph->height, NULL);
 	}	
 
