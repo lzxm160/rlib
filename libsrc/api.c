@@ -215,6 +215,11 @@ int rlib_add_parameter(rlib *r, const char *name, const char *value) {
 	return result;
 }
 
+int rlib_set_locale(rlib *r, char *locale) {
+	setlocale (LC_NUMERIC, locale);
+	return TRUE;
+}
+
 
 #if HAVE_MYSQL
 int rlib_mysql_report(char *hostname, char *username, char *password, char *database, char *xmlfilename, char *sqlquery, char *outputformat) {

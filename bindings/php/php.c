@@ -49,6 +49,7 @@ ZEND_FUNCTION(rlib_spool);
 ZEND_FUNCTION(rlib_free);
 ZEND_FUNCTION(rlib_get_content_type);
 ZEND_FUNCTION(rlib_add_parameter);
+ZEND_FUNCTION(rlib_set_locale);
 ZEND_MODULE_STARTUP_D(rlib);
 
 /*WRD: It appears we are thread safe here.. not sure yet*/
@@ -76,6 +77,7 @@ zend_function_entry rlib_functions[] =
 	 ZEND_FE(rlib_free, NULL)
 	 ZEND_FE(rlib_get_content_type, NULL)
 	 ZEND_FE(rlib_add_parameter, NULL)
+	 ZEND_FE(rlib_set_locale, NULL)
     {NULL, NULL, NULL}
 };
 
@@ -333,7 +335,6 @@ ZEND_FUNCTION(rlib_get_content_type) {
 	RETURN_STRING(buf, TRUE);
 }
 
-
 ZEND_FUNCTION(rlib_add_parameter) {
 	zval *z_rip = NULL;
 	long whatever;
@@ -350,3 +351,18 @@ ZEND_FUNCTION(rlib_add_parameter) {
 	rlib_add_parameter(rip->r, name, value);
 }
 
+ZEND_FUNCTION(rlib_set_locale) {
+	zval *z_rip = NULL;
+	long whatever;
+	char *locale;
+	rlib_inout_pass *rip;
+	int id = -1;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &z_rip, &locale, &whatever) == FAILURE) {
+		return;
+	}
+	
+	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
+
+	rlib_set_locale(rip->r, locale);
+}

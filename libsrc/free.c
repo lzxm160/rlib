@@ -148,7 +148,7 @@ void rlib_free_report(rlib *r, int which) {
 
 	rfree(r->reports[r->current_report]->position_top);
 	rfree(r->reports[r->current_report]->position_bottom);
-
+	rfree(r->reports[r->current_report]->bottom_size);
 	
 	if(r->reports[which]->breaks != NULL) {
 		for(e = r->reports[which]->breaks; e != NULL; e=e->next) {

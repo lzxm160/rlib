@@ -189,7 +189,7 @@ static void rlib_resolve_fields2(rlib *r, struct report_output_array *roa) {
 	if(roa->xml_page != NULL)
 		roa->page = atol(roa->xml_page);
 	else
-		roa->page = 1;
+		roa->page = -1;
 	
 	for(j=0;j<roa->count;j++) {
 		struct report_output *ro = roa->data[j];
@@ -288,6 +288,7 @@ void rlib_resolve_fields(rlib *r) {
 		
 	r->reports[r->current_report]->position_top = rmalloc(r->reports[r->current_report]->pages_accross * sizeof(float));
 	r->reports[r->current_report]->position_bottom = rmalloc(r->reports[r->current_report]->pages_accross * sizeof(float));
+	r->reports[r->current_report]->bottom_size = rmalloc(r->reports[r->current_report]->pages_accross * sizeof(float));
 
 	rlib_resolve_outputs(r, r->reports[r->current_report]->report_header);
 	rlib_resolve_outputs(r, r->reports[r->current_report]->page_header);

@@ -112,7 +112,7 @@ static int rlib_postgre_previous(void *input_ptr, void *result_ptr) {
 static int rlib_postgre_last(void *input_ptr, void *result_ptr) {
 	struct rlib_postgre_results *result = result_ptr;
 	result->row = result->tot_rows-1;
-	result->isdone = FALSE;
+	result->isdone = TRUE;
 	return TRUE;
 }
 

@@ -1,3 +1,13 @@
+2003-12-01  Bob Doan  <bdoan@sicompos.com>
+	* bindings/php/php.c: new function rlib_set_locale
+	* inputs/postgre/postgre.c: possible bug w/ breaking fixed
+	* libsrc/api.c: new function rlib_set_locale
+	* libsrc/free.c:  fixed bug w/ page footer
+	* libsrc/navigation.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+
 2003-11-30  Bob Doan  <bdoan@sicompos.com>
 	* configure.in: ability to turn off signal stuff, fix backwords stuff, bettwe pcode stuff
 	* libsrc/breaks.c: likewise 
