@@ -163,9 +163,10 @@ static void * xxmysql_fetch_field_name(void *woot, void *xfield) {
 
 static int rlib_mysql_free_input_filter(void *woot) {
 	struct input_filter *input = woot;
+//TODO.. rework api so I know which result are mine... 
+//	mysql_free_result(INPUT_PRIVATE(input)->result)
 	rfree(input->private);
 	rfree(input);
-debugf("************** SET ME FREE	***************\n");
 }
 
 void * rlib_mysql_new_input_filter() {

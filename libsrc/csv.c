@@ -155,6 +155,11 @@ static int rlib_csv_is_single_page(rlib *r) {
 	return TRUE;
 }
 
+static int rlib_csv_free(rlib *r) {
+	rfree(OUTPUT_PRIVATE(r));
+	rfree(OUTPUT(r));
+}
+
 void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT(r) = rmalloc(sizeof(struct output_filter));
 	OUTPUT_PRIVATE(r) = rmalloc(sizeof(struct _private));
@@ -191,4 +196,5 @@ void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT(r)->rlib_is_single_page = rlib_csv_is_single_page;
 	OUTPUT(r)->rlib_start_output_section = rlib_csv_start_output_section;	
 	OUTPUT(r)->rlib_end_output_section = rlib_csv_end_output_section;	
+	OUTPUT(r)->rlib_free = rlib_csv_free;
 }

@@ -260,6 +260,7 @@ struct report_variable {
 };
 
 struct report {
+	xmlDocPtr doc;
 	xmlChar *xml_fontsize;
 	xmlChar *defaultResult;
 	xmlChar *xml_orientation;
@@ -368,6 +369,7 @@ struct output_filter {
 	int (*rlib_is_single_page)(rlib *);
 	void (*rlib_start_output_section)(rlib *);
 	void (*rlib_end_output_section)(rlib *);
+	int (*rlib_free)(rlib *r);
 };
 
 
@@ -394,14 +396,6 @@ int rlib_add_query_as(rlib *r, char *sql, char *name);
 int rlib_add_report(rlib *r, char *name, char *mainloop);
 
 /***** PROTOTYPES: parsexml.c *************************************************/
-struct report_element * parseLineArray(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur);
-struct report_lines * parseReportLines(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur);
-struct report_element * parseBreakField(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur);
-struct report_element * parseReportBreak(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur);
-struct report_element * parseReportBreaks(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur);
-void parseDetail(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur, struct report_detail *r);
-struct report_element * parseReportVariable(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur);
-struct report_element * parseReportVariables(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur);
 struct report * parse_report_file(char *filename);
 
 /***** PROTOTYPES: pcode.c ****************************************************/

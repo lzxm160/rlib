@@ -166,6 +166,12 @@ static int rlib_pdf_is_single_page(rlib *r) {
 	return FALSE;
 }
 
+static int rlib_pdf_free(rlib *r) {
+	rfree(OUTPUT_PRIVATE(r));
+	rfree(OUTPUT(r));
+}
+
+
 static void rlib_pdf_stub_line(rlib *r, int backwards) {}
 
 static void rlib_pdf_end_output_section(rlib *r) {}
@@ -207,4 +213,5 @@ void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r)->rlib_is_single_page = rlib_pdf_is_single_page;
 	OUTPUT(r)->rlib_start_output_section = rlib_pdf_start_output_section;
 	OUTPUT(r)->rlib_end_output_section = rlib_pdf_end_output_section;
+	OUTPUT(r)->rlib_free = rlib_pdf_free;
 }

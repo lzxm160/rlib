@@ -137,13 +137,6 @@ long long rlib_str_to_long_long(char *str) {
 	return foo;
 }
 
-long long *makenumber(char *str) {
-	long long *foo;
-	foo = rmalloc(sizeof(long long));
-	*foo = rlib_str_to_long_long(str);
-	return foo;
-}
-
 int rvalcmp(struct rlib_value *v1, struct rlib_value *v2) {
 	if(RLIB_VALUE_IS_NUMBER(v1) && RLIB_VALUE_IS_NUMBER(v2)) {
 		if(RLIB_VALUE_GET_AS_NUMBER(v1) == RLIB_VALUE_GET_AS_NUMBER(v2))
@@ -195,8 +188,10 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, char *str) {
 		o->type = OPERAND_FIELD;
 		o->value = rf;		
 	} else {
+		long long *newnum = rmalloc(sizeof(long long));
 		o->type = OPERAND_NUMBER;
-		o->value = makenumber(str);
+		*newnum = rlib_str_to_long_long(str);
+		o->value = newnum;
 	}
 
 	return o;

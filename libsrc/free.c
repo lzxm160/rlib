@@ -22,34 +22,59 @@
 
 #include "ralloc.h"
 #include "rlib.h"
+#include "pcode.h"
+
+static void free_pcode(struct rlib_pcode *code) {
+	int i=0;
+	
+	if(code == NULL)
+		return;
+	
+	for(i=0;i<code->count;i++) {
+		if(code->instructions[i].instruction == PCODE_PUSH) {
+			struct rlib_pcode_operand *o = code->instructions[i].value;
+			if(o->type == OPERAND_STRING || o->type == OPERAND_NUMBER)
+				rfree(o->value);
+			if(o->type == OPERAND_IIF) {
+				struct rlib_pcode_if *rpif = o->value;
+				free_pcode(rpif->evaulation);
+				free_pcode(rpif->true);
+				free_pcode(rpif->false);
+				rfree(rpif);				
+			}
+		}
+	}
+
+	rfree(code);
+}
 
 static void rlib_image_free_pcode(rlib *r, struct report_image * ri) {
-	rfree(ri->value_code);
-	rfree(ri->type_code);
-	rfree(ri->width_code);
-	rfree(ri->height_code);
-	free(ri);
+	free_pcode(ri->value_code);
+	free_pcode(ri->type_code);
+	free_pcode(ri->width_code);
+	free_pcode(ri->height_code);
+	rfree(ri);
 }
 
 static void rlib_hr_free_pcode(rlib *r, struct report_horizontal_line * rhl) {
-	rfree(rhl->bgcolor_code);
-	free(rhl);
+	free_pcode(rhl->bgcolor_code);
+	rfree(rhl);
 }
 
 static void rlib_text_free_pcode(rlib *r, struct report_text *rt) {
-	rfree(rt->color_code);
-	rfree(rt->bgcolor_code);
-	rfree(rt->col_code);
+	free_pcode(rt->color_code);
+	free_pcode(rt->bgcolor_code);
+	free_pcode(rt->col_code);
 	rfree(rt);
 }
 
 static void rlib_field_free_pcode(rlib *r, struct report_field *rf) {
-	rfree(rf->code);
-	rfree(rf->format_code);
-	rfree(rf->link_code);
-	rfree(rf->color_code);
-	rfree(rf->bgcolor_code);
-	rfree(rf->col_code);
+	free_pcode(rf->code);
+	free_pcode(rf->format_code);
+	free_pcode(rf->link_code);
+	free_pcode(rf->color_code);
+	free_pcode(rf->bgcolor_code);
+	free_pcode(rf->col_code);
 	rfree(rf);
 }
 
@@ -61,12 +86,11 @@ static void rlib_free_fields(rlib *r, struct report_output_array *roa) {
 		return;
 	for(j=0;j<roa->count;j++) {
 		struct report_output *ro = roa->data[j];
-		
 		if(ro->type == REPORT_PRESENTATION_DATA_LINE) {
 			struct report_lines *rl = ro->data;	
 			e = rl->e;
-			rfree(rl->bgcolor_code);
-			rfree(rl->color_code);
+			free_pcode(rl->bgcolor_code);
+			free_pcode(rl->color_code);
 			for(; e != NULL; e=e->next) {
 				if(e->type == REPORT_ELEMENT_FIELD) {
 					rlib_field_free_pcode(r, ((struct report_field *)e->data));
@@ -85,7 +109,7 @@ static void rlib_free_fields(rlib *r, struct report_output_array *roa) {
 		} else if(ro->type == REPORT_PRESENTATION_DATA_IMAGE) {
 			rlib_image_free_pcode(r, ((struct report_image *)ro->data));
 		}
-		rfree(roa->data);
+		rfree(ro);
 	}
 	rfree(roa);
 }
@@ -97,7 +121,6 @@ void rlib_free_report(rlib *r, int which) {
 	rlib_free_fields(r, r->reports[which]->page_header);
 	rlib_free_fields(r, r->reports[which]->page_footer);
 	rlib_free_fields(r, r->reports[which]->report_footer);
-
 	rlib_free_fields(r, r->reports[which]->detail.fields);
 	rlib_free_fields(r, r->reports[which]->detail.textlines);
 
@@ -106,16 +129,19 @@ void rlib_free_report(rlib *r, int which) {
 void rlib_free_tree(rlib *r) {
 	int i;
 	for(i=0;i<r->reports_count;i++) {
-debugf("FREEING TREE [%d]\n", i);	
 		rlib_free_report(r, i);
+		xmlFreeDoc(r->reports[i]->doc);
 	}
 }
 
 int rlib_free(rlib *r) {
-	INPUT(r)->rlib_input_close(INPUT(r));
-	INPUT(r)->free(INPUT(r));
-	
 	rlib_free_tree(r);
-		
+
+	INPUT(r)->rlib_input_close(INPUT(r));
+	INPUT(r)->free(INPUT(r));	
+
+	OUTPUT(r)->rlib_free(r);
+	xmlCleanupParser();
+			
 	rfree(r);
 }

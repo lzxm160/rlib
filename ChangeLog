@@ -1,4 +1,15 @@
 2003-10-15  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/csv.c: new free method
+	* libsrc/free.c: free lots more stuff and don't crash
+	* libsrc/html.c: mew free method
+	* libsrc/parsexml.c: rename functions and make them static
+	* libsrc/pcode.c: cut down on malloc
+	* libsrc/pdf.c: new free method
+	* libsrc/rlib.h: new methods
+	* libsrc/sql.c: started to see what we have to do to free the result
+	* libsrc/txt.c: new free method
+
+2003-10-15  Bob Doan  <bdoan@sicompos.com>
 	* Makefile.am: include new directories
 	* bindings/Makefile.am: new make for bindings..
 	* bindings/php/Makefile.am: new php make file
