@@ -734,6 +734,8 @@ gint make_report(rlib *r);
 gint rlib_finalize(rlib *r);
 void rlib_process_expression_variables(rlib *r, struct rlib_report *report);
 gint get_font_point(rlib *r, struct rlib_report_lines *rl);
+gint rlib_format_get_number(gchar *name);
+gchar * rlib_format_get_name(gint number);
 
 /***** PROTOTYPES: resolution.c ***********************************************/
 gint rlib_resolve_rlib_variable(rlib *r, gchar *name);

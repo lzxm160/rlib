@@ -234,20 +234,10 @@ gint rlib_add_resultset_follower(rlib *r, gchar *leader, gchar *follower) {
 }
 
 gint rlib_set_output_format_from_text(rlib *r, gchar *name) {
-		r->format = RLIB_FORMAT_TXT;
+	r->format = rlib_format_get_number(name);
 
-#ifdef HAVE_LIBCPDF	
-	if(!strcasecmp(name, "PDF"))
-		r->format = RLIB_FORMAT_PDF;
-#endif
-	if(!strcasecmp(name, "HTML"))
-		r->format = RLIB_FORMAT_HTML;
-	if(!strcasecmp(name, "TXT"))
+	if(r->format == -1)
 		r->format = RLIB_FORMAT_TXT;
-	if(!strcasecmp(name, "CSV"))
-		r->format = RLIB_FORMAT_CSV;
-	if(!strcasecmp(name, "XML"))
-		r->format = RLIB_FORMAT_XML;
 	return 0;
 }
 

@@ -704,7 +704,10 @@ struct rlib_value *this_field_value) {
 		} else if(type == RLIB_RLIB_VARIABLE_DETAILCNT) {
 			gint64 dcnt = (long long)r->detail_line_count * RLIB_DECIMAL_PRECISION;
 			return rlib_value_new_number(rval, dcnt);				
-		}
+		} else if(type == RLIB_RLIB_VARIABLE_FORMAT) {
+			return rlib_value_new_string(rval, rlib_format_get_name(r->format));
+		}		
+		
 	} else if(o->type == OPERAND_VARIABLE) {
 		gint64 val = 0;
 		struct rlib_value *count;

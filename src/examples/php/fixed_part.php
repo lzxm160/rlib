@@ -158,7 +158,7 @@
 	rlib_add_query_as($rlib, "local_array", "misc_income", "misc_income");
 	rlib_add_query_as($rlib, "local_array", "inv_transfer", "inv_transfer");
 	rlib_add_query_as($rlib, "local_array", "inventory", "inventory");
-	rlib_add_report($rlib, "fixed_part_test.xml");
+	rlib_add_report($rlib, "fixed_part.xml");
 	rlib_set_output_format_from_text($rlib, "pdf");
 	rlib_signal_connect($rlib, "part_iteration", "callback");
 	rlib_execute($rlib);

@@ -1,3 +1,23 @@
+2004-11-01  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/parsexml.c: compile error fix
+	* libsrc/api.c: new r.format variable
+	* libsrc/pcode.c: likewise
+	* libsrc/pcode.h: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+	* src/examples/php/Makefile.am: better names
+	* src/examples/php/array.php: likewise
+	* src/examples/php/array.xml: likewise
+	* src/examples/php/fixed_part.php: likewise
+	* src/examples/php/fixed_part.xml: likewise
+	* src/examples/php/fixed_part_test.php: likewise
+	* src/examples/php/fixed_part_test.xml: likewise
+	* src/examples/php/flow_part.php: likewise
+	* src/examples/php/flow_part.xml: likewise
+	* src/examples/php/flow_part_test.php: likewise
+	* src/examples/php/flow_part_test.xml: likewise
+
 2004-10-29  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/environment.c: allow for different "m." data types
 	* bindings/php/php.c: implement signals, iterations, and query refreshing

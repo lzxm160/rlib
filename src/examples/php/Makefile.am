@@ -20,7 +20,8 @@
 ##
 ## Process this file with automake to produce Makefile.in
 
-EXTRA_DIST = example.php array.php array.xml
+EXTRA_DIST = array2.xml array.xml fixed_part.php flow_part.php pages_across.php \
+	array.php example.php fixed_part.xml flow_part.xml pages_across.xml
 
 noinst_SCRIPTS = products.xml
  

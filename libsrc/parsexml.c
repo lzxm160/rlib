@@ -90,7 +90,7 @@ static struct rlib_element * parse_line_array(xmlDocPtr doc, xmlNsPtr ns, xmlNod
 #if DISABLE_UTF8
 			utf8_to_8813(f->value, xmlGetProp(cur, (const xmlChar *) "value"));
 #else
-			safestrncpy(f->value, xmlGetProp(cur, (const xmlChar *) "value"));
+			safestrncpy(f->value, xmlGetProp(cur, (const xmlChar *) "value"), sizeof(f->value));
 #endif
 
 //Nevermind			//TODO: we need to utf to 8813 all string values in single quotes

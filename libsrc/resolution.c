@@ -48,6 +48,8 @@ gint rlib_resolve_rlib_variable(rlib *r, gchar *name) {
 			return RLIB_RLIB_VARIABLE_LINENO;
 		else if(!strcmp(name, "detailcnt"))
 			return RLIB_RLIB_VARIABLE_DETAILCNT;
+		else if(!strcmp(name, "format"))
+			return RLIB_RLIB_VARIABLE_FORMAT;
 	}
 	return 0;
 }

@@ -39,6 +39,41 @@
 
 //Not used: static struct rlib_rgb COLOR_BLACK = {0, 0, 0};
 
+struct _rlib_format_table {
+	gchar name[64];
+	gint number;
+} rlib_fomat_table[] =  {
+#ifdef HAVE_LIBCPDF	
+	{ "PDF", RLIB_FORMAT_PDF},
+#endif	
+	{ "HTML", RLIB_FORMAT_HTML},
+	{ "TXT", RLIB_FORMAT_TXT},
+	{ "CSV", RLIB_FORMAT_CSV},
+	{ "XML", RLIB_FORMAT_XML},
+	{ "", -1},
+};
+
+
+gint rlib_format_get_number(gchar *name) {
+	int i = 0;
+	while(rlib_fomat_table[i].number != -1) {
+		if(strcasecmp(rlib_fomat_table[i].name, name) == 0)
+			return rlib_fomat_table[i].number;
+		i++;
+	}
+	return -1;
+}
+
+gchar * rlib_format_get_name(gint number) {
+	int i = 0;
+	while(rlib_fomat_table[i].number != -1) {
+		if(rlib_fomat_table[i].number == number)
+			return rlib_fomat_table[i].name;
+		i++;
+	}
+	return "UNKNOWN";
+}
+
 static gchar *orientations[] = {
 	"",
 	"portrait",
