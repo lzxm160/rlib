@@ -1,3 +1,9 @@
+2004-01-21  Bob Doan  <bdoan@sicompos.com>
+	* AUTHORS: and cool people
+	* configure.in: check for iconv stuff.. nice patch from
+		H. Steuer <steuer@unixsystems.de>.. thanks dude
+	* libsrc/parsexml.c: handle new/old iconv stuff
+
 2004-01-20  Chet Heilman  <cheilman@sicompos.com>
 	* libsrc/pcode.c: Change name of 'substring' to 'mid'.
 
@@ -25,7 +31,7 @@
 	suppress so it will also work with 'old' string syntax.
 
 2004-01-13  Bob Doan  <bdoan@sicompos.com>
-	* bindings/php/php.c: pho bug work around
+	* bindings/php/php.c: php bug work around
 	* bindings/python/python.c: ability to use MySql groups (steuer@unixsystems.de)
 	* inputs/mysql/mysql.c: likewise
 	* libsrc/datasource.c: likewise

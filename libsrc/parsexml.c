@@ -36,7 +36,7 @@ void utf8_to_8813(struct rlib_report *rep, gchar *dest, gchar *str) {
 		if(rep->cd != NULL) {
 			slen = strlen(str);
 			bzero(dest, MAXSTRLEN);
-#ifdef BSD
+#if ICONV_CONST_CHAR_PP
 			iconv(rep->cd, (const char **) &str, &slen, &olddest, &len);
 #else
 			iconv(rep->cd, (char **)&str, &slen, &olddest, &len);
