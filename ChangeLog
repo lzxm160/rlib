@@ -1,4 +1,12 @@
 2003-12-03  Chet Heilman <cheilman@sicompos.com>
+
+	* libsrc/parsexml.c: (parse_line_array), (parse_report_output),
+	(parse_report_outputs), (parse_break_field), (parse_report_break),
+	(parse_report_breaks), (parse_detail), (parse_report_variable),
+	(parse_report_variables), (parse_report_file): Handle comments by ignoring
+	them and log unexpected xml elements. 
+
+2003-12-03  Chet Heilman <cheilman@sicompos.com>
 	* libsrc/api.c: (rlib_trap): A debugging aid for internal use only
 	* libsrc/pcode.c: (skip_next_closing_paren), (rlib_infix_to_pcode):
 	Corrected nested parenthesis parsing in iif statements.

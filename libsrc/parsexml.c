@@ -50,11 +50,11 @@ struct report_element * parse_line_array(struct rlib_report *rep, xmlDocPtr doc,
 	e = NULL;
 	
 	cur = cur->xmlChildrenNode;
-	while (cur != NULL) {      
-		current = rmalloc(sizeof(struct report_element));
-		current->next = NULL;
+	while (cur != NULL) {
+		current = NULL;
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "field"))) {
 			struct report_field *f = rmalloc(sizeof(struct report_field));
+			current = rcalloc(1, sizeof(struct report_element));
 			//utf8_to_8813(rep, f->value, xmlGetProp(cur, (const xmlChar *) "value"));
 			//TODO: we need to utf to 8813 all string values in single quotes
 			strcpy(f->value, xmlGetProp(cur, (const xmlChar *) "value"));
@@ -67,10 +67,9 @@ struct report_element * parse_line_array(struct rlib_report *rep, xmlDocPtr doc,
 			f->col = xmlGetProp(cur, (const xmlChar *) "col");
 			current->data = f;
 			current->type = REPORT_ELEMENT_FIELD;
-		}
-
-		if ((!xmlStrcmp(cur->name, (const xmlChar *) "text"))) {
+		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "text"))) {
 			struct report_text *t = rmalloc(sizeof(struct report_text));
+			current = rcalloc(1, sizeof(struct report_element));
 			utf8_to_8813(rep, t->value, xmlNodeListGetString(doc, cur->xmlChildrenNode, 1));
 			t->xml_align = xmlGetProp(cur, (const xmlChar *) "align");
 			t->bgcolor = xmlGetProp(cur, (const xmlChar *) "bgcolor");
@@ -79,16 +78,20 @@ struct report_element * parse_line_array(struct rlib_report *rep, xmlDocPtr doc,
 			t->col = xmlGetProp(cur, (const xmlChar *) "col");
 			current->data = t;
 			current->type = REPORT_ELEMENT_TEXT;
+		} else if (!xmlStrcmp(cur->name, "comment")) {
+			/* ignore comments */
+		} else {
+			rlogit("Unknown element [%s] in <Line>", cur->name);
 		}
-		
-		
-		if(e == NULL)
-			e = current;
-		else {
-			struct report_element *xxx;
-			xxx = e;
-			while(xxx->next != NULL) xxx =  xxx->next;
-			xxx->next = current;
+		if (current != NULL) {
+			if(e == NULL) {
+				e = current;
+			} else {
+				struct report_element *xxx;
+				xxx = e;
+				while(xxx->next != NULL) xxx =  xxx->next;
+				xxx->next = current;
+			}
 		}
 		cur = cur->next;
 	}
@@ -105,7 +108,7 @@ struct report_output * report_output_new(int type, void *data) {
 
 static struct report_element * parse_report_output(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
 	struct report_element *e = rmalloc(sizeof(struct report_element));
-	struct report_output_array *roa = rmalloc(sizeof(struct report_output_array));
+	struct report_output_array *roa = rcalloc(1, sizeof(struct report_output_array));
 	roa->count = 0;
 	roa->data = NULL;
 	e->next = NULL;
@@ -151,6 +154,10 @@ static struct report_element * parse_report_output(struct rlib_report *rep, xmlD
 			ri->height = xmlGetProp(cur, (const xmlChar *) "height");
 			roa->data = rrealloc(roa->data, sizeof(struct report_output_array *) * (roa->count + 1));
 			roa->data[roa->count++] = report_output_new(REPORT_PRESENTATION_DATA_IMAGE, ri);
+		} else if (!xmlStrcmp(cur->name, "comment")) {
+			/* ignore comments */
+		} else {
+			rlogit("Unknown element [%s] in <Output>. Expected: Line, HorizontalLine or Image", cur->name);
 		}
 		cur = cur->next;
 	}	
@@ -170,6 +177,10 @@ static struct report_element * parse_report_outputs(struct rlib_report *rep, xml
 				for(;xxx->next != NULL; xxx=xxx->next) {};
 				xxx->next = parse_report_output(rep, doc, ns, cur);				
 			}
+		} else if (!xmlStrcmp(cur->name, "comment")) {
+			/* ignore comments */
+		} else {
+			rlogit("Invalid element :<%s>. Expected: <Output>", cur->name);
 		}
 		cur = cur->next;
 	}	
@@ -187,6 +198,10 @@ static struct report_element * parse_break_field(xmlDocPtr doc, xmlNsPtr ns, xml
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "BreakField"))) {
 			bf->rval = NULL;
 			bf->value = xmlGetProp(cur, (const xmlChar *) "value");
+		} else if (!xmlStrcmp(cur->name, "comment")) {
+			/* ignore comments */
+		} else {
+			rlogit("Unknown element [%s] in <Break>. Expected BreakField", cur->name);
 		}
 		cur = cur->next;
 	}
@@ -209,11 +224,9 @@ static struct report_element * parse_report_break(struct rlib_report *rep, xmlDo
 	while (cur != NULL) {
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "BreakHeader"))) {
 			rb->header = parse_report_outputs(rep, doc, ns, cur);
-		}
-		if ((!xmlStrcmp(cur->name, (const xmlChar *) "BreakFooter"))) {
+		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "BreakFooter"))) {
 			rb->footer = parse_report_outputs(rep, doc, ns, cur);
-		}
-		if ((!xmlStrcmp(cur->name, (const xmlChar *) "BreakFields"))) {
+		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "BreakFields"))) {
 			if(rb->fields == NULL)
 				rb->fields = parse_break_field(doc, ns, cur);
 			else {
@@ -221,6 +234,10 @@ static struct report_element * parse_report_break(struct rlib_report *rep, xmlDo
 				for(;xxx->next != NULL; xxx=xxx->next) {};
 				xxx->next = parse_report_break(rep, doc, ns, cur);							
 			}
+		} else if (!xmlStrcmp(cur->name, "comment")) {
+			/* ignore comments */
+		} else {
+			rlogit("Unknown element [%s] in <ReportBreak>. Expected BreakHeader, BreakFooter, BreakFields", cur->name);
 		}
 		cur = cur->next;
 	}
@@ -241,6 +258,10 @@ static struct report_element * parse_report_breaks(struct rlib_report *rep, xmlD
 				for(;xxx->next != NULL; xxx=xxx->next) {};
 				xxx->next = parse_report_break(rep, doc, ns, cur);				
 			}
+		} else if (!xmlStrcmp(cur->name, "comment")) {
+			/* ignore comments */
+		} else {
+			rlogit("Unknown element [%s] in <Breaks>. Expected Break.", cur->name);
 		}
 		cur = cur->next;
 	}	
@@ -252,9 +273,12 @@ static void parse_detail(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xm
 	while (cur != NULL) {
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "FieldHeaders"))) {
 			r->textlines = parse_report_outputs(rep, doc, ns, cur);
-		}
-		if ((!xmlStrcmp(cur->name, (const xmlChar *) "FieldDetails"))) {
+		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "FieldDetails"))) {
 			r->fields = parse_report_outputs(rep, doc, ns, cur);
+		} else if (!xmlStrcmp(cur->name, "comment")) {
+			/* ignore comments */
+		} else {
+			rlogit("Unknown element [%s] in <Detail>. Expected FieldHeaders or FieldDetails", cur->name);
 		}
 		cur = cur->next;
 	}
@@ -274,16 +298,18 @@ static struct report_element * parse_report_variable(xmlDocPtr doc, xmlNsPtr ns,
 	if(rv->str_type != NULL && rv->str_type[0] != '\0') {
 		if(!strcmp(rv->str_type, "expression"))
 			rv->type = REPORT_VARIABLE_EXPRESSION;
-		if(!strcmp(rv->str_type, "count"))
+		else if(!strcmp(rv->str_type, "count"))
 			rv->type = REPORT_VARIABLE_COUNT;
-		if(!strcmp(rv->str_type, "sum"))
+		else if(!strcmp(rv->str_type, "sum"))
 			rv->type = REPORT_VARIABLE_SUM;
-		if(!strcmp(rv->str_type, "average"))
+		else if(!strcmp(rv->str_type, "average"))
 			rv->type = REPORT_VARIABLE_AVERAGE;
-		if(!strcmp(rv->str_type, "lowest"))
+		else if(!strcmp(rv->str_type, "lowest"))
 			rv->type = REPORT_VARIABLE_LOWEST;
-		if(!strcmp(rv->str_type, "highest"))
+		else if(!strcmp(rv->str_type, "highest"))
 			rv->type = REPORT_VARIABLE_HIGHEST;
+		else
+			rlogit("Unknown report variable type [%s] in <Variable>", rv->str_type);
 	}
 
 	return e;
@@ -302,6 +328,10 @@ static struct report_element * parse_report_variables(xmlDocPtr doc, xmlNsPtr ns
 				for(;xxx->next != NULL; xxx=xxx->next) {};
 				xxx->next = parse_report_variable(doc, ns, cur);				
 			}
+		} else if (!xmlStrcmp(cur->name, "comment")) {
+			/* ignore comments */
+		} else {
+			rlogit("Unknown element [%s] in <Variables>. Expected Variable.", cur->name);
 		}
 		cur = cur->next;
 	}	
@@ -377,19 +407,20 @@ struct rlib_report * parse_report_file(char *filename) {
 	while (cur != NULL) {
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "ReportHeader"))) 
 			ret->report_header = parse_report_outputs(ret, doc, ns, cur);
-		if ((!xmlStrcmp(cur->name, (const xmlChar *) "PageHeader"))) 
+		else if ((!xmlStrcmp(cur->name, (const xmlChar *) "PageHeader"))) 
 			ret->page_header = parse_report_outputs(ret, doc, ns, cur);
-		if ((!xmlStrcmp(cur->name, (const xmlChar *) "PageFooter"))) 
+		else if ((!xmlStrcmp(cur->name, (const xmlChar *) "PageFooter"))) 
 			ret->page_footer = parse_report_outputs(ret, doc, ns, cur);
-		if ((!xmlStrcmp(cur->name, (const xmlChar *) "ReportFooter"))) 
+		else if ((!xmlStrcmp(cur->name, (const xmlChar *) "ReportFooter"))) 
 			ret->report_footer = parse_report_outputs(ret, doc, ns, cur);
-		if ((!xmlStrcmp(cur->name, (const xmlChar *) "Detail"))) 
+		else if ((!xmlStrcmp(cur->name, (const xmlChar *) "Detail"))) 
 			parse_detail(ret, doc, ns, cur, &ret->detail);
-		if ((!xmlStrcmp(cur->name, (const xmlChar *) "Breaks"))) 
+		else if ((!xmlStrcmp(cur->name, (const xmlChar *) "Breaks"))) 
 			ret->breaks = parse_report_breaks(ret, doc, ns, cur);
-		if ((!xmlStrcmp(cur->name, (const xmlChar *) "Variables"))) 
+		else if ((!xmlStrcmp(cur->name, (const xmlChar *) "Variables"))) 
 			ret->variables = parse_report_variables(doc, ns, cur);
-
+		else if (xmlStrcmp(cur->name, "comment")) // must be last in the list
+			rlogit("Unknown element [%s] in <Report>", cur->name);
 		cur = cur->next;
 	}
 	
