@@ -395,4 +395,95 @@
 			<emphasis> Returns</emphasis> DATE
 		</para>
 	</sect1>		
+	<sect1>
+		<title>left(expS, expN)</title>
+		<para>
+			Returns the leftmost expN characters of the string expS.
+		</para>
+		<para>
+			<emphasis>Returns</emphasis> STRING
+		</para>
+	</sect1>
+	<sect1>
+		<title>right(expS, expN)</title>
+		<para>
+			Returns the rightmost expN characters of the string expS.
+		</para>
+		<para>
+			<emphasis>Returns</emphasis> STRING
+		</para>
+	</sect1>
+	<sect1>
+		<title>mid(expS, expN1, expN2)</title>
+		<para>
+			expN1 is an index into the string expS starting at 0.
+			expN2 is the maximum length of the result string.
+		</para>
+		<para>
+			<emphasis>Returns</emphasis> STRING
+		</para>
+	</sect1>
+	<sect1>
+		<title>tstod(expS)</title>
+		<para>
+			expS is a time in string format such as HH:MM, HH:MM:SS,
+		HH:MMp, HH:MM:SSp, HHMM, HHMMSS, HHMMp, HHMMSSp. This function 
+		will return a DATE value with the time set to the time in the
+		string (the date part of the DATE variable is set to 1/1/1980).
+		</para>
+		<para>
+			<emphasis>Returns</emphasis> DATE
+		</para>
+	</sect1>
+	<sect1>
+		<title>dtosf(expD, expS)</title>
+		<para>
+			Convert date expD to string using the specified format
+		expS. expS uses the formatting controls listed below and can be used 
+		to display either the date or time of the DATE variable.
+		</para>
+		<para>
+			<emphasis>Returns</emphasis> STRING
+		</para>
+	</sect1>
+	<sect1>
+		<title>true</title>
+		<para>
+			A predefined NUMBER variable with the value 1.
+		</para>
+		<para>
+			<emphasis>Returns</emphasis> NUMBER
+		</para>
+	</sect1>
+	<sect1>
+		<title>yes</title>
+		<para>
+			A predefined NUMBER variable with the value 1.
+		</para>
+		<para>
+			<emphasis>Returns</emphasis> NUMBER
+		</para>
+	</sect1>
+	<sect1>
+		<title>false</title>
+		<para>
+			A predefined NUMBER variable with the value 0.
+		</para>
+		<para>
+			<emphasis>Returns</emphasis> NUMBER
+		</para>
+	</sect1>
+	<sect1>
+		<title>no</title>
+		<para>
+			A predefined NUMBER variable with the value 0.
+		</para>
+		<para>
+			<emphasis>Returns</emphasis> NUMBER
+		</para>
+	</sect1>
+
+
+
+
 </chapter>

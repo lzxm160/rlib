@@ -1,3 +1,6 @@
+2004-01-20  Chet Heilman  <cheilman@sicompos.com>
+	* doc/symboltable.sgm: Update documentation for new functions.
+
 2004-01-19  Chet Heilman  <cheilman@sicompos.com>
 	* libsrc/pcode_op_functions.c: (rlib_pcode_operator_stod_common):
 	fix dtos function for times
