@@ -1,3 +1,8 @@
+2005-02-14  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/graphing.c: Try our best to graph data sets w/ one row
+	* libsrc/html.c: likewise
+	* libsrc/pdf.c: likewise
+
 2005-02-09  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/reportgen.c: Mike likes ReportHeader to come out w/ No Data.. I agree.. I put it back
 

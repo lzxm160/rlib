@@ -188,6 +188,7 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	gboolean divide_iterations = TRUE;
 	gboolean should_label_under_tick = FALSE;
 	gfloat value = 0;
+	gint did_set = FALSE;
 	
 	left_margin_offset += part->left_margin;
 
@@ -236,8 +237,9 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 				break;
 		}
 	}
-	if(row_count <= 1)
-		return 0;
+
+/*	if(row_count <= 1)
+		return 0;*/
 	
 	rlib_fetch_first_rows(r);
 	row_count = 0;
@@ -272,11 +274,12 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 								}
 							}
 							
-							if(row_count == 0) {
+							if(row_count == 0 && did_set == FALSE) {
 								if(rlib_execute_as_string(r, plot->label_code, legend_label, MAXSTRLEN)) {
 									OUTPUT(r)->graph_hint_legend(r, legend_label);
 								}
 								y_min[side] = y_max[side] = y_value;
+								did_set = TRUE;
 							}
 							
 							if(is_percent_graph(graph_type) || is_pie_graph(graph_type)) {
@@ -334,9 +337,20 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 		y_max[RLIB_SIDE_LEFT] = y_max[RLIB_SIDE_RIGHT] = 100;
 		y_ticks = 10;
 	} else {
-		adjust_limits(y_min[RLIB_SIDE_LEFT], y_max[RLIB_SIDE_LEFT], is_row_graph(graph_type), 5, 11, &y_ticks, &tmi, &y_min[RLIB_SIDE_LEFT], &y_max[RLIB_SIDE_LEFT]);
-		if(have_right_side)
-			adjust_limits(y_min[RLIB_SIDE_RIGHT], y_max[RLIB_SIDE_RIGHT], is_row_graph(graph_type), 2, y_ticks, &fake_y_ticks, &tmi, &y_min[RLIB_SIDE_RIGHT], &y_max[RLIB_SIDE_RIGHT]);
+		if(y_min[RLIB_SIDE_LEFT] == y_max[RLIB_SIDE_LEFT]) {
+			y_min[RLIB_SIDE_LEFT] = 0;
+			y_ticks = 1;
+		} else {
+			adjust_limits(y_min[RLIB_SIDE_LEFT], y_max[RLIB_SIDE_LEFT], is_row_graph(graph_type), 5, 11, &y_ticks, &tmi, &y_min[RLIB_SIDE_LEFT], &y_max[RLIB_SIDE_LEFT]);
+		}
+		if(have_right_side) {
+			if(y_min[RLIB_SIDE_RIGHT] == y_max[RLIB_SIDE_RIGHT]) {
+				y_min[RLIB_SIDE_RIGHT] = 0;
+				y_ticks = 1;
+			} else {
+				adjust_limits(y_min[RLIB_SIDE_RIGHT], y_max[RLIB_SIDE_RIGHT], is_row_graph(graph_type), 2, y_ticks, &fake_y_ticks, &tmi, &y_min[RLIB_SIDE_RIGHT], &y_max[RLIB_SIDE_RIGHT]);
+			}
+		}
 
 	}
 

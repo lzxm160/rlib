@@ -540,8 +540,12 @@ static void pdf_graph_do_grid(rlib *r, gboolean just_a_box) {
 
 	graph->x_width = graph->width - graph->width_offset - graph->intersection;
 
-	if(graph->x_axis_labels_are_under_tick)	
-		graph->x_tick_width = graph->x_width/(graph->x_iterations-1);
+	if(graph->x_axis_labels_are_under_tick)	 {
+		if(graph->x_iterations <= 1)
+			graph->x_tick_width = 0;
+		else
+			graph->x_tick_width = graph->x_width/(graph->x_iterations-1);
+	}
 	else
 		graph->x_tick_width = graph->x_width/graph->x_iterations;
 
@@ -704,6 +708,7 @@ void pdf_graph_plot_line(rlib *r, gchar side, gint iteration, gfloat p1_height, 
 	gfloat p1_start = graph->y_start;
 	gfloat p2_start = graph->y_start;
 	gfloat left = graph->x_start + (graph->x_tick_width * (iteration-1));
+	gfloat x_tick_width = graph->x_tick_width;
 
 	p1_height += p1_last_height;
 	p2_height += p2_last_height;
@@ -719,7 +724,7 @@ void pdf_graph_plot_line(rlib *r, gchar side, gint iteration, gfloat p1_height, 
 	
 	OUTPUT(r)->set_bg_color(r, color->r, color->g, color->b);
 	cpdf_setlinewidth(OUTPUT_PRIVATE(r)->pdf, 1.1);
-	pdf_graph_draw_line(r, left, p1_start + (graph->y_height * p1_height), left+graph->x_tick_width, p2_start + (graph->y_height * p2_height), NULL);
+	pdf_graph_draw_line(r, left, p1_start + (graph->y_height * p1_height), left+x_tick_width, p2_start + (graph->y_height * p2_height), NULL);
 	cpdf_setlinewidth(OUTPUT_PRIVATE(r)->pdf, 1);
 	OUTPUT(r)->set_bg_color(r, 0, 0, 0);
 }

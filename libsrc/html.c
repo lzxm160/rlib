@@ -516,9 +516,12 @@ static void html_graph_do_grid(rlib *r, gboolean just_a_box) {
 
 
 	if(graph->x_iterations != 0) {
-		if(graph->x_axis_labels_are_under_tick)	
-			graph->x_tick_width = graph->width/(graph->x_iterations-1);
-		else
+		if(graph->x_axis_labels_are_under_tick) {
+			if(graph->x_iterations <= 1)
+				graph->x_tick_width = 0;
+			else
+				graph->x_tick_width = graph->width/(graph->x_iterations-1);
+		} else
 			graph->x_tick_width = graph->width/graph->x_iterations;
 	}
 	
