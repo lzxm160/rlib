@@ -1,5 +1,23 @@
-2005-02-02  Michael Roth  <mroth@sicompos.com>
+2005-02-02  Bob Doan  <bdoan@sicompos.com>
+	* AUTHORS: Updates
+	* libsrc/html.c: support meta data, don't have html code before head
+	* libsrc/layout.c: if nothing is one a line still calculate the correct size
+	* libsrc/reportgen.c: likewise
+	* src/Makefile.am: (c) 2005
+	* src/examples/Makefile.am: likewise
+	* src/examples/c/Makefile.am:likewise
+	* src/examples/c/example.c:likewise
+	* src/examples/common/Makefile.am:likewise
+	* src/examples/java/Makefile.am:likewise
+	* src/examples/php/images.php:likewise
+	* src/examples/python/Makefile.am:likewise
+	* src/rlibc.c:likewise
+	* tests/Makefile.am:likewise
+	* tests/test1.c:likewise
+	* tests/test2.c:likewise
+	* tests/test3.c:likewise
 
+2005-02-02  Michael Roth  <mroth@sicompos.com>
 	* libsrc/reportgen.c: (rlib_layout_report): move signal up one
 	* libsrc/rlib.h: define correct number of signals
 

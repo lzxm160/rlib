@@ -307,6 +307,9 @@ static void rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_report_line
 	if(rl->italics_code != NULL)
 		rlib_execute_pcode(r, &line_rval_italics, rl->italics_code, NULL);
 
+	if(rl->max_line_height < RLIB_GET_LINE(rl->font_point))
+		rl->max_line_height = RLIB_GET_LINE(rl->font_point);
+
 	for(; e != NULL; e=e->next) {
 		RLIB_VALUE_TYPE_NONE(&extra_data[i].rval_bgcolor);
 		RLIB_VALUE_TYPE_NONE(&extra_data[i].rval_bold);

@@ -68,9 +68,7 @@ struct _graph {
 	gint y_start;
 	gint x_labels_are_up;
 	gboolean x_axis_labels_are_under_tick;
-	
 };
-
 
 struct _private {
 	struct rlib_rgb current_fg_color;
@@ -292,6 +290,7 @@ static void rlib_html_start_report(rlib *r, struct rlib_part *part) {
 	gchar buf[MAXSTRLEN];
 	gint pages_across = part->pages_across;
 	gint i;
+	gchar *meta;
 
 	OUTPUT_PRIVATE(r)->bottom = g_malloc(sizeof(struct _data) * pages_across);
 	OUTPUT_PRIVATE(r)->top = g_malloc(sizeof(struct _data) * pages_across);
@@ -303,14 +302,20 @@ static void rlib_html_start_report(rlib *r, struct rlib_part *part) {
 		OUTPUT_PRIVATE(r)->bottom[i].size = 0;
 		OUTPUT_PRIVATE(r)->bottom[i].total_size = 0;
 	}
-//	<meta http-equiv=\"content-type\" content=\"text/html; charset=%s\"><style type=\"text/css\">\n", output_encoding);
 	sprintf(buf, "<head>\n<style type=\"text/css\">\n");
 	print_text(r, buf, FALSE);
 	sprintf(buf, "pre { margin:0; padding:0; margin-top:0; margin-bottom:0;}\n");
 	print_text(r, buf, FALSE);
 	print_text(r, "DIV { position: absolute; left: 0; }\n", FALSE);
 	print_text(r, "TABLE { border: 0; cellspacing: 0; cellpadding: 0; width: 100%; }\n", FALSE);
-	print_text(r, "</style></head>\n", FALSE);
+	print_text(r, "</style>\n", FALSE);
+	
+	meta = g_hash_table_lookup(r->output_paramaters, "meta");
+	if(meta != NULL)
+		print_text(r, meta, FALSE);
+		
+	print_text(r, "</head>\n", FALSE);
+	
 	print_text(r, "<body><table><tr><td><pre>", FALSE);
 	
 }
@@ -319,19 +324,19 @@ static void rlib_html_end_part(rlib *r, struct rlib_part *part) {
 	gint i;
 	gint pages_across = part->pages_across;
 	gint sofar = OUTPUT_PRIVATE(r)->length;
-	gchar *str1 = "<table><tr>";
-	gchar *str2 = "<td nowrap><pre>";
+//	gchar *str1 = "<table><tr>";
+//	gchar *str2 = "<td nowrap><pre>";
 	gchar *str3 = "</td>";
 	gchar *str4 = "</tr></table>";
 	print_text(r, "</pre></td></tr></table>", TRUE);
 
-	OUTPUT_PRIVATE(r)->both = g_realloc(OUTPUT_PRIVATE(r)->both, sofar + 11);
-	memcpy(OUTPUT_PRIVATE(r)->both + sofar , str1, 11);
-	sofar += 11;
+//	OUTPUT_PRIVATE(r)->both = g_realloc(OUTPUT_PRIVATE(r)->both, sofar + 11);
+//	memcpy(OUTPUT_PRIVATE(r)->both + sofar , str1, 11);
+//	sofar += 11;
 	for(i=0;i<pages_across;i++) {
-		OUTPUT_PRIVATE(r)->both = g_realloc(OUTPUT_PRIVATE(r)->both, sofar + 16);
-		memcpy(OUTPUT_PRIVATE(r)->both + sofar, str2, 16);
-		sofar += 16;
+//		OUTPUT_PRIVATE(r)->both = g_realloc(OUTPUT_PRIVATE(r)->both, sofar + 16);
+//		memcpy(OUTPUT_PRIVATE(r)->both + sofar, str2, 16);
+//		sofar += 16;
 
 		OUTPUT_PRIVATE(r)->both = g_realloc(OUTPUT_PRIVATE(r)->both, sofar + OUTPUT_PRIVATE(r)->top[i].size + OUTPUT_PRIVATE(r)->bottom[i].size);
 		memcpy(OUTPUT_PRIVATE(r)->both + sofar , OUTPUT_PRIVATE(r)->top[i].data, OUTPUT_PRIVATE(r)->top[i].size);

@@ -41,6 +41,20 @@
 	$data[5][4] = "Dude";
 	$data[5][5] = "82";
 
+	$data[6][0] = "Steve";
+	$data[6][1] = "Tilden 2";
+	$data[6][2] = "purple";
+	$data[6][3] = "2";
+	$data[6][4] = "Dude";
+	$data[6][5] = "82";
+
+	$data[7][0] = "Steve";
+	$data[7][1] = "Tilden 3";
+	$data[7][2] = "purple";
+	$data[7][3] = "2";
+	$data[7][4] = "Dude";
+	$data[7][5] = "82";
+
 	$rlib =	rlib_init();
 	rlib_add_datasource_array($rlib, "local_array");
 	rlib_add_query_as($rlib, "local_array", "data", "data");

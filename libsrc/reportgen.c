@@ -209,24 +209,6 @@ void rlib_handle_page_footer(rlib *r, struct rlib_part *part, struct rlib_report
 		report->position_bottom[i] -= report->bottom_size[i];
 }
 
-/*void rlib_init_page(rlib *r, struct rlib_part *part, struct rlib_report *report, gchar report_header) {
-	gint i;
-	for(i=0;i<report->pages_across;i++)
-		report->position_top[i] = report->top_margin;
-	r->current_font_point = -1;
-	OUTPUT(r)->start_new_page(r, part);
-	OUTPUT(r)->set_font_point(r, r->font_point);
-	if(report_header)
-		rlib_layout_report_output(r, part, report, report->report_header, FALSE);	
-	
-	if(!(r->current_page_number == 1 && report->suppress_page_header_first_page == TRUE))
-		rlib_layout_report_output(r, part, report, report->page_header, FALSE);
-	rlib_layout_report_output(r, part, report, report->detail.textlines, FALSE);		
-	rlib_handle_page_footer(r, part, report);
-
-	OUTPUT(r)->init_end_page(r);
-}*/
-
 gfloat get_output_size(rlib *r, struct rlib_report_output_array *roa) {
 	gint j;
 	gfloat total=0;
@@ -235,7 +217,6 @@ gfloat get_output_size(rlib *r, struct rlib_report_output_array *roa) {
 		if(rd->type == RLIB_REPORT_PRESENTATION_DATA_LINE) {
 			struct rlib_report_lines *rl = rd->data;
 			total += RLIB_GET_LINE(get_font_point(r, rl));
-			
 //Here to adjust size of memo field output.			
 		} else if(rd->type == RLIB_REPORT_PRESENTATION_DATA_HR) {
 			struct rlib_report_horizontal_line *rhl = rd->data;
