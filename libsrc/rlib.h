@@ -364,6 +364,9 @@ struct rlib_report {
 	xmlChar *xml_suppress_page_header_first_page;
 	
 	gchar xml_encoding_name[ENCODING_NAME_SIZE]; //UTF8 if "", else whatever specified in xml
+#if DISABLE_UTF8
+	iconv_t cd;
+#endif	
 	rlib_char_encoder *output_encoder;
 //	rlib_char_encoder *db_encoder;
 //	rlib_char_encoder *param_encoder;		

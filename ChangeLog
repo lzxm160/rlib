@@ -1,4 +1,11 @@
-2004-04-28  rlib  <set EMAIL_ADDRESS environment variable>
+2004-04-28  Bob Doan  <bdoan@sicompos.com>
+	* bindings/php/php.c: ability to turn off UTF8 internals
+	* configure.in: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/pcode_op_functions.c: likewise
+	* libsrc/rlib.h: likewise
+
+2004-04-28  Chet Heilman  <cheilman@sicompos.com>
 	* libsrc/parsexml.c: (parse_report_variable):
 		Accept "static" as an "expression". It can later be changed to 
 		be actually static (computed once at report start).

@@ -337,7 +337,11 @@ gint rlib_pcode_operator_lte(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 			return TRUE;
 		}
 		if(RLIB_VALUE_IS_STRING(v1) && RLIB_VALUE_IS_STRING(v2)) {
+#if DISABLE_UTF8		
+			if(strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) <= 0) {
+#else
 			if(g_utf8_collate(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) <= 0) {
+#endif
 				rlib_value_free(v1);
 				rlib_value_free(v2);
 				rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
@@ -386,7 +390,11 @@ gint rlib_pcode_operator_lt(rlib *r, struct rlib_value_stack *vs, struct rlib_va
 			return TRUE;
 		}
 		if(RLIB_VALUE_IS_STRING(v1) && RLIB_VALUE_IS_STRING(v2)) {
+#if DISABLE_UTF8	
+			if(strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) < 0) {
+#else
 			if(g_utf8_collate(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) < 0) {
+#endif
 				rlib_value_free(v1);
 				rlib_value_free(v2);
 				rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
@@ -433,7 +441,11 @@ gint rlib_pcode_operator_gte(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 		return TRUE;
 	}
 	if(RLIB_VALUE_IS_STRING(v1) && RLIB_VALUE_IS_STRING(v2)) {
+#if DISABLE_UTF8	
+		if(strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) >= 0) {
+#else
 		if(g_utf8_collate(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) >= 0) {
+#endif
 			rlib_value_free(v1);
 			rlib_value_free(v2);
 			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
@@ -479,7 +491,11 @@ gint rlib_pcode_operator_gt(rlib *r, struct rlib_value_stack *vs, struct rlib_va
 		return TRUE;
 	}
 	if(RLIB_VALUE_IS_STRING(v1) && RLIB_VALUE_IS_STRING(v2)) {
+#if DISABLE_UTF8
+		if(strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) > 0) {
+#else
 		if(g_utf8_collate(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) > 0) {
+#endif
 			rlib_value_free(v1);
 			rlib_value_free(v2);
 			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
@@ -530,7 +546,11 @@ gint rlib_pcode_operator_eql(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 			push = RLIB_DECIMAL_PRECISION;
 		if(RLIB_VALUE_GET_AS_STRING(v2) == NULL || RLIB_VALUE_GET_AS_STRING(v1) == NULL)
 			push = 0;
+#if DISABLE_UTF8
+		if(strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) == 0) {
+#else
 		if(g_utf8_collate(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) == 0) {
+#endif
 			push = RLIB_DECIMAL_PRECISION;
 		} else {
 			push = 0;
@@ -576,7 +596,11 @@ gint rlib_pcode_operator_noteql(rlib *r, struct rlib_value_stack *vs, struct rli
 		return TRUE;
 	}
 	if(RLIB_VALUE_IS_STRING(v1) && RLIB_VALUE_IS_STRING(v2)) {
+#if DISABLE_UTF8
+		if(strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) != 0) {
+#else
 		if(g_utf8_collate(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) != 0) {
+#endif
 			rlib_value_free(v1);
 			rlib_value_free(v2);
 			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
@@ -1294,7 +1318,11 @@ gint rlib_pcode_operator_upper(rlib *r, struct rlib_value_stack *vs, struct rlib
 	if(RLIB_VALUE_IS_STRING(v1)) {
 		gchar *tmp = g_strdup(RLIB_VALUE_GET_AS_STRING(v1));
 		rlib_value_free(v1);
+#if DISABLE_UTF8
+		rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, strupr(tmp)));
+#else
 		rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, g_utf8_strup(tmp, -1)));
+#endif
 		g_free(tmp);
 		return TRUE;
 	}
@@ -1310,7 +1338,11 @@ gint rlib_pcode_operator_lower(rlib *r, struct rlib_value_stack *vs, struct rlib
 	if(RLIB_VALUE_IS_STRING(v1)) {
 		gchar *tmp = g_strdup(RLIB_VALUE_GET_AS_STRING(v1));
 		rlib_value_free(v1);
+#if DISABLE_UTF8
+		rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, strlwr(tmp)));
+#else
 		rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, g_utf8_strdown(tmp, -1)));
+#endif
 		g_free(tmp);
 		return TRUE;
 	}

@@ -37,7 +37,7 @@ void safestrncpy(gchar *dest, gchar *str, int n) {
 }
 
 
-#if 0
+#if DISABLE_UTF8
 void utf8_to_8813(struct rlib_report *rep, gchar *dest, gchar *str) {
 	size_t len = MAXSTRLEN;
 	size_t slen;
@@ -98,7 +98,7 @@ struct report_element * parse_line_array(struct rlib_report *rep, xmlDocPtr doc,
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "literal"))) {
 			struct report_literal *t = g_new0(struct report_literal, 1);
 			current = g_new0(struct report_element, 1);
-#if 0
+#if DISABLE_UTF8
 			utf8_to_8813(rep, t->value, xmlNodeListGetString(doc, cur->xmlChildrenNode, 1));
 #else
 			safestrncpy(t->value, xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), sizeof(t->value));
@@ -423,6 +423,9 @@ struct rlib_report * parse_report_file(gchar *filename) {
 	ret->doc = doc;
 	ret->contents = NULL;
 	if (doc->encoding) g_strlcpy(ret->xml_encoding_name, doc->encoding, sizeof(ret->xml_encoding_name));
+#if DISABLE_UTF8
+	ret->cd = iconv_open(ICONV_ISO, "UTF-8");
+#endif
 //thought this would be a convenience - it wasn't.
 #if 0
 	ret->output_encoder = rlib_char_encoder_new(doc->encoding, TRUE);
@@ -478,7 +481,9 @@ struct rlib_report * parse_report_file(gchar *filename) {
 		cur = cur->next;
 	}
 	
-//	iconv_close(ret->cd);
-	
+#if DISABLE_UTF8
+	iconv_close(ret->cd);
+#endif	
+
 	return(ret);
 }
