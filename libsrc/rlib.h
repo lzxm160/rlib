@@ -500,6 +500,8 @@ void rlib_resolve_fields(rlib *r);
 char *strlwrexceptquoted (char *s);
 char *rmwhitespacesexceptquoted(char *s);
 void rlogit(const char *fmt, ...);
+void rlogit_setmessagewriter(void(*writer)(const char *msg));
+int rutil_enableSignalHandler(int trueorfalse);
 long long tentothe(int n);
 char hextochar(char c);
 char *colornames(char *str);

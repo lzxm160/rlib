@@ -46,18 +46,31 @@ static void myFaultHandler (int signum, siginfo_t *si, void *aptr) {
 	exit (5); //THEORETICALLY IN THEORY THIS WILL NEVER GET CALLED... but lets play it safe
 }
 
+
+static int useMyHandler = TRUE;
+
 void init_signals() {
 	struct sigaction sa;
-	bzero(&sa, sizeof(struct sigaction));
-	sa.sa_handler = (void(*)(int))myFaultHandler;
-	sigaction (SIGILL, &sa, NULL);
-	sigaction (SIGBUS, &sa, NULL);
-	sigaction (SIGSEGV, &sa, NULL);
-	sigaction (SIGABRT, &sa, NULL);
-	sigaction (SIGIOT, &sa, NULL);
-	sigaction (SIGTRAP, &sa, NULL);
-	signal (SIGQUIT, SIG_DFL);
+	if (useMyHandler) {
+		bzero(&sa, sizeof(struct sigaction));
+		sa.sa_handler = (void(*)(int))myFaultHandler;
+		sigaction (SIGILL, &sa, NULL);
+		sigaction (SIGBUS, &sa, NULL);
+		sigaction (SIGSEGV, &sa, NULL);
+		sigaction (SIGABRT, &sa, NULL);
+		sigaction (SIGIOT, &sa, NULL);
+		sigaction (SIGTRAP, &sa, NULL);
+		signal (SIGQUIT, SIG_DFL);
+	}
 }
+
+
+int rutil_enableSignalHandler(int trueorfalse) {
+	int whatitwas = useMyHandler;
+	useMyHandler = trueorfalse;
+	return whatitwas;
+}
+
 
 int vasprintf(char **, const char *, va_list);
 
@@ -107,6 +120,22 @@ char *rmwhitespacesexceptquoted(char *s) {
 	return orig;
 }
 
+
+
+static void local_rlogit(const char *message) {
+	fprintf(stderr, message);
+	return;
+}
+
+
+static void (*logMessage)(const char *msg) = local_rlogit;
+
+
+void rlogit_setmessagewriter(void (*msgwriter)(const char *msg)) {
+	logMessage = msgwriter;
+}
+
+
 void rlogit(const char *fmt, ...) {
 	va_list vl;
 	char *result = NULL;
@@ -114,7 +143,7 @@ void rlogit(const char *fmt, ...) {
 	va_start(vl, fmt);
 	vasprintf(&result, fmt, vl);
 	va_end(vl);
-	fprintf(stderr, result);
+	logMessage(result);
 	if (result != NULL) free(result);
 	return;
 }

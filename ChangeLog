@@ -1,3 +1,10 @@
+2003-11-26  rlib  Chet Heilman <cheilman@sicompos.com>
+
+	* libsrc/rlib.h: Added function to disable rlib signal handling and a
+		function to redirect rlogit logging messages.
+	* libsrc/util.c: (init_signals), (rutil_enableSignalHandler),
+	(local_rlogit), (rlogit_setmessagewriter), (rlogit):
+
 2003-11-21  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/breaks.c: breaks/csv was broken.. rlib variables were wrong
 	* libsrc/csv.c: likewise
