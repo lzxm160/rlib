@@ -28,6 +28,15 @@
 
 #include "rlib.h"
 
+
+void safestrncpy(gchar *dest, gchar *str, int n) {
+	if (!dest) return;
+	*dest = '\0';
+	if (str) g_strlcpy(dest, str, n);
+}
+
+
+#if 0
 void utf8_to_8813(struct rlib_report *rep, gchar *dest, gchar *str) {
 	size_t len = MAXSTRLEN;
 	size_t slen;
@@ -48,7 +57,7 @@ void utf8_to_8813(struct rlib_report *rep, gchar *dest, gchar *str) {
 		dest[0] = 0;
 	}
 }
-
+#endif
 
 static int ignoreElement(const char *elname) {
 	int result = FALSE;
@@ -72,7 +81,7 @@ struct report_element * parse_line_array(struct rlib_report *rep, xmlDocPtr doc,
 			struct report_field *f = g_new0(struct report_field, 1);
 			current = g_new0(struct report_element, 1);
 			//utf8_to_8813(rep, f->value, xmlGetProp(cur, (const xmlChar *) "value"));
-			//TODO: we need to utf to 8813 all string values in single quotes
+//Nevermind			//TODO: we need to utf to 8813 all string values in single quotes
 			strcpy(f->value, xmlGetProp(cur, (const xmlChar *) "value"));
 			f->xml_align = xmlGetProp(cur, (const xmlChar *) "align");
 			f->bgcolor = xmlGetProp(cur, (const xmlChar *) "bgcolor");
@@ -88,7 +97,11 @@ struct report_element * parse_line_array(struct rlib_report *rep, xmlDocPtr doc,
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "literal"))) {
 			struct report_literal *t = g_new0(struct report_literal, 1);
 			current = g_new0(struct report_element, 1);
+#if 0
 			utf8_to_8813(rep, t->value, xmlNodeListGetString(doc, cur->xmlChildrenNode, 1));
+#else
+			safestrncpy(t->value, xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), sizeof(t->value));
+#endif
 			t->xml_align = xmlGetProp(cur, (const xmlChar *) "align");
 			t->bgcolor = xmlGetProp(cur, (const xmlChar *) "bgcolor");
 			t->color = xmlGetProp(cur, (const xmlChar *) "color");
@@ -409,14 +422,17 @@ struct rlib_report * parse_report_file(gchar *filename) {
 	memset(ret, 0, sizeof(struct rlib_report));
 	ret->doc = doc;
 	ret->contents = NULL;
-	ret->cd = iconv_open("ISO8859-1", "UTF-8");
+	
+	ret->pdf_conversion = (iconv_t) -1; //Used by the pdf output to make utf8->whatever
+		
+//	ret->cd = iconv_open("ISO8859-1", "UTF-8"); //Internal code is now all utf8
 
 	while ( cur && xmlIsBlankNode ( cur ) ) {
 		cur = cur -> next;
-   }
+	}
 
 	if ( cur == 0 )
-   	return ( NULL );
+   		return ( NULL );
 
 	if ((xmlStrcmp(cur->name, (const xmlChar *) "Report"))) {
 		rlogit("document of the wrong type, was '%s', Report expected", cur->name);
@@ -459,7 +475,7 @@ struct rlib_report * parse_report_file(gchar *filename) {
 		cur = cur->next;
 	}
 	
-	iconv_close(ret->cd);
+//	iconv_close(ret->cd);
 	
 	return(ret);
 }

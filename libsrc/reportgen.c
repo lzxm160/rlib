@@ -20,6 +20,7 @@
  
 #include <stdlib.h>
 #include <string.h>
+#include <langinfo.h>
 
 #include "rlib.h"
 #include "pcode.h"
@@ -248,14 +249,14 @@ gchar *align_text(rlib *r, gchar *rtn, gint len, gchar *src, gint align, gint wi
 	if(align == RLIB_ALIGN_LEFT || width == -1) {
 	} else {
 		if(align == RLIB_ALIGN_RIGHT) {
-			gint x = width-strlen(src);
+			gint x = width - charcount(src);
 			if(x > 0) {
 				memset(rtn, ' ', x);
 				strcpy(rtn+x, src);
 			}
 		}
 		if(align == RLIB_ALIGN_CENTER) {
-			gint x = (width-strlen(src))/2;
+			gint x = (width - charcount(src))/2;
 			if(x > 0) {
 				memset(rtn, ' ', x);
 				strcpy(rtn+x, src);
@@ -395,17 +396,17 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 			text = "";
 
 		if(extra_data[i].width == -1)
-			extra_data[i].width = strlen(text);
+			extra_data[i].width = charcount(text);
 		else {
-			gint slen = strlen(text);
+			gint slen = charcount(text);
 			if(slen > extra_data[i].width)
-				text[extra_data[i].width] = '\0';
+				*g_utf8_offset_to_pointer(text, extra_data[i].width) = '\0';
 			else if(slen < extra_data[i].width && MAXSTRLEN != slen) {
 				gint xx;
 				for(xx=0;xx<extra_data[i].width-slen;xx++) {
-					text[slen+xx] = ' ';
+					*g_utf8_offset_to_pointer(text, slen+xx) = ' ';
 				}
-				text[extra_data[i].width] = '\0';
+				*g_utf8_offset_to_pointer(text, extra_data[i].width) = '\0';
 			}
 		}
 				
@@ -540,7 +541,7 @@ RVector *wrap_memo_lines(gchar *txt, gint width, const gchar *wrapchars) {
 	RVector *v = RVector_new();
 	
 	do {
-		if (strlen(txt) < width) {
+		if (charcount(txt) < width) {
 			RVector_add(v, g_strdup(txt));
 			break;
 		} else {
@@ -949,9 +950,11 @@ void rlib_print_report_footer(rlib *r) {
 gint rlib_fetch_first_rows(rlib *r) {
 	gint i;
 	gint result = TRUE;
-	for(i=0;i<r->queries_count;i++)
-		if(INPUT(r,i)->first(INPUT(r,i), r->results[i].result) == FALSE)
+	for(i=0;i<r->queries_count;i++) {
+		if(INPUT(r,i)->first(INPUT(r,i), r->results[i].result) == FALSE) {
 			result = FALSE;
+		}
+	}
 	return result;
 }
 
@@ -1077,15 +1080,24 @@ gint make_report(rlib *r) {
 	gint report = 0;
 	gint processed_variables = FALSE;
 	gint first_result;
+	gchar *lc_encoding;
 	
+	lc_encoding = nl_langinfo(CODESET);
+	if (lc_encoding == NULL) lc_encoding = "ISO8859-15";
+	r_debug("Using encoding %s", lc_encoding);
 	if(r->format == RLIB_FORMAT_HTML)
 		rlib_html_new_output_filter(r);
 	else if(r->format == RLIB_FORMAT_TXT)
 		rlib_txt_new_output_filter(r);
 	else if(r->format == RLIB_FORMAT_CSV)
 		rlib_csv_new_output_filter(r);
-	else
+	else {
 		rlib_pdf_new_output_filter(r);
+		r->pdf_conversion = iconv_open(lc_encoding, "UTF-8");
+		if (r->pdf_conversion == (iconv_t) -1) {
+			r_error("Cannot convert UTF-8 to %s", lc_encoding);
+		}
+	}
 	r->current_font_point = -1;
 
 	OUTPUT(r)->rlib_set_fg_color(r, -1, -1, -1);
@@ -1096,10 +1108,8 @@ gint make_report(rlib *r) {
 	r->current_result = 0;
 	r->start_of_new_report = TRUE;
 
-
 	OUTPUT(r)->rlib_init_output(r);
 	first_result = rlib_fetch_first_rows(r);
-
 	for(report=0;report<r->reports_count;report++) {
 		processed_variables = FALSE;
 		r->current_report = report;
@@ -1117,14 +1127,14 @@ gint make_report(rlib *r) {
 		OUTPUT(r)->rlib_start_report(r);
 		rlib_init_page(r, TRUE);		
 		OUTPUT(r)->rlib_begin_text(r);
-		if(first_result == FALSE) {
+		if (!first_result) {
 			print_report_output(r, r->reports[r->current_report]->alternate.nodata, FALSE);
 		} else {
-			if(INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result) != TRUE) {
+			if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
 				while (1) {
 					gint page;
 					gint output_count = 0;
-					if(processed_variables == FALSE) {
+					if(!processed_variables) {
 						rlib_process_variables(r);
 						processed_variables = TRUE;
 					}

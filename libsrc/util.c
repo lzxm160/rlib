@@ -146,6 +146,67 @@ void rlogit(const gchar *fmt, ...) {
 	return;
 }
 
+
+void r_error(const gchar *fmt, ...) {
+	va_list vl;
+	gchar *result = NULL;
+
+	va_start(vl, fmt);
+	result = g_strdup_vprintf(fmt, vl);
+	va_end(vl);
+	if (result != NULL) {
+		logMessage(result);
+		g_free(result);
+	}
+	return;
+}
+
+
+void r_info(const gchar *fmt, ...) {
+	va_list vl;
+	gchar *result = NULL;
+
+	va_start(vl, fmt);
+	result = g_strdup_vprintf(fmt, vl);
+	va_end(vl);
+	if (result != NULL) {
+		logMessage(result);
+		g_free(result);
+	}
+	return;
+}
+
+
+void r_debug(const gchar *fmt, ...) {
+	va_list vl;
+	gchar *result = NULL;
+
+	va_start(vl, fmt);
+	result = g_strdup_vprintf(fmt, vl);
+	va_end(vl);
+	if (result != NULL) {
+		logMessage(result);
+		g_free(result);
+	}
+	return;
+}
+
+
+void r_warning(const gchar *fmt, ...) {
+	va_list vl;
+	gchar *result = NULL;
+
+	va_start(vl, fmt);
+	result = g_strdup_vprintf(fmt, vl);
+	va_end(vl);
+	if (result != NULL) {
+		logMessage(result);
+		g_free(result);
+	}
+	return;
+}
+
+
 gint64 tentothe(gint n) {
 	gint64 ten[] = {1LL, 10LL, 100LL, 1000LL, 10000LL, 100000LL, 1000000LL, 10000000LL, 100000000LL, 1000000000LL, 10000000000LL, 100000000000LL, 1000000000000LL};
 	return ten[n];
@@ -203,7 +264,7 @@ gchar *colornames(char *str) {
 
 void parsecolor(struct rgb *color, gchar *strx) {
 	gchar *str = colornames(strx);
-	if(str != NULL && strlen(str) == 8) {
+	if(str != NULL && bytelength(str) == 8) {
 		guchar r;
 		guchar g;
 		guchar b;
@@ -220,26 +281,21 @@ void parsecolor(struct rgb *color, gchar *strx) {
 	}
 }
 
-struct tm * stod(struct tm *tm_date, gchar *str) {
-	gint year, month, day;
-	sscanf(str, "%4d-%2d-%2d", &year, &month, &day);
-	memset(tm_date, 0, sizeof(struct tm));
-	tm_date->tm_year = year-1900;
-	tm_date->tm_mon = month-1;
-	tm_date->tm_mday = day;
-	return tm_date;
+struct rlib_datetime * stod(struct rlib_datetime *dt, gchar *str) {
+	int year, month, day;
+	rlib_datetime_clear(dt);
+	if (sscanf(str, "%4d-%2d-%2d", &year, &month, &day) == 3) {
+		rlib_datetime_set_date(dt, year, month, day);
+	}
+	return dt;
 }
 
+#if 0
 gchar month_dates[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
 
 gint daysinmonth(gint year, gint month) {
-	gint maxday;
-	maxday = month_dates[month];
-	if(month == 1 && year % 4 == 0 && year % 100 != 0)
-		maxday++;
-	return maxday;
+	return g_date_get_days_in_month(year, month);
 }
-
 void bumpday(gint *year, gint *month, gint *day) {
 	gint maxday;
 	*day = *day + 1;
@@ -271,6 +327,7 @@ void bumpdaybackwords(gint *year, gint *month, gint *day) {
 		}
 	}
 }
+#endif
 
 gchar *strupr (gchar *s) {
 	gchar c;
@@ -309,4 +366,31 @@ void make_more_space_if_necessary(gchar **str, gint *size, gint *total_size, gin
 		*str = g_realloc(*str, (*total_size)*2);
 		*total_size = (*total_size) * 2;
 	}		
+}
+
+
+const char *encode(iconv_t cd, const char *txt) {
+	size_t len = MAXSTRLEN;
+	size_t slen;
+	static char encodebuf[MAXSTRLEN];
+	char *dest = encodebuf;
+	int result = 0;
+	const char *ret = NULL;
+
+	encodebuf[0] = '\0';
+	if ((txt != NULL) && (*txt != '\0')) {
+		if (cd != (iconv_t) -1) {
+			slen = bytelength(txt);
+#if ICONV_CONST_CHAR_PP
+			result = iconv(cd, (const char **) &txt, &slen, &dest, &len);
+#else
+			result = iconv(cd, (char **)&txt, &slen, &dest, &len);
+#endif
+			*dest = '\0';
+			ret = encodebuf;
+		} else {
+			ret = txt;
+		}
+	}
+	return ret;
 }

@@ -166,7 +166,8 @@ gint rlib_format_string(rlib *r, struct report_field *rf, struct rlib_value *rva
 		} else if(RLIB_VALUE_IS_STRING(rval)) {
 			sprintf(buf, "%s", RLIB_VALUE_GET_AS_STRING(rval));
 		} else if(RLIB_VALUE_IS_DATE(rval))  {
-			strftime(buf, 100, "%m/%d/%Y", &RLIB_VALUE_GET_AS_DATE(rval));
+			struct rlib_datetime *dt = &RLIB_VALUE_GET_AS_DATE(rval);
+			rlib_datetime_format(dt, buf, 100, "%m/%d/%Y");
 		} else {
 			sprintf(buf, "!ERR_F");
 			return FALSE;
@@ -198,13 +199,14 @@ gint rlib_format_string(rlib *r, struct report_field *rf, struct rlib_value *rva
 					break;
 				case '@': //Format as time/date
 					if(RLIB_VALUE_IS_DATE(rval)) {
-						strftime(buf, 100, tfmt + 1, &RLIB_VALUE_GET_AS_DATE(rval));				
+						struct rlib_datetime *dt = &RLIB_VALUE_GET_AS_DATE(rval);
+						rlib_datetime_format(dt, buf, 100, tfmt + 1);
 					}
 					break;
 				}
 			}
 			if(RLIB_VALUE_IS_DATE(rval)) {
-				strftime(buf, 100, formatstring, &RLIB_VALUE_GET_AS_DATE(rval));				
+				rlib_datetime_format(&RLIB_VALUE_GET_AS_DATE(rval), buf, 100, formatstring);
 			} else {	
 				gint i=0,j=0,pos=0,fpos=0;
 				gchar fmtstr[20];

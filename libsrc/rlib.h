@@ -93,10 +93,17 @@ struct rgb {
 	gfloat b;
 };
 
+
+struct rlib_datetime {
+	GDate date;
+	long ltime;
+};
+
+
 struct rlib_value {
 	gint type;
 	gint64 number_value;
-	struct tm date_value;
+	struct rlib_datetime date_value;
 	gchar *string_value;
 	gpointer iif_value;
 	gint free;
@@ -331,7 +338,7 @@ struct rlib_report {
 	xmlChar *xml_bottom_margin;
 	xmlChar *xml_pages_accross;
 	xmlChar *xml_suppress_page_header_first_page;
-
+	
 	gfloat *position_top;
 	gfloat *position_bottom;
 	gfloat *bottom_size;
@@ -353,7 +360,7 @@ struct rlib_report {
 	struct report_element *breaks;
 	struct report_alternate alternate;
 	gint mainloop_query;
-	iconv_t cd;
+	iconv_t pdf_conversion;
 
 	struct rlib_pcode *font_size_code;
 	struct rlib_pcode *orientation_code;
@@ -400,11 +407,14 @@ struct rlib {
 
 	gint current_font_point;
 
-	char pdf_fontdir1[256];
-	char pdf_fontdir2[256];
-	char pdf_encoding[256];
-	char pdf_fontname[256];
-
+	gchar pdf_fontdir1[256];
+	gchar pdf_fontdir2[256];
+	gchar pdf_encoding[256];
+	gchar pdf_fontname[256];
+	gboolean utf8;
+	iconv_t pdf_conversion;
+	time_t now; //set when rlib starts now will then be a constant over the time of the report
+	
 	struct rlib_queries queries[RLIB_MAXIMUM_QUERIES];
 
 	gint mainloop_queries_count;
@@ -520,7 +530,7 @@ gint rlib_set_locale(rlib *r, gchar *locale);
 void rlib_init_profiler(void);
 void rlib_dump_profile(gint profilenum, const gchar *filename);
 void rlib_trap(void); //For internals debugging only
-
+gchar *rlib_version(); // returns the version string.
 
 /***** PROTOTYPES: parsexml.c *************************************************/
 struct rlib_report * parse_report_file(gchar *filename);
@@ -566,13 +576,17 @@ void rlib_resolve_fields(rlib *r);
 gchar *strlwrexceptquoted (gchar *s);
 gchar *rmwhitespacesexceptquoted(gchar *s);
 void rlogit(const gchar *fmt, ...);
+void r_debug(const gchar *fmt, ...);
+void r_info(const gchar *fmt, ...);
+void r_warning(const gchar *fmt, ...);
+void r_error(const gchar *fmt, ...);
 void rlogit_setmessagewriter(void(*writer)(const gchar *msg));
 gint rutil_enableSignalHandler(gint trueorfalse);
 gint64 tentothe(gint n);
 gchar hextochar(gchar c);
 gchar *colornames(gchar *str);
 void parsecolor(struct rgb *color, gchar *strx);
-struct tm * stod(struct tm *tm_date, gchar *str);
+struct rlib_datetime * stod(struct rlib_datetime *tm_date, gchar *str);
 void bumpday(gint *year, gint *month, gint *day);
 void bumpdaybackwords(gint *year, gint *month, gint *day);
 gchar *strupr (gchar *s);
@@ -581,6 +595,7 @@ gchar *strproper (gchar *s);
 gint daysinmonth(gint year, gint month);
 void init_signals(void);
 void make_more_space_if_necessary(gchar **str, gint *size, gint *total_size, gint len);
+const char *encode(iconv_t cd, const char *txt); //do an iconv conversion
 
 /***** PROTOTYPES: navigation.c ***********************************************/
 gint rlib_navigate_next(rlib *r, gint resultset_num);
@@ -632,3 +647,20 @@ struct rlib_report * load_report(gchar *filename);
 /* temp/test stuff */
 void rlib_set_pdf_font(rlib *r, const char *encoding, const char *fontname);
 void rlib_set_pdf_font_directories(rlib *r, const char *d1, const char *d2);
+void rlib_set_pdf_conversion(rlib *r, int rptnum, const char *encoding);
+
+/* rlib_datetime - should be a separate module (class) */
+void rlib_datetime_clear(struct rlib_datetime *t1);
+void rlib_datetime_set_date(struct rlib_datetime *dt, int y, int m, int d);
+void rlib_datetime_set_time(struct rlib_datetime *dt, int h, int m, int s);
+int rlib_datetime_valid_date(struct rlib_datetime *dt);
+int rlib_datetime_valid_time(struct rlib_datetime *dt);
+void rlib_datetime_clear_time(struct rlib_datetime *t);
+void rlib_datetime_clear_date(struct rlib_datetime *t);
+gint rlib_datetime_compare(struct rlib_datetime *t1, struct rlib_datetime *t2);
+void rlib_datetime_format(struct rlib_datetime *dt, char *buf, int max, const char *fmt);
+int rlib_datetime_daysdiff(struct rlib_datetime *dt, struct rlib_datetime *dt2);
+
+//#define charcount(s) g_utf8_strlen(s, -1)
+#define charcount(s) strlen(s)
+#define bytelength(s) strlen(s)

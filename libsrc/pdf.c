@@ -30,12 +30,39 @@ struct _private {
 	gint length;
 };
 
+
 static gfloat rlib_pdf_get_string_width(rlib *r, gchar *text) {
+	struct rlib_report *rr = r->reports[r->current_report]; //Should be a better way
+	if (rr->pdf_conversion != (iconv_t) -1) text = (gchar *) encode(rr->pdf_conversion, text);
+	else if(r->pdf_conversion != (iconv_t) -1) text = (gchar *) encode(r->pdf_conversion, text);
 	return cpdf_stringWidth(OUTPUT_PRIVATE(r)->pdf, text)/(72.0);
 }
 
-static void rlib_pdf_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *text, gint backwards, gint col) {
-	cpdf_text(OUTPUT_PRIVATE(r)->pdf, left_origin, bottom_origin, 0, text);
+static void rlib_pdf_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *t, gint backwards, gint col) {
+	CPDFdoc *pdf = OUTPUT_PRIVATE(r)->pdf;
+	gchar *tmp = t;
+	gchar *buf;
+	glong itemsread;
+	glong itemswritten;
+	GError *error;
+	gunichar2 *unistr;
+
+	if (r->utf8) {
+//rlib_trap();				
+		cpdf_hexStringMode(pdf, YES);
+		unistr = g_utf8_to_utf16(tmp, -1, &itemsread, &itemswritten, &error);
+		buf = g_malloc(2 * sizeof(gunichar2) * (itemswritten + 2));
+		cpdf_convertBinaryToHex((const guchar *) unistr, buf, sizeof(gunichar2) * itemswritten, NO);
+		g_free(unistr);
+		cpdf_text(pdf, left_origin, bottom_origin, 0, buf);
+		g_free(buf);
+		cpdf_hexStringMode(pdf, NO);
+	} else {
+		struct rlib_report *rr = r->reports[r->current_report]; //YECH!!
+		if (rr->pdf_conversion != (iconv_t) -1) t = (gchar *) encode(rr->pdf_conversion, t);
+		else if(r->pdf_conversion != (iconv_t) -1) t = (gchar *) encode(r->pdf_conversion, t);
+		cpdf_text(pdf, left_origin, bottom_origin, 0, t);
+	}
 }
 
 static void rlib_pdf_set_fg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {
@@ -96,15 +123,18 @@ gfloat nheight) {
 	OUTPUT(r)->rlib_set_bg_color(r, 0, 0, 0);
 }
 
+
 static void rlib_pdf_set_font_point(rlib *r, gint point) {
 	char *encoding;
 	char *fontname;
 	if(r->current_font_point != point) {
 		if (*r->pdf_fontdir1) { //if one set other is guaranteed to be set
 			cpdf_setFontDirectories(OUTPUT_PRIVATE(r)->pdf, r->pdf_fontdir1, r->pdf_fontdir2);
+//r_debug("Using font directories %s, %s", r->pdf_fontdir1, r->pdf_fontdir1);
 		}
 		encoding = (*r->pdf_encoding)? r->pdf_encoding : "WinAnsiEncoding";
 		fontname = (*r->pdf_fontname)? r->pdf_fontname : "Courier";
+//r_debug("Fontname %s, encoding %s", fontname, encoding);
 		cpdf_setFont(OUTPUT_PRIVATE(r)->pdf, fontname, encoding, point);		
 		r->current_font_point = point;
 	}
@@ -159,12 +189,16 @@ static void rlib_pdf_init_end_page(rlib *r) {
 
 }
 
+
 static void rlib_pdf_init_output(rlib *r) {
+	CPDFdoc *pdf;
 	CPDFdocLimits dL = {500, -1, -1, 10000, 10000};
-	OUTPUT_PRIVATE(r)->pdf = cpdf_open(0, &dL);
-	cpdf_enableCompression(OUTPUT_PRIVATE(r)->pdf, YES);
-	cpdf_init(OUTPUT_PRIVATE(r)->pdf);
-	cpdf_setTitle(OUTPUT_PRIVATE(r)->pdf, "RLIB Report");
+
+	r_debug("CPDF version %s", cpdf_version() );
+	pdf = OUTPUT_PRIVATE(r)->pdf = cpdf_open(0, &dL);
+	cpdf_enableCompression(pdf, YES);
+	cpdf_init(pdf);
+	cpdf_setTitle(pdf, "RLIB Report");
 }
 
 static void rlib_pdf_begin_text(rlib *r) {

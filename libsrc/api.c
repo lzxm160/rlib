@@ -80,6 +80,7 @@ gint rlib_execute(rlib *r) {
 	gint i,j;
 	char newfile[MAXSTRLEN];
 
+	r->now = time(NULL);// snapshot of the current date/time
 	for(i=0;i<r->queries_count;i++) {
 		r->results[i].input = r->queries[i].input;
 		r->results[i].result = INPUT(r,i)->new_result_from_query(INPUT(r,i), r->queries[i].sql);
@@ -221,6 +222,7 @@ gint rlib_add_parameter(rlib *r, const gchar *name, const gchar *value) {
 *  Returns TRUE if locale was actually set, otherwise, FALSE
 */
 gint rlib_set_locale(rlib *r, gchar *locale) {
+	if (strstr(locale, ".utf8")) r->utf8 = TRUE;
 	return (setlocale(LC_ALL, locale) == NULL)? FALSE : TRUE;
 }
 
@@ -280,14 +282,33 @@ void rlib_set_pdf_font_directories(rlib *r, const char *d1, const char *d2) {
 }
 
 
+void rlib_set_pdf_conversion(rlib *r, int rptnum, const char *encoding) {
+	if ((rptnum >= 0) && (rptnum < r->reports_count)) {
+		struct rlib_report *rr = r->reports[rptnum];
+		if (rr->pdf_conversion != (iconv_t) -1) iconv_close(rr->pdf_conversion);
+		rr->pdf_conversion = (iconv_t) -1;
+		if (encoding) {
+			rr->pdf_conversion = iconv_open(encoding, "UTF-8");
+		}
+	}	
+}
+
+
 void rlib_set_pdf_font(rlib *r, const char *encoding, const char *fontname) {
 	if (encoding) strncpy(r->pdf_encoding, encoding, sizeof(r->pdf_encoding) - 1);
 	if (fontname) strncpy(r->pdf_fontname, fontname, sizeof(r->pdf_fontname) - 1);
 }
 
 
-
-
+#ifdef VERSION
+gchar *rlib_version() {
+	return VERSION;
+}
+#else
+gchar *rlib_version() {
+	return "Unknown";
+}
+#endif
 
 
 #if HAVE_MYSQL

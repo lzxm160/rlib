@@ -23,6 +23,7 @@
 #include <math.h>
 #include <time.h>
 #include <ctype.h>
+#include <langinfo.h>
 
 #include "rlib.h"
 #include "pcode.h"
@@ -134,11 +135,16 @@ gint64 rlib_str_to_long_long(gchar *str) {
 	gint len=0;
 	gint64 left=0, right=0;
 	gint sign = 1;
-	gchar decimalsep = '.'; //TODO: Needs to come from locale info
-		
+	gchar decimalsep = '.';
+	gchar *temp;
+	
 	if(str == NULL)
 		return 0;
 	
+	temp = nl_langinfo(RADIXCHAR);
+	if (!temp || bytelength(temp) != 1) {
+		r_warning("nl_langinfo returned %s as DECIMAL_POINT", temp);
+	} else decimalsep = *temp;
 	left = atoll(str);
 	other_side = strchr(str, decimalsep);
 	if (left < 0) {
@@ -148,7 +154,7 @@ gint64 rlib_str_to_long_long(gchar *str) {
 	if(other_side != NULL) {
 		other_side++;
 		right = atoll(other_side);
-		len = strlen(other_side);
+		len = bytelength(other_side);
 	}
 	if (len > RLIB_FXP_PRECISION) {
 		len = RLIB_FXP_PRECISION;
@@ -171,7 +177,7 @@ gint rvalcmp(struct rlib_value *v1, struct rlib_value *v2) {
 		return strcmp(RLIB_VALUE_GET_AS_STRING(v1), RLIB_VALUE_GET_AS_STRING(v2));
 	}
 	if(RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_DATE(v2)) {
-		return memcmp(&RLIB_VALUE_GET_AS_DATE(v1), &RLIB_VALUE_GET_AS_DATE(v2), sizeof(struct tm));
+		return memcmp(&RLIB_VALUE_GET_AS_DATE(v1), &RLIB_VALUE_GET_AS_DATE(v2), sizeof(struct rlib_datetime));
 	}
 	return -1;
 }
@@ -185,13 +191,13 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, gchar *str) {
 	gint rvar;
 	o = g_new0(struct rlib_pcode_operand, 1);
 	if(str[0] == '\'') {
-		gchar *newstr = g_malloc(strlen(str)-1);
-		memcpy(newstr, str+1, strlen(str)-1);
+		gchar *newstr = g_malloc(bytelength(str)-1);
+		memcpy(newstr, str+1, bytelength(str)-1);
 		newstr[strlen(str)-2] = '\0';
 		o->type = OPERAND_STRING;
 		o->value = newstr;
 	} else if(str[0] == '{') {
-		struct tm *tm_date = g_malloc(sizeof(struct tm));
+		struct rlib_datetime *tm_date = g_malloc(sizeof(struct rlib_datetime));
 		str++;
 		o->type = OPERAND_DATE;
 		o->value = stod(tm_date, str);
@@ -252,7 +258,7 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, gchar *str) {
 		o->value = newnum;
 	} else {
 		gchar *err = "BAD_OPERAND";
-		gchar *newstr = g_malloc(strlen(err)+1);
+		gchar *newstr = g_malloc(bytelength(err)+1);
 		strcpy(newstr, err);
 		o->type = OPERAND_STRING;
 		o->value = newstr;
@@ -579,7 +585,7 @@ struct rlib_value * rlib_value_new(struct rlib_value *rval, gint type, gint free
 	if(type == RLIB_VALUE_STRING)
 		rval->string_value = value;
 	if(type == RLIB_VALUE_DATE)
-		rval->date_value = *(struct tm *)value;
+		rval->date_value = *((struct rlib_datetime *) value);
 	if(type == RLIB_VALUE_IIF)
 		rval->iif_value = value;
 
@@ -624,7 +630,7 @@ struct rlib_value * rlib_value_new_string(struct rlib_value *rval, gchar *value)
 	return rlib_value_new(rval, RLIB_VALUE_STRING, TRUE, g_strdup(value));
 }
 
-struct rlib_value * rlib_value_new_date(struct rlib_value *rval, struct tm *date) {
+struct rlib_value * rlib_value_new_date(struct rlib_value *rval, struct rlib_datetime *date) {
 	return rlib_value_new(rval, RLIB_VALUE_DATE, FALSE, date);
 }
 

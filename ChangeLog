@@ -1,3 +1,73 @@
+2004-02-23  Chet Heilman  <cheilman@sicompos.com>
+
+	* libsrc/api.c: (rlib_execute), (rlib_set_locale),
+	(rlib_set_pdf_conversion), (rlib_version):
+		Added new interface functions for setting report locale.
+	* libsrc/formatstring.c: (rlib_format_string):
+		added new 'locale' friendly formatters for handling numbers,
+		money and dates.
+	* libsrc/parsexml.c: (safestrncpy), (parse_line_array),
+	(parse_report_file):
+	
+	* libsrc/pcode.c: (rlib_str_to_long_long), (rvalcmp),
+	(rlib_new_operand), (rlib_value_new), (rlib_value_new_date):
+		changed the format of Date/time variables to allow it to handle
+		a greater range of dates. Now accepts 1/1/1 through 1/1/8000 or so.
+		It uses the GLIB GDate 'class'.
+		Fixed date arithmetic and added ability to subtract 2 dates.
+		Added dateof and timeof functions to address only the date or time
+		portion of the date time variable.
+	* libsrc/pcode.h:
+		Same as above.
+	* libsrc/pcode_op_functions.c: (rlib_datetime_valid_date),
+	(rlib_datetime_valid_time), (rlib_datetime_clear_time),
+	(rlib_datetime_clear_date), (rlib_datetime_clear),
+	(rlib_datetime_compare), (rlib_datetime_set_date),
+	(rlib_datetime_set_time), (rlib_datetime_format_date),
+	(rlib_datetime_format_time), (split_tdformat),
+	(rlib_datetime_format), (rlib_datetime_daysdiff),
+	(rlib_datetime_secsdiff), (rlib_pcode_operator_add),
+	(rlib_pcode_operator_subtract), (rlib_pcode_operator_lte),
+	(rlib_pcode_operator_lt), (rlib_pcode_operator_gte),
+	(rlib_pcode_operator_gt), (rlib_pcode_operator_eql),
+	(rlib_pcode_operator_noteql), (rlib_pcode_operator_stod_common),
+	(rlib_pcode_operator_dtos_common), (rlib_pcode_operator_dateof),
+	(rlib_pcode_operator_timeof), (rlib_pcode_operator_year),
+	(rlib_pcode_operator_month), (rlib_pcode_operator_day),
+	(rlib_pcode_operator_upper), (rlib_pcode_operator_lower),
+	(rlib_pcode_operator_left), (rlib_pcode_operator_right),
+	(rlib_pcode_operator_substring), (rlib_pcode_operator_proper),
+	(rlib_pcode_operator_stods), (rlib_pcode_operator_dim),
+	(rlib_pcode_operator_wiy), (rlib_pcode_operator_wiyo),
+	(rlib_pcode_operator_date):
+		Same as above. Plus all code has been upgraded so that it can 
+		process UTF8 encoded strings. All input from the xml parser is
+		UTF8. Input from the datasource and all other input data should
+		be in UTF8 encoding. To use non-UTF8 datasources, we would need
+		an input encoding filter (which we don't currently have).
+	* libsrc/pdf.c: (rlib_pdf_get_string_width), (rlib_pdf_print_text),
+	(rlib_pdf_set_font_point), (rlib_pdf_init_output):
+		Added functions to change font and set encodings.
+		Changed output functions so that they will re-encode to any
+		valid output encoding.
+		Also added code for direct output of UTF8, but it doesn't work.
+		I think this is at least partly due to CPDF not fully supporting
+		UTF8.
+	* libsrc/reportgen.c: (align_text), (execute_pcodes_for_line),
+	(wrap_memo_lines), (rlib_fetch_first_rows), (make_report):
+		Changed functions necessary for handling UTF8
+	* libsrc/resolution.c: (rlib_resolve_rlib_variable),
+	(rlib_resolve_resultset_field), (rlib_resolve_variable),
+	(rlib_resolve_memory_variable):
+		UTF8 handling.
+	* libsrc/rlib.h:
+		Added new function prototypes and changed some of the structs.
+	* libsrc/util.c: (r_error), (r_info), (r_debug), (r_warning),
+	(parsecolor), (stod), (daysinmonth), (encode):
+		Added new logging functions. These are currently identical to 
+		rlogit, but they will eventually be enableable/disableable, etc.
+		Change date/time handling to use new datetime.
+
 2004-02-17  H. Steuer <steuer@unixsystems.de>
 	reviewed by: <bdoan@sicompos.com>
 	* inputs/mysql/mysql.c: mysql_options() command does not always initialize the options struct by call, 

@@ -37,7 +37,7 @@
 
 */
 gint rlib_resolve_rlib_variable(rlib *r, gchar *name) {
-	if(strlen(name) >= 3 && name[0] == 'r' && name[1] == '.') {
+	if(bytelength(name) >= 3 && name[0] == 'r' && name[1] == '.') {
 		name += 2;
 		if(!strcmp(name, "pageno"))
 			return RLIB_RLIB_VARIABLE_PAGENO;
@@ -70,6 +70,7 @@ gint rlib_resolve_resultset_field(rlib *r, char *name, void **rtn_field, gint *r
 	gchar *right_side = NULL, *result_name = NULL;
 
 	resultset = r->current_result;
+//TODO:localize this so utf8 names work too.
 	right_side = memchr(name, '.', strlen(name));
 	if(right_side != NULL) {
 		gint t;
@@ -212,7 +213,7 @@ static void rlib_resolve_outputs(rlib *r, struct report_element *e) {
 */
 struct report_variable *rlib_resolve_variable(rlib *r, gchar *name) {
 	struct report_element *e;
-	if(strlen(name) >= 3 && name[0] == 'v' && name[1] == '.') {
+	if(bytelength(name) >= 3 && name[0] == 'v' && name[1] == '.') {
 		name += 2;
 		for(e = r->reports[r->current_report]->variables; e != NULL; e=e->next) {
 			struct report_variable *rv = e->data;
@@ -297,7 +298,7 @@ void rlib_resolve_fields(rlib *r) {
 }
 
 gchar * rlib_resolve_memory_variable(rlib *r, gchar *name) {
-	if(strlen(name) >= 3 && name[0] == 'm' && name[1] == '.') {
+	if(bytelength(name) >= 3 && name[0] == 'm' && name[1] == '.') {
 		if (r->htParameters) {
 			gchar *result = rlib_hashtable_lookup(r->htParameters, name + 2);
 			if (result) return result;

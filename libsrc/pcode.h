@@ -159,7 +159,7 @@ struct rlib_value * rlib_value_stack_pop(struct rlib_value_stack *vs);
 int rlib_value_stack_push(struct rlib_value_stack *vs, struct rlib_value *value);
 struct rlib_value * rlib_value_new_number(struct rlib_value *rval, long long value);
 struct rlib_value * rlib_value_new_string(struct rlib_value *rval, char *value);
-struct rlib_value * rlib_value_new_date(struct rlib_value *rval, struct tm *date);
+struct rlib_value * rlib_value_new_date(struct rlib_value *rval, struct rlib_datetime *date);
 void rlib_pcode_dump(struct rlib_pcode *p, int offset);
 
 int rlib_pcode_operator_multiply(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
