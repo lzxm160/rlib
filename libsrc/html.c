@@ -237,7 +237,6 @@ static void rlib_html_start_report(rlib *r) {
 	struct rlib_report *rr = r->reports[r->current_report];
 	gchar buf[MAXSTRLEN];
 	gint pages_accross = rr->pages_accross;
-	const char *output_encoding = rlib_char_encoder_get_name(r->current_output_encoder);
 	gint i;
 
 	OUTPUT_PRIVATE(r)->bottom = g_malloc(sizeof(struct _data) * pages_accross);

@@ -45,4 +45,3 @@ void rlib_set_output_encoding(rlib *r, const char *encoding);
 void rlib_set_report_output_encoding(rlib *r, int reportnum, const char *encoding);
 void rlib_set_pdf_font(rlib *r, const char *encoding, const char *fontname);
 void rlib_set_pdf_font_directories(rlib *r, const char *d1, const char *d2);
-gint rlib_datasource_set_decoding(rlib *r, gchar *input_name, gchar *decoding);

@@ -94,13 +94,13 @@ static const gchar *encode(gchar *encodebuf, size_t len, iconv_t cd, const gchar
 }
 
 
-static iconv_t open_input_encoder(const gchar *encoding) {
+/*static iconv_t open_input_encoder(const gchar *encoding) {
 	if (!g_strcasecmp(encoding, "UTF-8") || !g_strcasecmp(encoding, "UTF8")) {
 		return (iconv_t) -1;
 	}
 	return iconv_open("UTF-8", encoding);
 }
-
+*/
 
 static const char *fix_encoding_name(const char *encoding) {
 	if ((encoding == NULL)

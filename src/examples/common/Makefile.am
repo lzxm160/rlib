@@ -20,17 +20,4 @@
 ##
 ## Process this file with automake to produce Makefile.in
 
-if HAVE_MYSQL
-EXAMPLES=examples
-endif
-
-SUBDIRS = \
-	$(EXAMPLES) 
-
-bin_PROGRAMS = rlibc
-
-INCLUDES = $(RLIB_CFLAGS) -I${top_srcdir}/libsrc/  
-
-rlibc_SOURCES= rlibc.c rlib.h
-rlibc_LDADD = -L${top_builddir}/libsrc/ $(RLIB_LIBS) -lr
-
+EXTRA_DIST = create_database create_database_user create_products products.xml

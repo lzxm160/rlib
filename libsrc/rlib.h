@@ -583,6 +583,7 @@ void rlib_set_database_encoding(rlib *r, const char *encoding);
 void rlib_set_parameter_encoding(rlib *r, const char *encoding);
 gint rlib_set_datasource_encoding(rlib *r, gchar *input_name, gchar *encoding);
 void rlib_set_report_output_encoding(rlib *r, gint reportnum, const gchar *encoding);
+void rlib_set_output_encoding(rlib *r, const char *encoding);
 
 /***** PROTOTYPES: parsexml.c *************************************************/
 struct rlib_report * parse_report_file(gchar *filename);

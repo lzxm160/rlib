@@ -275,7 +275,6 @@ static const gchar *encode_text(rlib *r, const gchar *text) {
 			result = "!ERR_ENC2";
 		}
 	}
-rlogit("encode_text TEXT BEFORE[%s] AFTER[%s]\n", text, result);
 	return result;
 }
 
@@ -1183,7 +1182,6 @@ gint make_report(rlib *r) {
 	first_result = rlib_fetch_first_rows(r);
 	for(report=0;report<r->reports_count;report++) {
 		struct rlib_report *rr;
-		gchar *tmp;
 				
 		processed_variables = FALSE;
 		r->current_report = report;

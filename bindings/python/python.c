@@ -182,38 +182,6 @@ SWIG_TypeCast(swig_type_info *ty, void *ptr) {
   return (*ty->converter)(ptr);
 }
 
-#if 0
-/* Dynamic pointer casting. Down an inheritance hierarchy */
-SWIGRUNTIME(swig_type_info *) 
-SWIG_TypeDynamicCast(swig_type_info *ty, void **ptr) {
-  swig_type_info *lastty = ty;
-  if (!ty || !ty->dcast) return ty;
-  while (ty && (ty->dcast)) {
-    ty = (*ty->dcast)(ptr);
-    if (ty) lastty = ty;
-  }
-  return lastty;
-}
-
-/* Return the name associated with this type */
-SWIGRUNTIME(const char *)
-SWIG_TypeName(const swig_type_info *ty) {
-  return ty->name;
-}
-
-/* Search for a swig_type_info structure */
-SWIGRUNTIME(swig_type_info *)
-SWIG_TypeQuery(const char *name) {
-  swig_type_info *ty = swig_type_list;
-  while (ty) {
-    if (ty->str && (strcmp(name,ty->str) == 0)) return ty;
-    if (ty->name && (strcmp(name,ty->name) == 0)) return ty;
-    ty = ty->prev;
-  }
-  return 0;
-}
-#endif
-
 /* Set the clientdata field for a type */
 SWIGRUNTIME(void)
 SWIG_TypeClientData(swig_type_info *ti, void *clientdata) {
@@ -442,21 +410,6 @@ SWIG_Python_newvarlink(void) {
   return ((PyObject*) result);
 }
 
-#if 0
-SWIGRUNTIME(void)
-SWIG_Python_addvarlink(PyObject *p, char *name, PyObject *(*get_attr)(void), int (*set_attr)(PyObject *p)) {
-  swig_varlinkobject *v;
-  swig_globalvar *gv;
-  v= (swig_varlinkobject *) p;
-  gv = (swig_globalvar *) malloc(sizeof(swig_globalvar));
-  gv->name = (char *) malloc(strlen(name)+1);
-  strcpy(gv->name,name);
-  gv->get_attr = get_attr;
-  gv->set_attr = set_attr;
-  gv->next = v->vars;
-  v->vars = gv;
-}
-#endif
 /* Convert a pointer value */
 SWIGRUNTIME(int)
 SWIG_Python_ConvertPtr(PyObject *obj, void **ptr, swig_type_info *ty, int flags) {
@@ -548,49 +501,6 @@ type_error:
   }
   return -1;
 }
-
-#if 0
-/* Convert a pointer value, signal an exception on a type mismatch */
-SWIGRUNTIME(void *)
-SWIG_Python_MustGetPtr(PyObject *obj, swig_type_info *ty, int argnum, int flags) {
-  void *result;
-  SWIG_Python_ConvertPtr(obj, &result, ty, flags | SWIG_POINTER_EXCEPTION);
-  return result;
-}
-
-/* Convert a packed value value */
-SWIGRUNTIME(int)
-SWIG_Python_ConvertPacked(PyObject *obj, void *ptr, int sz, swig_type_info *ty, int flags) {
-  swig_type_info *tc;
-  char  *c = 0;
-
-  if ((!obj) || (!PyString_Check(obj))) goto type_error;
-  c = PyString_AsString(obj);
-  /* Pointer values must start with leading underscore */
-  if (*c != '_') goto type_error;
-  c++;
-  c = SWIG_UnpackData(c,ptr,sz);
-  if (ty) {
-    tc = SWIG_TypeCheck(c,ty);
-    if (!tc) goto type_error;
-  }
-  return 0;
-
-type_error:
-
-  if (flags) {
-    if (ty && c) {
-      char *temp = (char *) malloc(64+strlen(ty->name)+strlen(c));
-      sprintf(temp,"Type error. Got %s, expected %s", c, ty->name);
-      PyErr_SetString(PyExc_TypeError, temp);
-      free((char *) temp);
-    } else {
-      PyErr_SetString(PyExc_TypeError,"Expected a pointer");
-    }
-  }
-  return -1;
-}
-#endif
 
 /* Create a new pointer object */
 SWIGRUNTIME(PyObject *)

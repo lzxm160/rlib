@@ -20,17 +20,11 @@
 ##
 ## Process this file with automake to produce Makefile.in
 
-if HAVE_MYSQL
-EXAMPLES=examples
-endif
+EXTRA_DIST = example.php
 
-SUBDIRS = \
-	$(EXAMPLES) 
+noinst_SCRIPTS = products.xml
+ 
+products.xml:
+	cp ../common/products.xml .
 
-bin_PROGRAMS = rlibc
-
-INCLUDES = $(RLIB_CFLAGS) -I${top_srcdir}/libsrc/  
-
-rlibc_SOURCES= rlibc.c rlib.h
-rlibc_LDADD = -L${top_builddir}/libsrc/ $(RLIB_LIBS) -lr
-
+CLEANFILES = *.xml

@@ -100,7 +100,7 @@ gint rlib_execute(rlib *r) {
 
 		r->results[i].result = INPUT(r,i)->new_result_from_query(INPUT(r,i), r->queries[i].sql);
 		if(r->results[i].result == NULL) {
-			rlogit("Failed To Run A Query!\n");			
+			rlogit("Failed To Run A Query [%s]\n", r->queries[i].sql);
 			return -1;
 		}
 		r->results[i].name =  r->queries[i].name;

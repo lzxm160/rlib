@@ -20,17 +20,23 @@
 ##
 ## Process this file with automake to produce Makefile.in
 
-if HAVE_MYSQL
-EXAMPLES=examples
+if HAVE_PHP
+PHP_EXAMPLES=php
+endif
+
+if HAVE_PYTHON
+PYTHON_EXAMPLES=python
+endif
+
+if HAVE_JAVA
+JAVA_EXAMPLES=java
 endif
 
 SUBDIRS = \
-	$(EXAMPLES) 
+	common \
+	c \
+	$(PHP_EXAMPLES) \
+	$(PYTHON_EXAMPLES) \
+	$(JAVA_EXAMPLES) 
 
-bin_PROGRAMS = rlibc
-
-INCLUDES = $(RLIB_CFLAGS) -I${top_srcdir}/libsrc/  
-
-rlibc_SOURCES= rlibc.c rlib.h
-rlibc_LDADD = -L${top_builddir}/libsrc/ $(RLIB_LIBS) -lr
-
+EXTRA_DIST = README

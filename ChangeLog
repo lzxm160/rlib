@@ -1,3 +1,37 @@
+2004-04-11  Bob Doan  <bdoan@sicompos.com>
+	* Makefile.am: added examples
+	* autogen.sh: force compile warnings on so Chet sees warnings ;)
+	* bindings/interfaces/SWIGTYPE_p_rlib.class: these should not be in CVS
+	* bindings/interfaces/librlib.class: likewise
+	* bindings/interfaces/librlibJNI.class: likewise
+	* bindings/python/python.c: reswigged
+	* configure.in: added examples
+	* libsrc/api.c: removed silly logging
+	* libsrc/charencoder.c: likewise
+	* libsrc/datasource.c: we need to set datasource decoded to null @ the start otherwise we crash
+	* libsrc/html.c: removed silly logging
+	* libsrc/pcode.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/rlib.h: 
+	* libsrc/rlib.i:
+	* libsrc/util.c: 
+	* src/Makefile.am: new examples
+	* src/examples/Makefile.am: likewise
+	* src/examples/README: likewise
+	* src/examples/c/Makefile.am: likewise
+	* src/examples/c/example.c: likewise
+	* src/examples/common/Makefile.am: likewise
+	* src/examples/common/create_database: likewise
+	* src/examples/common/create_database_user: likewise
+	* src/examples/common/create_products: likewise
+	* src/examples/common/products.xml: likewise
+	* src/examples/java/Makefile.am: likewise
+	* src/examples/java/example.java: likewise
+	* src/examples/php/Makefile.am: likewise
+	* src/examples/php/example.php: likewise
+	* src/examples/python/Makefile.am: likewise
+	* src/examples/python/example.py: likewise
+
 2004-04-07  Chet Heilman  <cheilman@sicompos.com>
 	* libsrc/charencoder.c: (encode), (open_input_encoder),
 	(fix_encoding_name), (rlib_char_encoder_new),

@@ -20,17 +20,14 @@
 ##
 ## Process this file with automake to produce Makefile.in
 
-if HAVE_MYSQL
-EXAMPLES=examples
-endif
+JAVAROOT=.
 
-SUBDIRS = \
-	$(EXAMPLES) 
+java_JAVA = SWIGTYPE_p_rlib.java librlib.java librlibJNI.java example.java 
 
-bin_PROGRAMS = rlibc
+noinst_SCRIPTS = products.xml
 
-INCLUDES = $(RLIB_CFLAGS) -I${top_srcdir}/libsrc/  
+products.xml: 
+	cp ../common/products.xml .
+	cp ../../../bindings/interfaces/*.java .
 
-rlibc_SOURCES= rlibc.c rlib.h
-rlibc_LDADD = -L${top_builddir}/libsrc/ $(RLIB_LIBS) -lr
-
+CLEANFILES = *.class *.xml SWIGTYPE_p_rlib.java librlib.java librlibJNI.java

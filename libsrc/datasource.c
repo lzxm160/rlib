@@ -29,7 +29,7 @@ gint rlib_add_datasource(rlib *r, gchar *input_name, struct input_filter *input)
 	r->inputs[r->inputs_count].input = input;
 	r->inputs[r->inputs_count].name = g_strdup(input_name);
 	r->inputs[r->inputs_count].handle = NULL;
-//	r->inputs[r->inputs_count].input->input_decoder = (iconv_t)-1;
+	r->inputs[r->inputs_count].input->info.encoder = NULL;
 	r->inputs_count++;
 	return 0;
 }
@@ -65,6 +65,7 @@ gchar *database_user, gchar *database_password, gchar *database_database) {
 	
 	r->inputs[r->inputs_count].name = g_strdup(input_name);
 	r->inputs[r->inputs_count].handle = handle;
+	r->inputs[r->inputs_count].input->info.encoder = NULL;
 	r->inputs_count++;
 
 	return 0;	
@@ -108,6 +109,7 @@ gint rlib_add_datasource_postgre(rlib *r, gchar *input_name, gchar *conn) {
 		return -1;
 	}
 	r->inputs[r->inputs_count].handle = handle;
+	r->inputs[r->inputs_count].input->info.encoder = NULL;
 	r->inputs_count++;
 	return 0;
 }
@@ -139,6 +141,7 @@ gint rlib_add_datasource_odbc(rlib *r, gchar *input_name, gchar *source, gchar *
 		return -1;
 	}
 	r->inputs[r->inputs_count].handle = handle;
+	r->inputs[r->inputs_count].input->info.encoder = NULL;
 	r->inputs_count++;
 	return 0;
 }

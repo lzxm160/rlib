@@ -367,7 +367,7 @@ void rlib_var_factory_destroy(rlib_var_factory **fptr) {
 }
 
 
-//==================================================================\
+//==================================================================
 // a Stack implementation for rlib_vars 
 
 rlib_var_stack *rlib_var_stack_new() {

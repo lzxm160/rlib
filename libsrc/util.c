@@ -446,7 +446,6 @@ char *make_utf8_locale(const char *encoding) {
 void make_all_locales_utf8() {
 	int *lc = locale_codes;
 	int i;
-	char *t;
 	while ((i = *lc) != -1) {
 		char *t = setlocale(i, NULL);
 		if (t) setlocale(i, make_utf8_locale(t));
