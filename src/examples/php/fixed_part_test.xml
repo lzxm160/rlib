@@ -13,8 +13,8 @@
 			<HorizontalLine size="10" bgcolor="'white'"/>
 		</Output>
 	</PageHeader>
-	<tr>
-		<td>
+	<pr>
+		<pd>
 			<Report fontSize="9" query="'inventory'">
 				<Alternate>
 					<NoData>
@@ -88,10 +88,10 @@
 					</FieldDetails>
 				</Detail>
 			</Report>		
-		</td>
-	</tr>	
-	<tr newpage="yes">
-		<td width="30" height="81" border_width="2" border_color="'black'">
+		</pd>
+	</pr>	
+	<pr newpage="yes">
+		<pd width="30" height="81" border_width="2" border_color="'black'">
 			<Report fontSize="9" query="'yields'" height="19" leftMargin="0.1">
 				<Alternate>
 					<NoData>
@@ -243,8 +243,8 @@
 					</Output>				
 				</ReportHeader>
 			</Report>
-		</td>
-		<td width="30" height="81" border_width="2" border_color="'black'">
+		</pd>
+		<pd width="30" height="81" border_width="2" border_color="'black'">
 			<Report fontSize="9" query="'deposits'" height="17" leftMargin="0.1">
 				<Alternate>
 					<NoData>
@@ -408,8 +408,8 @@
 					</FieldDetails>
 				</Detail>
 			</Report>			
-		</td>
-		<td width="40" height="81" border_width="2" border_color="'black'">
+		</pd>
+		<pd width="40" height="81" border_width="2" border_color="'black'">
 			<Report fontSize="9" query="'cash'" height="47" leftMargin="0.1">
 				<Alternate>
 					<NoData>
@@ -595,10 +595,10 @@
 					</Output>				
 				</ReportFooter>				
 			</Report>			
-		</td>
-	</tr>
-	<tr>
-		<td width="30" height="15" border_width="2" border_color="'black'">
+		</pd>
+	</pr>
+	<pr>
+		<pd width="30" height="15" border_width="2" border_color="'black'">
 			<Report fontSize="9" query="'labor'" leftMargin="0.1">
 				<Alternate>
 					<NoData>
@@ -629,8 +629,8 @@
 				</ReportHeader>
 			</Report>
 		
-		</td>
-		<td width="70" height="15" border_width="2" border_color="'black'">
+		</pd>
+		<pd width="70" height="15" border_width="2" border_color="'black'">
 			<Report fontSize="9" leftMargin="0.1">
 				<Alternate>
 					<NoData>
@@ -661,10 +661,10 @@
 				</ReportHeader>
 			</Report>
 		
-		</td>
-	</tr>
-	<tr newpage="yes">
-		<td>
+		</pd>
+	</pr>
+	<pr newpage="yes">
+		<pd>
 			<Report fontSize="9" query="'inventory'">
 				<Alternate>
 					<NoData>
@@ -738,8 +738,8 @@
 					</FieldDetails>
 				</Detail>
 			</Report>		
-		</td>
-	</tr>	
+		</pd>
+	</pr>	
 	<PageFooter>
 		<Output>
 			<Line>

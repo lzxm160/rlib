@@ -356,6 +356,7 @@ void rlib_resolve_part_fields(rlib *r, struct rlib_part *part) {
 	rlib_resolve_part_tr(r, part, part->tr_elements);
 	rlib_resolve_outputs(r, NULL, part->page_header);
 	rlib_resolve_outputs(r, NULL, part->page_footer);
+	rlib_resolve_outputs(r, NULL, part->report_header);
 }
 
 

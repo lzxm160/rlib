@@ -103,8 +103,8 @@ static gint rlib_mysql_first(gpointer input_ptr, gpointer result_ptr) {
 	result->last_row = NULL;
 	result->didprevious = FALSE;
 	result->isdone = FALSE;
-	return TRUE;
-	//return result->this_row != NULL ? TRUE : FALSE;
+	return result->this_row != NULL ? TRUE : FALSE;
+//	return TRUE;
 }
 
 static gint rlib_mysql_next(gpointer input_ptr, gpointer result_ptr) {

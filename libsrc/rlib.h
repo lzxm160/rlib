@@ -421,6 +421,7 @@ struct rlib_part {
 	struct rlib_pcode *paper_type_code;
 	struct rlib_pcode *font_size_code;
 
+	struct rlib_element *report_header;
 	struct rlib_element *page_header;
 	struct rlib_element *page_footer;
 
@@ -698,6 +699,7 @@ gint rlib_execute_as_int_inlist(rlib *r, struct rlib_pcode *pcode, gint *result,
 gint rlib_execute_as_float(rlib *r, struct rlib_pcode *pcode, gfloat *result);
 
 /***** PROTOTYPES: reportgen.c ****************************************************/
+void rlib_set_report_from_part(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat top_margin_offset);
 gchar *align_text(rlib *r, char *rtn, gint len, gchar *src, gint align, gint width);
 gint will_outputs_fit(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_element *e, gint page);
 gint will_this_fit(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat total, gint page);
@@ -773,7 +775,7 @@ void rlib_set_pdf_font_directories(rlib *r, const gchar *d1, const gchar *d2);
 
 /***** PROTOTYPES: layout.c ***************************************************/
 gfloat rlib_layout_get_page_width(rlib *r, struct rlib_part *part);
-void rlib_layout_init_part_page(rlib *r, struct rlib_part *part);
+void rlib_layout_init_part_page(rlib *r, struct rlib_part *part, gboolean first);
 gint rlib_layout_report_output(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_element *e, gint backwards);
 struct rlib_paper * rlib_layout_get_paper(rlib *r, gint paper_type);
 struct rlib_paper * rlib_layout_get_paper_by_name(rlib *r, gchar *paper_name);
@@ -781,3 +783,4 @@ gint rlib_layout_report_output_with_break_headers(rlib *r, struct rlib_part *par
 void rlib_layout_init_report_page(rlib *r, struct rlib_part *part, struct rlib_report *report);
 void rlib_layout_report_footer(rlib *r, struct rlib_part *part, struct rlib_report *report);
 gfloat rlib_layout_get_next_line(rlib *r, struct rlib_part *part, gfloat position, gfloat foint_point);
+gint rlib_layout_end_page(rlib *r, struct rlib_part *part, struct rlib_report *report);

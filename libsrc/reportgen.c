@@ -254,19 +254,8 @@ gint rlib_end_page_if_line_wont_fit(rlib *r, struct rlib_part *part, struct rlib
 		if(!will_outputs_fit(r,part, report, e, i+1))
 			fits=FALSE;
 	}
-	if(!fits) {
-		if(report->raw_page_number < r->current_page_number) {
-			OUTPUT(r)->end_page_again(r, part, report);
-			report->raw_page_number++;
-			OUTPUT(r)->set_raw_page(r, part, report->raw_page_number);
-		} else {
-			OUTPUT(r)->end_page(r, part);
-			rlib_layout_init_part_page(r, part);
-			report->raw_page_number++;
-		}
-		rlib_set_report_from_part(r, part, report, 0);
-		rlib_layout_init_report_page(r, part, report);
-	}
+	if(!fits)
+		rlib_layout_end_page(r, part, report);
 	return !fits;
 }
 
@@ -328,30 +317,30 @@ static void rlib_process_variables(rlib *r, struct rlib_report *report) {
 				rlib_value_free(amount);
 				rlib_value_new_string(amount, RLIB_VALUE_GET_AS_STRING(er));
 			} else
-				rlogit("rlib_process_variables EXPECTED TYPE NUMBER OR STRING FOR RLIB_REPORT_VARIABLE_EXPRESSION\n");
+				r_error("rlib_process_variables EXPECTED TYPE NUMBER OR STRING FOR RLIB_REPORT_VARIABLE_EXPRESSION\n");
 		} else if(rv->type == RLIB_REPORT_VARIABLE_SUM) {
 			if(RLIB_VALUE_IS_NUMBER(er))
 				RLIB_VALUE_GET_AS_NUMBER(amount) += RLIB_VALUE_GET_AS_NUMBER(er);
 			else
-				rlogit("rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_SUM\n");
+				r_error("rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_SUM\n");
 		} else if(rv->type == RLIB_REPORT_VARIABLE_AVERAGE) {
 			RLIB_VALUE_GET_AS_NUMBER(count) += RLIB_DECIMAL_PRECISION;
 			if(RLIB_VALUE_IS_NUMBER(er))
 				RLIB_VALUE_GET_AS_NUMBER(amount) += RLIB_VALUE_GET_AS_NUMBER(er);
 			else
-				rlogit("rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_AVERAGE\n");
+				r_error("rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_AVERAGE\n");
 		} else if(rv->type == RLIB_REPORT_VARIABLE_LOWEST) {
 			if(RLIB_VALUE_IS_NUMBER(er)) {
 				if(RLIB_VALUE_GET_AS_NUMBER(er) < RLIB_VALUE_GET_AS_NUMBER(amount) || RLIB_VALUE_GET_AS_NUMBER(amount) == 0) //TODO: EVIL HACK
 					RLIB_VALUE_GET_AS_NUMBER(amount) = RLIB_VALUE_GET_AS_NUMBER(er);
 			} else
-				rlogit("rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_LOWEST\n");
+				r_error("rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_LOWEST\n");
 		} else if(rv->type == RLIB_REPORT_VARIABLE_HIGHEST) {
 			if(RLIB_VALUE_IS_NUMBER(er)) {
 				if(RLIB_VALUE_GET_AS_NUMBER(er) > RLIB_VALUE_GET_AS_NUMBER(amount) || RLIB_VALUE_GET_AS_NUMBER(amount) == 0) //TODO: EVIL HACK
 					RLIB_VALUE_GET_AS_NUMBER(amount) = RLIB_VALUE_GET_AS_NUMBER(er);
 			} else
-				rlogit("rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_HIGHEST\n");
+				r_error("rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_HIGHEST\n");
 		}
 	}
 	
@@ -416,7 +405,7 @@ void rlib_process_expression_variables(rlib *r, struct rlib_report *report) {
 				rlib_value_free(amount);
 				rlib_value_new_string(amount, RLIB_VALUE_GET_AS_STRING(er));
 			} else
-				rlogit("rlib_process_variables EXPECTED TYPE NUMBER OR STRING FOR RLIB_REPORT_VARIABLE_EXPRESSION\n");
+				r_error("rlib_process_variables EXPECTED TYPE NUMBER OR STRING FOR RLIB_REPORT_VARIABLE_EXPRESSION\n");
 		}
 	}
 	
@@ -455,6 +444,7 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 	gfloat at_least = 0.0, origional_position_top;
 				
 	report->query_code = rlib_infix_to_pcode(r, report, report->xml_query);
+	r->current_result = 0;
 	if(report->query_code != NULL) {
 		rlib_execute_as_string(r, report->query_code, query, MAXSTRLEN);
 		for(i=0;i<r->queries_count;i++) {
@@ -476,61 +466,61 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 	rlib_set_report_from_part(r, part, report, top_margin_offset);
 
 	report->left_margin += left_margin_offset + part->left_margin;
-rlogit("LEFT MARGIN IS NOW %f\n", report->left_margin);
 
 	if(report->font_size != -1)
 		r->font_point = report->font_size;
 
-	if(rlib_execute_as_int(r, report->height_code, &report_percent)) {
+	if(rlib_execute_as_int(r, report->height_code, &report_percent)) 
 		at_least = (part->position_bottom[0] - part->position_top[0]) * ((gfloat)report_percent/100);					
-	}
 
 	origional_position_top = report->position_top[0];
 
 	rlib_layout_report_output(r, part, report, report->report_header, FALSE);
 	rlib_layout_init_report_page(r, part, report);
 	r->detail_line_count = 0;
-/*		if (!first_result) {
-			rlib_layout_report_output(r, rr->alternate.nodata, FALSE);
-*/			
-	INPUT(r,r->current_result)->first(INPUT(r,r->current_result), r->results[r->current_result].result);
 
-	if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
-		while (1) {
-			gint output_count = 0;
+	if(INPUT(r,r->current_result)->first(INPUT(r,r->current_result), r->results[r->current_result].result) == FALSE) {
+		rlib_layout_report_output(r, part, report, report->alternate.nodata, FALSE);	
+	} else {
+		rlib_fetch_first_rows(r);
 
-			if(!processed_variables) {
-				rlib_process_variables(r, report);
-				processed_variables = TRUE;
-			}
-			rlib_evaluate_break_attributes(r, report);
-			rlib_handle_break_headers(r, part, report);
+		if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
+			while (1) {
+				gint output_count = 0;
 
-			if(rlib_end_page_if_line_wont_fit(r, part, report, report->detail.fields))
-				rlib_force_break_headers(r, part, report);
+				if(!processed_variables) {
+					rlib_process_variables(r, report);
+					processed_variables = TRUE;
+				}
+				rlib_evaluate_break_attributes(r, report);
+				rlib_handle_break_headers(r, part, report);
 
-			if(OUTPUT(r)->do_break)
-				output_count = rlib_layout_report_output(r, part, report, report->detail.fields, FALSE);
-			else
-				output_count = rlib_layout_report_output_with_break_headers(r, part, report);
+				if(rlib_end_page_if_line_wont_fit(r, part, report, report->detail.fields))
+					rlib_force_break_headers(r, part, report);
 
-			if(output_count > 0)
-				r->detail_line_count++;
+				if(OUTPUT(r)->do_break)
+					output_count = rlib_layout_report_output(r, part, report, report->detail.fields, FALSE);
+				else
+					output_count = rlib_layout_report_output_with_break_headers(r, part, report);
 
-			if(rlib_navigate_next(r, r->current_result) == FALSE) {
-				rlib_navigate_last(r, r->current_result);
+				if(output_count > 0)
+					r->detail_line_count++;
+
+				if(rlib_navigate_next(r, r->current_result) == FALSE) {
+					rlib_navigate_last(r, r->current_result);
+					rlib_handle_break_footers(r, part, report);
+					break;
+				} 
+
+				rlib_evaluate_break_attributes(r, report);
 				rlib_handle_break_footers(r, part, report);
-				break;
-			} 
-
-			rlib_evaluate_break_attributes(r, report);
-			rlib_handle_break_footers(r, part, report);
-			processed_variables = FALSE;
+				processed_variables = FALSE;
+			}
 		}
+		rlib_navigate_last(r, r->current_result);
+		rlib_layout_report_footer(r, part, report);
 	}
-	rlib_navigate_last(r, r->current_result);
-	rlib_layout_report_footer(r, part, report);
-
+	
 	if(at_least > 0) {
 		gfloat used = (report->position_bottom[0]-origional_position_top)-(report->position_bottom[0]-report->position_top[0]);
 		if(used < at_least) {
@@ -595,7 +585,6 @@ void rlib_layout_part_td(rlib *r, struct rlib_part *part, struct rlib_element *e
 				r_error("UNKNOWN ELEMENT IN TD\n");
 			}
 		}
-		rlogit("========== TD WIDTH WAS %f\n", (((gfloat)width/100) * paper_width));
 		running_left_margin += (((gfloat)width/100) * paper_width);
 		OUTPUT(r)->end_td(r);
 	}	
@@ -617,7 +606,7 @@ void rlib_layout_part_tr(rlib *r, struct rlib_part *part, struct rlib_element *e
 		if(rlib_execute_as_boolean(r, tr->newpage_code, &newpage)) {
 			if(newpage && OUTPUT(r)->paginate) {
 				OUTPUT(r)->end_page(r, part);
-				rlib_layout_init_part_page(r, part);
+				rlib_layout_init_part_page(r, part, FALSE);
 				bzero(&rrp, sizeof(rrp));
 			}
 		}
@@ -632,8 +621,6 @@ void rlib_layout_part_tr(rlib *r, struct rlib_part *part, struct rlib_element *e
 		if(rlib_execute_as_string(r, tr->layout_code, buf, MAXSTRLEN) && strcmp(buf, "fixed") == 0)
 			tr->layout = RLIB_LAYOUT_FIXED;
 
-		rlogit("  TR [%f] [%s]\n", rrp.position_top, tr->layout == RLIB_LAYOUT_FIXED ? "fixed" : "flow");
-
 		bzero(&rrp, sizeof(rrp));
 
 		rlib_layout_part_td(r, part, tr->e, save_page_number, save_position_top, &rrp);
@@ -645,7 +632,6 @@ void rlib_layout_part_tr(rlib *r, struct rlib_part *part, struct rlib_element *e
 gint make_report(rlib *r) {
 	gint i = 0;
 //	gint processed_variables = FALSE;
-	gint first_result;
 	if(r->format == RLIB_FORMAT_HTML)
 		rlib_html_new_output_filter(r);
 	else if(r->format == RLIB_FORMAT_TXT)
@@ -666,21 +652,20 @@ gint make_report(rlib *r) {
 	r->start_of_new_report = TRUE;
 
 	OUTPUT(r)->init_output(r);
-	first_result = rlib_fetch_first_rows(r);
 
 	r->current_output_encoder = NULL;
 	for(i=0;i<r->parts_count;i++) {
 		struct rlib_part *part = r->parts[i];
-
+		rlib_fetch_first_rows(r);
 		rlib_resolve_part_fields(r, part);
 		rlib_evaluate_part_attributes(r, part);
 		OUTPUT(r)->start_report(r, part);
-		if(part->font_size != -1)
-			r->font_point = part->font_size;
 
-		rlib_layout_init_part_page(r, part);
+		rlib_layout_init_part_page(r, part, TRUE);
 		rlib_layout_part_tr(r, part, part->tr_elements);
 		OUTPUT(r)->end_report(r, part);
+rlogit("HEY!!\n");		
+		OUTPUT(r)->end_page(r, part);
 	}
 	
 /*

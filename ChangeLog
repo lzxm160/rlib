@@ -1,3 +1,16 @@
+2004-10-19  Bob Doan  <bdoan@sicompos.com>
+	* inputs/mysql/mysql.c: td->pd tr->pr parts now have a report header, report concatination works again, nodata works again
+	* libsrc/breaks.c: likewise
+	* libsrc/free.c: likewise
+	* libsrc/layout.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+	* src/examples/php/fixed_part_test.xml: likewise
+	* src/examples/php/flow_part_test.xml: likewise
+
 2004-10-16  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/api.c: compile fixes, remove report specific iconv stuff.. make the xml stuff just do it, update copyright
 	* libsrc/breaks.c: likewise

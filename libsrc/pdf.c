@@ -257,6 +257,7 @@ static void rlib_pdf_set_working_page(rlib *r, struct rlib_part *part, gint page
 	gint pages_across = part->pages_across;
 	gint page_number = r->current_page_number * pages_across;
 	page--;
+	
 	cpdf_setCurrentPage(OUTPUT_PRIVATE(r)->pdf, page_number + page - OUTPUT_PRIVATE(r)->page_diff);
 	OUTPUT_PRIVATE(r)->current_page = page_number + page - OUTPUT_PRIVATE(r)->page_diff;
 #if USEPDFLOCALE
@@ -269,6 +270,7 @@ static void rlib_pdf_set_raw_page(rlib *r, struct rlib_part *part, gint page) {
 #if USEPDFLOCALE
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
+
 	OUTPUT_PRIVATE(r)->page_diff = r->current_page_number - page;
 #if USEPDFLOCALE
 	setlocale(LC_NUMERIC, tlocale);

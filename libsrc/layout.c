@@ -814,8 +814,26 @@ void rlib_layout_init_report_page(rlib *r, struct rlib_part *part, struct rlib_r
 	rlib_layout_report_output(r, part, report, report->detail.headers, FALSE);
 }
 
-void rlib_layout_init_part_page(rlib *r, struct rlib_part *part) {
+gint rlib_layout_end_page(rlib *r, struct rlib_part *part, struct rlib_report *report) {
+	if(report->raw_page_number < r->current_page_number) {
+		OUTPUT(r)->end_page_again(r, part, report);
+		report->raw_page_number++;
+		OUTPUT(r)->set_raw_page(r, part, report->raw_page_number);
+	} else {
+		OUTPUT(r)->end_page(r, part);
+		rlib_layout_init_part_page(r, part, FALSE);
+		report->raw_page_number++;
+	}
+	rlib_set_report_from_part(r, part, report, 0);
+	rlib_layout_init_report_page(r, part, report);
+	return TRUE;
+}
+
+void rlib_layout_init_part_page(rlib *r, struct rlib_part *part, gboolean first) {
 	gint i;
+	if(part->font_size != -1)
+		r->font_point = part->font_size;
+
 	for(i=0;i<part->pages_across;i++) {
 		part->position_top[i] = part->top_margin;
 		part->bottom_size[i] = get_outputs_size(r, part->page_footer, i);
@@ -825,6 +843,8 @@ void rlib_layout_init_part_page(rlib *r, struct rlib_part *part) {
 	OUTPUT(r)->start_new_page(r, part);
 	OUTPUT(r)->set_font_point(r, r->font_point);
 	
+	if(first)
+		rlib_layout_report_output(r, part, NULL, part->report_header, FALSE);
 	rlib_layout_report_output(r, part, NULL, part->page_header, FALSE);
 
 	for(i=0; i<part->pages_across; i++)
@@ -832,8 +852,10 @@ void rlib_layout_init_part_page(rlib *r, struct rlib_part *part) {
 
 	rlib_layout_report_output(r, part, NULL, part->page_footer, TRUE);
 
-	for(i=0; i<part->pages_across; i++)
+	for(i=0; i<part->pages_across; i++) {
 		part->position_bottom[i] -= part->bottom_size[i];
+
+	}
 
 	OUTPUT(r)->init_end_page(r);
 }

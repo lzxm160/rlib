@@ -307,6 +307,7 @@ void rlib_free_part(rlib *r, struct rlib_part *part) {
 
 	rlib_free_output(r, part->page_header);
 	rlib_free_output(r, part->page_footer);
+	rlib_free_output(r, part->report_header);
 
 	rlib_free_part_tr(r, part, part->tr_elements);
 }

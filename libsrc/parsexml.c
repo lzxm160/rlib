@@ -515,7 +515,7 @@ static struct rlib_element * parse_part_tr(struct rlib_part *part, xmlDocPtr doc
 	cur = cur->xmlChildrenNode;
 	e->data = tr;
 	while (cur != NULL) {      
-		if ((!xmlStrcmp(cur->name, (const xmlChar *) "td"))) {
+		if ((!xmlStrcmp(cur->name, (const xmlChar *) "pd"))) {
 			if(tr->e == NULL) {
 				tr->e = parse_part_td(part, doc, ns, cur);
 			} else {
@@ -551,7 +551,7 @@ static void parse_part(struct rlib_part *part, xmlDocPtr doc, xmlNsPtr ns, xmlNo
 	
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *) "tr"))) {
+		if ((!xmlStrcmp(cur->name, (const xmlChar *) "pr"))) {
 		
 			if(part->tr_elements == NULL) {
 				part->tr_elements = parse_part_tr(part, doc, ns, cur);
@@ -562,6 +562,8 @@ static void parse_part(struct rlib_part *part, xmlDocPtr doc, xmlNsPtr ns, xmlNo
 			}
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "PageHeader"))) {
 			part->page_header = parse_report_outputs(doc, ns, cur);
+		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "ReportHeader"))) {
+			part->report_header = parse_report_outputs(doc, ns, cur);
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "PageFooter"))) {
 			part->page_footer = parse_report_outputs(doc, ns, cur);
 		} else if (!ignoreElement(cur->name)) //must be last
@@ -674,13 +676,16 @@ struct rlib_part * parse_part_file(gchar *filename, gchar type) {
 		part_element->type = RLIB_ELEMENT_REPORT;
 		parse_report(part, report, doc, ns, cur);
 		part->page_header = report->page_header;
+		part->report_header = report->report_header;
 		part->page_footer = report->page_footer;
 		report->page_header = NULL;
+		report->report_header = NULL;
 		report->page_footer = NULL;
 		
 		part->xml_left_margin = report->xml_left_margin;
 		part->xml_top_margin = report->xml_top_margin;
 		part->xml_bottom_margin = report->xml_bottom_margin;
+		part->xml_font_size = report->xml_font_size;
 		report->is_the_only_report = TRUE;		
 		report->xml_left_margin = NULL;
 		report->xml_top_margin = NULL;
