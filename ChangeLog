@@ -1,4 +1,7 @@
 2004-05-18  Bob Doan  <bdoan@sicompos.com>
+	* NEWS: release time
+
+2004-05-18  Bob Doan  <bdoan@sicompos.com>
 	* inputs/mysql/mysql.c: getting ready for release
 	* libsrc/pdf.c: likewise
 	* src/Makefile.am: likewise

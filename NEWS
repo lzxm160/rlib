@@ -1,3 +1,13 @@
+1.1.8
+===
+- UTF8 backed for international folks, can be disabled (CHET)
+- Paper types (me)
+- Java support (me)
+- Examples (me)
+- New way to format money (chet)
+- New way of doing dates (chet)
+- Lots of bug fixes (chet)
+
 1.1.7
 ===
 - GLIB Integration (bob)
