@@ -1,1 +1,1 @@
-*.o libr.so chopblock
+*.o libr.so chopblock *.cache *.in .deps .libs *.1 *.lo *.la *.log *.m4 *.status Makefile Makefile.in configure

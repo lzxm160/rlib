@@ -1,3 +1,7 @@
+2004-03-01  Chet Heilman  <cheilman@sicompos.com>
+	* .cvsignore:
+		Add more of the generated files to be ignored by CVS.
+		
 2004-02-27  Chet Heilman  <cheilman@sicompos.com>
 	* bindings/interfaces/SWIGTYPE_p_rlib.class:
 		Add java classes for binding to rlib.
