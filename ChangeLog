@@ -1,4 +1,10 @@
 2004-07-21  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/parsexml.c: More loadings of parts (with out breaking anything but it leaks)
+	* libsrc/rlib.h: likewise
+	* src/examples/php/part_test.php: new test for parts
+	* src/examples/php/part_test.xml: likewise
+
+2004-07-21  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/array_data_source.c: make it compile clean w/ -Wall
 	* src/examples/php/Makefile.am: added files for dist
 

@@ -364,8 +364,10 @@ struct rlib_part_tr {
 
 struct rlib_part {
 	xmlChar *name;
+	xmlChar *layout;
 	struct rlib_report_element *e;
 	struct rlib_pcode *name_code;
+	struct rlib_pcode *layout_code;
 };
 
 struct rlib_report {
