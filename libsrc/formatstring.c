@@ -35,22 +35,22 @@
 /*
 * Formats numbers in money format using locale parameters and moneyformat codes
 */
-static gint format_money(char *dest, int max, const char *moneyformat, long long x) { 
-	double d = ((double) x) / RLIB_DECIMAL_PRECISION;
-	int result;
+gint format_money(gchar *dest, gint max, const gchar *moneyformat, gint64 x) { 
+	gdouble d = ((gdouble) x) / RLIB_DECIMAL_PRECISION;
+	gint result;
 
 	result = strfmon(dest, max - 1, moneyformat, d);
 	return (result >= 0)? strlen(dest) : 0;
 }
 
 
-static gint format_number(char *dest, int max, const char *fmt, long long x) {
+gint format_number(gchar *dest, gint max, const gchar *fmt, gint64 x) {
 	double d = (((double) x) / RLIB_DECIMAL_PRECISION);
 	return snprintf(dest, max - 1, fmt, d);
 }
 
 
-gint rlb_string_sprintf(gchar *dest, gchar *fmtstr, struct rlib_value *rval) {
+gint rlib_string_sprintf(gchar *dest, gchar *fmtstr, struct rlib_value *rval) {
 	gchar *value = RLIB_VALUE_GET_AS_STRING(rval);
 	return sprintf(dest, fmtstr, value);
 }
@@ -183,7 +183,8 @@ gint rlib_format_string(rlib *r, struct report_field *rf, struct rlib_value *rva
 		} else {
 			formatstring = RLIB_VALUE_GET_AS_STRING(rval_fmtstr);
 			if (*formatstring == '!') {
-				char *tfmt = formatstring + 1;
+				gchar *tfmt = formatstring + 1;
+				gboolean goodfmt = TRUE;
 				switch (*tfmt) {
 				case '$': //Format as money
 					if (RLIB_VALUE_IS_NUMBER(rval)) {
@@ -203,7 +204,11 @@ gint rlib_format_string(rlib *r, struct report_field *rf, struct rlib_value *rva
 						rlib_datetime_format(dt, buf, 100, tfmt + 1);
 					}
 					break;
+				default:
+					goodfmt = FALSE;
+					break;
 				}
+				if (goodfmt) return TRUE;
 			}
 			if(RLIB_VALUE_IS_DATE(rval)) {
 				rlib_datetime_format(&RLIB_VALUE_GET_AS_DATE(rval), buf, 100, formatstring);
@@ -250,7 +255,7 @@ gint rlib_format_string(rlib *r, struct report_field *rf, struct rlib_value *rva
 						} else if (tchar == 's') {
 							if(RLIB_VALUE_IS_STRING(rval)) {
 								gchar tmp[500];
-								rlb_string_sprintf(tmp, fmtstr, rval);
+								rlib_string_sprintf(tmp, fmtstr, rval);
 								for(j=0;j<(int)strlen(tmp);j++)
 									buf[pos++] = tmp[j];
 
@@ -272,7 +277,5 @@ gint rlib_format_string(rlib *r, struct report_field *rf, struct rlib_value *rva
 		}
 		rlib_value_free(rval_fmtstr);
 	}
-
-
 	return TRUE;
 }

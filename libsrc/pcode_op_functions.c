@@ -29,6 +29,10 @@
 
 
 // START rlib_datetime 'object'
+
+#define RLIB_DATETIME_SECSPERDAY (60 * 60 * 24)
+
+
 int rlib_datetime_valid_date(struct rlib_datetime *dt) {
 	return g_date_valid(&dt->date);
 }
@@ -87,6 +91,26 @@ void rlib_datetime_set_date(struct rlib_datetime *dt, int y, int m, int d) {
 
 void rlib_datetime_set_time(struct rlib_datetime *dt, int h, int m, int s) {
 	dt->ltime = 256 * 256 * 256 + h * 256 * 256 + m * 256 + s;
+}
+
+
+long rlib_datetime_time_as_long(struct rlib_datetime *dt) {
+	glong h, m, s;
+	h = ((dt->ltime & 0x00FF0000) >> 16);
+	m = ((dt->ltime & 0x0000FF00) >> 8);
+	s = (dt->ltime & 0x000000FF);
+	return (h * 60 *60) + (m * 60) + s;
+}
+
+
+void rlib_datetime_set_time_from_long(struct rlib_datetime *dt, long t) {
+	gint h, m, s;
+	s = t % 60;
+	t /= 60;
+	m = t % 60;
+	t /= 60;
+	h = t % 24;
+	rlib_datetime_set_time(dt, h, m, s);
 }
 
 
@@ -222,6 +246,28 @@ gint rlib_datetime_daysdiff(struct rlib_datetime *dt, struct rlib_datetime *dt2)
 }
 
 
+void rlib_datetime_addto(struct rlib_datetime *dt, gint64 amt) {
+	long ndays = amt;
+	long nsecs = 0;
+	gboolean hastime = FALSE;
+	if (rlib_datetime_valid_time(dt)) {
+		hastime = TRUE;
+		nsecs = rlib_datetime_time_as_long(dt) + amt;
+		ndays = nsecs / RLIB_DATETIME_SECSPERDAY;
+		rlib_datetime_set_time_from_long(dt, nsecs % RLIB_DATETIME_SECSPERDAY);
+	}
+	if (rlib_datetime_valid_date(dt)) {
+		if (ndays != 0) {
+			if (ndays >= 0) {
+				g_date_add_days(&dt->date, ndays);
+			} else {
+				g_date_subtract_days(&dt->date, -ndays);
+			}
+		}
+	}
+}
+
+
 gint rlib_datetime_secsdiff(struct rlib_datetime *dt, struct rlib_datetime *dt2) {
 	return dt->ltime - dt2->ltime;
 }
@@ -290,7 +336,7 @@ gint rlib_pcode_operator_add(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 				number = v1;
 			}
 			newday = RLIB_VALUE_GET_AS_DATE(date);
-			g_date_add_days(&newday.date, RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(number)));
+			rlib_datetime_addto(&newday, RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(number)));
 			rlib_value_free(v1);
 			rlib_value_free(v2);
 			rlib_value_stack_push(vs, rlib_value_new_date(&rval_rtn, &newday));
@@ -318,17 +364,24 @@ gint rlib_pcode_operator_subtract(rlib *r, struct rlib_value_stack *vs, struct r
 			return TRUE;
 		} else if (RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_DATE(v2)) {
 			struct rlib_datetime *dt1, *dt2;
-			gint64 result;
+			gint64 result = 0;
+			gint daysdiff = 0;
+			gint secsdiff = 0;
+			gboolean usedays = FALSE;
+			gboolean usesecs = FALSE;
 			dt1 = &RLIB_VALUE_GET_AS_DATE(v1);
 			dt2 = &RLIB_VALUE_GET_AS_DATE(v2);
+			if (rlib_datetime_valid_time(dt1) && rlib_datetime_valid_time(dt2)) {
+				secsdiff = rlib_datetime_secsdiff(dt1, dt2);
+				usesecs = TRUE;
+			}
 			if (rlib_datetime_valid_date(dt1) && rlib_datetime_valid_date(dt2)) {
-				result= rlib_datetime_daysdiff(dt2, dt1);
-				rlib_value_free(v1);
-				rlib_value_free(v2);
-				rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, LONG_TO_FXP_NUMBER(result)));
-				return TRUE;
-			} else if (rlib_datetime_valid_time(dt1) && rlib_datetime_valid_time(dt2)) {
-				result = rlib_datetime_secsdiff(dt2, dt1);
+				daysdiff = rlib_datetime_daysdiff(dt1, dt2);
+				usedays = TRUE;
+			}
+			if (usedays) result = daysdiff;
+			if (usesecs) result	= (daysdiff * RLIB_DATETIME_SECSPERDAY) + secsdiff;		
+			if (usedays || usesecs) {
 				rlib_value_free(v1);
 				rlib_value_free(v2);
 				rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, LONG_TO_FXP_NUMBER(result)));
@@ -340,7 +393,7 @@ gint rlib_pcode_operator_subtract(rlib *r, struct rlib_value_stack *vs, struct r
 			date = v2;
 			number = v1;
 			newday = RLIB_VALUE_GET_AS_DATE(date);
-			g_date_subtract_days(&newday.date, RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(number)));
+			rlib_datetime_addto(&newday, -RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(number)));
 			rlib_value_free(v1);
 			rlib_value_free(v2);
 			rlib_value_stack_push(vs, rlib_value_new_date(&rval_rtn, &newday));
@@ -1241,6 +1294,45 @@ gint rlib_pcode_operator_chgtimeof(rlib *r, struct rlib_value_stack *vs, struct 
 }
 
 
+gboolean rlib_pcode_operator_gettimeinsecs(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+	struct rlib_value rval_rtn, *v1;
+	
+	v1 = rlib_value_stack_pop(vs);
+	if (RLIB_VALUE_IS_DATE(v1)) {
+		struct rlib_datetime dt = RLIB_VALUE_GET_AS_DATE(v1);
+		glong secs = rlib_datetime_time_as_long(&dt);
+		rlib_value_free(v1);
+		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, secs * RLIB_DECIMAL_PRECISION));
+		return TRUE;
+	}
+	rlib_pcode_operator_fatal_execption("gettimeinsecs", 1, v1, NULL, NULL);
+	rlib_value_free(v1);
+	rlib_value_stack_push(vs, rlib_value_new_error(&rval_rtn));		
+	return FALSE;
+}
+
+
+gint rlib_pcode_operator_settimeinsecs(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+	struct rlib_value *v1, *v2, rval_rtn;
+	v2 = rlib_value_stack_pop(vs);
+	v1 = rlib_value_stack_pop(vs);
+	if(RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_NUMBER(v2)) {
+		struct rlib_datetime dt = RLIB_VALUE_GET_AS_DATE(v1);
+		gint64 secs = RLIB_VALUE_GET_AS_NUMBER(v2);
+		rlib_datetime_set_time_from_long(&dt, secs);
+		rlib_value_free(v1);
+		rlib_value_free(v2);
+		rlib_value_stack_push(vs, rlib_value_new_date(&rval_rtn, &dt));
+		return TRUE;
+	}
+	rlib_pcode_operator_fatal_execption("settimefromsecs", 2, v1, v2, NULL);
+	rlib_value_free(v1);
+	rlib_value_free(v2);
+	rlib_value_stack_push(vs, rlib_value_new_error(&rval_rtn));		
+	return FALSE;
+}
+
+
 gboolean rlib_pcode_operator_dtos(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
 	return rlib_pcode_operator_dtos_common(r, vs, this_field_value, "%Y-%m-%d");
 }
@@ -1262,6 +1354,60 @@ gboolean rlib_pcode_operator_dtosf(rlib *r, struct rlib_value_stack *vs, struct 
 		rlib_value_stack_push(vs, rlib_value_new_error(&rval_rtn));		
 	}
 	return result;
+}
+
+
+/*
+* Generic format function format(object, formatstring)
+*/
+gboolean rlib_pcode_operator_format(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+	struct rlib_value *v1, *v2, rval_rtn;
+	v2 = rlib_value_stack_pop(vs);
+	v1 = rlib_value_stack_pop(vs);
+	if (RLIB_VALUE_IS_STRING(v2)) {
+		gchar buf[MAXSTRLEN];
+		gchar *result = "!ERR_F_IV";
+		gchar *fmt = RLIB_VALUE_GET_AS_STRING(v2);
+		if (*fmt == '!') {
+			++fmt;
+			buf[MAXSTRLEN - 1] = '\0'; // Assure terminated
+			if(RLIB_VALUE_IS_STRING(v1)) {
+				gchar *str = RLIB_VALUE_GET_AS_STRING(v1);
+				if ((*fmt == '#') || (*fmt == '!')) {
+					++fmt;
+					sprintf(buf, fmt, str);
+					result = buf;
+				} else r_error("Format type does not match variable type in 'format' function");
+			} else if(RLIB_VALUE_IS_NUMBER(v1)) {
+				gint64 num = RLIB_VALUE_GET_AS_NUMBER(v1);
+				if (*fmt == '#') {
+					++fmt;
+					format_number(buf, sizeof(buf) - 1, fmt, num);
+				} else if(*fmt == '$') {
+					++fmt;
+					format_money(buf, sizeof(buf) - 1, fmt, num);
+				} else r_error("Format type does not match variable type in 'format' function");
+			} else if(RLIB_VALUE_IS_DATE(v1)) {
+				if (*fmt == '@') {
+					struct rlib_datetime dt = RLIB_VALUE_GET_AS_DATE(v1);
+					++fmt;
+					rlib_datetime_format(&dt, buf, sizeof(buf) - 1, fmt);
+					result = buf;
+				} else r_error("Format type does not match variable type in 'format' function");
+			} else {
+				r_error("Invalid variable type encountered in format");
+			}
+		}
+		rlib_value_free(v1);
+		rlib_value_free(v2);
+		rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, result));
+		return TRUE;
+	}
+	rlib_pcode_operator_fatal_execption("format not string in format", 2, v1, v2, NULL);
+	rlib_value_free(v1);
+	rlib_value_free(v2);
+	rlib_value_stack_push(vs, rlib_value_new_error(&rval_rtn));		
+	return FALSE;
 }
 
 

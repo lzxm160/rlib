@@ -97,6 +97,9 @@
 #define OP_TIMEOF	50
 #define OP_CHGDATEOF	51
 #define OP_CHGTIMEOF	52
+#define OP_GETTIMESECS	53
+#define OP_SETTIMESECS	54
+#define OP_FORMAT		55
 
 
 struct rlib_value_stack {
@@ -157,6 +160,9 @@ struct rlib_pcode_operand {
 #define RLIB_DECIMAL_PRECISION	10000000
 #define RLIB_FXP_PRECISION 7
 
+gint format_money(gchar *dest, gint max, const gchar *moneyformat, gint64 x);
+gint format_number(gchar *dest, gint max, const gchar *moneyformat, gint64 x);
+
 int execute_pcode(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
 struct rlib_value * rlib_value_stack_pop(struct rlib_value_stack *vs);
 int rlib_value_stack_push(struct rlib_value_stack *vs, struct rlib_value *value);
@@ -216,4 +222,6 @@ int rlib_pcode_operator_dateof(rlib *r, struct rlib_value_stack *vs, struct rlib
 int rlib_pcode_operator_timeof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
 int rlib_pcode_operator_chgdateof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
 int rlib_pcode_operator_chgtimeof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-
+int rlib_pcode_operator_gettimeinsecs(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
+int rlib_pcode_operator_settimeinsecs(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
+int rlib_pcode_operator_format(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);

@@ -99,6 +99,11 @@ struct rlib_pcode_operator rlib_pcode_verbs[] = {
       {"chgdateof(", 	10, 0,	TRUE,	OP_CHGDATEOF,  	TRUE, 	rlib_pcode_operator_chgdateof},
       {"chgtimeof(", 	10, 0,	TRUE,	OP_CHGTIMEOF,  	TRUE, 	rlib_pcode_operator_chgtimeof},
 
+      {"gettimeinsecs(", 	14, 0,	TRUE,	OP_GETTIMESECS,  	TRUE, 	rlib_pcode_operator_gettimeinsecs},
+      {"settimeinsecs(", 	14, 0,	TRUE,	OP_SETTIMESECS,  	TRUE, 	rlib_pcode_operator_settimeinsecs},
+
+      {"format(", 	7, 0,	TRUE,	OP_FORMAT,  	TRUE, 	rlib_pcode_operator_format},
+
       { NULL, 	 	0, 0, FALSE,-1,			TRUE,		NULL}
 };
 

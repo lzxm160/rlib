@@ -1,3 +1,20 @@
+2004-02-24  Chet Heilman  <cheilman@sicompos.com>
+	* libsrc/formatstring.c: (format_money), (format_number),
+	(rlib_string_sprintf), (rlib_format_string):
+		Make some functions public.
+	* libsrc/pcode.c:
+		Add general format function.
+	* libsrc/pcode.h:
+		same.
+	* libsrc/pcode_op_functions.c: (rlib_datetime_time_as_long),
+	(rlib_datetime_set_time_from_long), (rlib_datetime_addto),
+	(rlib_pcode_operator_add), (rlib_pcode_operator_subtract),
+	(rlib_pcode_operator_gettimeinsecs),
+	(rlib_pcode_operator_settimeinsecs), (rlib_pcode_operator_format):
+		Bug fixes and add format function.
+	* libsrc/pdf.c: (rlib_pdf_set_font_point):
+		Move where iconv happens to rlib level.
+
 2004-02-23  Chet Heilman  <cheilman@sicompos.com>
 	* libsrc/api.c: (rlib_set_pdf_conversion),
 	(rlib_set_output_encoder):
