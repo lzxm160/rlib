@@ -244,7 +244,7 @@ void * odbc_new_result_from_query(void *input_ptr, char *query) {
 	SQLHSTMT V_OD_hstmt;
 	unsigned int i;
 	SQLSMALLINT ncols;
-	SQLINTEGER nrows;;
+	SQLINTEGER nrows;
 	long V_OD_erg;
 	SQLUINTEGER col_size;
 	V_OD_hstmt = rlib_odbc_query(input_ptr, query);

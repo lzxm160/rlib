@@ -817,7 +817,55 @@ static PyObject *_wrap_rlib_postgre_report(PyObject *self, PyObject *args) {
     return _resultobj;
 }
 
+static PyObject *_wrap_rlib_add_datasource_odbc(PyObject *self, PyObject *args) {
+    PyObject * _resultobj;
+    int  _result;
+    rlib * _arg0;
+    char * _arg1;
+    char * _arg2;
+    char * _arg3;
+    char * _arg4;
+    char * _argc0 = 0;
+
+    self = self;
+    if(!PyArg_ParseTuple(args,"sssss:rlib_add_datasource_odbc",&_argc0,&_arg1,&_arg2,&_arg3,&_arg4)) 
+        return NULL;
+    if (_argc0) {
+        if (SWIG_GetPtr(_argc0,(void **) &_arg0,"_rlib_p")) {
+            PyErr_SetString(PyExc_TypeError,"Type error in argument 1 of rlib_add_datasource_odbc. Expected _rlib_p.");
+        return NULL;
+        }
+    }
+    _result = (int )rlib_add_datasource_odbc(_arg0,_arg1,_arg2,_arg3,_arg4);
+    _resultobj = Py_BuildValue("i",_result);
+    return _resultobj;
+}
+
+static PyObject *_wrap_rlib_add_resultset_follower(PyObject *self, PyObject *args) {
+    PyObject * _resultobj;
+    int  _result;
+    rlib * _arg0;
+    char * _arg1;
+    char * _arg2;
+    char * _argc0 = 0;
+
+    self = self;
+    if(!PyArg_ParseTuple(args,"sss:rlib_add_resultset_follower",&_argc0,&_arg1,&_arg2)) 
+        return NULL;
+    if (_argc0) {
+        if (SWIG_GetPtr(_argc0,(void **) &_arg0,"_rlib_p")) {
+            PyErr_SetString(PyExc_TypeError,"Type error in argument 1 of rlib_add_resultset_follower. Expected _rlib_p.");
+        return NULL;
+        }
+    }
+    _result = (int )rlib_add_resultset_follower(_arg0,_arg1,_arg2);
+    _resultobj = Py_BuildValue("i",_result);
+    return _resultobj;
+}
+
 static PyMethodDef librlibMethods[] = {
+	 { "rlib_add_resultset_follower", _wrap_rlib_add_resultset_follower, 1 },
+	 { "rlib_add_datasource_odbc", _wrap_rlib_add_datasource_odbc, 1 },
 	 { "rlib_postgre_report", _wrap_rlib_postgre_report, 1 },
 	 { "rlib_mysql_report", _wrap_rlib_mysql_report, 1 },
 	 { "rlib_get_output_length", _wrap_rlib_get_output_length, 1 },

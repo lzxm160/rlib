@@ -1,3 +1,9 @@
+2003-11-17  Bob Doan  <bdoan@sicompos.com>
+	* NEWS: new news (1.1.4 released)
+	* bindings/python/python.c: new bindings
+	* inputs/odbc/odbc.c: small compile problem
+	* libsrc/rlib.i:
+
 2003-11-16  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/php.c: ODBC support
 	* configure.in: likewise

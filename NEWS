@@ -1,3 +1,13 @@
+1.1.4
+===
+
+- support for most western languages
+- odbc bindings
+- layout bug fixes
+- followers and leader queries
+- faster report generation
+
+
 1.1.3
 ===
 
