@@ -1,3 +1,8 @@
+2005-01-06  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/gd.c: compile fixes
+	* libsrc/graphing.c: likewise
+	* libsrc/layout.c: respect suppress in csv output
+
 2005-01-05  Bob Doan  <bdoan@sicompos.com>
 	* configure.in: better gd checking
 	* libsrc/Makefile.am: likewise

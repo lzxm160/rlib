@@ -183,7 +183,8 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 	gint graph_type;
 	gboolean divide_iterations = TRUE;
 	gboolean should_label_under_tick = FALSE;
-
+	gfloat value_a = 0;
+	
 	left_margin_offset += part->left_margin;
 
 		
@@ -389,7 +390,7 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 								y_min = 0;
 							}
 
-							gfloat value_a = 0;
+							value_a = 0;
 						
 							if(data_type == POSITIVE_AND_NEGATIVE) {
 								if(value_a >= 0)

@@ -838,7 +838,23 @@ gint rlib_layout_report_output_with_break_headers(rlib *r, struct rlib_part *par
 	if(report->breaks != NULL) {
 		for(e = report->breaks; e != NULL; e=e->next) {
 			struct rlib_report_break *rb = e->data;
-			output_count += rlib_layout_report_outputs_across_pages(r, part, report, rb->header, FALSE);
+			gint blank = TRUE;
+			gint suppress = FALSE;
+			if(rb->suppressblank) {
+				struct rlib_element *be;
+				suppress = TRUE;
+				for(be = rb->fields; be != NULL; be=be->next) {
+					struct rlib_break_fields *bf = be->data;
+					if((bf->rval == NULL || (RLIB_VALUE_IS_STRING(bf->rval) && !strcmp(RLIB_VALUE_GET_AS_STRING(bf->rval), ""))) && blank == TRUE)
+						blank = TRUE;
+					else
+						blank = FALSE;
+				}		
+			}
+			if(!suppress || (suppress && !blank))
+				output_count += rlib_layout_report_outputs_across_pages(r, part, report, rb->header, FALSE);
+//HERE			
+//			output_count += rlib_layout_report_outputs_across_pages(r, part, report, rb->header, FALSE);
 		}		
 	}
 	rlib_layout_report_outputs_across_pages(r, part, report, report->detail.fields, FALSE);

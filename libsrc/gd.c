@@ -153,7 +153,7 @@ int rlib_gd_get_string_width(struct rlib_gd *rgd, char *text) {
 	return 0;
 }
 
-int int rlib_gd_get_string_height(struct rlib_gd *rgd) {
+int rlib_gd_get_string_height(struct rlib_gd *rgd) {
 	return 0;
 }
 
