@@ -121,6 +121,7 @@ static struct report_element * parse_report_output(struct rlib_report *rep, xmlD
 			rl->bgcolor = xmlGetProp(cur, (const xmlChar *) "bgcolor");
 			rl->color = xmlGetProp(cur, (const xmlChar *) "color");
 			rl->font_size = xmlGetProp(cur, (const xmlChar *) "fontSize");
+			rl->surpress = xmlGetProp(cur, (const xmlChar *) "surpress");
 			if(rl->font_size == NULL)
 				rl->font_point = -1;
 			else

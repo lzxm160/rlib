@@ -226,9 +226,11 @@ struct report_lines {
 	xmlChar *bgcolor;
 	xmlChar *color;
 	xmlChar *font_size;
+	xmlChar *surpress;
 	int font_point;
 	struct rlib_pcode *bgcolor_code;
 	struct rlib_pcode *color_code;
+	struct rlib_pcode *surpress_code;
 	struct report_element *e;
 };
 

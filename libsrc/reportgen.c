@@ -191,6 +191,8 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 	if(rl->bgcolor_code != NULL)
 		rlib_execute_pcode(r, &line_rval_bgcolor, rl->bgcolor_code, NULL);
 
+	
+
 	for(; e != NULL; e=e->next) {
 		RLIB_VALUE_TYPE_NONE(&extra_data[i].rval_bgcolor);
 		if(e->type == REPORT_ELEMENT_FIELD) {
@@ -386,6 +388,31 @@ void find_stuff_in_common(rlib *r, struct rlib_line_extra_data *extra_data, int 
 	}
 }
 
+static int rlib_check_do_line(rlib *r, struct report_lines *rl) {
+	struct rlib_value line_surpress;
+
+	if(rl->surpress_code != NULL) {
+		rlib_execute_pcode(r, &line_surpress, rl->surpress_code, NULL);
+
+		if(!RLIB_VALUE_IS_NONE((&line_surpress))) {
+			if(!RLIB_VALUE_IS_STRING((&line_surpress))) {
+				rlogit("RLIB ENCOUNTERED AN ERROR PROCESSING SURPRESS... VALUE WAS NOT OF TYPE STRING\n");
+			} else {
+				char *value = RLIB_VALUE_GET_AS_STRING((&line_surpress));
+				if(value != NULL) {
+					if(strcasecmp(value, "yes") == 0) {
+						rlib_value_free(&line_surpress);
+						return FALSE;
+					}
+				}
+				rlib_value_free(&line_surpress);
+			}	
+		}
+	}
+	
+	return TRUE;
+}
+
 static void print_report_output_private(rlib *r, struct report_output_array *roa, int backwards, int page) {
 	struct report_element *e=NULL;
 	int j=0;
@@ -411,104 +438,107 @@ static void print_report_output_private(rlib *r, struct report_output_array *roa
 			struct report_lines *rl = ro->data;
 			int count=0;
 			
-			OUTPUT(r)->rlib_start_line(r, backwards);
 			
-			for(e = rl->e; e != NULL; e=e->next)
-				count++;
+			if(rlib_check_do_line(r, rl)) {
+			
+				OUTPUT(r)->rlib_start_line(r, backwards);
 
-			extra_data = rcalloc(sizeof(struct rlib_line_extra_data), count);
-			execute_pcodes_for_line(r, rl, extra_data);
-			find_stuff_in_common(r, extra_data, count);
-			count = 0;
-
-			if(OUTPUT(r)->do_grouptext) {
-				char buf[MAXSTRLEN];
-				float fun_width=0;
-				int start_count=-1;
-				for(e = rl->e; e != NULL; e=e->next) {
-					if(e->type == REPORT_ELEMENT_FIELD) {
-						struct report_field *rf = ((struct report_field *)e->data);
-						rf->rval = &extra_data[count].rval_code;
-						width = rlib_output_extras(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)),  
-							&extra_data[count]);
-					}
-
-					if(e->type == REPORT_ELEMENT_TEXT) {
-						width = rlib_output_extras(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)), 
-							&extra_data[count]);
-					}
-					margin += width;
+				for(e = rl->e; e != NULL; e=e->next)
 					count++;
-				}
-				count=0;
-				margin = GET_MARGIN(r)->left_margin;				
-				buf[0] = 0;
-				width = 0;
-				start_count = -1;
-				for(e = rl->e; e != NULL; e=e->next) {
-					if(!extra_data[count].found_color) {
-						if(start_count == -1)
-							start_count = count;
-						sprintf(buf, "%s%s", buf, extra_data[count].formatted_string);
-						fun_width += extra_data[count].output_width;
-					} else {
-						if(start_count != -1) {
-							rlib_output_text_text(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)),  
-								&extra_data[start_count], buf);
-							start_count = -1;
-							margin += fun_width;
-							fun_width = 0;
-							buf[0] = 0;
+
+				extra_data = rcalloc(sizeof(struct rlib_line_extra_data), count);
+				execute_pcodes_for_line(r, rl, extra_data);
+				find_stuff_in_common(r, extra_data, count);
+				count = 0;
+
+				if(OUTPUT(r)->do_grouptext) {
+					char buf[MAXSTRLEN];
+					float fun_width=0;
+					int start_count=-1;
+					for(e = rl->e; e != NULL; e=e->next) {
+						if(e->type == REPORT_ELEMENT_FIELD) {
+							struct report_field *rf = ((struct report_field *)e->data);
+							rf->rval = &extra_data[count].rval_code;
+							width = rlib_output_extras(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)),  
+								&extra_data[count]);
 						}
-						width = rlib_output_text(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)),  
-							&extra_data[count]);
-						margin += width;
-					
-					}
-					count++;					
-				}
-				if(start_count != -1) {
-					width += fun_width;
-					rlib_output_text_text(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)), 
-						&extra_data[start_count], buf);
-				}
-			} else {
-				for(e = rl->e; e != NULL; e=e->next) {
-					if(e->type == REPORT_ELEMENT_FIELD) {
-						struct report_field *rf = ((struct report_field *)e->data);
-						rf->rval = &extra_data[count].rval_code;
-						rlib_output_extras(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)),  
-							&extra_data[count]);
-						width = rlib_output_text(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)), 
-							&extra_data[count]);
-					}
 
-					if(e->type == REPORT_ELEMENT_TEXT) {
-						rlib_output_extras(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)), 
-							&extra_data[count]);
-						width = rlib_output_text(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)), 
-							&extra_data[count]);				
+						if(e->type == REPORT_ELEMENT_TEXT) {
+							width = rlib_output_extras(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)), 
+								&extra_data[count]);
+						}
+						margin += width;
+						count++;
 					}
-					margin += width;
+					count=0;
+					margin = GET_MARGIN(r)->left_margin;				
+					buf[0] = 0;
+					width = 0;
+					start_count = -1;
+					for(e = rl->e; e != NULL; e=e->next) {
+						if(!extra_data[count].found_color) {
+							if(start_count == -1)
+								start_count = count;
+							sprintf(buf, "%s%s", buf, extra_data[count].formatted_string);
+							fun_width += extra_data[count].output_width;
+						} else {
+							if(start_count != -1) {
+								rlib_output_text_text(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)),  
+									&extra_data[start_count], buf);
+								start_count = -1;
+								margin += fun_width;
+								fun_width = 0;
+								buf[0] = 0;
+							}
+							width = rlib_output_text(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)),  
+								&extra_data[count]);
+							margin += width;
+
+						}
+						count++;					
+					}
+					if(start_count != -1) {
+						width += fun_width;
+						rlib_output_text_text(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)), 
+							&extra_data[start_count], buf);
+					}
+				} else {
+					for(e = rl->e; e != NULL; e=e->next) {
+						if(e->type == REPORT_ELEMENT_FIELD) {
+							struct report_field *rf = ((struct report_field *)e->data);
+							rf->rval = &extra_data[count].rval_code;
+							rlib_output_extras(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)),  
+								&extra_data[count]);
+							width = rlib_output_text(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)), 
+								&extra_data[count]);
+						}
+
+						if(e->type == REPORT_ELEMENT_TEXT) {
+							rlib_output_extras(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)), 
+								&extra_data[count]);
+							width = rlib_output_text(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)), 
+								&extra_data[count]);				
+						}
+						margin += width;
+						count++;
+					}
+				}
+				rlib_advance_line(r, rlib_position, get_font_point(r, rl));
+
+				OUTPUT(r)->rlib_end_line(r, backwards);	
+
+				count=0;
+				for(e = rl->e; e != NULL; e=e->next) {
+					rlib_value_free(&extra_data[count].rval_code);
+					rlib_value_free(&extra_data[count].rval_link);
+					rlib_value_free(&extra_data[count].rval_bgcolor);
+					rlib_value_free(&extra_data[count].rval_color);
+					rlib_value_free(&extra_data[count].rval_col);
 					count++;
 				}
+
+				rfree(extra_data);
 			}
-			rlib_advance_line(r, rlib_position, get_font_point(r, rl));
-				
-			OUTPUT(r)->rlib_end_line(r, backwards);	
-
-			count=0;
-			for(e = rl->e; e != NULL; e=e->next) {
-				rlib_value_free(&extra_data[count].rval_code);
-				rlib_value_free(&extra_data[count].rval_link);
-				rlib_value_free(&extra_data[count].rval_bgcolor);
-				rlib_value_free(&extra_data[count].rval_color);
-				rlib_value_free(&extra_data[count].rval_col);
-				count++;
-			}
-
-			rfree(extra_data);
-
 		} else if(ro->type == REPORT_PRESENTATION_DATA_HR) {
 			struct rlib_value rval2, *rval=&rval2;
 			char *colorstring;

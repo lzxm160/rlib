@@ -1,3 +1,11 @@
+2003-12-02  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/api.c: fix problem w/ pcode order of operations
+	* libsrc/parsexml.c:  likewise
+	* libsrc/pcode.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+
 2003-12-01  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/html.c: fix crashing bug
 

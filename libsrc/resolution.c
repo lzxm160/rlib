@@ -199,6 +199,8 @@ static void rlib_resolve_fields2(rlib *r, struct report_output_array *roa) {
 			e = rl->e;
 			rl->bgcolor_code = rlib_infix_to_pcode(r, rl->bgcolor);
 			rl->color_code = rlib_infix_to_pcode(r, rl->color);
+			rl->surpress_code = rlib_infix_to_pcode(r, rl->surpress);
+
 			for(; e != NULL; e=e->next) {
 				if(e->type == REPORT_ELEMENT_FIELD) {
 					rlib_field_resolve_pcode(r, ((struct report_field *)e->data));
