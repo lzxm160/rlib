@@ -122,7 +122,7 @@ do
   fi
 done
 
-conf_flags="--enable-maintainer-mode --enable-warningfun" #--enable-iso-c
+conf_flags="--enable-maintainer-mode" #--enable-iso-c
 
 cd "$ORIGDIR"
 

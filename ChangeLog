@@ -1,3 +1,10 @@
+2004-07-20  Bob Doan  <bdoan@sicompos.com>
+	* autogen.sh: take out warnings by default
+	* configure.in: bump version to offical stable release
+	* doc/IMAGES/namedcolors.png: added everton as a color
+	* libsrc/util.c: likewise
+	* NEWS: OFFICAL STABLE Release time!!!!!
+	
 2004-07-16  Chet Heilman <cheilman@sicompos.com>
 	* libsrc/reportgen.c: (rlib_process_expression_variables):
 		fix unused variable.
@@ -16,7 +23,7 @@
 	* libsrc/util.h: likewise
 
 2004-07-15  Bob Doan  <bdoan@sicompos.com>
-	* configure.in: bump vwrsion
+	* configure.in: bump version
 	* libsrc/pcode_op_functions.c: offset from sunday, not monday
 	* libsrc/pdf.c: better disable UTF16 stuff
 

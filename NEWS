@@ -1,3 +1,12 @@
+1.20.0
+===
+- Added Everton as an offical RLIB Color
+- Fix PDF Content Type for IE (chet)
+- better utf8/no utf8 support (me)
+- small variable/ breaking order changes to make it make more sense (chet)
+- compile fixes on other platforms (chet, me)
+
+
 1.1.9
 ===
 - Able to really disable UTF8 (me)
