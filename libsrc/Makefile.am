@@ -32,7 +32,7 @@ libr_la_SOURCES = parsexml.c reportgen.c api.c resolution.c util.c util.h\
 	containers.h containers.c charencoder.c charencoder.h\
 	datetime.c datetime.h value.c value.h
 
-libr_la_LIBADD = $(RLIB_LIBS) -ldl 
+libr_la_LIBADD = $(RLIB_LIBS) 
 
 INCLUDES = $(RLIB_CFLAGS)
 

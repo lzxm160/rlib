@@ -1,3 +1,7 @@
+2004-09-24  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/Makefile.am: don't -ldl
+	* NEWS: Release Time!
+
 2004-09-16  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/parsexml.c: get rid of part stuff
 	* libsrc/rlib.h: likewise

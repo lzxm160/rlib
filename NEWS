@@ -1,4 +1,11 @@
-1.20.0
+1.2.1
+===
+- Array Data Source (me, mike)
+- Fix misc bugs in the compiler where minus didn't work or nested functions didn't compile correct (me)
+- Fix misc bugs in the pcode engine (me, mike, chet)
+- Report concatination calles datasource::first on all reports (mike)
+
+1.2.0
 ===
 - Added Everton as an offical RLIB Color
 - Fix PDF Content Type for IE (chet)
