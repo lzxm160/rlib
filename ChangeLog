@@ -1,8 +1,8 @@
 2005-03-18  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/graphing.c: Mike's next idea
 
-	reviewed by: <delete if not using a buddy>
-
-	* libsrc/graphing.c: (rlib_graph_label_y_axis):
+2005-03-18  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/graphing.c: Mike says I need to have better Y axis labels still
 
 2005-03-18  Shannon Weyrick <weyrick@roadsend.com>
 	* inputs/mysql/mysql.c: get error messages from data source

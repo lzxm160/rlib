@@ -146,29 +146,24 @@ static void rlib_graph_label_y_axis(rlib *r, gint side, gboolean for_real, gint 
 	gint i,j,max=0;
 	gchar format[20];
 	gint max_slen = 0;
-	for(i=0;i<y_ticks+1;i++) {
-		gdouble val = ABS(y_min + (((y_max-y_min)/y_ticks)*i));
-		gchar temp[50];
-		gint slen,count=0, found_dot=FALSE;
-		sprintf(temp, "%.06f", val);
-		slen = strlen(temp);
-		for(j=slen-1;j>0;j--) {
-			if(temp[j] == '0')
-				temp[j] = 0;
-			else
+	for(j=0;j<6;j++) {
+		gboolean bad = FALSE;
+		sprintf(format, "%%.0%df", j);
+		for(i=0;i<y_ticks;i++) {
+			gchar v1[50], v2[50];
+			gdouble val = y_min + (((y_max-y_min)/y_ticks)*i);
+			gdouble val2 = y_min + (((y_max-y_min)/y_ticks)*(i+1));
+			sprintf(v1, format, val);
+			sprintf(v2, format, val2);
+			if(strcmp(v1, v2) == 0) {
+				bad = TRUE;
 				break;
+			}
 		}
-		slen = strlen(temp);
-		for(j=0;j<slen;j++) {
-			if(found_dot)
-				count++;
-			if(temp[j] == '.')
-				found_dot = TRUE;
-		}
-		
-		if(count > max)
-			max = count;
+		if(bad == FALSE)
+			break;
 	}
+	max = j;
 		
 	sprintf(format, "%%.0%df", max);
 
