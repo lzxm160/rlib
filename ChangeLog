@@ -1,4 +1,7 @@
 2005-01-14  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/graphing.c: Don't try to graph a dataset with only 1 row
+
+2005-01-14  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/html.c: vertical text on x axis w/ line graphs now is in the right spot.
 
 2005-01-13  Bob Doan  <bdoan@sicompos.com>

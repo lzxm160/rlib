@@ -226,6 +226,21 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	if(graph_type == RLIB_GRAPH_TYPE_ROW_STACKED || graph_type == RLIB_GRAPH_TYPE_ROW_PERCENT) 
 		divide_iterations = FALSE;
 			
+
+	row_count = 0;
+	rlib_fetch_first_rows(r);
+	if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
+		while(1) {
+			row_count++;
+			if(rlib_navigate_next(r, r->current_result) == FALSE) 
+				break;
+		}
+	}
+	if(row_count <= 1)
+		return 0;
+	
+	rlib_fetch_first_rows(r);
+	row_count = 0;
 	OUTPUT(r)->graph_start(r, left_margin_offset, rlib_layout_get_next_line(r, part, part->position_top[0]+(*top_margin_offset), 0), graph_width, graph_height, should_label_under_tick);
 	
 	rlib_fetch_first_rows(r);
