@@ -79,9 +79,12 @@
 			<Output>
 				<Line bgcolor="iif(r.detailcnt%2,'0xe5e5e5','white')">
 					<field value="first_name" width="20" align="left" col="1" bgcolor="'yellow'" link="'http://www.yahoo.com'"/>
+					<literal width="1"/>
 					<field value="last_name" width="20" align="left" col="2" bgcolor="'yellow'" link="'http://www.yahoo.com'"/>
 					<literal width="1"/>
 					<field value="color" width="20" align="left" col="3"/>
+					<literal width="1"/>
+					<field value="more_data.initials" width="5" align="left" col="3"/>
 				</Line>
 			</Output>
 		</FieldDetails>

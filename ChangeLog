@@ -1,3 +1,13 @@
+2004-12-23  Bob Doan  <bdoan@sicompos.com>
+	* inputs/odbc/odbc.c: nada
+	* libsrc/api.c: better error reporting, set follower resultset to FALSE
+	* libsrc/layout.c: better HTML link support w/ bg colors
+	* libsrc/navigation.c: followers are smarter
+	* libsrc/resolution.c: of a follower can't more anymore its gets puts ona virtual NULL row
+	* libsrc/rlib.h: protos
+	* src/examples/php/array.php: nada
+	* src/examples/php/array.xml: nada
+
 2004-12-17  Michael Roth  <mroth@sicompos.com>
 
 	* libsrc/graphing.c: (rlib_graph): remove debug prints

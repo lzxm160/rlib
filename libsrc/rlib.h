@@ -186,6 +186,8 @@ struct rlib_resultset_field {
 struct rlib_results {
 	gchar *name;
 	gpointer result;
+	gboolean next_failed;
+	gboolean navigation_failed;
 	struct input_filter *input;
 };
 
@@ -210,7 +212,9 @@ struct rlib_line_extra_data {
 	gint found_color;
 	gfloat output_width;
 	gint running_bgcolor_status;
-	gfloat running_running_bg_total;
+	gfloat running_bg_total;
+	gint running_link_status;
+	gfloat running_link_total;
 	gboolean is_bold;
 	gboolean is_italics;
 };

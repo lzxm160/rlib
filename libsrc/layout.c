@@ -162,12 +162,12 @@ struct rlib_line_extra_data *extra_data) {
 	if(extra_data->is_italics)
 		OUTPUT(r)->start_italics(r);
 
-	if(extra_data->found_link)
-		OUTPUT(r)->start_boxurl(r, part, left_origin, bottom_orgin, rlib_layout_estimate_string_width(r, extra_data->width), 
+	if(extra_data->running_link_status & STATUS_START)
+		OUTPUT(r)->start_boxurl(r, part, left_origin, bottom_orgin, extra_data->running_link_total, 
 			RLIB_GET_LINE(extra_data->font_point), extra_data->link);
 
 	if(extra_data->running_bgcolor_status & STATUS_START) 
-		OUTPUT(r)->start_draw_cell_background(r, left_origin, bottom_orgin, extra_data->running_running_bg_total, 
+		OUTPUT(r)->start_draw_cell_background(r, left_origin, bottom_orgin, extra_data->running_bg_total, 
 			RLIB_GET_LINE(extra_data->font_point), &extra_data->bgcolor);
 
 	return extra_data->output_width;
@@ -180,7 +180,7 @@ struct rlib_line_extra_data *extra_data) {
 	if(extra_data->running_bgcolor_status & STATUS_STOP)
 		OUTPUT(r)->end_draw_cell_background(r);	
 
-	if(extra_data->found_link)
+	if(extra_data->running_link_status & STATUS_STOP)
 		OUTPUT(r)->end_boxurl(r);
 
 	if(extra_data->is_italics)
@@ -193,18 +193,18 @@ struct rlib_line_extra_data *extra_data) {
 
 static gfloat rlib_layout_output_extras(rlib *r, struct rlib_part *part, gint backwards, gfloat left_origin, gfloat bottom_orgin, 
 struct rlib_line_extra_data *extra_data) {
-	if(extra_data->found_link)
-		OUTPUT(r)->start_boxurl(r, part, left_origin, bottom_orgin, rlib_layout_estimate_string_width(r, extra_data->width), 
+	if(extra_data->running_link_status & STATUS_START)
+		OUTPUT(r)->start_boxurl(r, part, left_origin, bottom_orgin, extra_data->running_link_total, 
 			RLIB_GET_LINE(extra_data->font_point), extra_data->link);
 
 	if(extra_data->running_bgcolor_status & STATUS_START) 
-		OUTPUT(r)->start_draw_cell_background(r, left_origin, bottom_orgin, extra_data->running_running_bg_total, 
+		OUTPUT(r)->start_draw_cell_background(r, left_origin, bottom_orgin, extra_data->running_bg_total, 
 			RLIB_GET_LINE(extra_data->font_point), &extra_data->bgcolor);
 
 	if(extra_data->running_bgcolor_status & STATUS_STOP)
 		OUTPUT(r)->end_draw_cell_background(r);	
 
-	if(extra_data->found_link)
+	if(extra_data->running_link_status & STATUS_STOP)
 		OUTPUT(r)->end_boxurl(r);
 		
 	return extra_data->output_width;
@@ -527,15 +527,15 @@ static void rlib_layout_find_common_properties_in_a_line(rlib *r, struct rlib_li
 				save_ptr = e_ptr;
 				state = STATE_BGCOLOR;
 				e_ptr->running_bgcolor_status |= STATUS_START;
-				e_ptr->running_running_bg_total = e_ptr->output_width;
+				e_ptr->running_bg_total = e_ptr->output_width;
 			} else {
 				if(!memcmp(&save_ptr->bgcolor, &e_ptr->bgcolor, sizeof(struct rlib_rgb))) {
-					save_ptr->running_running_bg_total += e_ptr->output_width;
+					save_ptr->running_bg_total += e_ptr->output_width;
 				} else {
 					save_ptr = e_ptr;
 					previous_ptr->running_bgcolor_status |= STATUS_STOP;
 					e_ptr->running_bgcolor_status |= STATUS_START;
-					e_ptr->running_running_bg_total = e_ptr->output_width;
+					e_ptr->running_bg_total = e_ptr->output_width;
 				}
 			}
 		} else {
@@ -549,6 +549,46 @@ static void rlib_layout_find_common_properties_in_a_line(rlib *r, struct rlib_li
 	if(state == STATE_BGCOLOR) {
  		e_ptr->running_bgcolor_status |= STATUS_STOP;
 	}
+
+	i = 0;
+	e_ptr = NULL;
+	save_ptr = NULL;
+	previous_ptr = NULL;
+	state = STATE_NONE;
+	
+	previous_ptr = &extra_data[i];
+	for(i=0;i<count;i++) {
+		e_ptr = &extra_data[i];
+		if(e_ptr->found_link) {
+			if(state == STATE_NONE) {
+				save_ptr = e_ptr;
+				state = STATE_BGCOLOR;
+				e_ptr->running_link_status |= STATUS_START;
+				e_ptr->running_link_total = e_ptr->output_width;
+			} else {
+				if(!strcmp(save_ptr->link, e_ptr->link)) {
+					save_ptr->running_link_total += e_ptr->output_width;
+				} else {
+					save_ptr = e_ptr;
+					previous_ptr->running_link_status |= STATUS_STOP;
+					e_ptr->running_link_status |= STATUS_START;
+					e_ptr->running_link_total = e_ptr->output_width;
+				}
+			}
+		} else {
+			if(state == STATE_BGCOLOR) {
+				previous_ptr->running_link_status |= STATUS_STOP;
+				state = STATE_NONE;
+			}
+		}
+		previous_ptr = e_ptr;
+	}
+	if(state == STATE_BGCOLOR) {
+ 		e_ptr->running_link_status |= STATUS_STOP;
+	}
+
+
+
 }
 
 static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_output_array *roa, gint backwards, gint page) {
@@ -652,6 +692,7 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 							&extra_data[start_count], buf);
 					}
 				} else {
+					gint counter;
 					for(e = rl->e; e != NULL; e=e->next) {
 						if(e->type == RLIB_ELEMENT_FIELD) {
 							struct rlib_report_field *rf = ((struct rlib_report_field *)e->data);

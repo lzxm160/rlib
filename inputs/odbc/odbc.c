@@ -71,33 +71,37 @@ gpointer rlib_odbc_connect(gpointer input_ptr, gchar *source, gchar *user, gchar
 
 	V_OD_erg=SQLAllocHandle(SQL_HANDLE_ENV,SQL_NULL_HANDLE,&INPUT_PRIVATE(input)->V_OD_Env);
 	if ((V_OD_erg != SQL_SUCCESS) && (V_OD_erg != SQL_SUCCESS_WITH_INFO)) {
-		rlogit("Error AllocHandle\n");
+		fprintf(stderr, "Error AllocHandle\n");
 		return NULL;
 	}
+
 	V_OD_erg=SQLSetEnvAttr(INPUT_PRIVATE(input)->V_OD_Env, SQL_ATTR_ODBC_VERSION, (void*)SQL_OV_ODBC3, 0);
 	if ((V_OD_erg != SQL_SUCCESS) && (V_OD_erg != SQL_SUCCESS_WITH_INFO)) {
-		rlogit("Error SetEnv\n");
+		fprintf(stderr, "Error SetEnv\n");
 		SQLFreeHandle(SQL_HANDLE_ENV, INPUT_PRIVATE(input)->V_OD_Env);
 		return NULL;
 	}
+
+
 	V_OD_erg = SQLAllocHandle(SQL_HANDLE_DBC, INPUT_PRIVATE(input)->V_OD_Env, &INPUT_PRIVATE(input)->V_OD_hdbc); 
 	if ((V_OD_erg != SQL_SUCCESS) && (V_OD_erg != SQL_SUCCESS_WITH_INFO)) {
-		rlogit("Error AllocHDB %d\n",V_OD_erg);
+		fprintf(stderr, "Error AllocHDB %d\n",V_OD_erg);
 		SQLFreeHandle(SQL_HANDLE_ENV, INPUT_PRIVATE(input)->V_OD_Env);
 		return NULL;
 	}
+
 	SQLSetConnectAttr(INPUT_PRIVATE(input)->V_OD_hdbc, SQL_LOGIN_TIMEOUT, (SQLPOINTER *)5, 0);
 
 	V_OD_erg = SQLConnect(INPUT_PRIVATE(input)->V_OD_hdbc, (SQLCHAR*) source, SQL_NTS, (SQLCHAR*) user, SQL_NTS, (SQLCHAR*) password, SQL_NTS);
 	if ((V_OD_erg != SQL_SUCCESS) && (V_OD_erg != SQL_SUCCESS_WITH_INFO)) {
-		rlogit("Error SQLConnect %d\n",V_OD_erg);
+		fprintf(stderr, "Error SQLConnect %d\n",V_OD_erg);
 		SQLGetDiagRec(SQL_HANDLE_DBC, INPUT_PRIVATE(input)->V_OD_hdbc,1, V_OD_stat, &V_OD_err,V_OD_msg,100,&V_OD_mlen);
-		rlogit("%s (%d)\n", V_OD_msg, V_OD_err);
+		fprintf(stderr, "%s (%d)\n", V_OD_msg, V_OD_err);
 		SQLFreeHandle(SQL_HANDLE_DBC, INPUT_PRIVATE(input)->V_OD_hdbc);
 		SQLFreeHandle(SQL_HANDLE_ENV, INPUT_PRIVATE(input)->V_OD_Env);
 		return NULL;
 	}
-	
+
 	return  INPUT_PRIVATE(input)->V_OD_Env;
 }
 
@@ -120,9 +124,9 @@ static SQLHSTMT * rlib_odbc_query(gpointer input_ptr, gchar *query) {
 
 	V_OD_erg=SQLAllocHandle(SQL_HANDLE_STMT, INPUT_PRIVATE(input)->V_OD_hdbc, &V_OD_hstmt);
 	if ((V_OD_erg != SQL_SUCCESS) && (V_OD_erg != SQL_SUCCESS_WITH_INFO)) {
-		rlogit("Failed to allocate a connection handle %d\n",V_OD_erg);
+		fprintf(stderr, "Failed to allocate a connection handle %d\n",V_OD_erg);
 		SQLGetDiagRec(SQL_HANDLE_DBC, INPUT_PRIVATE(input)->V_OD_hdbc,1, V_OD_stat,&V_OD_err,V_OD_msg,100,&V_OD_mlen);
-		rlogit("%s (%d)\n",V_OD_msg,V_OD_err);
+		fprintf(stderr, "%s (%d)\n",V_OD_msg,V_OD_err);
 		SQLDisconnect(INPUT_PRIVATE(input)->V_OD_hdbc);
 		SQLFreeHandle(SQL_HANDLE_DBC,INPUT_PRIVATE(input)->V_OD_hdbc);
 		SQLFreeHandle(SQL_HANDLE_ENV, INPUT_PRIVATE(input)->V_OD_Env);
@@ -131,9 +135,9 @@ static SQLHSTMT * rlib_odbc_query(gpointer input_ptr, gchar *query) {
 
 	V_OD_erg=SQLExecDirect(V_OD_hstmt, query, SQL_NTS);
 	if ((V_OD_erg != SQL_SUCCESS) && (V_OD_erg != SQL_SUCCESS_WITH_INFO)) {
-		rlogit("Error Select %d\n",V_OD_erg);
+		fprintf(stderr, "Error Select %d\n",V_OD_erg);
 		SQLGetDiagRec(SQL_HANDLE_DBC, INPUT_PRIVATE(input)->V_OD_hdbc,1, V_OD_stat, &V_OD_err, V_OD_msg,100,&V_OD_mlen);
-		rlogit("%s (%d)\n",V_OD_msg,V_OD_err);
+		fprintf(stderr, "%s (%d)\n",V_OD_msg,V_OD_err);
 		SQLFreeHandle(SQL_HANDLE_STMT,V_OD_hstmt);
 		SQLDisconnect(INPUT_PRIVATE(input)->V_OD_hdbc);
 		SQLFreeHandle(SQL_HANDLE_DBC,INPUT_PRIVATE(input)->V_OD_hdbc);
@@ -148,7 +152,6 @@ gint odbc_read_next(gpointer result_ptr) {
 	gint V_OD_erg;
 	gint i;
 	SQLINTEGER ind;
-	
 	if(SQL_SUCCEEDED(( V_OD_erg = SQLFetch (results->V_OD_hstmt)))) {
 		for (i=0;i<results->tot_fields;i++)
 			V_OD_erg = SQLGetData (results->V_OD_hstmt, i+1, SQL_C_CHAR, results->values[i].value, results->values[i].len+1, &ind);
@@ -163,7 +166,6 @@ static gint rlib_odbc_first(gpointer input_ptr, gpointer result_ptr) {
 	result->isdone = FALSE;
 	result->state_previous = FALSE;
 	return odbc_read_next(result_ptr);
-	return result != NULL ? TRUE : FALSE;
 }
 
 static void copy_to_from(struct rlib_odbc_results *results, struct odbc_field_values *to, struct odbc_field_values *from) {
@@ -175,6 +177,7 @@ static void copy_to_from(struct rlib_odbc_results *results, struct odbc_field_va
 
 static int rlib_odbc_next(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_odbc_results *results = result_ptr;
+
 	if(results->row+1 < results->tot_rows) {
 		if(results->state_previous) {
 			results->state_previous = FALSE;
@@ -203,7 +206,6 @@ static gint rlib_odbc_previous(gpointer input_ptr, gpointer result_ptr) {
 		results->row--;
 		results->isdone = FALSE;
 		results->state_previous = TRUE;
-		rlogit("GOING PREVIOUS\n");
 		copy_to_from(results, results->save_values, results->values);
 		copy_to_from(results, results->values, results->more_values);
 		return TRUE;
@@ -245,7 +247,7 @@ gpointer odbc_new_result_from_query(gpointer input_ptr, gchar *query) {
 	SQLINTEGER nrows;
 	gint V_OD_erg;
 	SQLUINTEGER col_size;
-	
+
 	V_OD_hstmt = rlib_odbc_query(input_ptr, query);
 	if(V_OD_hstmt == NULL)
 		return NULL;

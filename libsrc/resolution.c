@@ -56,6 +56,10 @@ gint rlib_resolve_rlib_variable(rlib *r, gchar *name) {
 
 gchar * rlib_resolve_field_value(rlib *r, struct rlib_resultset_field *rf) {
 	struct input_filter *rs = INPUT(r, rf->resultset);
+	
+	if(r->results[rf->resultset].navigation_failed == TRUE)
+		return NULL;
+	
 #if DISABLE_UTF8
 	return g_strdup(rs->get_field_value_as_string(rs, r->results[rf->resultset].result, rf->field));
 #else

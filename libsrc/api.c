@@ -102,20 +102,21 @@ gint rlib_add_query_pointer_as(rlib *r, gchar *input_source, gchar *sql, gchar *
 
 gint rlib_add_query_as(rlib *r, gchar *input_source, gchar *sql, gchar *name) {
 	gint i;
-	if(r->queries_count > (RLIB_MAXIMUM_QUERIES-1)) {
+	if(r->queries_count > (RLIB_MAXIMUM_QUERIES-1))
 		return -1;
-	}
 
 	r->queries[r->queries_count].sql = g_strdup(sql);
 	r->queries[r->queries_count].name = g_strdup(name);
 	for(i=0;i<r->inputs_count;i++) {
 		if(!strcmp(r->inputs[i].name, input_source)) {
 			r->queries[r->queries_count].input = r->inputs[i].input;
+			r->queries_count++;
+			return r->queries_count;
 		}
 	}
-	
-	r->queries_count++;
-	return r->queries_count;
+
+	r_error("rlib_add_query_as: Could not find input source [%s]!\n", input_source);
+	return -1;	
 }
 
 gint rlib_add_report(rlib *r, gchar *name) {
@@ -141,8 +142,11 @@ gint rlib_add_report_from_buffer(rlib *r, gchar *buffer) {
 static gint rlib_execute_queries(rlib *r) {
 	gint i;
 	for(i=0;i<r->queries_count;i++) {
+
 		r->results[i].input = r->queries[i].input;
 		r->results[i].result = INPUT(r,i)->new_result_from_query(INPUT(r,i), r->queries[i].sql);
+		r->results[i].next_failed = FALSE;
+		r->results[i].navigation_failed = FALSE;
 		if(r->results[i].result == NULL) {
 			rlogit("Failed To Run A Query [%s]\n", r->queries[i].sql);
 			return FALSE;

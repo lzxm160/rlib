@@ -28,9 +28,17 @@ static gint rlib_do_followers(rlib *r, gint i, gint way) {
 	gint follower;
 	gint rtn = TRUE;
 	follower = r->followers[i].follower;
+
+	if(r->results[follower].next_failed)
+		r->results[follower].navigation_failed = TRUE;
+
 	if(way == RLIB_NAVIGATE_NEXT) {
-		if(rlib_navigate_next(r, follower) != TRUE)
-			rtn = FALSE;
+		if(rlib_navigate_next(r, follower) != TRUE) {
+			if(rlib_navigate_last(r, follower) != TRUE) {
+				rtn = FALSE;
+			}
+			r->results[follower].next_failed = TRUE;
+		}	
 	} else if(way == RLIB_NAVIGATE_PREVIOUS) {
 		if(rlib_navigate_previous(r, follower) != TRUE)
 			rtn = FALSE;

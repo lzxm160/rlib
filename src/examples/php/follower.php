@@ -35,11 +35,20 @@
 	$data[5][3] = "2";
 	$data[5][4] = "Dude";
 
+
+	$more_data[0][0] = "initials";
+
+	$more_data[1][0] = "WRD";
+	$more_data[2][0] = "ERB";
+
+
 	$rlib =	rlib_init();
 	rlib_add_datasource_array($rlib, "local_array");
 	rlib_add_query_as($rlib, "local_array", "data", "data");
-	rlib_add_report($rlib, "array.xml");
-	rlib_set_output_format_from_text($rlib, "html");
+	rlib_add_query_as($rlib, "local_array", "more_data", "more_data");
+	rlib_add_resultset_follower($rlib, "data", "more_data");
+	rlib_add_report($rlib, "follower.xml");
+	rlib_set_output_format_from_text($rlib, "pdf");
 	rlib_execute($rlib);
 	header(rlib_get_content_type($rlib));
 	rlib_spool($rlib);
