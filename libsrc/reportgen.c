@@ -21,7 +21,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ralloc.h"
 #include "rlib.h"
 #include "pcode.h"
 #include "rlib_input.h"
@@ -315,9 +314,9 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 				rlogit("RLIB ENCOUNTERED AN ERROR PROCESSING THE BGCOLOR FOR THIS VALUE [%s].. BGCOLOR VALUE WAS NOT OF TYPE STRING\n", text);
 			} else {
 				gchar *idx;
-				ocolor = colorstring = rstrdup(RLIB_VALUE_GET_AS_STRING((&extra_data[i].rval_bgcolor)));
+				ocolor = colorstring = g_strdup(RLIB_VALUE_GET_AS_STRING((&extra_data[i].rval_bgcolor)));
 				if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_code)) && RLIB_VALUE_IS_NUMBER((&extra_data[i].rval_code)) && index(colorstring, ':')) {
-					colorstring = rstrdup(colorstring);
+					colorstring = g_strdup(colorstring);
 					idx = index(colorstring, ':');
 					if(RLIB_VALUE_GET_AS_NUMBER((&extra_data[i].rval_code)) >= 0)
 						idx[0] = '\0';
@@ -326,7 +325,7 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 				}
 				parsecolor(&extra_data[i].bgcolor, colorstring);
 				extra_data[i].found_bgcolor = TRUE;
-				rfree(ocolor);
+				g_free(ocolor);
 			}
 
 		}
@@ -338,7 +337,7 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 				rlogit("RLIB ENCOUNTERED AN ERROR PROCESSING THE COLOR FOR THIS VALUE [%s].. COLOR VALUE WAS NOT OF TYPE STRING\n", text);
 			} else {
 				gchar *idx;
-				ocolor = colorstring = rstrdup(RLIB_VALUE_GET_AS_STRING((&extra_data[i].rval_color)));
+				ocolor = colorstring = g_strdup(RLIB_VALUE_GET_AS_STRING((&extra_data[i].rval_color)));
 				if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_code)) && RLIB_VALUE_IS_NUMBER((&extra_data[i].rval_code)) && index(colorstring, ':')) {
 					idx = index(colorstring, ':');
 					if(RLIB_VALUE_GET_AS_NUMBER((&extra_data[i].rval_code)) >= 0)
@@ -348,7 +347,7 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 				}
 				parsecolor(&extra_data[i].color, colorstring);
 				extra_data[i].found_color = TRUE;
-				rfree(ocolor);
+				g_free(ocolor);
 			}
 		}
 
@@ -456,14 +455,14 @@ RVector *wrap_memo_lines(gchar *txt, gint width, const gchar *wrapchars) {
 	
 	do {
 		if (strlen(txt) < width) {
-			RVector_add(v, rstrdup(txt));
+			RVector_add(v, g_strdup(txt));
 			break;
 		} else {
 			endptr = ptr = txt + width;
 			while (ptr > txt) {
 				if ((tptr = strchr(wrapchars, *ptr))) {
 					len = ptr - txt;
-					tptr = rmalloc(len + 1);
+					tptr = g_malloc(len + 1);
 					strncpy(tptr, txt, len);
 					tptr[len] = '\0';
 					RVector_add(v, tptr);
@@ -485,7 +484,7 @@ void free_memo_lines(RVector *v) {
 	gint i, lim = RVector_size(v);
 
 	for (i = 0; i < lim; ++i) {
-		rfree(RVector_get(v, i));
+		g_free(RVector_get(v, i));
 	}
 	RVector_free(v);
 }
@@ -545,7 +544,7 @@ static gint print_report_output_private(rlib *r, struct report_output_array *roa
 				for(e = rl->e; e != NULL; e=e->next)
 					count++;
 
-				extra_data = rcalloc(sizeof(struct rlib_line_extra_data), count);
+				extra_data = g_new0(struct rlib_line_extra_data, count);
 				execute_pcodes_for_line(r, rl, extra_data);
 				find_stuff_in_common(r, extra_data, count);
 				count = 0;
@@ -640,7 +639,7 @@ static gint print_report_output_private(rlib *r, struct report_output_array *roa
 					count++;
 				}
 
-				rfree(extra_data);
+				g_free(extra_data);
 			}
 		} else if(ro->type == REPORT_PRESENTATION_DATA_HR) {
 			gchar *colorstring;
@@ -873,23 +872,23 @@ void rlib_init_variables(rlib *r) {
 	for(e = r->reports[r->current_report]->variables; e != NULL; e=e->next) {
 		struct report_variable *rv = e->data;
 		if(rv->type == REPORT_VARIABLE_EXPRESSION) {
-			RLIB_VARIABLE_CA(rv) = rmalloc(sizeof(struct count_amount));
+			RLIB_VARIABLE_CA(rv) = g_malloc(sizeof(struct count_amount));
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		} else if(rv->type == REPORT_VARIABLE_COUNT) {
-			RLIB_VARIABLE_CA(rv) = rmalloc(sizeof(struct count_amount));
+			RLIB_VARIABLE_CA(rv) = g_malloc(sizeof(struct count_amount));
 			RLIB_VARIABLE_CA(rv)->count = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->count, 0);
 		} else if(rv->type == REPORT_VARIABLE_SUM) {
-			RLIB_VARIABLE_CA(rv) = rmalloc(sizeof(struct count_amount));
+			RLIB_VARIABLE_CA(rv) = g_malloc(sizeof(struct count_amount));
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		} else if(rv->type == REPORT_VARIABLE_AVERAGE) {
-			RLIB_VARIABLE_CA(rv) = rmalloc(sizeof(struct count_amount));
+			RLIB_VARIABLE_CA(rv) = g_malloc(sizeof(struct count_amount));
 			RLIB_VARIABLE_CA(rv)->count = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->count, 0);
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		} else if(rv->type == REPORT_VARIABLE_LOWEST) {
-			RLIB_VARIABLE_CA(rv) = rmalloc(sizeof(struct count_amount));
+			RLIB_VARIABLE_CA(rv) = g_malloc(sizeof(struct count_amount));
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		} else if(rv->type == REPORT_VARIABLE_HIGHEST) {
-			RLIB_VARIABLE_CA(rv) = rmalloc(sizeof(struct count_amount));
+			RLIB_VARIABLE_CA(rv) = g_malloc(sizeof(struct count_amount));
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		}
 	}

@@ -23,7 +23,6 @@
 #include <math.h>
 #include <time.h>
 
-#include "ralloc.h"
 #include "rlib.h"
 #include "pcode.h"
 
@@ -161,15 +160,15 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, gchar *str) {
 	struct rlib_pcode_operand *o;
 	struct report_variable *rv;
 	gint rvar;
-	o = rmalloc(sizeof(struct rlib_pcode_operand));
+	o = g_malloc(sizeof(struct rlib_pcode_operand));
 	if(str[0] == '\'') {
-		gchar *newstr = rmalloc(strlen(str)-1);
+		gchar *newstr = g_malloc(strlen(str)-1);
 		memcpy(newstr, str+1, strlen(str)-1);
 		newstr[strlen(str)-2] = '\0';
 		o->type = OPERAND_STRING;
 		o->value = newstr;
 	} else if(str[0] == '{') {
-		struct tm *tm_date = rmalloc(sizeof(struct tm));
+		struct tm *tm_date = g_malloc(sizeof(struct tm));
 		str++;
 		o->type = OPERAND_DATE;
 		o->value = stod(tm_date, str);				
@@ -183,13 +182,13 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, gchar *str) {
 		o->type = OPERAND_RLIB_VARIABLE;
 		o->value = (void *)rvar;
 	} 	else if(rlib_resolve_resultset_field(r, str, &field, &resultset)) {
-		struct rlib_resultset_field *rf = rmalloc(sizeof(struct rlib_resultset_field));
+		struct rlib_resultset_field *rf = g_malloc(sizeof(struct rlib_resultset_field));
 		rf->resultset = resultset;
 		rf->field = field;
 		o->type = OPERAND_FIELD;
 		o->value = rf;		
 	} else {
-		gint64 *newnum = rmalloc(sizeof(long long));
+		gint64 *newnum = g_malloc(sizeof(long long));
 		o->type = OPERAND_NUMBER;
 		*newnum = rlib_str_to_long_long(str);
 		o->value = newnum;
@@ -361,7 +360,7 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, gchar *infix) {
 	if(infix == NULL || infix[0] == '\0' || !strcmp(infix, ""))
 		return NULL;
 
-	pcodes = rmalloc(sizeof(struct rlib_pcode));
+	pcodes = g_malloc(sizeof(struct rlib_pcode));
 	rlib_pcode_init(pcodes);
 	operator_stack_init(&os);
 	rmwhitespacesexceptquoted(infix);
@@ -423,7 +422,7 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, gchar *infix) {
 						if(pcount == 0)
 							break;
 					}
-					save_iif = iif = rmalloc(moving_ptr - save_ptr);
+					save_iif = iif = g_malloc(moving_ptr - save_ptr);
 					memcpy(iif, save_ptr, moving_ptr-save_ptr);
 					iif[moving_ptr-save_ptr-1] = '\0';
 					evaulation = iif;
@@ -444,13 +443,13 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, gchar *infix) {
 						}
 						iif++;
 					}
-					rpif = rmalloc(sizeof(struct rlib_pcode_if));
+					rpif = g_malloc(sizeof(struct rlib_pcode_if));
 					rpif->evaulation = rlib_infix_to_pcode(r, evaulation);			
 					rpif->true = rlib_infix_to_pcode(r, true);			
 					rpif->false = rlib_infix_to_pcode(r, false);
 					rpif->str_ptr = iif;
 					smart_add_pcode(pcodes, &os, op);
-					o = rmalloc(sizeof(struct rlib_pcode_operand));			
+					o = g_malloc(sizeof(struct rlib_pcode_operand));			
 					o->type = OPERAND_IIF;
 					o->value = rpif;
 					rlib_pcode_add(pcodes, rlib_new_pcode_instruction(&rpi, PCODE_PUSH, o));
@@ -462,7 +461,7 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, gchar *infix) {
 					moving_ptr-=1;
 					op_pointer = moving_ptr;
 					move_pointers = FALSE;
-					rfree(save_iif);
+					g_free(save_iif);
 				} else {
 					smart_add_pcode(pcodes, &os, op);
 					last_op_was_function = op->is_function;
@@ -522,16 +521,16 @@ struct rlib_value * rlib_value_new(struct rlib_value *rval, gint type, gint free
 
 struct rlib_value * rlib_value_dup(struct rlib_value *orig) {
 	struct rlib_value *new;
-	new = rmalloc(sizeof(struct rlib_value));
+	new = g_malloc(sizeof(struct rlib_value));
 	memcpy(new, orig, sizeof(struct rlib_value));
 	if(orig->type == RLIB_VALUE_STRING)
-		new->string_value = rstrdup(orig->string_value);
+		new->string_value = g_strdup(orig->string_value);
 	return new;
 }
 
 struct rlib_value * rlib_value_dup_contents(struct rlib_value *rval) {
 	if(rval->type == RLIB_VALUE_STRING)
-		rval->string_value = rstrdup(rval->string_value);
+		rval->string_value = g_strdup(rval->string_value);
 	return rval;
 }
 
@@ -542,7 +541,7 @@ gint rlib_value_free(struct rlib_value *rval) {
 	if(rval->free == FALSE)
 		return FALSE;
 	if(rval->type == RLIB_VALUE_STRING) {
-		rfree(rval->string_value);
+		g_free(rval->string_value);
 		rval->free = FALSE;
 		RLIB_VALUE_TYPE_NONE(rval);
 		return TRUE;
@@ -555,7 +554,7 @@ struct rlib_value * rlib_value_new_number(struct rlib_value *rval, gint64 value)
 }
 
 struct rlib_value * rlib_value_new_string(struct rlib_value *rval, gchar *value) {
-	return rlib_value_new(rval, RLIB_VALUE_STRING, TRUE, rstrdup(value));
+	return rlib_value_new(rval, RLIB_VALUE_STRING, TRUE, g_strdup(value));
 }
 
 struct rlib_value * rlib_value_new_date(struct rlib_value *rval, struct tm *date) {

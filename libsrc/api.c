@@ -21,7 +21,6 @@
 #include <string.h>
 #include <locale.h>
 
-#include "ralloc.h"
 #include "rlib.h"
 #include "rlib_input.h"
 
@@ -32,8 +31,7 @@ rlib * rlib_init_with_environment(struct environment_filter *environment) {
 	setlocale (LC_NUMERIC, "en_US");
 	init_signals();
 
-	r = rmalloc(sizeof(rlib));
-	bzero(r, sizeof(rlib));
+	r = g_new0(rlib, 1);
 
 	if(environment == NULL)
 		rlib_new_c_environment(r);

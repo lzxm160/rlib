@@ -21,7 +21,6 @@
 #include <string.h>
 #include <cpdflib.h>
 
-#include "ralloc.h"
 #include "rlib.h"
 
 struct _private {
@@ -189,8 +188,8 @@ static int rlib_pdf_is_single_page(rlib *r) {
 }
 
 static int rlib_pdf_free(rlib *r) {
-	rfree(OUTPUT_PRIVATE(r));
-	rfree(OUTPUT(r));
+	g_free(OUTPUT_PRIVATE(r));
+	g_free(OUTPUT(r));
 	return 0;
 }
 
@@ -212,8 +211,8 @@ static void rlib_pdf_start_report(rlib *r) {}
 static void rlib_pdf_end_report(rlib *r) {}
 
 void rlib_pdf_new_output_filter(rlib *r) {
-	OUTPUT(r) = rmalloc(sizeof(struct output_filter));
-	OUTPUT_PRIVATE(r) = rmalloc(sizeof(struct _private));
+	OUTPUT(r) = g_malloc(sizeof(struct output_filter));
+	OUTPUT_PRIVATE(r) = g_malloc(sizeof(struct _private));
 	bzero(OUTPUT_PRIVATE(r), sizeof(struct _private));
 
 	OUTPUT(r)->do_align = TRUE;

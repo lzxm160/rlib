@@ -28,7 +28,6 @@
 #include <time.h>
 #include <sys/resource.h>
 
-#include "ralloc.h"
 #include "rlib.h"
 
 int rlib_save_report(struct rlib_report *rep, char *filename) {

@@ -21,7 +21,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ralloc.h"
 #include "rlib.h"
 
 #define MAX_COL	100
@@ -161,15 +160,15 @@ static void rlib_csv_set_working_page(rlib *r, gint page) {
 }
 
 static int rlib_csv_free(rlib *r) {
-	rfree(OUTPUT_PRIVATE(r)->top);
-	rfree(OUTPUT_PRIVATE(r));
-	rfree(OUTPUT(r));
+	g_free(OUTPUT_PRIVATE(r)->top);
+	g_free(OUTPUT_PRIVATE(r));
+	g_free(OUTPUT(r));
 	return 0;
 }
 
 void rlib_csv_new_output_filter(rlib *r) {
-	OUTPUT(r) = rmalloc(sizeof(struct output_filter));
-	OUTPUT_PRIVATE(r) = rmalloc(sizeof(struct _private));
+	OUTPUT(r) = g_malloc(sizeof(struct output_filter));
+	OUTPUT_PRIVATE(r) = g_malloc(sizeof(struct _private));
 	bzero(OUTPUT_PRIVATE(r), sizeof(struct _private));
 	OUTPUT_PRIVATE(r)->top = NULL;
 	OUTPUT_PRIVATE(r)->top_size = 0;

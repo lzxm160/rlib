@@ -28,7 +28,6 @@
 #include <time.h>
 #include <sys/resource.h>
 
-#include "ralloc.h"
 #include "rlib.h"
 
 //man 3 llabs says the prototype is in stdlib.. no it aint!
@@ -140,6 +139,7 @@ void rlogit_setmessagewriter(void (*msgwriter)(const gchar *msg)) {
 }
 
 
+//TODO: NOTE: uses non-glib free
 void rlogit(const gchar *fmt, ...) {
 	va_list vl;
 	gchar *result = NULL;
@@ -147,8 +147,10 @@ void rlogit(const gchar *fmt, ...) {
 	va_start(vl, fmt);
 	vasprintf(&result, fmt, vl);
 	va_end(vl);
-	logMessage(result);
-	if (result != NULL) free(result);
+	if (result != NULL) {
+		logMessage(result);
+		free(result);
+	}
 	return;
 }
 
@@ -304,12 +306,15 @@ gchar *strproper (gchar *s) {
 	return ptr;
 }
 
+
+//TODO: Change this to use a g_string instead of this
 void make_more_space_if_necessary(gchar **str, gint *size, gint *total_size, gint len) {
 	if(*total_size == 0) {
-		*str = rcalloc(MAXSTRLEN, 1);
+		*str = g_malloc(MAXSTRLEN);
+		bzero(*str, MAXSTRLEN);
 		*total_size = MAXSTRLEN;
 	} else if((*size) + len > (*total_size)) {
-		*str = rrealloc(*str, (*total_size)*2);
+		*str = g_realloc(*str, (*total_size)*2);
 		*total_size = (*total_size) * 2;
 	}		
 }

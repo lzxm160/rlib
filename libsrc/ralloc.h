@@ -18,10 +18,5 @@
  * Boston, MA 02111-1307, USA.
  */
 
-void *rmalloc(size_t size);
-char *rstrdup(const char *s);
-void *rcalloc(size_t nmemb, size_t size);
-void rfree(void *ptr);
-void *rrealloc(void *ptr, size_t size);
 void ralloc_init_profiler(void);
 void ralloc_profile(void);

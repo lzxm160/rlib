@@ -21,7 +21,6 @@
 #include <stdlib.h>
 #include <dlfcn.h>
 
-#include "ralloc.h"
 #include "rlib.h"
 #include "pcode.h"
 #include "rlib_input.h"
@@ -36,19 +35,18 @@ static void free_pcode(struct rlib_pcode *code) {
 		if(code->instructions[i].instruction == PCODE_PUSH) {
 			struct rlib_pcode_operand *o = code->instructions[i].value;
 			if(o->type == OPERAND_STRING || o->type == OPERAND_NUMBER || o->type == OPERAND_FIELD)
-				rfree(o->value);
+				g_free(o->value);
 			if(o->type == OPERAND_IIF) {
 				struct rlib_pcode_if *rpif = o->value;
 				free_pcode(rpif->evaulation);
 				free_pcode(rpif->true);
 				free_pcode(rpif->false);
-				rfree(rpif);				
+				g_free(rpif);				
 			}
-			rfree(o);
+			g_free(o);
 		}
 	}
-
-	rfree(code);
+	g_free(code);
 }
 
 static void rlib_image_free_pcode(rlib *r, struct report_image * ri) {
@@ -56,20 +54,20 @@ static void rlib_image_free_pcode(rlib *r, struct report_image * ri) {
 	free_pcode(ri->type_code);
 	free_pcode(ri->width_code);
 	free_pcode(ri->height_code);
-	rfree(ri);
+	g_free(ri);
 }
 
 static void rlib_hr_free_pcode(rlib *r, struct report_horizontal_line * rhl) {
 	free_pcode(rhl->bgcolor_code);
 	free_pcode(rhl->suppress_code);
-	rfree(rhl);
+	g_free(rhl);
 }
 
 static void rlib_text_free_pcode(rlib *r, struct report_text *rt) {
 	free_pcode(rt->color_code);
 	free_pcode(rt->bgcolor_code);
 	free_pcode(rt->col_code);
-	rfree(rt);
+	g_free(rt);
 }
 
 static void rlib_field_free_pcode(rlib *r, struct report_field *rf) {
@@ -81,7 +79,7 @@ static void rlib_field_free_pcode(rlib *r, struct report_field *rf) {
 	free_pcode(rf->col_code);
 	free_pcode(rf->maxlines_code);
 	free_pcode(rf->wrapchars_code);
-	rfree(rf);
+	g_free(rf);
 }
 
 static void rlib_free_fields(rlib *r, struct report_output_array *roa) {
@@ -108,18 +106,18 @@ static void rlib_free_fields(rlib *r, struct report_output_array *roa) {
 			for(e=rl->e; e != NULL; ) {
 				save = e;
 				e=e->next;
-				rfree(save);
+				g_free(save);
 			}
-			rfree(rl);
+			g_free(rl);
 		} else if(ro->type == REPORT_PRESENTATION_DATA_HR) {
 			rlib_hr_free_pcode(r, ((struct report_horizontal_line *)ro->data));
 		} else if(ro->type == REPORT_PRESENTATION_DATA_IMAGE) {
 			rlib_image_free_pcode(r, ((struct report_image *)ro->data));
 		}
-		rfree(ro);
+		g_free(ro);
 	}
-	rfree(roa->data);
-	rfree(roa);
+	g_free(roa->data);
+	g_free(roa);
 }
 
 
@@ -135,7 +133,7 @@ static void rlib_free_output(rlib *r, struct report_element *e) {
 		roa = e->data;
 		rlib_free_fields(r, roa);
 		e=e->next;
-		rfree(save);
+		g_free(save);
 	}	
 }
 
@@ -149,9 +147,9 @@ void rlib_free_report(rlib *r, gint which) {
 	rlib_free_output(r, r->reports[which]->detail.fields);
 	rlib_free_output(r, r->reports[which]->detail.textlines);
 
-	rfree(r->reports[r->current_report]->position_top);
-	rfree(r->reports[r->current_report]->position_bottom);
-	rfree(r->reports[r->current_report]->bottom_size);
+	g_free(r->reports[r->current_report]->position_top);
+	g_free(r->reports[r->current_report]->position_bottom);
+	g_free(r->reports[r->current_report]->bottom_size);
 	
 	if(r->reports[which]->breaks != NULL) {
 		for(e = r->reports[which]->breaks; e != NULL; e=e->next) {
@@ -162,7 +160,7 @@ void rlib_free_report(rlib *r, gint which) {
 			for(be = rb->fields; be != NULL; be=be->next) {
 				struct break_fields *bf = be->data;
 				rlib_break_free_pcode(r, bf);
-				rfree(bf);
+				g_free(bf);
 			}
 			
 			while(rb->fields) {
@@ -170,14 +168,14 @@ void rlib_free_report(rlib *r, gint which) {
 				for(be = rb->fields; be->next != NULL; be=be->next) {
 					prev = be;
 				}
-				rfree(be);
+				g_free(be);
 				if(prev != NULL)
 					prev->next = NULL;
 				else
 					break;
 			}
 			
-			rfree(rb);
+			g_free(rb);
 		}
 
 		while(r->reports[which]->breaks) {
@@ -185,7 +183,7 @@ void rlib_free_report(rlib *r, gint which) {
 			for(e = r->reports[which]->breaks; e->next != NULL; e=e->next) {
 				prev = e;
 			}
-			rfree(e);
+			g_free(e);
 			if(prev != NULL)
 				prev->next = NULL;
 			else
@@ -201,18 +199,18 @@ void rlib_free_report(rlib *r, gint which) {
 			free_pcode(rv->code);
 
 			if(rv->type == REPORT_VARIABLE_EXPRESSION)
-				rfree(RLIB_VARIABLE_CA(rv));
+				g_free(RLIB_VARIABLE_CA(rv));
 			else if(rv->type == REPORT_VARIABLE_COUNT)
-				rfree(RLIB_VARIABLE_CA(rv));
+				g_free(RLIB_VARIABLE_CA(rv));
 			else if(rv->type == REPORT_VARIABLE_SUM)
-				rfree(RLIB_VARIABLE_CA(rv));
+				g_free(RLIB_VARIABLE_CA(rv));
 			else if(rv->type == REPORT_VARIABLE_AVERAGE)
-				rfree(RLIB_VARIABLE_CA(rv));
+				g_free(RLIB_VARIABLE_CA(rv));
 			else if(rv->type == REPORT_VARIABLE_LOWEST)
-				rfree(RLIB_VARIABLE_CA(rv));
+				g_free(RLIB_VARIABLE_CA(rv));
 			else if(rv->type == REPORT_VARIABLE_HIGHEST)
-				rfree(RLIB_VARIABLE_CA(rv));
-			rfree(rv);
+				g_free(RLIB_VARIABLE_CA(rv));
+			g_free(rv);
 		}
 		
 		while(r->reports[which]->variables) {
@@ -220,7 +218,7 @@ void rlib_free_report(rlib *r, gint which) {
 			for(e = r->reports[which]->variables; e->next != NULL; e=e->next) {
 				prev = e;
 			}
-			rfree(e);
+			g_free(e);
 			if(prev != NULL)
 				prev->next = NULL;
 			else
@@ -236,7 +234,7 @@ void rlib_free_tree(rlib *r) {
 	for(i=0;i<r->reports_count;i++) {
 		rlib_free_report(r, i);
 		xmlFreeDoc(r->reports[i]->doc);
-		rfree(r->reports[i]);
+		g_free(r->reports[i]);
 		r->reports[i] = NULL;
 	}
 }
@@ -277,6 +275,6 @@ gint rlib_free(rlib *r) {
 	
 	ENVIRONMENT(r)->free(r);
 				
-	rfree(r);
+	g_free(r);
 	return 0;
 }

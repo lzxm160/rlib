@@ -26,34 +26,10 @@
 #include "ralloc.h"
 
 
-void *rmalloc(size_t size) {
-	return g_malloc(size); 
-}
-
-gchar * rstrdup(const gchar *s) {
-	return g_strdup(s);
-}
-
-gpointer rcalloc(size_t nmemb, size_t size) {
-//TODO: this is not quite right but no good equivalent ... do something.
-	return g_malloc0(nmemb * size);
-}
-
-void rfree(gpointer ptr) {
-	g_free(ptr);
-}
-
-gpointer rrealloc(gpointer ptr, size_t size) {
-	return g_realloc(ptr, size);
-}
-
 void ralloc_init_profiler() {
 	g_mem_set_vtable(glib_mem_profiler_table);
 }
 
-int ralloc_getBadFrees() {
-	return 0;
-}
 
 void ralloc_profile() {
 	g_mem_profile();

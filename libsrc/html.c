@@ -21,7 +21,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ralloc.h"
 #include "rlib.h"
 
 struct _data {
@@ -233,8 +232,8 @@ static void rlib_html_start_report(rlib *r) {
 	gint pages_accross = r->reports[r->current_report]->pages_accross;
 	gint i;
 
-	OUTPUT_PRIVATE(r)->bottom = rmalloc(sizeof(struct _data) * pages_accross);
-	OUTPUT_PRIVATE(r)->top = rmalloc(sizeof(struct _data) * pages_accross);
+	OUTPUT_PRIVATE(r)->bottom = g_malloc(sizeof(struct _data) * pages_accross);
+	OUTPUT_PRIVATE(r)->top = g_malloc(sizeof(struct _data) * pages_accross);
 	for(i=0;i<pages_accross;i++) {
 		OUTPUT_PRIVATE(r)->top[i].data = NULL;
 		OUTPUT_PRIVATE(r)->top[i].size = 0;
@@ -262,7 +261,7 @@ static void rlib_html_end_report(rlib *r) {
 	print_text(r, "</pre></td></tr></table>", TRUE);
 
 	for(i=0;i<pages_accross;i++) {
-		OUTPUT_PRIVATE(r)->both = rrealloc(OUTPUT_PRIVATE(r)->both, sofar + OUTPUT_PRIVATE(r)->top[i].size + OUTPUT_PRIVATE(r)->bottom[i].size);
+		OUTPUT_PRIVATE(r)->both = g_realloc(OUTPUT_PRIVATE(r)->both, sofar + OUTPUT_PRIVATE(r)->top[i].size + OUTPUT_PRIVATE(r)->bottom[i].size);
 		memcpy(OUTPUT_PRIVATE(r)->both + sofar , OUTPUT_PRIVATE(r)->top[i].data, OUTPUT_PRIVATE(r)->top[i].size);
 		memcpy(OUTPUT_PRIVATE(r)->both + sofar + OUTPUT_PRIVATE(r)->top[i].size, OUTPUT_PRIVATE(r)->bottom[i].data, OUTPUT_PRIVATE(r)->bottom[i].size);
 		sofar += OUTPUT_PRIVATE(r)->top[i].size + OUTPUT_PRIVATE(r)->bottom[i].size;	
@@ -270,11 +269,11 @@ static void rlib_html_end_report(rlib *r) {
 	OUTPUT_PRIVATE(r)->length += sofar;
 
 	for(i=0;i<pages_accross;i++) {
-		rfree(OUTPUT_PRIVATE(r)->top[i].data);
-		rfree(OUTPUT_PRIVATE(r)->bottom[i].data);
+		g_free(OUTPUT_PRIVATE(r)->top[i].data);
+		g_free(OUTPUT_PRIVATE(r)->bottom[i].data);
 	}
-	rfree(OUTPUT_PRIVATE(r)->top);
-	rfree(OUTPUT_PRIVATE(r)->bottom);
+	g_free(OUTPUT_PRIVATE(r)->top);
+	g_free(OUTPUT_PRIVATE(r)->bottom);
 }
 
 
@@ -320,15 +319,15 @@ static void rlib_html_set_working_page(rlib *r, gint page) {
 
 
 static gint rlib_html_free(rlib *r) {
-	rfree(OUTPUT_PRIVATE(r)->both);
-	rfree(OUTPUT_PRIVATE(r));
-	rfree(OUTPUT(r));
+	g_free(OUTPUT_PRIVATE(r)->both);
+	g_free(OUTPUT_PRIVATE(r));
+	g_free(OUTPUT(r));
 	return 0;
 }
 
 void rlib_html_new_output_filter(rlib *r) {
-	OUTPUT(r) = rmalloc(sizeof(struct output_filter));
-	OUTPUT_PRIVATE(r) = rmalloc(sizeof(struct _private));
+	OUTPUT(r) = g_malloc(sizeof(struct output_filter));
+	OUTPUT_PRIVATE(r) = g_malloc(sizeof(struct _private));
 	bzero(OUTPUT_PRIVATE(r), sizeof(struct _private));
 
 	OUTPUT_PRIVATE(r)->do_bg = FALSE;

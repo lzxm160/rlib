@@ -21,7 +21,6 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "ralloc.h"
 #include "rlib.h"
 #include "pcode.h"
 #include "rlib_input.h"
@@ -74,7 +73,7 @@ gint rlib_resolve_resultset_field(rlib *r, char *name, void **rtn_field, gint *r
 	right_side = memchr(name, '.', strlen(name));
 	if(right_side != NULL) {
 		gint t;
-		result_name = rmalloc(strlen(name) - strlen(right_side) + 1);
+		result_name = g_malloc(strlen(name) - strlen(right_side) + 1);
 		memcpy(result_name, name, strlen(name) - strlen(right_side));
 		result_name[strlen(name) - strlen(right_side)] = '\0';
 		right_side++;
@@ -87,7 +86,7 @@ gint rlib_resolve_resultset_field(rlib *r, char *name, void **rtn_field, gint *r
 			if(!isdigit(*result_name))
 				rlogit("rlib_resolve_namevalue: INVALID RESULT SET %s, name was [%s]\n", result_name, name);
 		}
-		rfree(result_name);
+		g_free(result_name);
 	}
 	*rtn_field = INPUT(r, resultset)->resolve_field_pointer(INPUT(r, resultset), r->results[resultset].result, name);
 	
@@ -290,9 +289,9 @@ void rlib_resolve_fields(rlib *r) {
 		!strcmp(r->reports[r->current_report]->xml_suppress_page_header_first_page, "yes"))
 		r->reports[r->current_report]->suppress_page_header_first_page = TRUE;
 		
-	r->reports[r->current_report]->position_top = rmalloc(r->reports[r->current_report]->pages_accross * sizeof(float));
-	r->reports[r->current_report]->position_bottom = rmalloc(r->reports[r->current_report]->pages_accross * sizeof(float));
-	r->reports[r->current_report]->bottom_size = rmalloc(r->reports[r->current_report]->pages_accross * sizeof(float));
+	r->reports[r->current_report]->position_top = g_malloc(r->reports[r->current_report]->pages_accross * sizeof(float));
+	r->reports[r->current_report]->position_bottom = g_malloc(r->reports[r->current_report]->pages_accross * sizeof(float));
+	r->reports[r->current_report]->bottom_size = g_malloc(r->reports[r->current_report]->pages_accross * sizeof(float));
 
 	rlib_resolve_outputs(r, r->reports[r->current_report]->report_header);
 	rlib_resolve_outputs(r, r->reports[r->current_report]->page_header);
