@@ -21,8 +21,8 @@
 ## Process this file with automake to produce Makefile.in
 
 lib_LTLIBRARIES = libr.la
-libr_la_SOURCES = parsexml.c php.c sql.c reportgen.c init.c resolution.c util.c pcode.c pcode_op_functions.c formatstring.c \
-	fxp.c breaks.c pdf.c html.c txt.c csv.c ralloc.c input.h  pcode.h  ralloc.h  rlib.h rlib_php.h
-libr_la_LIBADD = $(RLIB_LIBS) $(MYSQL_LIBS) -lcpdf
-INCLUDES = $(RLIB_CFLAGS) $(MYSQL_CFLAGS) $(PHP_CFLAGS) 
+libr_la_SOURCES = parsexml.c sql.c reportgen.c init.c resolution.c util.c pcode.c pcode_op_functions.c formatstring.c \
+	fxp.c breaks.c pdf.c html.c txt.c csv.c ralloc.c environment.c free.c input.h  pcode.h  ralloc.h  rlib.h 
+libr_la_LIBADD = $(LIBXML_LIBS) $(MYSQL_LIBS) -lcpdf
+INCLUDES = $(LIBXML_CFLAGS) $(MYSQL_CFLAGS) 
 libdir = ${exec_prefix}/

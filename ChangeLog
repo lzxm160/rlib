@@ -1,3 +1,35 @@
+2003-10-15  Bob Doan  <bdoan@sicompos.com>
+	* Makefile.am: include new directories
+	* bindings/Makefile.am: new make for bindings..
+	* bindings/php/Makefile.am: new php make file
+	* bindings/php/environment.c: new file for php environment.. writing, get global vars
+	* bindings/php/rlib_php.h: prototypes
+	* bindings/php/php.c: move logic out of php and into rlib core.. more php to bindings
+	* configure.in: clean it up a tad
+	* libsrc/Makefile.am: remove php stuff
+	* libsrc/Makefile.simple: gone.. I'm not gonna maintain 2 make methods
+	* libsrc/chopblock.c: gone.. this was stupid anyway
+	* libsrc/csv.c: use environment to spool
+	* libsrc/environment.c: new c environment object
+	* libsrc/formatstring.c: less mallocing
+	* libsrc/free.c: initial attempt at freeing stuff
+	* libsrc/html.c: spool using the environment
+	* libsrc/init.c: add execute method.. put more logic in rlib.. less in php
+	* libsrc/input.h: new free method
+	* libsrc/pcode.c: malloc less
+	* libsrc/pcode.h: malloc less
+	* libsrc/pcode_op_functions.c: malloc less
+	* libsrc/pdf.c: spoll using environment object
+	* libsrc/php.c: gone.. moved to bindings
+	* libsrc/ralloc.c: don't use php's e* funcs
+	* libsrc/reportgen.c: removed useless spool function
+	* libsrc/resolution.c: malloc less
+	* libsrc/rlib.h: malloc less.. new prototypes and stuff
+	* libsrc/sql.c: free methods
+	* libsrc/txt.c: use environment object to spool
+	* tests/Makefile.am: new
+	* tests/test1.c: our 1st c test program
+
 2003-10-14  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/Makefile.am: New api for getting at databases
 	Also took all important logic out of php.c and put init into rlib core

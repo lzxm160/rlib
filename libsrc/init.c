@@ -24,7 +24,7 @@
 #include "ralloc.h"
 #include "rlib.h"
 
-rlib * rlib_init() {
+rlib * rlib_init(struct environment_filter *environment) {
 	rlib *r;
 	
 	setlocale (LC_NUMERIC, "en_US");
@@ -34,6 +34,11 @@ rlib * rlib_init() {
 	bzero(r, sizeof(rlib));
 
 	r->input = rlib_mysql_new_input_filter();
+	
+	if(environment == NULL)
+		rlib_new_c_environment(r);
+	else
+		ENVIRONMENT(r) = environment;
 
 	return r;
 }
@@ -108,6 +113,8 @@ int rlib_execute(rlib *r) {
 			return -1;
 		}
 	}
-	
+
+	make_report(r);	
+		
 	return 0;
 }

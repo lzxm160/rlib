@@ -18,25 +18,29 @@
  * Boston, MA 02111-1307, USA.
  */
  
-#include <stdlib.h>
-#include <string.h>
- 
-void *rmalloc(size_t size) {
-	return malloc(size); 
+#include <php.h>
+
+#include "ralloc.h"
+#include "rlib.h"
+
+static char * rlib_php_resolve_memory_variable(char *name) {
+	zval **data; 
+	if (zend_hash_find(&EG(symbol_table),name,strlen(name),(void **)&data)==FAILURE) { 
+		return NULL;
+	} else {
+		return Z_STRVAL_PP(data);
+	}
 }
 
-char * rstrdup(const char *s) {
-	return strdup(s);
+static int rlib_php_write_output(char *data, int len) {
+	return php_write(data, len TSRMLS_CC);
 }
 
-void *rcalloc(size_t nmemb, size_t size) {
-	return calloc(nmemb, size);
-}
 
-void rfree(void *ptr) {
-	free(ptr);
-}
+struct environment_filter * rlib_php_new_environment() {
+	struct environment_filter *ef;
+	ef = emalloc(sizeof(struct environment_filter));
 
-void *rrealloc(void *ptr, size_t size) {
-	return realloc(ptr, size);
+	ef->rlib_resolve_memory_variable = rlib_php_resolve_memory_variable;
+	ef->rlib_write_output = rlib_php_write_output;
 }

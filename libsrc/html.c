@@ -253,8 +253,8 @@ static void rlib_html_finalize_private(rlib *r) {
 }
 
 static void rlib_html_spool_private(rlib *r) {
-	rlib_write_output(OUTPUT_PRIVATE(r)->top, strlen(OUTPUT_PRIVATE(r)->top));
-	rlib_write_output(OUTPUT_PRIVATE(r)->bottom, strlen(OUTPUT_PRIVATE(r)->bottom));
+	ENVIRONMENT(r)->rlib_write_output(OUTPUT_PRIVATE(r)->top, strlen(OUTPUT_PRIVATE(r)->top));
+	ENVIRONMENT(r)->rlib_write_output(OUTPUT_PRIVATE(r)->bottom, strlen(OUTPUT_PRIVATE(r)->bottom));
 }
 
 static void rlib_html_start_line(rlib *r, int backwards) {

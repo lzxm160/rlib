@@ -54,18 +54,6 @@ int rlib_resolve_rlib_variable(rlib *r, char *name) {
 	return 0;
 }
 
-
-/*
-	This gives rlib the ability to resolve php variables so that you can do stuff like this in php:
-	$foo = "12";
-	Note: foo could be some sorta equation that rlib can not resolve.. or be an option passed in or whatever.......
-	and in rlib if you want to work with it reference it as m.foo
-	Also good for passing paramaters to reports.. such as start date to be displaed on the report header
-*/
-char * rlib_resolve_memory_variable(rlib *r, char *name) {
-	return rlib_php_resolve_memory_variable(name);
-}
-
 char * rlib_resolve_field_value(rlib *r, struct rlib_resultset_field *rf) {
 	return INPUT(r)->get_row_value(INPUT(r), rf->resultset, rf->field);
 }
@@ -311,5 +299,11 @@ void rlib_resolve_fields(rlib *r) {
 			rlib_variable_resolve_pcode(r, rv);
 		}
 	}
+}
 
+char * rlib_resolve_memory_variable(rlib *r, char *name) {
+	if(strlen(name) >= 3 && name[0] == 'm' && name[1] == '.') {
+		return ENVIRONMENT(r)->rlib_resolve_memory_variable(name+2);
+	}
+	return NULL;
 }

@@ -101,7 +101,7 @@ ZEND_FUNCTION(rlib_init) {
 	
 	rip->content_type = RLIB_CONTENT_TYPE_ERROR;
 
-	rip->r = rlib_init();
+	rip->r = rlib_init(rlib_php_new_environment());
 	
 	resource_id = ZEND_REGISTER_RESOURCE(return_value, rip, le_link);
 	RETURN_RESOURCE(resource_id);
@@ -188,6 +188,8 @@ ZEND_FUNCTION(rlib_set_output_format) {
 		rip->format = RLIB_FORMAT_XML;
 	else
 		zend_error(E_ERROR, "Valid Formats are PDF, HTML, TXT, CSV, or XML");
+	
+	rip->r->format = rip->format;
 }
 
 ZEND_FUNCTION(rlib_execute) {
@@ -201,14 +203,6 @@ ZEND_FUNCTION(rlib_execute) {
 	
 	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
 	rlib_execute(rip->r);
-	if(rip->r == NULL) {
-		zend_error(E_ERROR, "Could not load engine.. check logs");
-	} else {
-		rip->r->format = rip->format;
-		if(rip->r != NULL) {
-			make_report(rip->r);	
-		}
-	}
 }
 
 ZEND_FUNCTION(rlib_spool) {
@@ -289,23 +283,4 @@ ZEND_FUNCTION(rlib_get_content_type) {
 	}
 
 	RETURN_STRING(buf, TRUE);
-}
-
-void rlib_write_output(char *buf, long length) {
-	php_write(buf, length TSRMLS_CC);
-}
-
-char * rlib_php_resolve_memory_variable(char *name) {
-	zval **data; 
-	if(strlen(name) >= 3 && name[0] == 'm' && name[1] == '.') {
-		name += 2;
-		if (zend_hash_find(&EG(symbol_table),name,strlen(name)+1,(void **)&data)==FAILURE) { 
-			debugf("rlib_resolve_memory_variable: could not resolve [%s], this could lead to more problems!\n", name);
-			return NULL;
-		} else {
-	
-			return Z_STRVAL_PP(data);
-		}
-	}
-	return NULL;
 }

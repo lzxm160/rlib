@@ -43,13 +43,12 @@ AM_PROG_LIBTOOL
 dnl Checks for libraries.
 AC_CHECK_LIB(c, exit)
 AC_CHECK_LIB(m, exp)
-AC_CHECK_LIB(libr, rlib_init)
 
 AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
 
-PKG_CHECK_MODULES(RLIB, libxml-2.0 >= 2.4.0)
-AC_SUBST(RLIB_LIBS)
-AC_SUBST(RLIB_CFLAGS)
+PKG_CHECK_MODULES(LIBXML, libxml-2.0 >= 2.4.0)
+AC_SUBST(LIBXML_LIBS)
+AC_SUBST(LIBXML_CFLAGS)
 
 AC_PATH_PROG(MYSQL_CONFIG, mysql_config, no)
 MYSQL_CFLAGS=`$MYSQL_CONFIG --cflags`
@@ -79,4 +78,4 @@ AC_C_CONST
 
 dnl Checks for library functions.
 
-AC_OUTPUT(Makefile libsrc/Makefile)
+AC_OUTPUT(Makefile libsrc/Makefile bindings/Makefile bindings/php/Makefile tests/Makefile)

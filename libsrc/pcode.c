@@ -107,16 +107,14 @@ void rlib_pcode_init(struct rlib_pcode *p) {
 }
 
 int rlib_pcode_add(struct rlib_pcode *p, struct rlib_pcode_instruction *i) {
-	p->instructions[p->count++] = i;	
+	p->instructions[p->count++] = *i;	
 	return 0;
 }
 
-struct rlib_pcode_instruction * rlib_new_pcode_instruction(int instruction, void *value) {
-	struct rlib_pcode_instruction *i;
-	i = rmalloc(sizeof(struct rlib_pcode_instruction));
-	i->instruction = instruction;
-	i->value = value;
-	return i;
+struct rlib_pcode_instruction * rlib_new_pcode_instruction(struct rlib_pcode_instruction *rpi, int instruction, void *value) {
+	rpi->instruction = instruction;
+	rpi->value = value;
+	return rpi;
 }
 
 long long rlib_str_to_long_long(char *str) {
@@ -157,7 +155,7 @@ int rvalcmp(struct rlib_value *v1, struct rlib_value *v2) {
 		return strcmp(RLIB_VALUE_GET_AS_STRING(v1), RLIB_VALUE_GET_AS_STRING(v2));
 	}
 	if(RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_DATE(v2)) {
-		return memcmp(RLIB_VALUE_GET_AS_DATE(v1), RLIB_VALUE_GET_AS_DATE(v2), sizeof(struct tm));
+		return memcmp(&RLIB_VALUE_GET_AS_DATE(v1), &RLIB_VALUE_GET_AS_DATE(v2), sizeof(struct tm));
 	}
 	return -1;
 }
@@ -210,8 +208,8 @@ void rlib_pcode_dump(struct rlib_pcode *p, int offset) {
 		for(j=0;j<offset*5;j++)
 			debugf(" ");
 		debugf("DUMP: ");
-		if(p->instructions[i]->instruction == PCODE_PUSH) {
-			struct rlib_pcode_operand *o = p->instructions[i]->value;
+		if(p->instructions[i].instruction == PCODE_PUSH) {
+			struct rlib_pcode_operand *o = p->instructions[i].value;
 			debugf("PUSH: ");
 			if(o->type == OPERAND_NUMBER)
 				debugf("%lld", *((long long *)o->value));
@@ -239,8 +237,8 @@ void rlib_pcode_dump(struct rlib_pcode *p, int offset) {
 				
 			}
 
-		} else if(p->instructions[i]->instruction == PCODE_EXECUTE) {
-			struct rlib_pcode_operator *o = p->instructions[i]->value;
+		} else if(p->instructions[i].instruction == PCODE_EXECUTE) {
+			struct rlib_pcode_operator *o = p->instructions[i].value;
 			
 		debugf("EXECUTE: %s", o->tag);
 		}
@@ -292,14 +290,15 @@ int operator_stack_is_all_less(struct operator_stack *os, struct rlib_pcode_oper
 
 void popopstack(struct rlib_pcode *p, struct operator_stack *os, struct rlib_pcode_operator *op) {
 	struct rlib_pcode_operator *o;
+	struct rlib_pcode_instruction rpi;
 	if(op != NULL && (op->tag[0] == ')' || op->tag[0] == ',')) {
 		while((o=operator_stack_pop(os))) {
 			if(o->is_op == TRUE) {
 				if(op->tag[0] != ',') {
-					rlib_pcode_add(p, rlib_new_pcode_instruction(PCODE_EXECUTE, o));
+					rlib_pcode_add(p, rlib_new_pcode_instruction(&rpi, PCODE_EXECUTE, o));
 				} else {
 					if(o->is_function == FALSE)
-						rlib_pcode_add(p, rlib_new_pcode_instruction(PCODE_EXECUTE, o));
+						rlib_pcode_add(p, rlib_new_pcode_instruction(&rpi, PCODE_EXECUTE, o));
 				}
 			}
 			if(o->tag[0] == '(' || o->is_function == TRUE) {
@@ -312,7 +311,7 @@ void popopstack(struct rlib_pcode *p, struct operator_stack *os, struct rlib_pco
 	} else {
 		while((o=operator_stack_pop(os))) {
 			if(o->is_op == TRUE)
-				rlib_pcode_add(p, rlib_new_pcode_instruction(PCODE_EXECUTE, o));
+				rlib_pcode_add(p, rlib_new_pcode_instruction(&rpi, PCODE_EXECUTE, o));
 			if(o->tag[0] == '(' || o->is_function == TRUE) 
 				break;
 		}	
@@ -321,9 +320,10 @@ void popopstack(struct rlib_pcode *p, struct operator_stack *os, struct rlib_pco
 
 void forcepopstack(struct rlib_pcode *p, struct operator_stack *os) {
 	struct rlib_pcode_operator *o;
+	struct rlib_pcode_instruction rpi;
 	while((o=operator_stack_pop(os))) {
 		if(o->is_op == TRUE)
-			rlib_pcode_add(p, rlib_new_pcode_instruction(PCODE_EXECUTE, o));
+			rlib_pcode_add(p, rlib_new_pcode_instruction(&rpi, PCODE_EXECUTE, o));
 	}
 }
 
@@ -350,6 +350,8 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, char *infix) {
 	int move_pointers = TRUE;
 	int instr=0;
 	int indate=0;
+	struct rlib_pcode_instruction rpi;
+
 	if(infix == NULL || infix[0] == '\0' || !strcmp(infix, ""))
 		return NULL;
 
@@ -384,7 +386,7 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, char *infix) {
 				memcpy(operand, op_pointer, moving_ptr - op_pointer);
 				operand[moving_ptr - op_pointer] = '\0';
 				if(operand[0] != ')') {
-					rlib_pcode_add(pcodes, rlib_new_pcode_instruction(PCODE_PUSH, rlib_new_operand(r, operand)));
+					rlib_pcode_add(pcodes, rlib_new_pcode_instruction(&rpi, PCODE_PUSH, rlib_new_operand(r, operand)));
 				}
 				op_pointer += moving_ptr - op_pointer;
 				found_op_last = FALSE;
@@ -403,7 +405,7 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, char *infix) {
 					int ccount=0;
 					char *save_ptr, *iif;
 					char *evaulation, *true, *false;
-					struct rlib_pcode_if *rpi;
+					struct rlib_pcode_if *rpif;
 					struct rlib_pcode_operand *o;
 					moving_ptr +=  op->taglen;
 					save_ptr = moving_ptr;
@@ -437,19 +439,19 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, char *infix) {
 						}
 						iif++;
 					}
-					rpi = rmalloc(sizeof(struct rlib_pcode_if));
-					rpi->evaulation = rlib_infix_to_pcode(r, evaulation);			
-					rpi->true = rlib_infix_to_pcode(r, true);			
-					rpi->false = rlib_infix_to_pcode(r, false);
+					rpif = rmalloc(sizeof(struct rlib_pcode_if));
+					rpif->evaulation = rlib_infix_to_pcode(r, evaulation);			
+					rpif->true = rlib_infix_to_pcode(r, true);			
+					rpif->false = rlib_infix_to_pcode(r, false);
 					smart_add_pcode(pcodes, &os, op);
 					o = rmalloc(sizeof(struct rlib_pcode_operand));			
 					o->type = OPERAND_IIF;
-					o->value = rpi;
-					rlib_pcode_add(pcodes, rlib_new_pcode_instruction(PCODE_PUSH, o));
+					o->value = rpif;
+					rlib_pcode_add(pcodes, rlib_new_pcode_instruction(&rpi, PCODE_PUSH, o));
 					if(1) {
 						struct rlib_pcode_operator *ox;
 						ox=operator_stack_pop(&os);
-						rlib_pcode_add(pcodes, rlib_new_pcode_instruction(PCODE_EXECUTE, ox));					
+						rlib_pcode_add(pcodes, rlib_new_pcode_instruction(&rpi, PCODE_EXECUTE, ox));					
 					}
 					moving_ptr-=1;
 					op_pointer = moving_ptr;
@@ -473,7 +475,7 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, char *infix) {
 		memcpy(operand, op_pointer, moving_ptr - op_pointer);
 		operand[moving_ptr - op_pointer] = '\0';
 		if(operand[0] != ')') {
-			rlib_pcode_add(pcodes, rlib_new_pcode_instruction(PCODE_PUSH, rlib_new_operand(r, operand)));
+			rlib_pcode_add(pcodes, rlib_new_pcode_instruction(&rpi, PCODE_PUSH, rlib_new_operand(r, operand)));
 		}
 		op_pointer += moving_ptr - op_pointer;
 	}
@@ -495,19 +497,29 @@ int rlib_value_stack_push(struct rlib_value_stack *vs, struct rlib_value *value)
 struct rlib_value * rlib_value_stack_pop(struct rlib_value_stack *vs) {
 	return &vs->values[--vs->count];
 }
-
 struct rlib_value * rlib_value_new(struct rlib_value *rval, int type, int free, void * value) {
 	rval->type = type;
 	rval->free = free;
-	rval->value = value;
+	rval->number_value = 0;
+	bzero(&rval->date_value, sizeof(struct tm));
+	rval->string_value = NULL;
+	rval->iif_value = NULL;
+
+	if(type == RLIB_VALUE_NUMBER)
+		rval->number_value = *(long long *)value;
+	if(type == RLIB_VALUE_STRING)
+		rval->string_value = value;
+	if(type == RLIB_VALUE_DATE)
+		rval->date_value = *(struct tm *)value;
+	if(type == RLIB_VALUE_IIF)
+		rval->iif_value = value;
+
 	return rval;
 }
 
 struct rlib_value * rlib_value_new_number(struct rlib_value *rval, long long value) {
 	long long *tmp;
-	tmp = rmalloc(sizeof(long long));
-	*tmp = value;
-	return rlib_value_new(rval, RLIB_VALUE_NUMBER, TRUE, tmp);
+	return rlib_value_new(rval, RLIB_VALUE_NUMBER, FALSE, &value);
 }
 
 struct rlib_value * rlib_value_new_string(struct rlib_value *rval, char *value) {
@@ -515,12 +527,7 @@ struct rlib_value * rlib_value_new_string(struct rlib_value *rval, char *value) 
 }
 
 struct rlib_value * rlib_value_new_date(struct rlib_value *rval, struct tm *date) {
-	struct tm *t;
-	long tmp;
-	t = rmalloc(sizeof(struct tm));
-	tmp = mktime(date);
-	localtime_r(&tmp, t);
-	return rlib_value_new(rval, RLIB_VALUE_DATE, FALSE, t);
+	return rlib_value_new(rval, RLIB_VALUE_DATE, FALSE, date);
 }
 
 /*
@@ -553,7 +560,7 @@ struct rlib_value *rlib_operand_get_value(rlib *r, struct rlib_value *rval, stru
 		}
 	} else if(o->type == OPERAND_VARIABLE) {
 		struct report_variable *rv = o->value;
-		long long val = 0, *this_logic_sucks_fix_it_later;
+		long long val = 0;
 		struct rlib_value *count = &RLIB_VARIABLE_CA(rv)->count;
 		struct rlib_value *amount = &RLIB_VARIABLE_CA(rv)->amount;
 		if(rv->type == REPORT_VARIABLE_COUNT) {
@@ -569,9 +576,7 @@ struct rlib_value *rlib_operand_get_value(rlib *r, struct rlib_value *rval, stru
 		} else if(rv->type == REPORT_VARIABLE_HIGHEST) {
 			val = RLIB_VALUE_GET_AS_NUMBER(amount);
 		}
-		this_logic_sucks_fix_it_later = rmalloc(sizeof(long long));
-		*this_logic_sucks_fix_it_later = val;
-		return rlib_value_new(rval, RLIB_VALUE_NUMBER, TRUE, this_logic_sucks_fix_it_later);
+		return rlib_value_new(rval, RLIB_VALUE_NUMBER, TRUE, &val);
 	} else if(o->type == OPERAND_IIF) {
 		return rlib_value_new(rval, RLIB_VALUE_IIF, FALSE, o->value);
 	}
@@ -582,12 +587,12 @@ struct rlib_value *rlib_operand_get_value(rlib *r, struct rlib_value *rval, stru
 int execute_pcode(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
 	int i=0;
 	for(i=0;i<code->count;i++) {
-		if(code->instructions[i]->instruction == PCODE_PUSH) {
-			struct rlib_pcode_operand *o = code->instructions[i]->value;
+		if(code->instructions[i].instruction == PCODE_PUSH) {
+			struct rlib_pcode_operand *o = code->instructions[i].value;
 			struct rlib_value rval;
 			rlib_value_stack_push(vs, rlib_operand_get_value(r, &rval, o, this_field_value));
-		} else if(code->instructions[i]->instruction == PCODE_EXECUTE) {
-			struct rlib_pcode_operator *o = code->instructions[i]->value;
+		} else if(code->instructions[i].instruction == PCODE_EXECUTE) {
+			struct rlib_pcode_operator *o = code->instructions[i].value;
 			if(o->execute != NULL) {
 				o->execute(r, vs, this_field_value);
 			}

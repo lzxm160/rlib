@@ -92,7 +92,7 @@ static void rlib_csv_finalize_private(rlib *r) {
 }
 
 static void rlib_csv_spool_private(rlib *r) {
-	rlib_write_output(OUTPUT_PRIVATE(r)->top, strlen(OUTPUT_PRIVATE(r)->top));
+	ENVIRONMENT(r)->rlib_write_output(OUTPUT_PRIVATE(r)->top, strlen(OUTPUT_PRIVATE(r)->top));
 }
 
 static void rlib_csv_start_line(rlib *r, int backwards) {}

@@ -732,7 +732,3 @@ int rlib_spool(rlib *r) {
 	OUTPUT(r)->rlib_spool_private(r);
 	return 0;
 }
-
-int rlib_input_close(rlib *r) {
-	return INPUT(r)->rlib_input_close(INPUT(r));
-}

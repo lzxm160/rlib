@@ -151,7 +151,7 @@ static void rlib_pdf_finalize_private(rlib *r) {
 }
 
 static void rlib_pdf_spool_private(rlib *r) {
-	rlib_write_output(r->bufPDF, r->length);
+	ENVIRONMENT(r)->rlib_write_output(r->bufPDF, r->length);
 	cpdf_close(OUTPUT_PRIVATE(r)->pdf);
 }
 

@@ -161,6 +161,13 @@ static void * xxmysql_fetch_field_name(void *woot, void *xfield) {
 	return field->name;
 }
 
+static int rlib_mysql_free_input_filter(void *woot) {
+	struct input_filter *input = woot;
+	rfree(input->private);
+	rfree(input);
+debugf("************** SET ME FREE	***************\n");
+}
+
 void * rlib_mysql_new_input_filter() {
 	struct input_filter *input;
 	
@@ -183,5 +190,6 @@ void * rlib_mysql_new_input_filter() {
 	input->seek_field = mysql_seek_field;
 	input->fetch_field = xxmysql_fetch_field;
 	input->fetch_field_name = xxmysql_fetch_field_name;
+	input->free = rlib_mysql_free_input_filter;
 	return input;
 }

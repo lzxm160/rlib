@@ -18,40 +18,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
+struct rlib_inout_pass {
+	rlib *r;
+	int content_type;
+	int format;
+};
 
-/*
-	A silly willy program to shop send HEADER/DEBUG stuff from RLIB to stderr and PDF stuff to stdout
-	that way you can php report.php | chopblock | acroread
-	and test reports easy
-*/
-#include <stdio.h>
-
-#define HEADER "Content-Length:"
-
-int main() {
-	char header[50] = HEADER;
-	char buf[1024];
-	char *woot=NULL;
-	char dude;
-	int size=0;
-	int i=0;
-	FILE *dest=stderr;
-	int hp=0;
-	
-	while((size=read(0, &buf, 1023)) > 0) {
-		for(i=0;i<size;i++) {
-			fwrite((char *)&buf[i], 1, 1, dest); //FIX THIS
-			if(header[hp] == buf[i])
-				hp++;
-			else
-				hp=0;
-			if(hp == strlen(header)) {
-				while(read(0, &dude, 1)) {
-					if(dude == 10)
-						break;
-				}
-				dest=stdout;
-			}
-		}
-	}
-}
+typedef struct rlib_inout_pass rlib_inout_pass;
+struct environment_filter * rlib_php_new_environment();

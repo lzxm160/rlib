@@ -18,6 +18,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include <libxml/parser.h>
+#include <time.h>
 #include "input.h"
 
 //man 3 llabs says the prototype is in stdlib.. no it aint!
@@ -65,8 +66,11 @@ struct rgb {
 
 struct rlib_value {
 	int type;
+	long long number_value;
+	struct tm date_value;
+	char *string_value;
+	void *iif_value;
 	int free;
-	void *value;
 };
 
 struct report_element {
@@ -309,8 +313,6 @@ struct rlib {
 	int queries_count;
 	int mainloop_queries_count;
 	struct rip_reports reportstorun[RLIB_MAXIMUM_REPORTS];
-//	int reports_count;
-
 
 	int results_count;
 	struct report *reports[RLIB_MAXIMUM_REPORTS];
@@ -320,11 +322,22 @@ struct rlib {
 	int format;
 	struct output_filter *o;
 	struct input_filter *input;
+	struct environment_filter *environment;
 };
 typedef struct rlib rlib;
 
+#define ENVIRONMENT(r) (r->environment)
+#define ENVIRONMENT_PRIVATE(r) (((struct _private *)r->evnironment->private))
+
+struct environment_filter {
+	void *private;
+	char *(*rlib_resolve_memory_variable)(char *);
+	int (*rlib_write_output)(char *, int);
+};
+
 #define OUTPUT(r) (r->o)
 #define OUTPUT_PRIVATE(r) (((struct _private *)r->o->private))
+
 
 struct output_filter {
 	void *private;
@@ -375,7 +388,7 @@ long long fxp_mul(long long a, long long b, long long factor);
 long long fxp_div( long long num, long long denom, int places);
 
 /***** PROTOTYPES: init.c *****************************************************/
-rlib * rlib_init();
+rlib * rlib_init(struct environment_filter *environment);
 int rlib_add_datasource_mysql(rlib *r, char *database_host, char *database_user, char *database_password, char *database_database);
 int rlib_add_query_as(rlib *r, char *sql, char *name);
 int rlib_add_report(rlib *r, char *name, char *mainloop);
@@ -413,7 +426,6 @@ void rlib_init_page(rlib *r, char report_header);
 int make_report(rlib *r);
 int rlib_spool(rlib *r);
 int rlib_finalize(rlib *r);
-int rlib_input_close(rlib *r);
 
 /***** PROTOTYPES: resolution.c ***********************************************/
 int rlib_resolve_rlib_variable(rlib *r, char *name);
@@ -441,10 +453,16 @@ char *strproper (char *s);
 int daysinmonth(int year, int month);
 void init_signals();
 
+/***** PROTOTYPES: environment.c **********************************************/
+void rlib_new_c_environment(rlib *r);
+
+/***** PROTOTYPES: free.c *****************************************************/
+int rlib_free(rlib *r);
+
 /***** PROTOTYPES: pdf.c ******************************************************/
 void rlib_pdf_new_output_filter(rlib *r);
 
-/***** PROTOTYPES: html.c ******************************************************/
+/***** PROTOTYPES: html.c *****************************************************/
 void rlib_html_new_output_filter(rlib *r);
 
 /***** PROTOTYPES: txt.c ******************************************************/
@@ -452,10 +470,6 @@ void rlib_txt_new_output_filter(rlib *r);
 
 /***** PROTOTYPES: csv.c ******************************************************/
 void rlib_csv_new_output_filter(rlib *r);
-
-/***** PROTOTYPES: php.c ******************************************************/
-void rlib_write_output(char *buf, long length);
-char * rlib_php_resolve_memory_variable(char *name);
 
 /***** PROTOTYPES: sql.c ******************************************************/
 void * rlib_mysql_new_input_filter();

@@ -33,11 +33,11 @@
 #define RLIB_VALUE_IS_IIF(a)	(RLIB_VALUE_GET_TYPE(a)==RLIB_VALUE_IIF)
 #define RLIB_VALUE_IS_ERROR(a)	(RLIB_VALUE_GET_TYPE(a)==RLIB_VALUE_ERROR)
 #define RLIB_VALUE_IS_NONE(a)	(RLIB_VALUE_GET_TYPE(a)==RLIB_VALUE_NONE)
-#define RLIB_VALUE_GET_AS_NUMBER(a) (*(long long *)a->value)
-#define RLIB_VALUE_GET_AS_NUMBERNP(a) ((long long *)a->value)
-#define RLIB_VALUE_GET_AS_STRING(a) ((char *)(a)->value)
-#define RLIB_VALUE_GET_AS_DATE(a) ((struct tm *)a->value)
-#define RLIB_VALUE_GET_AS_IIF(a) ((struct rlib_pcode_if *)a->value)
+#define RLIB_VALUE_GET_AS_NUMBER(a) (a->number_value)
+#define RLIB_VALUE_GET_AS_NUMBERNP(a) ((long long *)&a->number_value)
+#define RLIB_VALUE_GET_AS_STRING(a) (a->string_value)
+#define RLIB_VALUE_GET_AS_DATE(a) (a->date_value)
+#define RLIB_VALUE_GET_AS_IIF(a) ((struct rlib_pcode_if *)a->iif_value)
 
 #define RLIB_FXP_MUL(a, b) fxp_mul(a, b, RLIB_DECIMAL_PERCISION)
 #define RLIB_FXP_DIV(num, denom) fxp_div(num, denom, RLIB_FXP_PERCISION)
@@ -101,7 +101,7 @@ struct rlib_value_stack {
 struct rlib_pcode_operator {
       char *tag;			// What I expect to find in the infix string
       int taglen;		
-      int precedence; // PEMDAS BABY!
+      int precedence; 
 		int is_op;
 		int opnum;
 		int is_function;
@@ -115,9 +115,8 @@ struct rlib_pcode_instruction {
 
 struct rlib_pcode {
 	int count;
-	struct rlib_pcode_instruction *instructions[200];
+	struct rlib_pcode_instruction instructions[200];
 };
-
 
 struct rlib_pcode_if {
 	struct rlib_pcode *evaulation;

@@ -17,26 +17,24 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
- 
-#include <stdlib.h>
-#include <string.h>
- 
-void *rmalloc(size_t size) {
-	return malloc(size); 
+
+#include <unistd.h>
+
+#include "ralloc.h"
+#include "rlib.h"
+
+static char * rlib_c_resolve_memory_variable(char *name) {
+	return "FIXME";
 }
 
-char * rstrdup(const char *s) {
-	return strdup(s);
+static int rlib_c_write_output(char *data, int len) {
+	return write(1, data, len);
 }
 
-void *rcalloc(size_t nmemb, size_t size) {
-	return calloc(nmemb, size);
-}
 
-void rfree(void *ptr) {
-	free(ptr);
-}
+void rlib_new_c_environment(rlib *r) {
+	ENVIRONMENT(r) = rmalloc(sizeof(struct environment_filter));
 
-void *rrealloc(void *ptr, size_t size) {
-	return realloc(ptr, size);
+	ENVIRONMENT(r)->rlib_resolve_memory_variable = rlib_c_resolve_memory_variable;
+	ENVIRONMENT(r)->rlib_write_output = rlib_c_write_output;
 }

@@ -1,12 +1,12 @@
-## Makefile.am for RLIB
+## bindings/php/Makefile.am for RLIB
 
 ## Copyright (c) 2003 SICOM Systems Inc (bdoan@sicompos.com)
-## RLIB is free software; you can redistribute it and/or modify
+## rlib is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 2, or (at your option)
 ## any later version.
 
-## RLIB is distributed in the hope that it will be useful,
+## rlib is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
@@ -20,5 +20,8 @@
 ##
 ## Process this file with automake to produce Makefile.in
 
-EXTRA_DIST = AUTHORS CVS HACKING install-sh README
-SUBDIRS = libsrc bindings tests
+noinst_PROGRAMS = test1
+INCLUDES = $(LIBXML_CFLAGS) -I${top_srcdir}/libsrc/  
+
+test1_SOURCES= rlib.h test1.c
+test1_LDADD = -L${top_srcdir}/libsrc/ $(MYSQL_LIBS) $(LIBXML_LIBS) -lcpdf -lr

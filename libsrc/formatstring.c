@@ -143,7 +143,7 @@ int rlib_format_string(rlib *r, struct report_field *rf, struct rlib_value *rval
 		} else if(RLIB_VALUE_IS_STRING(rval)) {
 			sprintf(buf, "%s", RLIB_VALUE_GET_AS_STRING(rval));
 		} else if(RLIB_VALUE_IS_DATE(rval))  {
-			strftime(buf, 100, "%m/%d/%Y", RLIB_VALUE_GET_AS_DATE(rval));
+			strftime(buf, 100, "%m/%d/%Y", &RLIB_VALUE_GET_AS_DATE(rval));
 		} else {
 			sprintf(buf, "!ERR_F");
 			return FALSE;
@@ -158,7 +158,7 @@ int rlib_format_string(rlib *r, struct report_field *rf, struct rlib_value *rval
 		} else {
 			formatstring = RLIB_VALUE_GET_AS_STRING(rval_fmtstr);
 			if(RLIB_VALUE_IS_DATE(rval)) {
-				strftime(buf, 100, formatstring, RLIB_VALUE_GET_AS_DATE(rval));				
+				strftime(buf, 100, formatstring, &RLIB_VALUE_GET_AS_DATE(rval));				
 			} else {	
 				int i=0,j=0,pos=0,fpos=0;
 				char fmtstr[20];
