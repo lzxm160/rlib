@@ -53,6 +53,9 @@ static void rlib_pdf_print_text(rlib *r, gfloat left_origin, gfloat bottom_origi
 #if USEPDFLOCALE
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
+#if DISABLE_UTF8
+		cpdf_text(pdf, left_origin, bottom_origin, 0, t);
+#else
 	if (!r->current_output_encoder || rlib_char_encoder_isUTF8(r->current_output_encoder)) {
 		cpdf_hexStringMode(pdf, YES);
 		unistr = g_utf8_to_utf16(tmp, -1, &itemsread, &itemswritten, &error);
@@ -66,6 +69,7 @@ static void rlib_pdf_print_text(rlib *r, gfloat left_origin, gfloat bottom_origi
 	} else {
 		cpdf_text(pdf, left_origin, bottom_origin, 0, t);
 	}
+#endif	
 #if USEPDFLOCALE
 	setlocale(LC_NUMERIC, tlocale);
 #endif

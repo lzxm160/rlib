@@ -29,9 +29,6 @@
 #include "datetime.h"
 #include "pcode.h"
 
-
-
-
 gchar * rlib_value_get_type_as_str(struct rlib_value *v) {
 	if(v == NULL)
 		return "(null)";
@@ -59,7 +56,6 @@ struct rlib_value *v3) {
 	rlogit("\n");
 }
 
-
 #if USE_RLIB_VAR
 gint rlib_pcode_add(rlib_var_stack *rvs) {
 	rlib_var *v1, *v2;
@@ -77,7 +73,6 @@ gint rlib_pcode_add(rlib_var_stack *rvs) {
 		break;
 	}
 }
-
 
 gint rlib_pcode_operator_add(rlib *r, struct rlib_var_stack *vs, struct rlib_value *this_field_value) {
 	struct rlib_value *v1, *v2;
@@ -1476,7 +1471,7 @@ gint rlib_pcode_operator_wiy(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_DATE(v1)) {
 		struct rlib_datetime *request = &RLIB_VALUE_GET_AS_DATE(v1);
-		gint dim = g_date_get_monday_week_of_year(&request->date);
+		gint dim = g_date_get_sunday_week_of_year(&request->date);
 		rlib_value_free(v1);
 		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, LONG_TO_FXP_NUMBER(dim)));
 		return TRUE;
@@ -1497,7 +1492,7 @@ gint rlib_pcode_operator_wiyo(rlib *r, struct rlib_value_stack *vs, struct rlib_
 		gint offset;
 		offset = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v2));
 		g_date_subtract_days(&request.date, offset);
-		dim = g_date_get_monday_week_of_year(&request.date);
+		dim = g_date_get_sunday_week_of_year(&request.date);
 		rlib_value_free(v1);
 		rlib_value_free(v2);
 		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, LONG_TO_FXP_NUMBER(dim)));
