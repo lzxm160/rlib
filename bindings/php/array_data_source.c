@@ -93,6 +93,8 @@ static gint rlib_php_array_last(gpointer input_ptr, gpointer result_ptr) {
 static gchar * rlib_php_array_get_field_value_as_string(gpointer input_ptr, gpointer result_ptr, gpointer field_ptr) {
 	struct rlib_php_array_results *result = result_ptr;
 	int which_field = (int)field_ptr -1;
+	if(result->rows <= 1)
+		return "";
 	return result->data[(result->current_row*result->cols)+which_field];
 }
 

@@ -1,4 +1,8 @@
 2004-08-13  Bob Doan  <bdoan@sicompos.com>
+	* bindings/php/array_data_source.c: Detect an empty result set correctly in all places to avoid a crash
+	* src/examples/php/array_test.php: nada
+
+2004-08-13  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/array_data_source.c: Detect an empty result set correctly
 	* src/examples/php/array_test.php: likewise
 	* src/examples/php/array_test.xml: likewise
