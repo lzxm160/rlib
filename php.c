@@ -19,6 +19,7 @@
  */
  
 #include <php.h>
+
 #include "rlib.h"
 
 /*
@@ -250,8 +251,7 @@ ZEND_FUNCTION(rlib_spool) {
 		zend_error(E_ERROR, "Unable to run report with requested data");
 	}
 	
-	//TODO: put this somewhere else
-	rlib_mysql_close(rip->mysql);
+	rlib_input_close(rip->r);
 
 }
 
@@ -286,8 +286,6 @@ ZEND_FUNCTION(rlib_finalize) {
 #define CONTENT_TYPE_HTML "Content-Type: text/html\n"
 #define CONTENT_TYPE_TEXT "Content-Type: text/plain\n"
 #define CONTENT_TYPE_PDF "Content-Type: application/pdf"
-//#define CONTENT_TYPE_CSV "Content-type: application/csv\r\n\r\n"
-//#define CONTENT_TYPE_CSV "Content-Type: text/x-comma-separated-values\nContent-Disposition: inline; filename=bobkratz.csv\n"
 #define CONTENT_TYPE_CSV "Content-type: application/octet-stream\nContent-Disposition: attachment; filename=report.csv\n"
 
 
@@ -321,4 +319,23 @@ ZEND_FUNCTION(rlib_get_content_type) {
 	}
 
 	RETURN_STRING(buf, TRUE);
+}
+
+void rlib_write_output(char *buf, long length) {
+	php_write(buf, length TSRMLS_CC);
+}
+
+char * rlib_php_resolve_memory_variable(char *name) {
+	zval **data; 
+	if(strlen(name) >= 3 && name[0] == 'm' && name[1] == '.') {
+		name += 2;
+		if (zend_hash_find(&EG(symbol_table),name,strlen(name)+1,(void **)&data)==FAILURE) { 
+			debugf("rlib_resolve_memory_variable: could not resolve [%s], this could lead to more problems!\n", name);
+			return NULL;
+		} else {
+	
+			return Z_STRVAL_PP(data);
+		}
+	}
+	return NULL;
 }

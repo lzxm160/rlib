@@ -19,9 +19,10 @@
  */
 
 #include <string.h>
-#include <php.h>
 #include <locale.h>
+#include <mysql.h>
 
+#include "ralloc.h"
 #include "rlib.h"
 
 /*
@@ -36,12 +37,16 @@
 */
 rlib * rlib_init(rlib_inout_pass *rip) {
 	int i,j;
-	MYSQL *mysql;
+	void *mysql;
 	rlib *r;
 	
 	setlocale (LC_NUMERIC, "en_US");
-	
-	mysql = rlib_mysql_real_connect(rip->database_host, rip->database_user, rip->database_password, rip->database_database);
+
+	r = rmalloc(sizeof(rlib));
+	bzero(r, sizeof(rlib));
+
+	r->input = rlib_mysql_new_input_filter();
+	mysql = INPUT(r)->rlib_input_connect(INPUT(r), rip->database_host, rip->database_user, rip->database_password, rip->database_database);
 
 	if(mysql == NULL) {
 		debugf("Could not connect to MYSQL\n");
@@ -58,27 +63,16 @@ rlib * rlib_init(rlib_inout_pass *rip) {
 		return NULL;
 	}
 	
-	r = emalloc(sizeof(rlib));
-	bzero(r, sizeof(rlib));
-		
 	for(i=0;i<rip->queries_count;i++) {
-		clock_t start, finish;
-		double duration;
-		start = clock();
-		r->results[i].result = rlib_mysql_query(mysql, rip->queries[i].sql);
-		finish = clock();
-		duration = (double)(finish - start);
-		debugf("RUNNING QUERY [%s]\n\t[%s] TOOK %lf %d %d\n", rip->queries[i].sql, rip->queries[i].name, duration, start, finish);
-		if(r->results[i].result == NULL) {
-			efree(r);
+		INPUT(r)->query_and_set_result(INPUT(r), i, rip->queries[i].sql);
+		if(INPUT(r)->get_result_pointer(INPUT(r), i) == NULL) {
+			rfree(r);
 			debugf("Failed To Run A Query!\n");			
 			return NULL;
 		}
-		r->results[i].name = rip->queries[i].name;
+		INPUT(r)->set_query_result_name(INPUT(r), i, rip->queries[i].name);
 	}
 	r->results_count = rip->queries_count;
-
-	rip->mysql = mysql;
 
 	LIBXML_TEST_VERSION
 	xmlKeepBlanksDefault(0);

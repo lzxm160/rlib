@@ -24,8 +24,10 @@
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
-#include <php.h>       
+#include <time.h>
+#include <mysql.h>
 
+#include "ralloc.h"
 #include "rlib.h"
 #include "pcode.h"
 
@@ -166,7 +168,7 @@ int rlib_format_string(rlib *r, struct report_field *rf, struct rlib_value *rval
 				int len_formatstring;
 				idx = index(formatstring, ':');
 				if(idx != NULL && RLIB_VALUE_IS_NUMBER(rval)) {
-					formatstring = estrdup(formatstring);
+					formatstring = rstrdup(formatstring);
 					idx = index(formatstring, ':');
 					special_format=1;
 					if(RLIB_VALUE_GET_AS_NUMBER(rval) >= 0)

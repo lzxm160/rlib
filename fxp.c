@@ -22,10 +22,11 @@
 #include <stdlib.h>
 
 
-#include "rlib.h"
-
 #define DIV0(a,b) ((b) == 0 ? 0 : ((a)/(b)))
 #define MOD0(a,b) ((b) == 0 ? 0 : ((a)%(b)))
+
+//man 3 llabs says the prototype is in stdlib.. no it aint!
+long long int llabs(long long int j);
 
 
 long long fxp_mul(long long a, long long b, long long factor) {

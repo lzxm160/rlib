@@ -27,13 +27,17 @@
 #include <stdarg.h>
 #include <time.h>
 #include <sys/resource.h>
+#include <mysql.h>
 
 #include "rlib.h"
+
+//man 3 llabs says the prototype is in stdlib.. no it aint!
+long long int llabs(long long int j);
 
 
 static void myFaultHandler (int signum, siginfo_t *si, void *aptr) {
 	struct rlimit rlim;
-   debugf("** NUTS.. WE CRASHED\n");
+	debugf("** NUTS.. WE CRASHED\n");
 	getrlimit (RLIMIT_CORE, &rlim); //POSIBLY NOT NECESSARY
 	rlim.rlim_cur = 1024000000; //NECESSARY
 	setrlimit (RLIMIT_CORE, &rlim); //NECESSARY

@@ -19,8 +19,10 @@
  */
  
 #include <string.h>
-#include <php.h>
+#include <ctype.h>
+#include <mysql.h>
 
+#include "ralloc.h"
 #include "rlib.h"
 #include "pcode.h"
 
@@ -62,28 +64,17 @@ int rlib_resolve_rlib_variable(rlib *r, char *name) {
 	Also good for passing paramaters to reports.. such as start date to be displaed on the report header
 */
 char * rlib_resolve_memory_variable(rlib *r, char *name) {
-	zval **data; 
-	if(strlen(name) >= 3 && name[0] == 'm' && name[1] == '.') {
-		name += 2;
-		if (zend_hash_find(&EG(symbol_table),name,strlen(name)+1,(void **)&data)==FAILURE) { 
-			debugf("rlib_resolve_memory_variable: could not resolve [%s], this could lead to more problems!\n", name);
-			return NULL;
-		} else {
-	
-			return Z_STRVAL_PP(data);
-		}
-	}
-	return NULL;
+	return rlib_php_resolve_memory_variable(name);
 }
 
 char * rlib_resolve_field_value(rlib *r, struct rlib_resultset_field *rf) {
-	return r->results[rf->resultset].row[rf->field];
+	return INPUT(r)->get_row_value(INPUT(r), rf->resultset, rf->field);
 }
 
 int rlib_lookup_result(rlib *r, char *name) {
 	int i;
 	for(i=0;i<r->results_count;i++) {
-		if(!strcmp(r->results[i].name, name))
+		if(!strcmp(INPUT(r)->get_resultset_name(INPUT(r), i), name))
 			return i;
 	}
 	return -1;
@@ -99,7 +90,7 @@ int rlib_resolve_resultset_field(rlib *r, char *name, int *value, int *xxresults
 	right_side = memchr(name, '.', strlen(name));
 	if(right_side != NULL) {
 		int t;
-		result_name = emalloc(strlen(name) - strlen(right_side) + 1);
+		result_name = rmalloc(strlen(name) - strlen(right_side) + 1);
 		memcpy(result_name, name, strlen(name) - strlen(right_side));
 		result_name[strlen(name) - strlen(right_side)] = '\0';
 		right_side++;
@@ -112,10 +103,10 @@ int rlib_resolve_resultset_field(rlib *r, char *name, int *value, int *xxresults
 			if(!isdigit(*result_name))
 				debugf("rlib_resolve_namevalue: INVALID RESULT SET %s\n", result_name);
 		}
-		efree(result_name);
+		rfree(result_name);
 	}
-	mysql_field_seek(r->results[resultset].result, 0);
-	while((field = mysql_fetch_field(r->results[resultset].result))) {
+	INPUT(r)->seek_field(INPUT(r), resultset, 0);
+	while((field = INPUT(r)->fetch_field(INPUT(r), resultset))) {
 		if(!strcmp(field->name, name)) {
 			found = TRUE;
 			break;

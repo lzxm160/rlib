@@ -20,9 +20,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-
-#include <SAPI.h>
-#include <php.h>
+#include <mysql.h>
 
 #include "rlib.h"
 #include "pcode.h"
@@ -187,12 +185,12 @@ void rlib_break_all_below_in_reverse_order(rlib *r, struct report_element *e) {
 /*
 	Fun little hack so break lines reflect the correct value.. not the next row
 */
-		temp = r->results[r->current_result].row;
-		r->results[r->current_result].row = r->results[r->current_result].last_row;		
+		temp = INPUT(r)->fetch_row(INPUT(r), r->current_result);
+		INPUT(r)->set_row_pointer(INPUT(r), r->current_result, INPUT(r)->get_last_row_pointer(INPUT(r), r->current_result));
 		
 		rlib_print_break_footer_lines(r, rb, rb->footer, FALSE);
 		
-		r->results[r->current_result].row = temp;
+		INPUT(r)->set_row_pointer(INPUT(r), r->current_result, temp);
 		
 		rlib_reset_variables_on_break(r, rb->name);
 
@@ -230,7 +228,8 @@ void rlib_handle_break_footers(rlib *r) {
 		for(be = rb->fields; be != NULL; be=be->next) {
 			struct rlib_value rval_tmp;
 			bf = be->data;
-			if(dobreak && (r->results[r->current_result].row == NULL || rvalcmp(bf->rval, rlib_execute_pcode(r, &rval_tmp, bf->code, NULL)))) {
+//			if(dobreak && (r->results[r->current_result].row == NULL || rvalcmp(bf->rval, rlib_execute_pcode(r, &rval_tmp, bf->code, NULL)))) {
+			if(dobreak && (INPUT(r)->get_row_pointer(INPUT(r), r->current_result) == NULL || rvalcmp(bf->rval, rlib_execute_pcode(r, &rval_tmp, bf->code, NULL)))) {
 				dobreak=1;
 			} else {
 				dobreak = 0;

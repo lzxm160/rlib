@@ -17,9 +17,8 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include <mysql.h>
 #include <parser.h>
-
+#include "input.h"
 
 //man 3 llabs says the prototype is in stdlib.. no it aint!
 long long int llabs(long long int j);
@@ -280,13 +279,6 @@ struct report {
 	int mainloop_query;
 };
 
-struct rlib_results {
-	MYSQL_RES *result;
-	char *name;
-	MYSQL_ROW row;
-	MYSQL_ROW last_row;
-};
-
 struct rlib {
 	long length;
 	char *bufPDF;
@@ -303,7 +295,6 @@ struct rlib {
 	
 	int current_font_point;
 
-	struct rlib_results results[RLIB_MAXIMUM_QUERIES]; 
 	int results_count;
 	struct report *reports[RLIB_MAXIMUM_REPORTS];
 	int reports_count;
@@ -311,9 +302,9 @@ struct rlib {
 	int current_result;
 	int format;
 	struct output_filter *o;
+	struct input_filter *input;
 };
 typedef struct rlib rlib;
-
 
 #define OUTPUT(r) (r->o)
 #define OUTPUT_PRIVATE(r) (((struct _private *)r->o->private))
@@ -363,7 +354,6 @@ struct rlib_inout_pass {
 	char *database_user;
 	char *database_password;
 	char *database_database;
-	MYSQL *mysql;
 	struct rlib_queries queries[RLIB_MAXIMUM_QUERIES];
 	int queries_count;
 	int mainloop_queries_count;
@@ -428,6 +418,7 @@ void rlib_init_page(rlib *r, char report_header);
 int make_report(rlib *r);
 int rlib_spool(rlib *r);
 int rlib_finalize(rlib *r);
+int rlib_input_close(rlib *r);
 
 /***** PROTOTYPES: resolution.c ***********************************************/
 int rlib_resolve_rlib_variable(rlib *r, char *name);
@@ -437,13 +428,6 @@ int rlib_lookup_result(rlib *r, char *name);
 int rlib_resolve_resultset_field(rlib *r, char *name, int *value, int *xxresultset);
 struct report_variable *rlib_resolve_variable(rlib *r, char *name);
 void rlib_resolve_fields(rlib *r);
-
-/***** PROTOTYPES: sql.c ******************************************************/
-MYSQL_RES * process_sql(char *query, MYSQL *mysql);
-MYSQL * rlib_mysql_real_connect(char *host, char *user, char *password, char *database);
-int rlib_mysql_close(MYSQL *mysql);
-MYSQL_RES * rlib_mysql_query(MYSQL *mysql, char *query);
-
 
 /***** PROTOTYPES: util.c *****************************************************/
 char *strlwrexceptquoted (char *s);
@@ -473,3 +457,10 @@ void rlib_txt_new_output_filter(rlib *r);
 
 /***** PROTOTYPES: csv.c ******************************************************/
 void rlib_csv_new_output_filter(rlib *r);
+
+/***** PROTOTYPES: php.c ******************************************************/
+void rlib_write_output(char *buf, long length);
+char * rlib_php_resolve_memory_variable(char *name);
+
+/***** PROTOTYPES: sql.c ******************************************************/
+void * rlib_mysql_new_input_filter();

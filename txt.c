@@ -17,10 +17,12 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
- 
-#include <SAPI.h>
-#include <php.h>
 
+#include <stdlib.h>
+#include <string.h> 
+#include <mysql.h>
+
+#include "ralloc.h"
 #include "rlib.h"
 
 struct _private {
@@ -35,10 +37,10 @@ struct _private {
 
 static void make_more_space_if_necessary(char **str, int *size, int *total_size, int len) {
 	if(*total_size == 0) {
-		*str = calloc(MAXSTRLEN, 1);
+		*str = rcalloc(MAXSTRLEN, 1);
 		*total_size = MAXSTRLEN;
 	} else if((*size) + len > (*total_size)) {
-		*str = realloc(*str, (*total_size)*2);
+		*str = rrealloc(*str, (*total_size)*2);
 		*total_size = (*total_size) * 2;
 	}		
 }
@@ -102,8 +104,8 @@ static void rlib_txt_finalize_private(rlib *r) {
 }
 
 static void rlib_txt_spool_private(rlib *r) {
-	php_write(OUTPUT_PRIVATE(r)->top, strlen(OUTPUT_PRIVATE(r)->top) TSRMLS_CC);
-	php_write(OUTPUT_PRIVATE(r)->bottom, strlen(OUTPUT_PRIVATE(r)->bottom) TSRMLS_CC);
+	rlib_write_output(OUTPUT_PRIVATE(r)->top, strlen(OUTPUT_PRIVATE(r)->top));
+	rlib_write_output(OUTPUT_PRIVATE(r)->bottom, strlen(OUTPUT_PRIVATE(r)->bottom));
 }
 
 static void rlib_txt_start_line(rlib *r, int backwards) {}
@@ -126,8 +128,8 @@ static int rlib_txt_is_single_page(rlib *r) {
 }
 
 void rlib_txt_new_output_filter(rlib *r) {
-	OUTPUT(r) = emalloc(sizeof(struct output_filter));
-	OUTPUT_PRIVATE(r) = emalloc(sizeof(struct _private));
+	OUTPUT(r) = rmalloc(sizeof(struct output_filter));
+	OUTPUT_PRIVATE(r) = rmalloc(sizeof(struct _private));
 	bzero(OUTPUT_PRIVATE(r), sizeof(struct _private));
 	OUTPUT_PRIVATE(r)->top = NULL;
 	OUTPUT_PRIVATE(r)->top_size = 0;

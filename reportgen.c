@@ -18,9 +18,11 @@
  * Boston, MA 02111-1307, USA.
  */
  
-#include <SAPI.h>
-#include <php.h>
+#include <stdlib.h>
+#include <string.h>
+#include <mysql.h>
 
+#include "ralloc.h"
 #include "rlib.h"
 #include "pcode.h"
 
@@ -255,7 +257,7 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 				char *idx;
 				colorstring = RLIB_VALUE_GET_AS_STRING((&extra_data[i].rval_bgcolor));
 				if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_code)) && RLIB_VALUE_IS_NUMBER((&extra_data[i].rval_code)) && index(colorstring, ':')) {
-					colorstring = estrdup(colorstring);
+					colorstring = rstrdup(colorstring);
 					idx = index(colorstring, ':');
 					if(RLIB_VALUE_GET_AS_NUMBER((&extra_data[i].rval_code)) >= 0)
 						idx[0] = '\0';
@@ -277,7 +279,7 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 				char *idx;
 				colorstring = RLIB_VALUE_GET_AS_STRING((&extra_data[i].rval_color));
 				if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_code)) && RLIB_VALUE_IS_NUMBER((&extra_data[i].rval_code)) && index(colorstring, ':')) {
-					colorstring = estrdup(colorstring);
+					colorstring = rstrdup(colorstring);
 					idx = index(colorstring, ':');
 					if(RLIB_VALUE_GET_AS_NUMBER((&extra_data[i].rval_code)) >= 0)
 						idx[0] = '\0';
@@ -378,7 +380,7 @@ static void print_detail_line_private(rlib *r, struct report_output_array *roa, 
 			for(e = rl->e; e != NULL; e=e->next)
 				count++;
 
-			extra_data = ecalloc(sizeof(struct rlib_line_extra_data), count);
+			extra_data = rcalloc(sizeof(struct rlib_line_extra_data), count);
 			execute_pcodes_for_line(r, rl, extra_data);
 			find_stuff_in_common(r, extra_data, count);
 			count = 0;
@@ -399,7 +401,7 @@ static void print_detail_line_private(rlib *r, struct report_output_array *roa, 
 				count++;
 			}
 
-			efree(extra_data);
+			rfree(extra_data);
 
 			if(backwards)
 				rlib_subtract_line(r,get_font_point(r, rl));
@@ -544,11 +546,11 @@ void rlib_print_report_footer(rlib *r) {
 	}
 }
 
-
 int rlib_fetch_first_rows(rlib *r) {
 	int i;
 	for(i=0;i<r->results_count;i++)
-		r->results[i].row = mysql_fetch_row(r->results[i].result);
+		INPUT(r)->rlib_fetch_row_from_result(INPUT(r), i);
+//WRD		r->results[i].row = mysql_fetch_row(r->results[i].result);
 	return 0;
 }
 
@@ -557,23 +559,23 @@ void rlib_init_variables(rlib *r) {
 	for(e = r->reports[r->current_report]->variables; e != NULL; e=e->next) {
 		struct report_variable *rv = e->data;
 		if(rv->type == REPORT_VARIABLE_EXPRESSION) {
-			RLIB_VARIABLE_CA(rv) = emalloc(sizeof(struct count_amount));
+			RLIB_VARIABLE_CA(rv) = rmalloc(sizeof(struct count_amount));
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		} else if(rv->type == REPORT_VARIABLE_COUNT) {
-			RLIB_VARIABLE_CA(rv) = emalloc(sizeof(struct count_amount));
+			RLIB_VARIABLE_CA(rv) = rmalloc(sizeof(struct count_amount));
 			RLIB_VARIABLE_CA(rv)->count = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->count, 0);
 		} else if(rv->type == REPORT_VARIABLE_SUM) {
-			RLIB_VARIABLE_CA(rv) = emalloc(sizeof(struct count_amount));
+			RLIB_VARIABLE_CA(rv) = rmalloc(sizeof(struct count_amount));
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		} else if(rv->type == REPORT_VARIABLE_AVERAGE) {
-			RLIB_VARIABLE_CA(rv) = emalloc(sizeof(struct count_amount));
+			RLIB_VARIABLE_CA(rv) = rmalloc(sizeof(struct count_amount));
 			RLIB_VARIABLE_CA(rv)->count = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->count, 0);
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		} else if(rv->type == REPORT_VARIABLE_LOWEST) {
-			RLIB_VARIABLE_CA(rv) = emalloc(sizeof(struct count_amount));
+			RLIB_VARIABLE_CA(rv) = rmalloc(sizeof(struct count_amount));
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		} else if(rv->type == REPORT_VARIABLE_HIGHEST) {
-			RLIB_VARIABLE_CA(rv) = emalloc(sizeof(struct count_amount));
+			RLIB_VARIABLE_CA(rv) = rmalloc(sizeof(struct count_amount));
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		}
 	}
@@ -647,7 +649,7 @@ int make_report(rlib *r) {
 	r->current_report = 0;
 	r->current_result = 0;
 	r->start_of_new_report = TRUE;
-	r->results[r->current_result].row = NULL;
+	INPUT(r)->set_row_pointer(INPUT(r), r->current_result, NULL);
 
 	OUTPUT(r)->rlib_init_output(r);
 	rlib_fetch_first_rows(r);
@@ -673,7 +675,7 @@ int make_report(rlib *r) {
 		rlib_init_variables(r);
 		rlib_init_page(r, TRUE);		
 		OUTPUT(r)->rlib_begin_text(r);
-		while (r->results[r->current_result].row) {
+		while (INPUT(r)->get_row_pointer(INPUT(r), r->current_result)) {
 			MYSQL_ROW temp=NULL;
 			rlib_handle_break_headers(r);
 			
@@ -693,22 +695,23 @@ int make_report(rlib *r) {
 			r->detail_line_count++;
 			i++;
 			last = temp;
-			temp = mysql_fetch_row(r->results[r->current_result].result);
-			r->results[r->current_result].last_row = r->results[r->current_result].row;
+			temp = INPUT(r)->fetch_row(INPUT(r), r->current_result);
+			INPUT(r)->set_last_row_pointer(INPUT(r), r->current_result, INPUT(r)->get_row_pointer(INPUT(r), r->current_result));
+debugf("IS ROW NULL [%d]\n", temp == NULL);
 			if(temp == NULL) {
-				r->results[r->current_result].row = temp;
+				INPUT(r)->set_row_pointer(INPUT(r), r->current_result, temp);
 				rlib_handle_break_footers(r);
 				break;
 			} else
-				r->results[r->current_result].row = temp;
+				INPUT(r)->set_row_pointer(INPUT(r), r->current_result, temp);
 
 			rlib_handle_break_footers(r);
 
 		}
 
+		INPUT(r)->set_row_pointer(INPUT(r), r->current_result, INPUT(r)->get_last_row_pointer(INPUT(r), r->current_result));
 
-		r->results[r->current_result].row = r->results[r->current_result].last_row;
-		if(r->results[r->current_result].row != NULL)
+		if(INPUT(r)->get_row_pointer(INPUT(r), r->current_result) != NULL)
 			rlib_print_report_footer(r);
 	
 		if(report+1 < r->reports_count) {
@@ -735,4 +738,8 @@ int rlib_finalize(rlib *r) {
 int rlib_spool(rlib *r) {
 	OUTPUT(r)->rlib_spool_private(r);
 	return 0;
+}
+
+int rlib_input_close(rlib *r) {
+	return INPUT(r)->rlib_input_close(INPUT(r));
 }

@@ -18,10 +18,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <SAPI.h>
-#include <php.h>
+#include <string.h>
 #include <cpdflib.h>
+#include <mysql.h>
 
+#include "ralloc.h"
 #include "rlib.h"
 
 struct _private {
@@ -151,7 +152,7 @@ static void rlib_pdf_finalize_private(rlib *r) {
 }
 
 static void rlib_pdf_spool_private(rlib *r) {
-	php_write(r->bufPDF, r->length TSRMLS_CC);
+	rlib_write_output(r->bufPDF, r->length);
 	cpdf_close(OUTPUT_PRIVATE(r)->pdf);
 }
 
@@ -175,8 +176,8 @@ static void rlib_pdf_boxurl_end(rlib *r) {}
 static void rlib_pdf_draw_cell_background_end(rlib *r) {}
 
 void rlib_pdf_new_output_filter(rlib *r) {
-	OUTPUT(r) = emalloc(sizeof(struct output_filter));
-	OUTPUT_PRIVATE(r) = emalloc(sizeof(struct _private));
+	OUTPUT(r) = rmalloc(sizeof(struct output_filter));
+	OUTPUT_PRIVATE(r) = rmalloc(sizeof(struct _private));
 	bzero(OUTPUT_PRIVATE(r), sizeof(struct _private));
 
 	OUTPUT(r)->do_align = TRUE;

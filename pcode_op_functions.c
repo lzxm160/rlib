@@ -21,8 +21,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <php.h>
+#include <time.h>
+#include <mysql.h>
 
+#include "ralloc.h"
 #include "rlib.h"
 #include "pcode.h"
 
@@ -62,11 +64,11 @@ int rlib_pcode_operator_add(rlib *r, struct rlib_value_stack *vs, struct rlib_va
 		return TRUE;
 	}
 	if(RLIB_VALUE_IS_STRING(v1) && RLIB_VALUE_IS_STRING(v2)) {
-		char *newstr = emalloc(strlen(RLIB_VALUE_GET_AS_STRING(v1))+strlen(RLIB_VALUE_GET_AS_STRING(v2))+1);
+		char *newstr = rmalloc(strlen(RLIB_VALUE_GET_AS_STRING(v1))+strlen(RLIB_VALUE_GET_AS_STRING(v2))+1);
 		memcpy(newstr, RLIB_VALUE_GET_AS_STRING(v2), strlen(RLIB_VALUE_GET_AS_STRING(v2))+1);
 		strcat(newstr, RLIB_VALUE_GET_AS_STRING(v1));
 		rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, newstr));
-		efree(newstr);
+		rfree(newstr);
 		return TRUE;
 	}
 	if((RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_NUMBER(v2)) || (RLIB_VALUE_IS_NUMBER(v1) && RLIB_VALUE_IS_DATE(v2))) {
@@ -667,9 +669,9 @@ int rlib_pcode_operator_upper(rlib *r, struct rlib_value_stack *vs, struct rlib_
 	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_STRING(v1)) {
-		char *tmp = estrdup(RLIB_VALUE_GET_AS_STRING(v1));
+		char *tmp = rstrdup(RLIB_VALUE_GET_AS_STRING(v1));
 		rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, strupr(tmp)));
-		efree(tmp);
+		rfree(tmp);
 		return TRUE;
 	}
 	rlib_pcode_operator_fatal_execption("upper", 1, v1, NULL, NULL);
@@ -680,9 +682,9 @@ int rlib_pcode_operator_lower(rlib *r, struct rlib_value_stack *vs, struct rlib_
 	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_STRING(v1)) {
-		char *tmp = estrdup(RLIB_VALUE_GET_AS_STRING(v1));
+		char *tmp = rstrdup(RLIB_VALUE_GET_AS_STRING(v1));
 		rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, strlwr(tmp)));
-		efree(tmp);
+		rfree(tmp);
 		return TRUE;
 	}
 	rlib_pcode_operator_fatal_execption("lower", 1, v1, NULL, NULL);
@@ -693,9 +695,9 @@ int rlib_pcode_operator_proper(rlib *r, struct rlib_value_stack *vs, struct rlib
 	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_STRING(v1)) {
-		char *tmp = estrdup(RLIB_VALUE_GET_AS_STRING(v1));
+		char *tmp = rstrdup(RLIB_VALUE_GET_AS_STRING(v1));
 		rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, strproper(tmp)));
-		efree(tmp);
+		rfree(tmp);
 		return TRUE;
 	}
 	rlib_pcode_operator_fatal_execption("proper", 1, v1, NULL, NULL);

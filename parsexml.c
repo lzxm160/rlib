@@ -21,10 +21,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <php.h>
+
 #include <xmlversion.h>
 #include <xmlmemory.h>
+#include <mysql.h>
 
+#include "ralloc.h"
 #include "rlib.h"
 
 struct report_element * parse_line_array(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
@@ -33,10 +35,10 @@ struct report_element * parse_line_array(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr 
 	
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {      
-		current = emalloc(sizeof(struct report_element));
+		current = rmalloc(sizeof(struct report_element));
 		current->next = NULL;
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "field"))) {
-			struct report_field *f = emalloc(sizeof(struct report_field));
+			struct report_field *f = rmalloc(sizeof(struct report_field));
 			f->xml_align = xmlGetProp(cur, (const xmlChar *) "align");
 			f->value = xmlGetProp(cur, (const xmlChar *) "value");
 			f->bgcolor = xmlGetProp(cur, (const xmlChar *) "bgcolor");
@@ -50,7 +52,7 @@ struct report_element * parse_line_array(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr 
 		}
 
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "text"))) {
-			struct report_text *t = emalloc(sizeof(struct report_text));
+			struct report_text *t = rmalloc(sizeof(struct report_text));
 			t->value = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			t->xml_align = xmlGetProp(cur, (const xmlChar *) "align");
 			t->bgcolor = xmlGetProp(cur, (const xmlChar *) "bgcolor");
@@ -77,14 +79,14 @@ struct report_element * parse_line_array(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr 
 }
 
 struct report_output * report_output_new(int type, void *data) {
-	struct report_output *ro = emalloc(sizeof(struct report_output));
+	struct report_output *ro = rmalloc(sizeof(struct report_output));
 	ro->type = type;
 	ro->data = data;
 	return ro;
 }
 
 struct report_output_array * parse_report_element(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
-	struct report_output_array *da = emalloc(sizeof(struct report_output_array));
+	struct report_output_array *da = rmalloc(sizeof(struct report_output_array));
 	da->count = 0;
 	da->data = NULL;
 
@@ -94,7 +96,7 @@ struct report_output_array * parse_report_element(xmlDocPtr doc, xmlNsPtr ns, xm
 	
 	while (cur != NULL) {      
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "Line"))) {
-			struct report_lines *rl = emalloc(sizeof(struct report_lines));
+			struct report_lines *rl = rmalloc(sizeof(struct report_lines));
 			rl->bgcolor = xmlGetProp(cur, (const xmlChar *) "bgcolor");
 			rl->color = xmlGetProp(cur, (const xmlChar *) "color");
 			rl->fontSize = xmlGetProp(cur, (const xmlChar *) "fontSize");
@@ -104,10 +106,10 @@ struct report_output_array * parse_report_element(xmlDocPtr doc, xmlNsPtr ns, xm
 				rl->font_point = atoi(rl->fontSize);
 				
 			rl->e = parse_line_array(doc, ns, cur);
-			da->data = erealloc(da->data, sizeof(struct report_output_array *) * (da->count + 1));
+			da->data = rrealloc(da->data, sizeof(struct report_output_array *) * (da->count + 1));
 			da->data[da->count++] = report_output_new(REPORT_PRESENTATION_DATA_LINE, rl);
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "HorizontalLine"))) {
-			struct report_horizontal_line *rhl = emalloc(sizeof(struct report_horizontal_line));
+			struct report_horizontal_line *rhl = rmalloc(sizeof(struct report_horizontal_line));
 			rhl->bgcolor = xmlGetProp(cur, (const xmlChar *) "bgcolor");
 			rhl->size = xmlGetProp(cur, (const xmlChar *) "size");
 			rhl->indent = xmlGetProp(cur, (const xmlChar *) "indent");
@@ -117,15 +119,15 @@ struct report_output_array * parse_report_element(xmlDocPtr doc, xmlNsPtr ns, xm
 				rhl->font_point = -1;
 			else
 				rhl->font_point = atoi(rhl->fontSize);
-			da->data = erealloc(da->data, sizeof(struct report_output_array *) * (da->count + 1));
+			da->data = rrealloc(da->data, sizeof(struct report_output_array *) * (da->count + 1));
 			da->data[da->count++] = report_output_new(REPORT_PRESENTATION_DATA_HR, rhl);
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "Image"))) {
-			struct report_image *ri = emalloc(sizeof(struct report_image));
+			struct report_image *ri = rmalloc(sizeof(struct report_image));
 			ri->value = xmlGetProp(cur, (const xmlChar *) "value");
 			ri->type = xmlGetProp(cur, (const xmlChar *) "type");
 			ri->width = xmlGetProp(cur, (const xmlChar *) "width");
 			ri->height = xmlGetProp(cur, (const xmlChar *) "height");
-			da->data = erealloc(da->data, sizeof(struct report_output_array *) * (da->count + 1));
+			da->data = rrealloc(da->data, sizeof(struct report_output_array *) * (da->count + 1));
 			da->data[da->count++] = report_output_new(REPORT_PRESENTATION_DATA_IMAGE, ri);
 		}
 		cur = cur->next;
@@ -133,8 +135,8 @@ struct report_output_array * parse_report_element(xmlDocPtr doc, xmlNsPtr ns, xm
 	return da;
 }
 struct report_element * parseBreakField(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
-	struct report_element *e = emalloc(sizeof(struct report_element));
-	struct break_fields *bf = emalloc(sizeof(struct break_fields));
+	struct report_element *e = rmalloc(sizeof(struct report_element));
+	struct break_fields *bf = rmalloc(sizeof(struct break_fields));
 	e->next = NULL;
 	e->data = bf;
 	cur = cur->xmlChildrenNode;
@@ -149,8 +151,8 @@ struct report_element * parseBreakField(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr c
 }
 
 struct report_element * parseReportBreak(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
-	struct report_element *e = emalloc(sizeof(struct report_element));
-	struct report_break *rb = emalloc(sizeof(struct report_break));
+	struct report_element *e = rmalloc(sizeof(struct report_element));
+	struct report_break *rb = rmalloc(sizeof(struct report_break));
 	e->next = NULL;
 	e->data = rb;
 	rb->name = xmlGetProp(cur, (const xmlChar *) "name");
@@ -217,8 +219,8 @@ static void parse_detail(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur, struct repo
 }
 
 struct report_element * parseReportVariable(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
-	struct report_element *e = emalloc(sizeof(struct report_element));
-	struct report_variable *rv = emalloc(sizeof(struct report_variable));
+	struct report_element *e = rmalloc(sizeof(struct report_element));
+	struct report_variable *rv = rmalloc(sizeof(struct report_variable));
 	e->next = NULL;
 	e->data = rv;
 	rv->name = xmlGetProp(cur, (const xmlChar *) "name");
@@ -289,7 +291,7 @@ struct report * parse_report_file(char *filename) {
 		return(NULL);
 	}
 
-	ret = (struct report *) emalloc(sizeof(struct report));
+	ret = (struct report *) rmalloc(sizeof(struct report));
 	if (ret == NULL) {
 		debugf("Out of Memory :(\n");
 		xmlFreeDoc(doc);
@@ -312,11 +314,10 @@ struct report * parse_report_file(char *filename) {
 		debugf("document of the wrong type, was '%s', Report expected", cur->name);
 		debugf("xmlDocDump follows\n");
 		xmlDocDump ( stderr, doc );
-//		debugf("xmlDocDump finished\n");
 		xmlFreeDoc(doc);
-		efree(ret);
+		rfree(ret);
 		return(NULL);
-    }
+	}
 	ret->xml_fontsize = xmlGetProp(cur, (const xmlChar *) "fontSize");
 	ret->xml_orientation = xmlGetProp(cur, (const xmlChar *) "orientation");
 	ret->defaultResult = xmlGetProp(cur, (const xmlChar *) "defaultResult");
@@ -341,7 +342,7 @@ struct report * parse_report_file(char *filename) {
 			ret->report_footer = parse_report_element(doc, ns, cur);
 		}
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "Detail"))) {
-			ret->detail = emalloc(sizeof(struct report_detail));
+			ret->detail = rmalloc(sizeof(struct report_detail));
 			parse_detail(doc, ns, cur, ret->detail);
 		}
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "Breaks"))) {

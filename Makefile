@@ -9,17 +9,20 @@ CCINC=-I/usr/include/libxml2/libxml -I /usr/include/libxml2 \
         -I$(HOME)/mgrng/slib/ -I/usr/include/mysql
 LINC=-L/usr/lib/mysql -L$(HOME)/mgrng/slib -lcpdf -lxml2 -lm -lmysqlclient
 
-sql.o: sql.c rlib.h
+php.o: php.c rlib.h
+	gcc $(CCFLAGS) $(CCINC) php.c
+
+ralloc.o: ralloc.c ralloc.h
+	gcc $(CCFLAGS) $(CCINC) ralloc.c
+
+sql.o: sql.c rlib.h input.h
 	gcc $(CCFLAGS) $(CCINC) sql.c
 
-reportgen.o: reportgen.c rlib.h pcode.h
+reportgen.o: reportgen.c rlib.h pcode.h input.h
 	gcc $(CCFLAGS) $(CCINC) reportgen.c
 
 parsexml.o: parsexml.c rlib.h
 	gcc $(CCFLAGS) $(CCINC) parsexml.c
-
-php.o: php.c rlib.h
-	gcc $(CCFLAGS) $(CCINC) php.c
 
 pcode.o: pcode.c rlib.h pcode.h
 	gcc $(CCFLAGS) $(CCINC) pcode.c
@@ -57,13 +60,13 @@ txt.o: txt.c rlib.h
 csv.o: csv.c rlib.h
 	gcc $(CCFLAGS) $(CCINC) csv.c
 
-libr.so: parsexml.o php.o  reportgen.o sql.o init.o resolution.o util.o pcode.o \
+libr.so: parsexml.o php.o sql.o reportgen.o init.o resolution.o util.o pcode.o \
 		pcode_op_functions.o formatstring.o fxp.o breaks.o pdf.o html.o \
-		txt.o csv.o
+		txt.o csv.o ralloc.o
 	gcc -g -fpic -shared -o libr.so -Wall $(LINC) \
 		php.o parsexml.o reportgen.o sql.o init.o resolution.o util.o pcode.o \
 		pcode_op_functions.o formatstring.o fxp.o breaks.o pdf.o html.o txt.o \
-		csv.o
+		csv.o ralloc.o
 
 chopblock: chopblock.c
 	gcc -o chopblock chopblock.c

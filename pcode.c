@@ -21,8 +21,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <php.h>
+#include <time.h>
+#include <mysql.h>
 
+#include "ralloc.h"
 #include "rlib.h"
 #include "pcode.h"
 
@@ -112,7 +114,7 @@ int rlib_pcode_add(struct rlib_pcode *p, struct rlib_pcode_instruction *i) {
 
 struct rlib_pcode_instruction * rlib_new_pcode_instruction(int instruction, void *value) {
 	struct rlib_pcode_instruction *i;
-	i = emalloc(sizeof(struct rlib_pcode_instruction));
+	i = rmalloc(sizeof(struct rlib_pcode_instruction));
 	i->instruction = instruction;
 	i->value = value;
 	return i;
@@ -140,7 +142,7 @@ long long rlib_str_to_long_long(char *str) {
 
 long long *makenumber(char *str) {
 	long long *foo;
-	foo = emalloc(sizeof(long long));
+	foo = rmalloc(sizeof(long long));
 	*foo = rlib_str_to_long_long(str);
 	return foo;
 }
@@ -167,16 +169,16 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, char *str) {
 	struct rlib_pcode_operand *o;
 	struct report_variable *rv;
 	long rvar;
-	o = emalloc(sizeof(struct rlib_pcode_operand));
+	o = rmalloc(sizeof(struct rlib_pcode_operand));
 	 
 	if(str[0] == '\'') {
-		char *newstr = emalloc(strlen(str)-1);
+		char *newstr = rmalloc(strlen(str)-1);
 		memcpy(newstr, str+1, strlen(str)-1);
 		newstr[strlen(str)-2] = '\0';
 		o->type = OPERAND_STRING;
 		o->value = newstr;
 	} else if(str[0] == '{') {
-		struct tm *tm_date = emalloc(sizeof(struct tm));
+		struct tm *tm_date = rmalloc(sizeof(struct tm));
 		str++;
 		o->type = OPERAND_DATE;
 		o->value = stod(tm_date, str);				
@@ -190,7 +192,7 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, char *str) {
 		o->type = OPERAND_RLIB_VARIABLE;
 		o->value = (void *)rvar;
 	} 	else if(rlib_resolve_resultset_field(r, str, &field, &resultset)) {
-		struct rlib_resultset_field *rf = emalloc(sizeof(struct rlib_resultset_field));
+		struct rlib_resultset_field *rf = rmalloc(sizeof(struct rlib_resultset_field));
 		rf->resultset = resultset;
 		rf->field = field;
 		o->type = OPERAND_FIELD;
@@ -352,7 +354,7 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, char *infix) {
 	if(infix == NULL || infix[0] == '\0' || !strcmp(infix, ""))
 		return NULL;
 
-	pcodes = emalloc(sizeof(struct rlib_pcode));
+	pcodes = rmalloc(sizeof(struct rlib_pcode));
 	rlib_pcode_init(pcodes);
 	operator_stack_init(&os);
 	strlwrexceptquoted(infix);
@@ -415,7 +417,7 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, char *infix) {
 						if(pcount == 0)
 							break;
 					}
-					iif = emalloc(moving_ptr - save_ptr);
+					iif = rmalloc(moving_ptr - save_ptr);
 					memcpy(iif, save_ptr, moving_ptr-save_ptr);
 					iif[moving_ptr-save_ptr-1] = '\0';
 					evaulation = iif;
@@ -436,12 +438,12 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, char *infix) {
 						}
 						iif++;
 					}
-					rpi = emalloc(sizeof(struct rlib_pcode_if));
+					rpi = rmalloc(sizeof(struct rlib_pcode_if));
 					rpi->evaulation = rlib_infix_to_pcode(r, evaulation);			
 					rpi->true = rlib_infix_to_pcode(r, true);			
 					rpi->false = rlib_infix_to_pcode(r, false);
 					smart_add_pcode(pcodes, &os, op);
-					o = emalloc(sizeof(struct rlib_pcode_operand));			
+					o = rmalloc(sizeof(struct rlib_pcode_operand));			
 					o->type = OPERAND_IIF;
 					o->value = rpi;
 					rlib_pcode_add(pcodes, rlib_new_pcode_instruction(PCODE_PUSH, o));
@@ -504,19 +506,19 @@ struct rlib_value * rlib_value_new(struct rlib_value *rval, int type, int free, 
 
 struct rlib_value * rlib_value_new_number(struct rlib_value *rval, long long value) {
 	long long *tmp;
-	tmp = emalloc(sizeof(long long));
+	tmp = rmalloc(sizeof(long long));
 	*tmp = value;
 	return rlib_value_new(rval, RLIB_VALUE_NUMBER, TRUE, tmp);
 }
 
 struct rlib_value * rlib_value_new_string(struct rlib_value *rval, char *value) {
-	return rlib_value_new(rval, RLIB_VALUE_STRING, TRUE, estrdup(value));
+	return rlib_value_new(rval, RLIB_VALUE_STRING, TRUE, rstrdup(value));
 }
 
 struct rlib_value * rlib_value_new_date(struct rlib_value *rval, struct tm *date) {
 	struct tm *t;
 	long tmp;
-	t = emalloc(sizeof(struct tm));
+	t = rmalloc(sizeof(struct tm));
 	tmp = mktime(date);
 	localtime_r(&tmp, t);
 	return rlib_value_new(rval, RLIB_VALUE_DATE, FALSE, t);
@@ -568,7 +570,7 @@ struct rlib_value *rlib_operand_get_value(rlib *r, struct rlib_value *rval, stru
 		} else if(rv->type == REPORT_VARIABLE_HIGHEST) {
 			val = RLIB_VALUE_GET_AS_NUMBER(amount);
 		}
-		this_logic_sucks_fix_it_later = emalloc(sizeof(long long));
+		this_logic_sucks_fix_it_later = rmalloc(sizeof(long long));
 		*this_logic_sucks_fix_it_later = val;
 		return rlib_value_new(rval, RLIB_VALUE_NUMBER, TRUE, this_logic_sucks_fix_it_later);
 	} else if(o->type == OPERAND_IIF) {
