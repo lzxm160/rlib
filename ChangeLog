@@ -1,3 +1,6 @@
+2004-08-04  Steve Tilden  <stilden@sicompos.com>
+	* doc/symboltable.sgm: add stodtsql, grouped time fncs, spelling
+
 2004-08-03  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/pcode.c: add stodtsql for steve
 	* libsrc/pcode.h: likewise

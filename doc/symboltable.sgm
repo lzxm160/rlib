@@ -19,7 +19,7 @@
 			Otherwise the result returned is in DAYS.
 		</para>
 		<para>
-			expS1 + expS2 <emphasis>Returns</emphasis> STRING containing the result of the concatination of expS1 and expS2
+			expS1 + expS2 <emphasis>Returns</emphasis> STRING containing the result of the concatenation of expS1 and expS2
 		</para>
 	</sect1>
 	<sect1>
@@ -32,7 +32,7 @@
 			Otherwise it returns expD - expN DAYS. 
 		</para>
 		<para>
-			expD - expD <emphasis>Returns</emphasis> NUMBER containing the number of SECONDS or DAYS differnce in the dates.
+			expD - expD <emphasis>Returns</emphasis> NUMBER containing the number of SECONDS or DAYS difference in the dates.
 			If the time portion is valid, the result is the number of SECONDS difference.
 			If both times and both dates are valid the seconds count will include the difference in the days.
 			Otherwise if the date portions are valid it returns the number of DAYS difference.
@@ -68,7 +68,7 @@
 			expN1 &lt= expN1 <emphasis>Returns</emphasis> NUMBER 1 if true.. 0 if false
 		</para>
 		<para>
-			expS1 &lt= expS2 <emphasis>Returns</emphasis> NUMBER 1 if true if expS1 is alphebatically less then expS2.. 0 if false
+			expS1 &lt= expS2 <emphasis>Returns</emphasis> NUMBER 1 if true if expS1 is alphabetically less then expS2.. 0 if false
 		</para>
 		<para>
 			expD1 &lt= expD2 <emphasis>Returns</emphasis> NUMBER 1 if true if expD1 is less then expD2.. 0 if false.
@@ -273,31 +273,65 @@
 	<sect1>
 		<title>str(expN1, expN2, expN3)</title>
 		<para>
-			 Convert a NUMBER into a STRING of length expN2 with decimal percision of expN3
+			 Convert a NUMBER into a STRING of length expN2 with decimal precision of expN3
 		</para>
 		<para>
 			<emphasis> Returns</emphasis> STRING
 		</para>
 	</sect1>	
 	<sect1>
-		<title>stod(expS)</title>
+		<title>iif(exp1, exp2, exp3)</title>
 		<para>
-			 Converts a string into a date.. must be int he format of YYYY-MM-DD (like sql)
+			 In-line If. Basically exp1 is evaluated. If it is true (NUMBER != 0, STRING != NULL, DATE is always true).. exp2
+			 is evaluated and returned otherwise exp3 is evaluated and returned
+		</para>
+		<para>
+			<emphasis> Returns</emphasis> exp2 if TRUE... exp3 if FALSE
+		</para>
+	</sect1>
+	<sect1>
+		<title>stodt(expS)</title>
+		<para>
+			 Converts a string into a date time.. must be in the format of YYYYMMDDHHMMSS 
+			 (format sql timestamp type)
 		</para>
 		<para>
 			<emphasis> Returns</emphasis> DATE
 		</para>
 	</sect1>
 	<sect1>
-		<title>iif(exp1, exp2, exp3)</title>
+		<title>stodtsql(expS)</title>
 		<para>
-			 In-line If. Basically exp1 is evaulated. If it is true (NUMBER != 0, STRING != NULL, DATE is always true).. exp2
-			 is evaulated and returned otherwise exp3 is evaluated and returned
+			 Converts a string into a date time.. must be in the format of YYYY-MM-DD HH:MM:SS 
+			 (format sql datetime type)
 		</para>
 		<para>
-			<emphasis> Returns</emphasis> exp2 if TRUE... exp3 if FALSE
+			<emphasis> Returns</emphasis> DATE
 		</para>
 	</sect1>	
+	<sect1>
+		<title>stod(expS)</title>
+		<para>
+			 Converts a string into a date.. must be int he format of YYYY-MM-DD 
+			 (format sql date type)
+		</para>
+		<para>
+			<emphasis> Returns</emphasis> DATE
+		</para>
+	</sect1>
+	<sect1>
+		<title>tstod(expS)</title>
+		<para>
+			expS is a time in string format such as HH:MM, HH:MM:SS,
+		HH:MMp, HH:MM:SSp, HHMM, HHMMSS, HHMMp, HHMMSSp. This function 
+		will return a DATE value with the time set to the time in the
+		string (the date part of the DATE variable is set to 1/1/1980).
+		</para>
+		<para>
+			<emphasis>Returns</emphasis> DATE
+		</para>
+	</sect1>
+
 	<sect1>
 		<title>dtos(expD)</title>
 		<para>
@@ -333,56 +367,11 @@
 		<para>
 			<emphasis> Returns</emphasis> NUMBER
 		</para>
-	</sect1>	
-	<sect1>
-		<title>upper(expS)</title>
-		<para>
-			 Returns expS as a upper case string
-		</para>
-		<para>
-			<emphasis> Returns</emphasis> STRING
-		</para>
-	</sect1>	
-	<sect1>
-		<title>lower(expS)</title>
-		<para>
-			 Returns expS as a lower case string
-		</para>
-		<para>
-			<emphasis> Returns</emphasis> STRING
-		</para>
-	</sect1>	
-	<sect1>
-		<title>proper(expS)</title>
-		<para>
-			 Returns expS as a proper string.. ie 1str char caps.. all the rest lower
-		</para>
-		<para>
-			<emphasis> Returns</emphasis> STRING
-		</para>
-	</sect1>	
-	<sect1>
-		<title>stodt(expS)</title>
-		<para>
-			 Converts a string into a date time.. must be int he format of YYYYMMDDHHMMSS (like sql)
-		</para>
-		<para>
-			<emphasis> Returns</emphasis> DATE
-		</para>
 	</sect1>
-	<sect1>
-		<title>isnull(expS)</title>
-		<para>
-			 Returns expN 1 if expS is null or expN 0 if expS is not null
-		</para>
-		<para>
-			<emphasis> Returns</emphasis> NUMBER
-		</para>
-	</sect1>	
 	<sect1>
 		<title>dim(expD)</title>
 		<para>
-			 Returns NUMBER containting the day in the month (1-31)
+			 Returns NUMBER containing the day in the month (1-31)
 		</para>
 		<para>
 			<emphasis> Returns</emphasis> NUMBER
@@ -391,7 +380,7 @@
 	<sect1>
 		<title>wiy(expD)</title>
 		<para>
-			 Returns NUMBER containting the week number of the year.  Range  00  to  53, starting with the first
+			 Returns NUMBER containing the week number of the year.  Range  00  to  53, starting with the first
           Sunday as the first day of week 01
 		</para>
 		<para>
@@ -421,6 +410,109 @@
 		</para>
 	</sect1>		
 	<sect1>
+		<title>dateof(expD)</title>
+		<para>
+			A function that converts a datetime to a date only variable.
+			Use this function with comparisons and DATE arithmetic to select
+			only the DATE portion for use in the expression.
+		</para>
+		<para>
+			<emphasis>Returns</emphasis> DATE
+		</para>
+	</sect1>
+	<sect1>
+		<title>timeof(expD)</title>
+		<para>
+			A function that converts a datetime to a time only variable.
+			Use this function with comparisons and TIME arithmetic to select
+			only the TIME portion for use in the expression.
+		</para>
+		<para>
+			<emphasis>Returns</emphasis> DATE
+		</para>
+	</sect1>
+	<sect1>
+		<title>chgdateof(expD1, expD2)</title>
+		<para>
+			Changes the date portion of expD1 to equal that of expD2.
+		</para>
+		<para>
+			<emphasis>Returns</emphasis> DATE
+		</para>
+	</sect1>
+	<sect1>
+		<title>chgtimeof(expD1, expD2)</title>
+		<para>
+			Changes the time portion of expD1 to equal that of expD2.
+		</para>
+		<para>
+			<emphasis>Returns</emphasis> DATE
+		</para>
+	</sect1>
+
+	<sect1>
+		<title>gettimeinsecs(expD)</title>
+		<para>
+			Returns the time portion of the datetime variable as the number of seconds past 00:00:00
+		</para>
+		<para>
+			<emphasis>Returns</emphasis> NUMBER
+		</para>
+		<para>
+			This function in conjunction with settimeinsecs can be used to perform mathematical calculations on time.
+		</para>
+	</sect1>
+	<sect1>
+		<title>settimeinsecs(expD, expN)</title>
+		<para>
+			Returns a datetime with the time portion of the datetime changed to a value obtained by adding expN seconds to 00:00:00.
+			For example: "settimeinsecs(expD, (gettimeinsecs(expD) / 3600) * 3600)"
+			returns a datetime that has been truncated to an even hour value.
+		</para>
+		<para>
+			<emphasis>Returns</emphasis> DATE
+		</para>
+		<para>
+			see settimeinsecs function for details and example.
+		</para>
+	</sect1>	
+	<sect1>
+		<title>upper(expS)</title>
+		<para>
+			 Returns expS as a upper case string
+		</para>
+		<para>
+			<emphasis> Returns</emphasis> STRING
+		</para>
+	</sect1>	
+	<sect1>
+		<title>lower(expS)</title>
+		<para>
+			 Returns expS as a lower case string
+		</para>
+		<para>
+			<emphasis> Returns</emphasis> STRING
+		</para>
+	</sect1>	
+	<sect1>
+		<title>proper(expS)</title>
+		<para>
+			 Returns expS as a proper string.. ie 1str char caps.. all the rest lower
+		</para>
+		<para>
+			<emphasis> Returns</emphasis> STRING
+		</para>
+	</sect1>	
+	<sect1>
+		<title>isnull(expS)</title>
+		<para>
+			 Returns expN 1 if expS is null or expN 0 if expS is not null
+		</para>
+		<para>
+			<emphasis> Returns</emphasis> NUMBER
+		</para>
+	</sect1>	
+	<sect1>
 		<title>left(expS, expN)</title>
 		<para>
 			Returns the leftmost expN characters of the string expS.
@@ -446,18 +538,6 @@
 		</para>
 		<para>
 			<emphasis>Returns</emphasis> STRING
-		</para>
-	</sect1>
-	<sect1>
-		<title>tstod(expS)</title>
-		<para>
-			expS is a time in string format such as HH:MM, HH:MM:SS,
-		HH:MMp, HH:MM:SSp, HHMM, HHMMSS, HHMMp, HHMMSSp. This function 
-		will return a DATE value with the time set to the time in the
-		string (the date part of the DATE variable is set to 1/1/1980).
-		</para>
-		<para>
-			<emphasis>Returns</emphasis> DATE
 		</para>
 	</sect1>
 	<sect1>
@@ -528,73 +608,6 @@
 		</para>
 		<para>
 			<emphasis>Returns</emphasis> NUMBER
-		</para>
-	</sect1>
-	<sect1>
-		<title>dateof(expD)</title>
-		<para>
-			A function that converts a datetime to a date only variable.
-			Use this function with comparisons and DATE arithmetic to select
-			only the DATE portion for use in the expression.
-		</para>
-		<para>
-			<emphasis>Returns</emphasis> DATE
-		</para>
-	</sect1>
-	<sect1>
-		<title>timeof(expD)</title>
-		<para>
-			A function that converts a datetime to a time only variable.
-			Use this function with comparisons and TIME arithmetic to select
-			only the TIME portion for use in the expression.
-		</para>
-		<para>
-			<emphasis>Returns</emphasis> DATE
-		</para>
-	</sect1>
-	<sect1>
-		<title>chgdateof(expD1, expD2)</title>
-		<para>
-			Changes the date portion of expD1 to equal that of expD2.
-		</para>
-		<para>
-			<emphasis>Returns</emphasis> DATE
-		</para>
-	</sect1>
-	<sect1>
-		<title>chgtimeof(expD1, expD2)</title>
-		<para>
-			Changes the time portion of expD1 to equal that of expD2.
-		</para>
-		<para>
-			<emphasis>Returns</emphasis> DATE
-		</para>
-	</sect1>
-
-	<sect1>
-		<title>gettimeinsecs(expD)</title>
-		<para>
-			Returns the time portion of the datetime variable as the number of seconds past 00:00:00
-		</para>
-		<para>
-			<emphasis>Returns</emphasis> NUMBER
-		</para>
-		<para>
-			This function in conjunction with settimeinsecs can be used to perform mathematical calculations on time.
-		</para>
-	</sect1>
-	<sect1>
-		<title>settimeinsecs(expD, expN)</title>
-		<para>
-			Returns a datetime with the time portion of the datetime changed to a value obtained by adding expN seconds to 00:00:00.
-			For example: "settimeinsecs(expD, (gettimeinsecs(expD) / 3600) * 3600)"
-			returns a datetime that has been truncated to an even hour value.
-		</para>
-		<para>
-			<emphasis>Returns</emphasis> DATE
-		</para>
-		<para>
-			see settimeinsecs function for details and example.
 		</para>
 	</sect1>
 </chapter>
