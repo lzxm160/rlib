@@ -91,7 +91,8 @@ struct rlib_pcode_operator rlib_pcode_verbs[] = {
 		{"right(", 	6, 0,	TRUE,	OP_LEFT, 	TRUE, 	rlib_pcode_operator_right},
 		{"mid(", 	4, 0, TRUE,	OP_LEFT, 	TRUE, 	rlib_pcode_operator_substring},
       {"proper(", 7, 0,	TRUE,	OP_PROPER, 	TRUE,		rlib_pcode_operator_proper},
-      {"stodt(", 	6, 0,	TRUE,	OP_STODS,  	TRUE, 	rlib_pcode_operator_stodt},
+      {"stodt(", 	6, 0,	TRUE,	OP_STOD,  	TRUE, 	rlib_pcode_operator_stodt},
+      {"stodtsql(", 9, 0,	TRUE,	OP_STODSQL,  	TRUE, 	rlib_pcode_operator_stodtsql},
       {"isnull(",	7, 0,	TRUE,	OP_ISNULL, 	TRUE, 	rlib_pcode_operator_isnull},
       {"dim(", 	4, 0,	TRUE,	OP_DIM,  	TRUE, 	rlib_pcode_operator_dim},
       {"wiy(", 	4, 0,	TRUE,	OP_WIY,  	TRUE, 	rlib_pcode_operator_wiy},
@@ -126,10 +127,10 @@ struct rlib_pcode_operator * rlib_find_operator(gchar *ptr, struct rlib_operator
 	struct rlib_pcode_operator *op;
 	op = rlib_pcode_verbs;
 	while(op && op->tag != NULL) {
-		if(len >= op->taglen) {		
+		if(len >= op->taglen) {
 			if(!strncmp(ptr, op->tag, op->taglen)) {
 				if(op->opnum == OP_SUB) {
-					if(have_operand) 
+					if(have_operand || p->count > 0) 
 						return op;				
 				} else
 					return op;
@@ -217,7 +218,7 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, gchar *str) {
 	gpointer field=NULL;
 	gchar *memresult;
 	struct rlib_pcode_operand *o;
-	struct report_variable *rv;
+	struct rlib_report_variable *rv;
 	gint rvar;
 	o = g_new0(struct rlib_pcode_operand, 1);
 	if(str[0] == '\'') {
@@ -317,7 +318,7 @@ void rlib_pcode_dump(struct rlib_pcode *p, gint offset) {
 			} else if(o->type == OPERAND_MEMORY_VARIABLE) {
 				rlogit("Result Memory Variable = [%s]", (char *)o->value);
 			} else if(o->type == OPERAND_VARIABLE) {
-				struct report_variable *rv = o->value;
+				struct rlib_report_variable *rv = o->value;
 				rlogit("Result Variable = [%s]", rv->name);
 			} else if(o->type == OPERAND_RLIB_VARIABLE) {
 				rlogit("RLIB Variable\n");
@@ -672,7 +673,7 @@ struct rlib_value * rlib_value_new_error(struct rlib_value *rval) {
 */
 struct rlib_value *rlib_operand_get_value(rlib *r, struct rlib_value *rval, struct rlib_pcode_operand *o, 
 struct rlib_value *this_field_value) {
-	struct report_variable *rv = NULL;
+	struct rlib_report_variable *rv = NULL;
 
 	if(o->type == OPERAND_NUMBER) {
 		return rlib_value_new(rval, RLIB_VALUE_NUMBER, FALSE, o->value);

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003 SICOM Systems, INC.
+ *  Copyright (C) 2003-2004 SICOM Systems, INC.
  *
  *  Authors: Bob Doan <bdoan@sicompos.com>
  *
@@ -42,6 +42,7 @@ ZEND_FUNCTION(rlib_add_datasource_postgre);
 #if HAVE_ODBC
 ZEND_FUNCTION(rlib_add_datasource_odbc);
 #endif
+ZEND_FUNCTION(rlib_add_datasource_array);
 ZEND_FUNCTION(rlib_add_query_as);
 ZEND_FUNCTION(rlib_add_resultset_follower);
 ZEND_FUNCTION(rlib_add_report);
@@ -79,6 +80,7 @@ zend_function_entry rlib_functions[] =
 #if HAVE_ODBC
 	ZEND_FE(rlib_add_datasource_odbc, NULL)
 #endif
+	ZEND_FE(rlib_add_datasource_array, NULL)
 	ZEND_FE(rlib_add_query_as, NULL)
 	ZEND_FE(rlib_add_resultset_follower, NULL)
 	ZEND_FE(rlib_add_report, NULL)
@@ -232,6 +234,25 @@ ZEND_FUNCTION(rlib_add_datasource_odbc) {
 	RETURN_LONG(result);
 }
 #endif
+
+ZEND_FUNCTION(rlib_add_datasource_array) {
+	zval *z_rip = NULL;
+	gint datasource_length;
+	gchar *datasource_name;
+	rlib_inout_pass *rip;
+	gint id = -1;
+	gint result = 0;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &z_rip,
+		&datasource_name, &datasource_length) == FAILURE) {
+		return;
+	}
+	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);
+	
+	result = rlib_add_datasource_php_array(rip->r, estrdup(datasource_name));
+	RETURN_LONG(result);
+}
+
 
 
 ZEND_FUNCTION(rlib_add_query_as) {

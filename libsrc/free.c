@@ -52,7 +52,7 @@ static void free_pcode(struct rlib_pcode *code) {
 	g_free(code);
 }
 
-static void rlib_image_free_pcode(rlib *r, struct report_image * ri) {
+static void rlib_image_free_pcode(rlib *r, struct rlib_report_image * ri) {
 	free_pcode(ri->value_code);
 	free_pcode(ri->type_code);
 	free_pcode(ri->width_code);
@@ -60,7 +60,7 @@ static void rlib_image_free_pcode(rlib *r, struct report_image * ri) {
 	g_free(ri);
 }
 
-static void rlib_hr_free_pcode(rlib *r, struct report_horizontal_line * rhl) {
+static void rlib_hr_free_pcode(rlib *r, struct rlib_report_horizontal_line * rhl) {
 	free_pcode(rhl->bgcolor_code);
 	free_pcode(rhl->suppress_code);
 	free_pcode(rhl->indent_code);
@@ -70,7 +70,7 @@ static void rlib_hr_free_pcode(rlib *r, struct report_horizontal_line * rhl) {
 	g_free(rhl);
 }
 
-static void rlib_text_free_pcode(rlib *r, struct report_literal *rt) {
+static void rlib_text_free_pcode(rlib *r, struct rlib_report_literal *rt) {
 	free_pcode(rt->color_code);
 	free_pcode(rt->bgcolor_code);
 	free_pcode(rt->col_code);
@@ -79,7 +79,7 @@ static void rlib_text_free_pcode(rlib *r, struct report_literal *rt) {
 	g_free(rt);
 }
 
-static void rlib_field_free_pcode(rlib *r, struct report_field *rf) {
+static void rlib_field_free_pcode(rlib *r, struct rlib_report_field *rf) {
 	free_pcode(rf->code);
 	free_pcode(rf->format_code);
 	free_pcode(rf->link_code);
@@ -93,16 +93,16 @@ static void rlib_field_free_pcode(rlib *r, struct report_field *rf) {
 	g_free(rf);
 }
 
-static void rlib_free_fields(rlib *r, struct report_output_array *roa) {
-	struct report_element *e, *save;
+static void rlib_free_fields(rlib *r, struct rlib_report_output_array *roa) {
+	struct rlib_report_element *e, *save;
 	gint j;
 	
 	if(roa == NULL)
 		return;
 	for(j=0;j<roa->count;j++) {
-		struct report_output *ro = roa->data[j];
+		struct rlib_report_output *ro = roa->data[j];
 		if(ro->type == REPORT_PRESENTATION_DATA_LINE) {
-			struct report_lines *rl = ro->data;	
+			struct rlib_report_lines *rl = ro->data;	
 			e = rl->e;
 			free_pcode(rl->bgcolor_code);
 			free_pcode(rl->color_code);
@@ -110,9 +110,9 @@ static void rlib_free_fields(rlib *r, struct report_output_array *roa) {
 			free_pcode(rl->font_size_code);
 			for(; e != NULL; e=e->next) {
 				if(e->type == REPORT_ELEMENT_FIELD) {
-					rlib_field_free_pcode(r, ((struct report_field *)e->data));
+					rlib_field_free_pcode(r, ((struct rlib_report_field *)e->data));
 				} else if(e->type == REPORT_ELEMENT_LITERAL) {
-					rlib_text_free_pcode(r, ((struct report_literal *)e->data));
+					rlib_text_free_pcode(r, ((struct rlib_report_literal *)e->data));
 				}
 			}
 			for(e=rl->e; e != NULL; ) {
@@ -122,9 +122,9 @@ static void rlib_free_fields(rlib *r, struct report_output_array *roa) {
 			}
 			g_free(rl);
 		} else if(ro->type == REPORT_PRESENTATION_DATA_HR) {
-			rlib_hr_free_pcode(r, ((struct report_horizontal_line *)ro->data));
+			rlib_hr_free_pcode(r, ((struct rlib_report_horizontal_line *)ro->data));
 		} else if(ro->type == REPORT_PRESENTATION_DATA_IMAGE) {
-			rlib_image_free_pcode(r, ((struct report_image *)ro->data));
+			rlib_image_free_pcode(r, ((struct rlib_report_image *)ro->data));
 		}
 		g_free(ro);
 	}
@@ -133,13 +133,13 @@ static void rlib_free_fields(rlib *r, struct report_output_array *roa) {
 }
 
 
-static void rlib_break_free_pcode(rlib *r, struct break_fields *bf) {
+static void rlib_break_free_pcode(rlib *r, struct rlib_break_fields *bf) {
 	free_pcode(bf->code);
 }
 
-static void rlib_free_output(rlib *r, struct report_element *e) {
-	struct report_output_array *roa;
-	struct report_element *save;
+static void rlib_free_output(rlib *r, struct rlib_report_element *e) {
+	struct rlib_report_output_array *roa;
+	struct rlib_report_element *save;
 	while(e != NULL) {
 		save = e;
 		roa = e->data;
@@ -151,7 +151,7 @@ static void rlib_free_output(rlib *r, struct report_element *e) {
 
 void rlib_free_report(rlib *r, gint which) {
 	struct rlib_report *thisreport = r->reports[which];
-	struct report_element *e, *prev;
+	struct rlib_report_element *e, *prev;
 
 //rlogit("address being freed is: %08lx", (long) thisreport->font_size_code);
 	free_pcode(thisreport->font_size_code);
@@ -177,12 +177,12 @@ void rlib_free_report(rlib *r, gint which) {
 	
 	if(r->reports[which]->breaks != NULL) {
 		for(e = r->reports[which]->breaks; e != NULL; e=e->next) {
-			struct report_break *rb = e->data;
-			struct report_element *be;
+			struct rlib_report_break *rb = e->data;
+			struct rlib_report_element *be;
 			rlib_free_output(r, rb->header);
 			rlib_free_output(r, rb->footer);
 			for(be = rb->fields; be != NULL; be=be->next) {
-				struct break_fields *bf = be->data;
+				struct rlib_break_fields *bf = be->data;
 				rlib_break_free_pcode(r, bf);
 				g_free(bf);
 			}
@@ -219,7 +219,7 @@ void rlib_free_report(rlib *r, gint which) {
 
 	if(r->reports[which]->variables != NULL) {
 		for(e = r->reports[which]->variables; e != NULL; e=e->next) {
-			struct report_variable *rv = e->data;
+			struct rlib_report_variable *rv = e->data;
 			free_pcode(rv->code);
 
 			if(rv->type == REPORT_VARIABLE_EXPRESSION) {

@@ -52,7 +52,7 @@ gint format_money(gchar *dest, gint max, const gchar *moneyformat, gint64 x) {
 
 
 gint format_number(gchar *dest, gint max, const gchar *fmt, gint64 x) {
-	double d = (((double) x) / RLIB_DECIMAL_PRECISION);
+	double d = (((double) x) / (double)RLIB_DECIMAL_PRECISION);
 	return snprintf(dest, max - 1, fmt, d);
 }
 
@@ -166,7 +166,7 @@ gint rlib_number_sprintf(gchar *dest, gchar *fmtstr, const struct rlib_value *rv
 	return strlen(dest);
 }
 
-gint rlib_format_string(rlib *r, struct report_field *rf, struct rlib_value *rval, gchar *buf) {
+gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value *rval, gchar *buf) {
 	if(rf->format == NULL) {
 		if(RLIB_VALUE_IS_NUMBER(rval)) {
 			sprintf(buf, "%lld", RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(rval)));

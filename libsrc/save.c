@@ -54,14 +54,14 @@ void write_xml_str(gint fd, gchar *str) {
 	return;
 }
 
-void write_image(gint fd, struct report_image *ri) {
+void write_image(gint fd, struct rlib_report_image *ri) {
 	write_xml_str(fd, ri->value);
 	write_xml_str(fd, ri->type);
 	write_xml_str(fd, ri->width);
 	write_xml_str(fd, ri->height);
 }
 
-void write_hr(gint fd, struct report_horizontal_line *hr) {
+void write_hr(gint fd, struct rlib_report_horizontal_line *hr) {
 	write_xml_str(fd, hr->bgcolor);
 	write_xml_str(fd, hr->size);
 	write_xml_str(fd, hr->indent);
@@ -70,7 +70,7 @@ void write_hr(gint fd, struct report_horizontal_line *hr) {
 	write_xml_str(fd, hr->suppress);
 }
 
-void write_field(gint fd, struct report_field *rf) {
+void write_field(gint fd, struct rlib_report_field *rf) {
 	write_xml_str(fd, rf->value);
 	write_xml_str(fd, rf->xml_align);
 	write_xml_str(fd, rf->bgcolor);
@@ -83,7 +83,7 @@ void write_field(gint fd, struct report_field *rf) {
 	write_xml_str(fd, rf->xml_maxlines);
 }
 
-void write_text(gint fd, struct report_literal *rt) {
+void write_text(gint fd, struct rlib_report_literal *rt) {
 	write_xml_str(fd, rt->value);
 	write_xml_str(fd, rt->xml_align);
 	write_xml_str(fd, rt->color);
@@ -92,8 +92,8 @@ void write_text(gint fd, struct report_literal *rt) {
 	write_xml_str(fd, rt->col);
 }
 
-void write_line(gint fd, struct report_lines *rl) {
-	struct report_element *e;
+void write_line(gint fd, struct rlib_report_lines *rl) {
+	struct rlib_report_element *e;
 	gint32 type;
 	write_xml_str(fd, rl->bgcolor);
 	write_xml_str(fd, rl->color);
@@ -106,10 +106,10 @@ void write_line(gint fd, struct report_lines *rl) {
 		type = e->type;
 		write(fd, &type, sizeof(gint32));
 		if(e->type == REPORT_ELEMENT_FIELD) {
-			struct report_field *rf = e->data;
+			struct rlib_report_field *rf = e->data;
 			write_field(fd, rf);
 		} else if(e->type == REPORT_ELEMENT_LITERAL) {
-			struct report_literal *rt = e->data;
+			struct rlib_report_literal *rt = e->data;
 			write_text(fd, rt);
 		}
 	}
@@ -118,24 +118,24 @@ void write_line(gint fd, struct report_lines *rl) {
 
 }
 
-void write_roa(gint fd, struct report_output_array *roa) {
+void write_roa(gint fd, struct rlib_report_output_array *roa) {
 	gint j;
 	gint32 type;
 	type = RLIB_FILE_ROA;
 	write(fd, &type, sizeof(gint32));
 	write_xml_str(fd, roa->xml_page);
 	for(j=0;j<roa->count;j++) {
-		struct report_output *ro = roa->data[j];
+		struct rlib_report_output *ro = roa->data[j];
 		type = ro->type;
 		write(fd, &type, sizeof(gint32));
 		if(ro->type == REPORT_PRESENTATION_DATA_LINE) {			
-			struct report_lines *rl = ro->data;	
+			struct rlib_report_lines *rl = ro->data;	
 			write_line(fd, rl);
 		} else if(ro->type == REPORT_PRESENTATION_DATA_HR) {
-			struct report_horizontal_line *hr = ro->data;
+			struct rlib_report_horizontal_line *hr = ro->data;
 			write_hr(fd, hr);
 		} else if(ro->type == REPORT_PRESENTATION_DATA_IMAGE) {
-			struct report_image *ri = ro->data;
+			struct rlib_report_image *ri = ro->data;
 			write_image(fd, ri);
 		}
 
@@ -144,8 +144,8 @@ void write_roa(gint fd, struct report_output_array *roa) {
 	write(fd, &type, sizeof(gint32));
 }
 
-void write_output(gint fd, struct report_element *e) {
-	struct report_output_array *roa;
+void write_output(gint fd, struct rlib_report_element *e) {
+	struct rlib_report_output_array *roa;
 	gint32 type = RLIB_FILE_OUTPUTS;
 	write(fd, &type, sizeof(gint32));
 	for(; e != NULL; e=e->next) {
@@ -156,13 +156,13 @@ void write_output(gint fd, struct report_element *e) {
 	write(fd, &type, sizeof(gint32));
 }
 
-void write_variables(gint fd, struct report_element *rv) {
-	struct report_element *e;
+void write_variables(gint fd, struct rlib_report_element *rv) {
+	struct rlib_report_element *e;
 	gint32 type = RLIB_FILE_VARIABLES;
 	write(fd, &type, sizeof(gint32));
 
 	for(e=rv; e != NULL; e=e->next) {
-		struct report_variable *rv = e->data;
+		struct rlib_report_variable *rv = e->data;
 		type = RLIB_FILE_VARIABLE;
 		write(fd, &type, sizeof(gint32));
 		write_xml_str(fd, rv->name);
@@ -176,14 +176,14 @@ void write_variables(gint fd, struct report_element *rv) {
 	write(fd, &type, sizeof(gint32));
 }
 
-void write_breaks(gint fd, struct report_element *breaks) {
-	struct report_element *e;
+void write_breaks(gint fd, struct rlib_report_element *breaks) {
+	struct rlib_report_element *e;
 	gint32 type = RLIB_FILE_BREAKS;
 	write(fd, &type, sizeof(gint32));
 
 	for(e=breaks; e != NULL; e=e->next) {
-		struct report_break *rb = e->data;
-		struct report_element *be;
+		struct rlib_report_break *rb = e->data;
+		struct rlib_report_element *be;
 		type = RLIB_FILE_BREAK;
 		write(fd, &type, sizeof(gint32));
 		write_xml_str(fd, rb->name);
@@ -193,7 +193,7 @@ void write_breaks(gint fd, struct report_element *breaks) {
 		write_output(fd, rb->header);
 		write_output(fd, rb->footer);
 		for(be = rb->fields; be != NULL; be=be->next) {
-			struct break_fields *bf = be->data;
+			struct rlib_break_fields *bf = be->data;
 			type = RLIB_FILE_BREAK_FIELD;
 			write(fd, &type, sizeof(gint32));
 			write_xml_str(fd, bf->value);

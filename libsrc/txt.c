@@ -156,9 +156,9 @@ static void rlib_txt_set_working_page(rlib *r, int page) {
 static void rlib_txt_set_fg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {}
 static void rlib_txt_set_bg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {}
 static void rlib_txt_hr(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
-struct rgb *color, gfloat indent, gfloat length) {}
+struct rlib_rgb *color, gfloat indent, gfloat length) {}
 static void rlib_txt_draw_cell_background_start(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
-struct rgb *color) {}
+struct rlib_rgb *color) {}
 static void rlib_txt_draw_cell_background_end(rlib *r) {}
 static void rlib_txt_boxurl_start(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url) {}
 static void rlib_txt_boxurl_end(rlib *r) {}

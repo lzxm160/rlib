@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003 SICOM Systems, INC.
+ *  Copyright (C) 2003-2004 SICOM Systems, INC.
  *
  *  Authors: Bob Doan <bdoan@sicompos.com>
  *
@@ -37,7 +37,7 @@
 
 #define RLIB_WEB_CONTENT_TYPE_HTML "Content-Type: text/html; charset=%s\n"
 #define RLIB_WEB_CONTENT_TYPE_TEXT "Content-Type: text/plain; charset=%s\n"
-#define RLIB_WEB_CONTENT_TYPE_PDF "Content-Type: application/pdf; \n"
+#define RLIB_WEB_CONTENT_TYPE_PDF "Content-Type: application/pdf\n"
 #define RLIB_WEB_CONTENT_TYPE_CSV "Content-type: application/octet-stream\nContent-Disposition: attachment; filename=report.csv\n"
 
 #define RLIB_NAVIGATE_FIRST 1
@@ -132,17 +132,17 @@ struct rlib_value {
 };
 
 
-struct report_element {
+struct rlib_report_element {
 	gint type;
 	gpointer data;
-	struct report_element *next;
+	struct rlib_report_element *next;
 };
 
 #define RLIB_ALIGN_LEFT 	0
 #define RLIB_ALIGN_RIGHT	1
 #define RLIB_ALIGN_CENTER	2
 
-struct report_literal {
+struct rlib_report_literal {
 	gchar value[MAXSTRLEN];
 	xmlChar *xml_align;
 	xmlChar *color;
@@ -182,18 +182,18 @@ struct rlib_line_extra_data {
 	gchar formatted_string[MAXSTRLEN];
 	gint width;	
 	gint col;	
-	struct rgb bgcolor;
+	struct rlib_rgb bgcolor;
 	gint found_bgcolor;
 	gchar *link;
 	gint found_link;
-	struct rgb color;
+	struct rlib_rgb color;
 	gint found_color;
 	gfloat output_width;
 	gint running_bgcolor_status;
 	gfloat running_running_bg_total;
 };
 
-struct report_field {
+struct rlib_report_field {
 	gchar value[MAXSTRLEN];
 	xmlChar *xml_align;
 	xmlChar *bgcolor;
@@ -227,19 +227,19 @@ struct report_field {
 #define REPORT_PRESENTATION_DATA_HR 	2
 #define REPORT_PRESENTATION_DATA_IMAGE	3
 
-struct report_output {
+struct rlib_report_output {
 	gint type;
 	gpointer data;
 };
 
-struct report_output_array {
+struct rlib_report_output_array {
 	gint count;
 	xmlChar *xml_page;
 	gint page;
-	struct report_output **data;
+	struct rlib_report_output **data;
 };
 
-struct report_horizontal_line {
+struct rlib_report_horizontal_line {
 	xmlChar *bgcolor;
 	xmlChar *size;
 	xmlChar *indent;
@@ -260,7 +260,7 @@ struct report_horizontal_line {
 	struct rlib_pcode *suppress_code;
 };
 
-struct report_image {
+struct rlib_report_image {
 	xmlChar *value;
 	xmlChar *type;
 	xmlChar *width;
@@ -272,7 +272,7 @@ struct report_image {
 	struct rlib_pcode *height_code;
 };
 
-struct report_lines {
+struct rlib_report_lines {
 	xmlChar *bgcolor;
 	xmlChar *color;
 	xmlChar *font_size;
@@ -285,17 +285,17 @@ struct report_lines {
 	struct rlib_pcode *suppress_code;
 	struct rlib_pcode *font_size_code;
 	
-	struct report_element *e;
+	struct rlib_report_element *e;
 };
 
-struct break_fields {
+struct rlib_break_fields {
 	xmlChar *value;
 	struct rlib_pcode *code;
 	struct rlib_value rval2;
 	struct rlib_value *rval;
 };
 
-struct report_break {
+struct rlib_report_break {
 	xmlChar *name;
 	xmlChar *xml_newpage;
 	xmlChar *xml_headernewpage;
@@ -306,25 +306,25 @@ struct report_break {
 	gint headernewpage;
 	gint suppressblank;
 
-	struct report_element *header;
-	struct report_element *fields;
-	struct report_element *footer;
+	struct rlib_report_element *header;
+	struct rlib_report_element *fields;
+	struct rlib_report_element *footer;
 	
 	struct rlib_pcode *newpage_code;
 	struct rlib_pcode *headernewpage_code;
 	struct rlib_pcode *suppressblank_code;
 };
 
-struct report_detail {
-	struct report_element *textlines;
-	struct report_element *fields;
+struct rlib_report_detail {
+	struct rlib_report_element *textlines;
+	struct rlib_report_element *fields;
 };
 
-struct report_alternate {
-	struct report_element *nodata;
+struct rlib_report_alternate {
+	struct rlib_report_element *nodata;
 };
 
-struct count_amount {
+struct rlib_count_amount {
 	struct rlib_value count;
 	struct rlib_value amount;
 };
@@ -337,9 +337,9 @@ struct count_amount {
 #define REPORT_VARIABLE_LOWEST		5
 #define REPORT_VARIABLE_HIGHEST		6
 
-#define RLIB_VARIABLE_CA(a)	((struct count_amount *)a->data)
+#define RLIB_VARIABLE_CA(a)	((struct rlib_count_amount *)a->data)
 
-struct report_variable {
+struct rlib_report_variable {
 	xmlChar *name;
 	xmlChar *str_type;
 	xmlChar *value;
@@ -348,6 +348,26 @@ struct report_variable {
 	gint type;
 	struct rlib_pcode *code;
 	gpointer data;	
+};
+
+struct rlib_part_td {
+	xmlChar *width;
+	struct rlib_pcode *width_code;
+	struct rlib_report_element *e;
+};
+
+struct rlib_part_tr {
+	xmlChar *height;
+	struct rlib_pcode *height_code;
+	struct rlib_report_element *e;
+};
+
+struct rlib_part {
+	xmlChar *name;
+	xmlChar *layout;
+	struct rlib_report_element *e;
+	struct rlib_pcode *name_code;
+	struct rlib_pcode *layout_code;
 };
 
 struct rlib_report {
@@ -378,14 +398,14 @@ struct rlib_report {
 	gint pages_accross;
 	gint suppress_page_header_first_page;
 	
-	struct report_element *report_header;
-	struct report_element *page_header;
-	struct report_detail detail;
-	struct report_element *page_footer;
-	struct report_element *report_footer;
-	struct report_element *variables;
-	struct report_element *breaks;
-	struct report_alternate alternate;
+	struct rlib_report_element *report_header;
+	struct rlib_report_element *page_header;
+	struct rlib_report_detail detail;
+	struct rlib_report_element *page_footer;
+	struct rlib_report_element *report_footer;
+	struct rlib_report_element *variables;
+	struct rlib_report_element *breaks;
+	struct rlib_report_alternate alternate;
 	gint mainloop_query;
 
 	struct rlib_paper *paper;
@@ -405,7 +425,7 @@ struct rlib_queries {
 	struct input_filter *input;
 };
 
-struct rip_reports {
+struct rlib_rip_reports {
 	gchar *name;
 	gchar *query;
 };
@@ -454,7 +474,7 @@ struct rlib {
 
 	gint mainloop_queries_count;
 	gint queries_count;
-	struct rip_reports reportstorun[RLIB_MAXIMUM_REPORTS];
+	struct rlib_rip_reports reportstorun[RLIB_MAXIMUM_REPORTS];
 	struct rlib_results results[RLIB_MAXIMUM_QUERIES];
 	
 	struct rlib_report *reports[RLIB_MAXIMUM_REPORTS];
@@ -498,8 +518,8 @@ struct output_filter {
 	void (*rlib_print_text)(rlib *, float, float, char *, int, int);
 	void (*rlib_set_fg_color)(rlib *, float, float, float);
 	void (*rlib_set_bg_color)(rlib *, float, float, float);
-	void (*rlib_hr)(rlib *, int, float, float, float, float, struct rgb *, float, float);
-	void (*rlib_draw_cell_background_start)(rlib *, float, float, float, float, struct rgb *);
+	void (*rlib_hr)(rlib *, int, float, float, float, float, struct rlib_rgb *, float, float);
+	void (*rlib_draw_cell_background_start)(rlib *, float, float, float, float, struct rlib_rgb *);
 	void (*rlib_draw_cell_background_end)(rlib *);
 	void (*rlib_boxurl_start)(rlib *, float, float, float, float, char *);
 	void (*rlib_boxurl_end)(rlib *);
@@ -530,13 +550,13 @@ struct output_filter {
 void rlib_force_break_headers(rlib *r);
 void rlib_handle_break_headers(rlib *r);
 void rlib_reset_variables_on_break(rlib *r, gchar *name);
-void rlib_break_all_below_in_reverse_order(rlib *r, struct report_element *e);
+void rlib_break_all_below_in_reverse_order(rlib *r, struct rlib_report_element *e);
 void rlib_handle_break_footers(rlib *r);
 
 /***** PROTOTYPES: formatstring.c *********************************************/
 gint rlb_string_sprintf(char *dest, gchar *fmtstr, struct rlib_value *rval);
 gint rlib_number_sprintf(char *dest, gchar *fmtstr, const struct rlib_value *rval, gint special_format);
-gint rlib_format_string(rlib *r, struct report_field *rf, struct rlib_value *rval, gchar *buf);
+gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value *rval, gchar *buf);
 
 /***** PROTOTYPES: fxp.c ******************************************************/
 gint64 rlib_fxp_mul(gint64 a, gint64 b, gint64 factor);
@@ -576,7 +596,7 @@ void rlib_set_output_encoding(rlib *r, const char *encoding);
 
 /***** PROTOTYPES: parsexml.c *************************************************/
 struct rlib_report * parse_report_file(gchar *filename);
-struct report_output * report_output_new(gint type, gpointer data);
+struct rlib_report_output * report_output_new(gint type, gpointer data);
 
 /***** PROTOTYPES: pcode.c ****************************************************/
 struct rlib_value * rlib_execute_pcode(rlib *r, struct rlib_value *rval, struct rlib_pcode *code, struct rlib_value *this_field_value);
@@ -591,16 +611,17 @@ struct rlib_value * rlib_value_new_error(struct rlib_value *rval);
 /***** PROTOTYPES: reportgen.c ************************************************/
 gchar *align_text(rlib *r, char *rtn, gint len, gchar *src, gint align, gint width);
 gfloat get_page_width(rlib *r);
-gint print_report_output(rlib *r, struct report_element *e, gint backwards);
-gint will_outputs_fit(rlib *r, struct report_element *e, gint page);
+gint print_report_output(rlib *r, struct rlib_report_element *e, gint backwards);
+gint will_outputs_fit(rlib *r, struct rlib_report_element *e, gint page);
 gint will_this_fit(rlib *r, gfloat total, gint page);
-gfloat get_output_size(rlib *r, struct report_output_array *roa);
+gfloat get_output_size(rlib *r, struct rlib_report_output_array *roa);
 void rlib_print_report_footer(rlib *r);
 gint rlib_fetch_first_rows(rlib *r);
 void rlib_init_variables(rlib *r);
-gint rlib_end_page_if_line_wont_fit(rlib *r, struct report_element *e) ;
-gfloat get_outputs_size(rlib *r, struct report_element *e, gint page);
+gint rlib_end_page_if_line_wont_fit(rlib *r, struct rlib_report_element *e) ;
+gfloat get_outputs_size(rlib *r, struct rlib_report_element *e, gint page);
 void rlib_process_variables(rlib *r);
+void rlib_process_expression_variables(rlib *r);
 void rlib_init_page(rlib *r, gchar report_header);
 gint make_report(rlib *r);
 gint rlib_finalize(rlib *r);
@@ -613,7 +634,7 @@ gchar * rlib_resolve_memory_variable(rlib *r, gchar *name);
 gchar * rlib_resolve_field_value(rlib *r, struct rlib_resultset_field *rf);
 gint rlib_lookup_result(rlib *r, gchar *name);
 gint rlib_resolve_resultset_field(rlib *r, gchar *name, void **rtn_field, gint *rtn_resultset);
-struct report_variable *rlib_resolve_variable(rlib *r, gchar *name);
+struct rlib_report_variable *rlib_resolve_variable(rlib *r, gchar *name);
 void rlib_resolve_fields(rlib *r);
 
 /***** PROTOTYPES: navigation.c ***********************************************/

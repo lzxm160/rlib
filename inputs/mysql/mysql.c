@@ -24,6 +24,7 @@
 #include <mysql.h>
 #include <glib.h>
  
+#include "util.h"
 #include "rlib_input.h"
 
 #define INPUT_PRIVATE(input) (((struct _private *)input->private))
@@ -96,12 +97,14 @@ static MYSQL_RES * rlib_mysql_query(MYSQL *mysql, gchar *query) {
 
 static gint rlib_mysql_first(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_mysql_results *result = result_ptr;
+	mysql_data_seek(result->result,0);
 	result->this_row = mysql_fetch_row(result->result);
 	result->previous_row = NULL;
 	result->last_row = NULL;
 	result->didprevious = FALSE;
 	result->isdone = FALSE;
-	return result->this_row != NULL ? TRUE : FALSE;
+	return TRUE;
+	//return result->this_row != NULL ? TRUE : FALSE;
 }
 
 static gint rlib_mysql_next(gpointer input_ptr, gpointer result_ptr) {

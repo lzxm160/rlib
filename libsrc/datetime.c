@@ -30,7 +30,7 @@
 
 
 int rlib_datetime_valid_date(struct rlib_datetime *dt) {
-	return g_date_valid(&dt->date);
+	return &dt->date && g_date_valid(&dt->date);
 }
 
 
@@ -79,9 +79,13 @@ gint rlib_datetime_compare(struct rlib_datetime *t1, struct rlib_datetime *t2) {
 
 void rlib_datetime_set_date(struct rlib_datetime *dt, int y, int m, int d) {
 	GDate *t;
-	t = g_date_new_dmy(d, m, y);
-	dt->date = *t;
-	g_date_free(t);
+	if (d && m && y) {
+		t = g_date_new_dmy(d, m, y);
+		dt->date = *t;
+		g_date_free(t);
+	} else {
+		memset(&dt->date, 0, sizeof(dt->date));
+	}
 }
 
 
@@ -114,8 +118,8 @@ static void rlib_datetime_format_date(struct rlib_datetime *dt, char *buf, int m
 	if (rlib_datetime_valid_date(dt)) {
 		g_date_strftime(buf, max, fmt, &dt->date);
 	} else {
-		strcpy(buf, "!ERR_DT_D");
-		rlogit("Invalid date in format date");
+		strcpy(buf, "");
+//		rlogit("Invalid date in format date");
 	}
 }
 
@@ -141,7 +145,7 @@ static gchar timechars[] = "HIklMpPrRsSTXzZ";
 static void split_tdformat(gchar **datefmt, gchar **timefmt, gint *order, const gchar *fmtstr) {
 	gint havedate = FALSE, havetime = FALSE;
 	gchar *splitpoint = NULL;
-	gchar *s, *t;
+	gchar *s, *t = NULL;
 	gchar *pctptr;
 	gint mode = 0;
 
@@ -150,6 +154,7 @@ static void split_tdformat(gchar **datefmt, gchar **timefmt, gint *order, const 
 	t = (gchar *) fmtstr;
 	while (!splitpoint && (t = r_strchr(t, r_bytecount(t), '%'))) {
 		pctptr = t;
+
 		t = r_nextchr(t);
 		switch (r_getchr(t)) {
 		case '%':

@@ -120,7 +120,6 @@ gint rlib_execute(rlib *r) {
 	r->now = time(NULL);
 	for(i=0;i<r->queries_count;i++) {
 		r->results[i].input = r->queries[i].input;
-
 		r->results[i].result = INPUT(r,i)->new_result_from_query(INPUT(r,i), r->queries[i].sql);
 		if(r->results[i].result == NULL) {
 			rlogit("Failed To Run A Query [%s]\n", r->queries[i].sql);
@@ -163,7 +162,7 @@ gchar * rlib_get_content_type_as_text(rlib *r) {
 	static char buf[256];
 #ifdef HAVE_LIBCPDF	
 	if(r->format == RLIB_CONTENT_TYPE_PDF) {
-		sprintf(buf, "Content-Type: application/pdf\nContent-Length: %d%c", OUTPUT(r)->rlib_get_output_length(r), 10);
+		sprintf(buf, "Content-Type: application/pdf\nContent-Length: %ld%c", OUTPUT(r)->rlib_get_output_length(r), 10);
 		return buf;
 	}
 #endif

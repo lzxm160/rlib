@@ -26,7 +26,7 @@
 
 #include <glib.h>
 
-struct rgb {
+struct rlib_rgb {
 	gfloat r;
 	gfloat g;
 	gfloat b;
@@ -54,7 +54,7 @@ gint rutil_enableSignalHandler(gint trueorfalse);
 gint64 tentothe(gint n);
 gchar hextochar(gchar c);
 gchar *colornames(gchar *str);
-void parsecolor(struct rgb *color, gchar *strx);
+void parsecolor(struct rlib_rgb *color, gchar *strx);
 struct rlib_datetime * stod(struct rlib_datetime *tm_date, gchar *str);
 void bumpday(gint *year, gint *month, gint *day);
 void bumpdaybackwords(gint *year, gint *month, gint *day);
@@ -70,7 +70,7 @@ gchar *str2hex(const gchar *str);
 #define r_charcount(s) (strlen(s))
 #define r_bytecount(s) (strlen(s))
 #define r_strchr(s, len, chr) (strchr(s, chr))
-#define r_nextchr(s) (++s)
+#define r_nextchr(s) (s+1)
 #define r_getchr(s) (*s)
 #define r_strcmp(s1,s2) (strcmp(s1, s2))
 #define r_strupr(s) (strupr(s))

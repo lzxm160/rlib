@@ -30,7 +30,7 @@
 
 
 struct _private {
-	struct rgb current_color;
+	struct rlib_rgb current_color;
 	CPDFdoc *pdf;
 	gchar *buffer;
 	gint length;
@@ -44,12 +44,6 @@ static gfloat rlib_pdf_get_string_width(rlib *r, gchar *text) {
 
 static void rlib_pdf_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *t, gint backwards, gint col) {
 	CPDFdoc *pdf = OUTPUT_PRIVATE(r)->pdf;
-	gchar *tmp = t;
-	gchar *buf;
-	glong itemsread;
-	glong itemswritten;
-	GError *error;
-	gunichar2 *unistr;
 #if USEPDFLOCALE
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
@@ -57,6 +51,12 @@ static void rlib_pdf_print_text(rlib *r, gfloat left_origin, gfloat bottom_origi
 		cpdf_text(pdf, left_origin, bottom_origin, 0, t);
 #else
 	if (!r->current_output_encoder || rlib_char_encoder_isUTF8(r->current_output_encoder)) {
+		gchar *tmp = t;
+		gchar *buf;
+		glong itemsread;
+		glong itemswritten;
+		GError *error;
+		gunichar2 *unistr;
 		cpdf_hexStringMode(pdf, YES);
 		unistr = g_utf8_to_utf16(tmp, -1, &itemsread, &itemswritten, &error);
 		buf = g_malloc(2 * sizeof(gunichar2) * (itemswritten + 2));
@@ -93,7 +93,7 @@ static void rlib_pdf_set_fg_color(rlib *r, gfloat red, gfloat green, gfloat blue
 #endif
 }
 
-static void rlib_pdf_drawbox(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, struct rgb *color) {
+static void rlib_pdf_drawbox(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, struct rlib_rgb *color) {
 #if USEPDFLOCALE
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
@@ -112,7 +112,7 @@ static void rlib_pdf_drawbox(rlib *r, gfloat left_origin, gfloat bottom_origin, 
 }
 
 static void rlib_pdf_hr(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
-struct rgb *color, gfloat indent, gfloat length) {
+struct rlib_rgb *color, gfloat indent, gfloat length) {
 #if USEPDFLOCALE
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif

@@ -1,3 +1,31 @@
+2004-09-03  Bob Doan  <bdoan@sicompos.com>
+	* bindings/php/Makefile.am: Merge bug fixes from head
+	* bindings/php/array_data_source.c: likewise
+	* bindings/php/environment.c: likewise
+	* bindings/php/php.c: likewise
+	* bindings/php/rlib_php.h: likewise
+	* inputs/mysql/mysql.c: likewise
+	* libsrc/api.c: likewise
+	* libsrc/breaks.c: likewise
+	* libsrc/csv.c: likewise
+	* libsrc/datetime.c: likewise
+	* libsrc/formatstring.c: likewise
+	* libsrc/free.c: likewise
+	* libsrc/html.c: likewise
+	* libsrc/load.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/pcode.c: likewise
+	* libsrc/pcode.h: likewise
+	* libsrc/pcode_op_functions.c:  likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/save.c: likewise
+	* libsrc/txt.c: likewise
+	* libsrc/util.c: likewise
+	* libsrc/util.h:likewise
+
 2004-07-29  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/pcode.c: fix semi MAJOR expression compile problem
 	   round(1.0*100/60) did not work!!

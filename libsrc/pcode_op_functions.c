@@ -703,7 +703,9 @@ gint rlib_pcode_operator_ceil(rlib *r, struct rlib_value_stack *vs, struct rlib_
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1)) {
 		gint64 dec = RLIB_VALUE_GET_AS_NUMBER(v1) % RLIB_DECIMAL_PRECISION;
-		gint64 result = RLIB_VALUE_GET_AS_NUMBER(v1) - dec + RLIB_DECIMAL_PRECISION;
+		gint64 result = RLIB_VALUE_GET_AS_NUMBER(v1) - dec ;
+		if(dec != 0)
+			result += RLIB_DECIMAL_PRECISION;
 		rlib_value_free(v1);
 		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, result));
 		return TRUE;
@@ -719,7 +721,7 @@ gint rlib_pcode_operator_floor(rlib *r, struct rlib_value_stack *vs, struct rlib
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1)) {
 		gint64 dec = RLIB_VALUE_GET_AS_NUMBER(v1) % RLIB_DECIMAL_PRECISION;
-		gint64 result = RLIB_VALUE_GET_AS_NUMBER(v1) - dec - RLIB_DECIMAL_PRECISION;
+		gint64 result = RLIB_VALUE_GET_AS_NUMBER(v1) - dec;
 		rlib_value_free(v1);
 		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, result));
 		return TRUE;
@@ -1210,9 +1212,11 @@ gboolean rlib_pcode_operator_format(rlib *r, struct rlib_value_stack *vs, struct
 				if (*fmt == '#') {
 					++fmt;
 					format_number(buf, sizeof(buf) - 1, fmt, num);
+					result = buf;
 				} else if(*fmt == '$') {
 					++fmt;
 					format_money(buf, sizeof(buf) - 1, fmt, num);
+					result = buf;
 				} else r_error("Format type does not match variable type in 'format' function");
 			} else if(RLIB_VALUE_IS_DATE(v1)) {
 				if (*fmt == '@') {
@@ -1400,14 +1404,17 @@ gint rlib_pcode_operator_proper(rlib *r, struct rlib_value_stack *vs, struct rli
 	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_STRING(v1)) {
-		gchar *tmp = g_strdup(RLIB_VALUE_GET_AS_STRING(v1));
-		rlib_value_free(v1);
-
+		if(RLIB_VALUE_GET_AS_STRING(v1) == NULL || RLIB_VALUE_GET_AS_STRING(v1)[0] == '\0') {
+			rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, ""));	
+			return TRUE;	
+		} else {
+			gchar *tmp = g_strdup(RLIB_VALUE_GET_AS_STRING(v1));
+			rlib_value_free(v1);
 //TODO: find or write a utf8 version  of strproper.
-
-		rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, strproper(tmp)));
-		g_free(tmp);
-		return TRUE;
+			rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, strproper(tmp)));
+			g_free(tmp);
+			return TRUE;
+		}
 	}
 	rlib_pcode_operator_fatal_execption("proper", 1, v1, NULL, NULL);
 	rlib_value_free(v1);
@@ -1423,6 +1430,27 @@ gint rlib_pcode_operator_stodt(rlib *r, struct rlib_value_stack *vs, struct rlib
 		struct rlib_datetime dt;
 		gchar *str = RLIB_VALUE_GET_AS_STRING(v1);
 		sscanf(str, "%4d%2d%2d%2d%2d%2d", &year, &month, &day, &hour, &min, &sec);
+		rlib_datetime_clear(&dt);
+		rlib_datetime_set_date(&dt, year, month, day);
+		rlib_datetime_set_time(&dt, hour, min, sec);
+		rlib_value_free(v1);
+		rlib_value_stack_push(vs, rlib_value_new_date(&rval_rtn, &dt));
+		return TRUE;
+	}
+	rlib_pcode_operator_fatal_execption("stodt", 1, v1, NULL, NULL);
+	rlib_value_free(v1);
+	rlib_value_stack_push(vs, rlib_value_new_error(&rval_rtn));		
+	return FALSE;
+}
+
+gint rlib_pcode_operator_stodtsql(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+	struct rlib_value *v1, rval_rtn;
+	v1 = rlib_value_stack_pop(vs);
+	if(RLIB_VALUE_IS_STRING(v1)) {
+		gint year=2000, month=1, day=1, hour=12, min=0, sec=0;
+		struct rlib_datetime dt;
+		gchar *str = RLIB_VALUE_GET_AS_STRING(v1);
+		sscanf(str, "%4d-%2d-%2d %2d:%2d:%2d", &year, &month, &day, &hour, &min, &sec);
 		rlib_datetime_clear(&dt);
 		rlib_datetime_set_date(&dt, year, month, day);
 		rlib_datetime_set_time(&dt, hour, min, sec);
