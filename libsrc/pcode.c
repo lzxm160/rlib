@@ -232,7 +232,7 @@ gint rvalcmp(struct rlib_value *v1, struct rlib_value *v2) {
 }
 #endif
 
-struct rlib_pcode_operand * rlib_new_operand(rlib *r, struct rlib_report *report, gchar *str, gboolean look_at_metadata) {
+struct rlib_pcode_operand * rlib_new_operand(rlib *r, struct rlib_part *part, struct rlib_report *report, gchar *str, gboolean look_at_metadata) {
 	gint resultset;
 	gpointer field=NULL;
 	gchar *memresult;
@@ -292,7 +292,7 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, struct rlib_report *report
 		o->type = OPERAND_NUMBER;
 		*newnum = rlib_str_to_long_long(str);
 		o->value = newnum;
-	} else if((rv = rlib_resolve_variable(r, report, str))) {
+	} else if((rv = rlib_resolve_variable(r, part, report, str))) {
 		o->type = OPERAND_VARIABLE;
 		o->value = rv;
 	} else if((memresult = rlib_resolve_memory_variable(r, str))) {
@@ -467,7 +467,7 @@ static gchar *skip_next_closing_paren(gchar *str) {
 }
 
 
-struct rlib_pcode * rlib_infix_to_pcode(rlib *r, struct rlib_report *report, gchar *infix, gboolean look_at_metadata) {
+struct rlib_pcode * rlib_infix_to_pcode(rlib *r, struct rlib_part *part, struct rlib_report *report, gchar *infix, gboolean look_at_metadata) {
 	gchar *moving_ptr = infix;
 	gchar *op_pointer = infix;
 	gchar operand[255];
@@ -514,7 +514,7 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, struct rlib_report *report, gch
 				memcpy(operand, op_pointer, moving_ptr - op_pointer);
 				operand[moving_ptr - op_pointer] = '\0';
 				if(operand[0] != ')') {
-					rlib_pcode_add(pcodes, rlib_new_pcode_instruction(&rpi, PCODE_PUSH, rlib_new_operand(r, report, operand, look_at_metadata)));
+					rlib_pcode_add(pcodes, rlib_new_pcode_instruction(&rpi, PCODE_PUSH, rlib_new_operand(r, part, report, operand, look_at_metadata)));
 				}
 //				op_pointer += moving_ptr - op_pointer;
 // How about just:
@@ -571,9 +571,9 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, struct rlib_report *report, gch
 						iif++;
 					}
 					rpif = g_malloc(sizeof(struct rlib_pcode_if));
-					rpif->evaulation = rlib_infix_to_pcode(r, report, evaulation, look_at_metadata);			
-					rpif->true = rlib_infix_to_pcode(r, report, true, look_at_metadata);			
-					rpif->false = rlib_infix_to_pcode(r, report, false, look_at_metadata);
+					rpif->evaulation = rlib_infix_to_pcode(r, part, report, evaulation, look_at_metadata);			
+					rpif->true = rlib_infix_to_pcode(r, part, report, true, look_at_metadata);			
+					rpif->false = rlib_infix_to_pcode(r, part, report, false, look_at_metadata);
 					rpif->str_ptr = iif;
 					smart_add_pcode(pcodes, &os, op);
 					o = g_malloc(sizeof(struct rlib_pcode_operand));			
@@ -608,7 +608,7 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, struct rlib_report *report, gch
 		memcpy(operand, op_pointer, moving_ptr - op_pointer);
 		operand[moving_ptr - op_pointer] = '\0';
 		if(operand[0] != ')') {
-			rlib_pcode_add(pcodes, rlib_new_pcode_instruction(&rpi, PCODE_PUSH, rlib_new_operand(r, report, operand, look_at_metadata)));
+			rlib_pcode_add(pcodes, rlib_new_pcode_instruction(&rpi, PCODE_PUSH, rlib_new_operand(r, part, report, operand, look_at_metadata)));
 		}
 		op_pointer += moving_ptr - op_pointer;
 	}

@@ -443,6 +443,8 @@ struct rlib_part {
 	gint font_size;
 	gint pages_across;
 	gint iterations;
+	gboolean has_only_one_report;
+	struct rlib_report *only_report;
 	gfloat *position_top;
 	gfloat *position_bottom;
 	gfloat *bottom_size;
@@ -801,7 +803,7 @@ struct rlib_report_output * report_output_new(gint type, gpointer data);
 /***** PROTOTYPES: pcode.c ****************************************************/
 struct rlib_value * rlib_execute_pcode(rlib *r, struct rlib_value *rval, struct rlib_pcode *code, struct rlib_value *this_field_value);
 gint64 rlib_str_to_long_long(gchar *str);
-struct rlib_pcode * rlib_infix_to_pcode(rlib *r, struct rlib_report *report, gchar *infix, gboolean look_at_metadata);
+struct rlib_pcode * rlib_infix_to_pcode(rlib *r, struct rlib_part *part, struct rlib_report *report, gchar *infix, gboolean look_at_metadata);
 gint rvalcmp(struct rlib_value *v1, struct rlib_value *v2);
 gint rlib_value_free(struct rlib_value *rval);
 struct rlib_value * rlib_value_dup(struct rlib_value *orig);
@@ -837,8 +839,8 @@ gchar * rlib_resolve_memory_variable(rlib *r, gchar *name);
 gchar * rlib_resolve_field_value(rlib *r, struct rlib_resultset_field *rf);
 gint rlib_lookup_result(rlib *r, gchar *name);
 gint rlib_resolve_resultset_field(rlib *r, gchar *name, void **rtn_field, gint *rtn_resultset);
-struct rlib_report_variable *rlib_resolve_variable(rlib *r, struct rlib_report *report, gchar *name);
-void rlib_resolve_report_fields(rlib *r, struct rlib_report *report);
+struct rlib_report_variable *rlib_resolve_variable(rlib *r, struct rlib_part *part, struct rlib_report *report, gchar *name);
+void rlib_resolve_report_fields(rlib *r, struct rlib_part *part, struct rlib_report *report);
 void rlib_resolve_part_fields(rlib *r, struct rlib_part *part);
 void rlib_resolve_metadata(rlib *r);
 void rlib_resolve_followers(rlib *r);

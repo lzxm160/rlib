@@ -488,7 +488,7 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 	gfloat at_least = 0.0, origional_position_top;
 	gint iterations;
 
-	report->query_code = rlib_infix_to_pcode(r, report, report->xml_query, TRUE);
+	report->query_code = rlib_infix_to_pcode(r, part, report, report->xml_query, TRUE);
 	r->current_result = 0;
 	if(report->query_code != NULL) {
 		rlib_execute_as_string(r, report->query_code, query, MAXSTRLEN);
@@ -502,7 +502,7 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 		r->current_result = 0;
 	}
 
-	rlib_resolve_report_fields(r, report);
+	rlib_resolve_report_fields(r, part, report);
 
 	for(iterations=0;iterations<report->iterations;iterations++) {
 		rlib_init_variables(r, report);
@@ -687,6 +687,49 @@ static void rlib_layout_part_tr(rlib *r, struct rlib_part *part) {
 	}	
 }
 
+/*
+	This is so single reports that use variable in report header and page header still work (With parts)
+*/
+gint rlib_evaulate_single_report_variables(rlib *r, struct rlib_part *part) {
+	GSList *element, *part_deviations, *element2;
+
+	for(element = part->part_rows;element != NULL;element = g_slist_next(element)) {
+		struct rlib_part_tr *tr = element->data;
+		part_deviations = tr->part_deviations;
+		for(element2 = part_deviations;element2 != NULL;element2 = g_slist_next(element2)) {
+			struct rlib_part_td *td = element2->data;
+			GSList *report_element;		
+			for(report_element=td->reports;report_element != NULL;report_element = g_slist_next(report_element)) {
+				struct rlib_report *report = report_element->data;
+				char query[MAXSTRLEN];
+				gint i;
+
+				report->query_code = rlib_infix_to_pcode(r, part, report, report->xml_query, TRUE);
+				r->current_result = 0;
+				if(report->query_code != NULL) {
+					rlib_execute_as_string(r, report->query_code, query, MAXSTRLEN);
+					for(i=0;i<r->queries_count;i++) {
+						if(!strcmp(r->results[i].name, query)) {
+							r->current_result = i;		
+							break;
+						}
+					}
+				} else {
+					r->current_result = 0;
+				}
+
+				rlib_resolve_report_fields(r, part, report);
+				rlib_pcode_free(report->query_code);
+				rlib_init_variables(r, report);
+				rlib_process_variables(r, report);
+				rlib_process_input_metadata(r);
+				part->only_report = report;
+			}
+		}
+	}
+	return TRUE;
+}
+
 gint rlib_make_report(rlib *r) {
 	gint i = 0;
 	gint iterations;
@@ -712,15 +755,18 @@ gint rlib_make_report(rlib *r) {
 
 	OUTPUT(r)->init_output(r);
 
+
 	r->current_output_encoder = NULL;
 	for(i=0;i<r->parts_count;i++) {
 		struct rlib_part *part = r->parts[i];
+		if(part->has_only_one_report) 
+			rlib_evaulate_single_report_variables(r, part);
+
 		rlib_resolve_part_fields(r, part);
 		for(iterations=0;iterations<part->iterations;iterations++) {
 			rlib_fetch_first_rows(r);
 			rlib_evaluate_part_attributes(r, part);
 			OUTPUT(r)->start_report(r, part);
-
 			rlib_layout_init_part_page(r, part, TRUE);
 			rlib_layout_part_tr(r, part);
 			OUTPUT(r)->end_part(r, part);
@@ -731,13 +777,6 @@ gint rlib_make_report(rlib *r) {
 	}
 	
 /*
-		if(report+1 < r->reports_count) {
-			r->current_page_number++;
-			r->start_of_new_report = TRUE;
-			r->current_line_number = 1;
-			r->detail_line_count = 0;
-			r->font_point = FONTPOINT;
-		}
 		rlib_char_encoder_destroy(&rr->output_encoder); //Destroy if was one.
 		rlib_char_encoder_destroy(&rr->db_encoder); //Destroy if was one.
 		rlib_char_encoder_destroy(&rr->param_encoder); //Destroy if was one.

@@ -1,3 +1,11 @@
+2005-01-11  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/parsexml.c: Be able to use variable in single report page headers and report headers again
+	* libsrc/pcode.c: likewise
+	* libsrc/pcode_op_functions.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+
 2005-01-06  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/free.c: start of "side" support for Y axis, make line graphs a tad wider for easier readibility
 	* libsrc/gd.c: likewise
