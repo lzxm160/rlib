@@ -171,8 +171,9 @@ void rlib_reset_variables_on_break(rlib *r, gchar *name) {
 				RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 			}
 		}
-		if(rv->type == REPORT_VARIABLE_EXPRESSION)
-			RLIB_VARIABLE_CA(rv)->count = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
+
+//		if(rv->type == REPORT_VARIABLE_EXPRESSION)
+//			RLIB_VARIABLE_CA(rv)->count = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		
 	}
 }
