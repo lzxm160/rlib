@@ -1,12 +1,12 @@
-## Makefile.am for RLIB
+## bindings/java/Makefile.am for RLIB
 
 ## Copyright (c) 2003 SICOM Systems Inc (bdoan@sicompos.com)
-## RLIB is free software; you can redistribute it and/or modify
+## rlib is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 2, or (at your option)
 ## any later version.
 
-## RLIB is distributed in the hope that it will be useful,
+## rlib is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
@@ -19,25 +19,8 @@
 ## Report bugs to rlib-devel@lists.sourceforge.net
 ##
 ## Process this file with automake to produce Makefile.in
-
-if HAVE_PHP
-PHP_BINDINGS=php
-endif
-
-if HAVE_PYTHON
-PYTHON_BINDINGS=python
-endif
-
-if HAVE_JAVA
-JAVA_BINDINGS=java
-endif
-
-if HAVE_PERL
-PERL_BINDINGS=perl
-endif
-
-SUBDIRS = \
-	$(PHP_BINDINGS) \
-	$(PYTHON_BINDINGS) \
-	$(JAVA_BINDINGS) \
-	$(PERL_BINDINGS)
+lib_LTLIBRARIES = librlibjava.la
+librlibjava_la_SOURCES = java.c 
+librlibjava_la_LIBADD = -L${top_builddir}/libsrc/ -lr $(RLIB_LIBS)
+INCLUDES = -I${top_srcdir}/libsrc/ $(RLIB_CFLAGS) 
+librlibjava_la_LDFLAGS = -release $(RLIB_VERSION)

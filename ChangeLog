@@ -1,3 +1,12 @@
+2003-12-30  Bob Doan  <bdoan@sicompos.com>
+	* bindings/Makefile.am: add perl and java bindings
+	* bindings/java/Makefile.am: likewise
+	* bindings/java/java.c: likewise
+	* bindings/perl/Makefile.am: likewise
+	* bindings/perl/perl.c: likewise
+	* configure.in: check for perl, java, gmodule
+	* libsrc/datasource.c: use gmodule.. not dl*
+
 2003-12-29  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/php.c: use glib data types
 	* inputs/mysql/mysql.c: likewise

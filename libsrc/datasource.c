@@ -19,7 +19,7 @@
  */
  
 #include <string.h>
-#include <dlfcn.h>
+#include <gmodule.h>
 
 #include "ralloc.h"
 #include "rlib.h"
@@ -36,20 +36,20 @@ gint rlib_add_datasource(rlib *r, gchar *input_name, struct input_filter *input)
 #if HAVE_MYSQL
 gint rlib_add_datasource_mysql(rlib *r, gchar *input_name, gchar *database_host, gchar *database_user, gchar *database_password, 
 gchar *database_database) {
-	gpointer handle;
+	GModule* handle;
 	gpointer (*rlib_mysql_new_input_filter)();
 	gpointer (*rlib_mysql_real_connect)(void *, char *, char *, char*, char *);
 	gpointer mysql;
 	
-	handle = dlopen ("libr-mysql.so", RTLD_LAZY);
+	handle = g_module_open("libr-mysql", 0);
 	if (!handle) {
-		rlogit("DLOPEN SAYS [%s]\n", dlerror());
+		rlogit("Could Not Load MYSQL Input [%s]\n", g_module_error());
 		return -1;
 	}
-                                                                                                  
-	rlib_mysql_new_input_filter = dlsym(handle, "rlib_mysql_new_input_filter");
-	rlib_mysql_real_connect = dlsym(handle, "rlib_mysql_real_connect");
-                                                                                                   
+
+	g_module_symbol(handle, "rlib_mysql_new_input_filter", (gpointer *)&rlib_mysql_new_input_filter);
+	g_module_symbol(handle, "rlib_mysql_real_connect", (gpointer *)&rlib_mysql_real_connect);
+															                                                                                                  
 	r->inputs[r->inputs_count].input = rlib_mysql_new_input_filter();
 	mysql = rlib_mysql_real_connect(r->inputs[r->inputs_count].input, database_host, database_user, database_password, database_database);
 	r->inputs[r->inputs_count].name = input_name;
@@ -67,17 +67,19 @@ gchar *database_database) {
 
 #if HAVE_POSTGRE
 gint rlib_add_datasource_postgre(rlib *r, gchar *input_name, gchar *conn) {
-	gpointer handle;
+	GModule* handle;
 	gpointer (*rlib_postgre_new_input_filter)();
 	gpointer (*rlib_postgre_connect)(void *, char *);
 	gpointer postgre;
 
-	handle = dlopen ("libr-postgre.so", RTLD_LAZY);
-	if (!handle)
+	handle = g_module_open("libr-postgre", 0);
+	if (!handle) {
+		rlogit("Could Not Load POSTGRE Input [%s]\n", g_module_error());
 		return -1;
+	}
 
-	rlib_postgre_new_input_filter = dlsym(handle, "rlib_postgre_new_input_filter");
-	rlib_postgre_connect = dlsym(handle, "rlib_postgre_connect");
+	g_module_symbol(handle, "rlib_postgre_new_input_filter", (gpointer *)&rlib_postgre_new_input_filter);
+	g_module_symbol(handle, "rlib_postgre_connect", (gpointer *)&rlib_postgre_connect);
 
 	r->inputs[r->inputs_count].input = rlib_postgre_new_input_filter();
 	postgre = rlib_postgre_connect(r->inputs[r->inputs_count].input, conn);
@@ -95,17 +97,19 @@ gint rlib_add_datasource_postgre(rlib *r, gchar *input_name, gchar *conn) {
 
 #if HAVE_ODBC
 gint rlib_add_datasource_odbc(rlib *r, gchar *input_name, gchar *source, gchar *user, gchar *password) {
-	gpointer handle;
+	GModule* handle;
 	gpointer (*rlib_odbc_new_input_filter)();
 	gpointer (*rlib_odbc_connect)(void *, char *, char *, char *);
 	gpointer odbc;
 
-	handle = dlopen ("libr-odbc.so", RTLD_LAZY);
-	if (!handle)
+	handle = g_module_open("libr-odbc", 0);
+	if (!handle) {
+		rlogit("Could Not Load ODBC Input [%s]\n", g_module_error());
 		return -1;
+	}
 
-	rlib_odbc_new_input_filter = dlsym(handle, "rlib_odbc_new_input_filter");
-	rlib_odbc_connect = dlsym(handle, "rlib_odbc_connect");
+	g_module_symbol(handle, "rlib_odbc_new_input_filter", (gpointer *)&rlib_odbc_new_input_filter);
+	g_module_symbol(handle, "rlib_odbc_connect", (gpointer *)&rlib_odbc_connect);
 
 	r->inputs[r->inputs_count].input = rlib_odbc_new_input_filter();
 	odbc = rlib_odbc_connect(r->inputs[r->inputs_count].input, source, user, password);
