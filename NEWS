@@ -1,3 +1,11 @@
+1.3.2
+===
+- RPDF (No more CPDF)
+- Fix some problems w/ graphing
+- Fixed many possible crashes
+- Worked on documentation
+- Python and JAVA work again
+
 1.3.1
 ===
 - PIE Graphing 

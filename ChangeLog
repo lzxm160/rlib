@@ -1,3 +1,7 @@
+2005-03-08  Bob Doan  <bdoan@sicompos.com>
+	* Makefile.am: include JPEG README
+	* NEWS: RELEASE TIME
+
 2005-03-06  Bob Doan  <bdoan@sicompos.com>
 	* configure.in: don't require python v 2.4
 
