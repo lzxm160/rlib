@@ -548,10 +548,7 @@ struct rlib {
 
 	gint current_font_point;
 
-	gchar pdf_fontdir1[256];
-	gchar pdf_fontdir2[256];
-	gchar pdf_encoding[256];
-	gchar pdf_fontname[256];
+	GHashTable * output_paramaters;
 
 	rlib_char_encoder *output_encoder;		//_destroy all of these
 	rlib_char_encoder *db_encoder;
@@ -680,7 +677,6 @@ gint rlib_set_output_format_from_text(rlib *r, gchar * name);
 gboolean rlib_query_refresh(rlib *r);
 gboolean rlib_signal_connect_string(rlib *r, gchar *signal_name, gboolean (*signal_function)(rlib *, gpointer), gpointer data);
 gboolean rlib_signal_connect(rlib *r, gint signal_number, gboolean (*signal_function)(rlib *, gpointer), gpointer data);
-
 gchar *rlib_get_output(rlib *r);
 gint rlib_get_output_length(rlib *r);
 gint rlib_mysql_report(gchar *hostname, gchar *username, gchar *password, gchar *database, gchar *xmlfilename, gchar *sqlquery, 
@@ -697,8 +693,9 @@ void rlib_set_encodings(rlib *r, const char *output, const char *database, const
 void rlib_set_database_encoding(rlib *r, const char *encoding);
 void rlib_set_parameter_encoding(rlib *r, const char *encoding);
 gint rlib_set_datasource_encoding(rlib *r, gchar *input_name, gchar *encoding);
-void rlib_set_report_output_encoding(rlib *r, gint reportnum, const gchar *encoding);
 void rlib_set_output_encoding(rlib *r, const char *encoding);
+void rlib_set_output_paramater(rlib *r, gchar *paramater, gchar *value);
+
 
 /***** PROTOTYPES: parsexml.c *************************************************/
 struct rlib_part * parse_part_file(gchar *filename, gchar type);
@@ -793,10 +790,6 @@ gint save_report(struct rlib_report *rep, char *filename);
 
 /***** PROTOTYPES: load.c *****************************************************/
 struct rlib_part * load_report(gchar *filename);
-
-/* temp/test stuff */
-void rlib_set_pdf_font(rlib *r, const gchar *encoding, const gchar *fontname);
-void rlib_set_pdf_font_directories(rlib *r, const gchar *d1, const gchar *d2);
 
 /***** PROTOTYPES: layout.c ***************************************************/
 gfloat rlib_layout_get_page_width(rlib *r, struct rlib_part *part);

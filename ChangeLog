@@ -1,3 +1,10 @@
+2004-11-17  Bob Doan  <bdoan@sicompos.com>
+	* bindings/php/php.c: made utf8 work again
+	* libsrc/api.c: likewise
+	* libsrc/free.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/rlib.h: likewise
+
 2004-11-16  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/breaks.c: make new page dynamic
 	* libsrc/free.c: make rlib_free_pcode public

@@ -361,7 +361,7 @@ gint rlib_free(rlib *r) {
 	}
 	
 	OUTPUT(r)->free(r);
-	
+	g_hash_table_freeze(r->outut_paramaters);
 	ENVIRONMENT(r)->free(r);
 				
 	g_free(r);

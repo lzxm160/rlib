@@ -38,6 +38,10 @@
 #define CODESET _NL_CTYPE_CODESET_NAME
 #endif
 
+void string_destroyer (gpointer data) {
+	g_free(data);
+}
+
 rlib * rlib_init_with_environment(struct environment_filter *environment) {
 	gchar *lc_encoding;
 	rlib *r;
@@ -54,6 +58,9 @@ rlib * rlib_init_with_environment(struct environment_filter *environment) {
 	if (lc_encoding != NULL) {
 		rlib_set_encodings(r, lc_encoding, lc_encoding, lc_encoding);
 	}
+	
+	r->output_paramaters = g_hash_table_new_full (g_str_hash, g_str_equal, string_destroyer, string_destroyer);
+	
 #if !DISABLE_UTF8
 	make_all_locales_utf8();
 #endif
@@ -377,14 +384,8 @@ void rlib_trap() {
 }
 
 
-void rlib_set_report_output_encoding(rlib *r, int rptnum, const char *encoding) {
-//TODO: PUT THIS BACK
-/*	if ((rptnum >= 0) && (rptnum < r->parts_count)) {
-		struct rlib_report *rr = r->reports[rptnum];
-
-		rlib_char_encoder_destroy(&rr->output_encoder);
-		rr->output_encoder = rlib_char_encoder_new(encoding, TRUE);
-	}*/
+void rlib_set_output_paramater(rlib *r, gchar *paramater, gchar *value) {
+	g_hash_table_insert(r->output_paramaters, g_strdup(paramater), g_strdup(value));
 }
 
 
@@ -392,27 +393,6 @@ void rlib_set_output_encoding(rlib *r, const char *encoding) {
 	rlib_char_encoder_destroy(&r->output_encoder);
 	r->output_encoder = rlib_char_encoder_new(encoding, TRUE);
 }
-
-void rlib_set_pdf_font_directories(rlib *r, const char *d1, const char *d2) {
-	if (d1) g_strlcpy(r->pdf_fontdir1, d1, sizeof(r->pdf_fontdir1) - 1);
-	else *r->pdf_fontdir1 = '\0';
-	if (d2) g_strlcpy(r->pdf_fontdir2, d2, sizeof(r->pdf_fontdir2) - 1);
-	else *r->pdf_fontdir2 = '\0';
-	if (d1 && !d2) strcpy(r->pdf_fontdir2, d1);
-	if (d2 && !d1) strcpy(r->pdf_fontdir1, d2);
-}
-
-void rlib_set_pdf_font(rlib *r, const char *encoding, const char *fontname) {
-	if (encoding) {
-		g_strlcpy(r->pdf_encoding, encoding, sizeof(r->pdf_encoding));
-		r_debug("PDF font set to %s", fontname);
-	}
-	if (fontname) {
-		g_strlcpy(r->pdf_fontname, fontname, sizeof(r->pdf_fontname));
-		r_debug("PDF encoding set to %s", encoding);
-	}
-}
-
 
 /**
  * Sets the default encoding that is used by the datasource so RLIB 

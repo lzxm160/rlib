@@ -74,31 +74,10 @@ static void rlib_pdf_print_text(rlib *r, gfloat left_origin, gfloat bottom_origi
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
 
-		rlib_pdf_turn_text_on(r);
+	rlib_pdf_turn_text_on(r);
 
-#if DISABLE_UTF8
-		cpdf_text(pdf, left_origin, bottom_origin, 0, text);
-#else
-	if (!r->current_output_encoder || rlib_char_encoder_isUTF8(r->current_output_encoder)) {
-		gchar *tmp = text;
-		gchar *buf;
-		glong itemsread;
-		glong itemswritten;
-		GError *error;
-		gunichar2 *unistr;
-		cpdf_hexStringMode(pdf, YES);
-		unistr = g_utf8_to_utf16(tmp, -1, &itemsread, &itemswritten, &error);
-		buf = g_malloc(2 * sizeof(gunichar2) * (itemswritten + 2));
-		cpdf_convertBinaryToHex((const guchar *) unistr, buf, sizeof(gunichar2) * itemswritten, NO);
-		g_free(unistr);
-		cpdf_text(pdf, left_origin, bottom_origin, 0, buf);
-		g_free(buf);
-		cpdf_hexStringMode(pdf, NO);
-		r_warning("Using UTF8 output to PDF is not fully supported by CLIBPDF\n"); 
-	} else {
-		cpdf_text(pdf, left_origin, bottom_origin, 0, text);
-	}
-#endif	
+	cpdf_text(pdf, left_origin, bottom_origin, 0, text);
+
 #if USEPDFLOCALE
 	setlocale(LC_NUMERIC, tlocale);
 #endif
@@ -193,6 +172,15 @@ static void rlib_pdf_set_font_point_actual(rlib *r, gint point) {
 	char *fontname;
 	int which_font = 0;
 	int result;
+	gchar *pdfdir1, *pdfdir2, *pdfencoding, *pdffontname;
+	
+	pdfdir1 = g_hash_table_lookup(r->output_paramaters, "pdf_fontdir1");
+	pdfdir2 = g_hash_table_lookup(r->output_paramaters, "pdf_fontdir2");
+	pdfencoding = g_hash_table_lookup(r->output_paramaters, "pdf_encoding");
+	pdffontname = g_hash_table_lookup(r->output_paramaters, "pdf_fontname");
+
+	if(pdfdir2 == NULL)
+		pdfdir2 = pdfdir1;
 	
 	if(OUTPUT_PRIVATE(r)->is_bold)
 		which_font += BOLD;
@@ -200,16 +188,13 @@ static void rlib_pdf_set_font_point_actual(rlib *r, gint point) {
 	if(OUTPUT_PRIVATE(r)->is_italics)
 		which_font += ITALICS;
 
-	if (*r->pdf_fontdir1) { //if one set other is guaranteed to be set
-		cpdf_setFontDirectories(OUTPUT_PRIVATE(r)->pdf, r->pdf_fontdir1, r->pdf_fontdir2);
-	}
-	encoding = (*r->pdf_encoding)? r->pdf_encoding : NULL;
-	fontname = (*r->pdf_fontname)? r->pdf_fontname : font_names[which_font];
-#if DISABLE_UTF8
+	if (pdfdir1) 
+		cpdf_setFontDirectories(OUTPUT_PRIVATE(r)->pdf, pdfdir1, pdfdir2);
+
+	encoding = pdfencoding;
+	fontname = pdffontname ? pdffontname : font_names[which_font];
+	
 	result = cpdf_setFont(OUTPUT_PRIVATE(r)->pdf, fontname, "WinAnsiEncoding", point);
-#else
-	result = cpdf_setFont(OUTPUT_PRIVATE(r)->pdf, fontname, encoding, point);
-#endif
 
 }
 
