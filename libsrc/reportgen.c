@@ -206,7 +206,7 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 	gint i=0;
 	gchar *text;
 	struct report_field *rf;
-	struct report_text *rt;
+	struct report_literal *rt;
 	struct report_element *e = rl->e;
 	struct rlib_value line_rval_color;
 	struct rlib_value line_rval_bgcolor;
@@ -252,7 +252,7 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 			
 			rlib_execute_pcode(r, &extra_data[i].rval_col, rf->col_code, NULL);
 		}
-		if(e->type == REPORT_ELEMENT_TEXT) {
+		if(e->type == REPORT_ELEMENT_LITERAL) {
 			gchar buf[MAXSTRLEN];
 			rt = e->data;
 
@@ -561,7 +561,7 @@ static gint print_report_output_private(rlib *r, struct report_output_array *roa
 								&extra_data[count]);
 						}
 
-						if(e->type == REPORT_ELEMENT_TEXT) {
+						if(e->type == REPORT_ELEMENT_LITERAL) {
 							width = rlib_output_extras(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)), 
 								&extra_data[count]);
 						}
@@ -613,7 +613,7 @@ static gint print_report_output_private(rlib *r, struct report_output_array *roa
 								&extra_data[count]);
 						}
 
-						if(e->type == REPORT_ELEMENT_TEXT) {
+						if(e->type == REPORT_ELEMENT_LITERAL) {
 							rlib_output_extras_start(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)), 
 								&extra_data[count]);
 							width = rlib_output_text(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)), 

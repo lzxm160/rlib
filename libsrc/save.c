@@ -82,7 +82,7 @@ void write_field(gint fd, struct report_field *rf) {
 	write_xml_str(fd, rf->xml_maxlines);
 }
 
-void write_text(gint fd, struct report_text *rt) {
+void write_text(gint fd, struct report_literal *rt) {
 	write_xml_str(fd, rt->value);
 	write_xml_str(fd, rt->xml_align);
 	write_xml_str(fd, rt->color);
@@ -107,8 +107,8 @@ void write_line(gint fd, struct report_lines *rl) {
 		if(e->type == REPORT_ELEMENT_FIELD) {
 			struct report_field *rf = e->data;
 			write_field(fd, rf);
-		} else if(e->type == REPORT_ELEMENT_TEXT) {
-			struct report_text *rt = e->data;
+		} else if(e->type == REPORT_ELEMENT_LITERAL) {
+			struct report_literal *rt = e->data;
 			write_text(fd, rt);
 		}
 	}

@@ -130,7 +130,7 @@ rlib_pcode_dump(rf->code,0);
 rlogit("\n\n");*/
 }
 
-static void rlib_text_resolve_pcode(rlib *r, struct report_text *rt) {
+static void rlib_text_resolve_pcode(rlib *r, struct report_literal *rt) {
 	rt->color_code = rlib_infix_to_pcode(r, rt->color);
 	rt->bgcolor_code = rlib_infix_to_pcode(r, rt->bgcolor);
 	rt->col_code = rlib_infix_to_pcode(r, rt->col);
@@ -205,8 +205,8 @@ static void rlib_resolve_fields2(rlib *r, struct report_output_array *roa) {
 			for(; e != NULL; e=e->next) {
 				if(e->type == REPORT_ELEMENT_FIELD) {
 					rlib_field_resolve_pcode(r, ((struct report_field *)e->data));
-				} else if(e->type == REPORT_ELEMENT_TEXT) {
-					rlib_text_resolve_pcode(r, ((struct report_text *)e->data));
+				} else if(e->type == REPORT_ELEMENT_LITERAL) {
+					rlib_text_resolve_pcode(r, ((struct report_literal *)e->data));
 				}
 			}
 		} else if(ro->type == REPORT_PRESENTATION_DATA_HR) {

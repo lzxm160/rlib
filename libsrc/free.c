@@ -63,7 +63,7 @@ static void rlib_hr_free_pcode(rlib *r, struct report_horizontal_line * rhl) {
 	g_free(rhl);
 }
 
-static void rlib_text_free_pcode(rlib *r, struct report_text *rt) {
+static void rlib_text_free_pcode(rlib *r, struct report_literal *rt) {
 	free_pcode(rt->color_code);
 	free_pcode(rt->bgcolor_code);
 	free_pcode(rt->col_code);
@@ -99,8 +99,8 @@ static void rlib_free_fields(rlib *r, struct report_output_array *roa) {
 			for(; e != NULL; e=e->next) {
 				if(e->type == REPORT_ELEMENT_FIELD) {
 					rlib_field_free_pcode(r, ((struct report_field *)e->data));
-				} else if(e->type == REPORT_ELEMENT_TEXT) {
-					rlib_text_free_pcode(r, ((struct report_text *)e->data));
+				} else if(e->type == REPORT_ELEMENT_LITERAL) {
+					rlib_text_free_pcode(r, ((struct report_literal *)e->data));
 				}
 			}
 			for(e=rl->e; e != NULL; ) {

@@ -1,3 +1,17 @@
+2004-01-06  Bob Doan  <bdoan@sicompos.com>
+	* configure.in: require libxml 2.6.0 for xinclude stuff chet added
+	* doc/basictraining.sgm: changed "text" to "literal" because libxml puts "text" it all over the place.. this might piss people off
+	* doc/examples.sgm: likewise
+	* doc/formating.sgm: likewise
+	* libsrc/free.c: likewise
+	* libsrc/load.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/save.c: likewise
+	* rlib.dtd: likewise
+
 2004-01-05  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/Makefile.am: stuff for saving/loading .rlib files
 	* libsrc/api.c: likewise

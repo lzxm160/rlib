@@ -69,8 +69,8 @@ INSERT INTO example (name, type, price)
 			&lt;Image value="'logo.jpg'" type="'jpeg'" width="50" height="50"/&gt;
 			&lt;Line/&gt;
 			&lt;Line fontSize="12"&gt;
-				&lt;text width="8"/&gt;
-				&lt;text&gt;REPORT HEADER........&lt;/text&gt;
+				&lt;literal width="8"/&gt;
+				&lt;literal&gt;REPORT HEADER........&lt;/literal&gt;
 			&lt;/Line&gt;
 			&lt;Line/&gt;
 			&lt;Line/&gt;
@@ -84,7 +84,7 @@ INSERT INTO example (name, type, price)
 	&lt;PageHeader&gt;
 		&lt;Output&gt;
 			&lt;Line fontSize="11"&gt;
-				&lt;text&gt;Page Header (Example Report)&lt;/text&gt;
+				&lt;literal&gt;Page Header (Example Report)&lt;/literal&gt;
 			&lt;/Line&gt;
 			&lt;HorizontalLine size="4" bgcolor="'white'"/&gt;
 		&lt;/Output&gt;
@@ -95,11 +95,11 @@ INSERT INTO example (name, type, price)
 			&lt;Output&gt;
 				&lt;HorizontalLine size="1" bgcolor="'black'"/&gt;
 				&lt;Line bgcolor="'0xe5e5e5'"&gt;
-					&lt;text width="30" col="1"&gt;Name&lt;/text&gt;
-					&lt;text width="1"/&gt;
-					&lt;text width="5" col="2"&gt;Type&lt;/text&gt;
-					&lt;text width="1"/&gt;
-					&lt;text width="10" col="3" align="right"&gt;Price&lt;/text&gt;
+					&lt;literal width="30" col="1"&gt;Name&lt;/literal&gt;
+					&lt;literal width="1"/&gt;
+					&lt;literal width="5" col="2"&gt;Type&lt;/literal&gt;
+					&lt;literal width="1"/&gt;
+					&lt;literal width="10" col="3" align="right"&gt;Price&lt;/literal&gt;
 				&lt;/Line&gt;
 				&lt;HorizontalLine size="1" bgcolor="'black'"/&gt;
 				&lt;HorizontalLine size="4" bgcolor="'white'"/&gt;
@@ -109,9 +109,9 @@ INSERT INTO example (name, type, price)
 			&lt;Output&gt;
 				&lt;Line bgcolor="iif(r.detailcnt%2,'0xe5e5e5','white')"&gt;
 					&lt;field value="name" width="30" align="left" col="1"/&gt;
-					&lt;text width="1"/&gt;
+					&lt;literal width="1"/&gt;
 					&lt;field value="type" width="5" align="left" col="2"/&gt;
-					&lt;text width="1"/&gt;
+					&lt;literal width="1"/&gt;
 					&lt;field value="val(price)" width="10" format="'%$.2d'" align="right" col="3"/&gt;
 				&lt;/Line&gt;
 			&lt;/Output&gt;
@@ -121,7 +121,7 @@ INSERT INTO example (name, type, price)
 	&lt;PageFooter&gt;
 		&lt;Output&gt;
 			&lt;Line&gt;
-				&lt;text&gt;Page: &lt;/text&gt;	
+				&lt;literal&gt;Page: &lt;/literal&gt;	
 				&lt;field value="r.pageno" width="3" align="right"/&gt;
 			&lt;/Line&gt;
 		&lt;/Output&gt;
@@ -130,7 +130,7 @@ INSERT INTO example (name, type, price)
 	&lt;ReportFooter&gt;
 		&lt;Output&gt;
 			&lt;Line fontSize="11"&gt;
-				&lt;text&gt;REPORT FOOTER&lt;/text&gt;
+				&lt;literal&gt;REPORT FOOTER&lt;/literal&gt;
 			&lt;/Line&gt;
 		&lt;/Output&gt;
 	&lt;/ReportFooter&gt;

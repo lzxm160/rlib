@@ -60,8 +60,8 @@ long long int llabs(long long int j);
 
 #define RLIB_MAXIMUM_PAGES_ACCROSS	100
 
-#define REPORT_ELEMENT_TEXT 1
-#define REPORT_ELEMENT_FIELD 2
+#define REPORT_ELEMENT_LITERAL	1
+#define REPORT_ELEMENT_FIELD		2
 
 #define RLIB_FORMAT_PDF 	1
 #define RLIB_FORMAT_HTML	2
@@ -112,7 +112,7 @@ struct report_element {
 #define RLIB_ALIGN_RIGHT	1
 #define RLIB_ALIGN_CENTER	2
 
-struct report_text {
+struct report_literal {
 	gchar value[MAXSTRLEN];
 	xmlChar *xml_align;
 	xmlChar *color;

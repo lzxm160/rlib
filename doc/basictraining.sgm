@@ -187,11 +187,11 @@ dtos(database.somedatefield)-7
 			&lt;Image value="'logo.jpg'" type="'jpeg'" width="50" height="50"/&gt;
 			&lt;Line/&gt;
 			&lt;Line fontSize="12"&gt;
-				&lt;text width="8"/&gt;
+				&lt;literal width="8"/&gt;
 				&lt;field value="header.name" align="left" col="1"/&gt;
 			&lt;/Line&gt;
 			&lt;Line fontSize="12"&gt;
-				&lt;text width="8"/&gt;
+				&lt;literal width="8"/&gt;
 				&lt;field value="header.name2" align="left" col="1"/&gt;
 			&lt;/Line&gt;
 			&lt;Line/&gt;
@@ -216,13 +216,13 @@ dtos(database.somedatefield)-7
 			&lt;Output&gt;
 				&lt;HorizontalLine size="1" bgcolor="'black'"/&gt;
 				&lt;Line bgcolor="'0xe5e5e5'"&gt;
-					&lt;text width="15" col="1"&gt;Number&lt;/text&gt;
-					&lt;text width="1"/&gt;
-					&lt;text width="20" col="2"&gt;Name&lt;/text&gt;
-					&lt;text width="1"/&gt;
-					&lt;text width="10" col="3"&gt;Type&lt;/text&gt;
-					&lt;text width="1"/&gt;
-					&lt;text width="10" col="4"&gt;Category&lt;/text&gt;
+					&lt;literal width="15" col="1"&gt;Number&lt;/literal&gt;
+					&lt;literal width="1"/&gt;
+					&lt;literal width="20" col="2"&gt;Name&lt;/literal&gt;
+					&lt;literal width="1"/&gt;
+					&lt;literal width="10" col="3"&gt;Type&lt;/literal&gt;
+					&lt;literal width="1"/&gt;
+					&lt;literal width="10" col="4"&gt;Category&lt;/literal&gt;
 				&lt;/Line&gt;
 				&lt;HorizontalLine size="1" bgcolor="'black'"/&gt;
 				&lt;HorizontalLine size="4" bgcolor="'white'"/&gt;
@@ -232,11 +232,11 @@ dtos(database.somedatefield)-7
 			&lt;Output&gt;
 				&lt;Line bgcolor="iif(r.detailcnt%2,'0xe5e5e5','white')"&gt;
 					&lt;field value="plunum" width="15" align="left" col="1"/&gt;
-					&lt;text width="1"/&gt;
+					&lt;literal width="1"/&gt;
 					&lt;field value="name" width="20" align="left" col="2"/&gt;
-					&lt;text width="1"/&gt;
+					&lt;literal width="1"/&gt;
 					&lt;field value="type" width="10" align="left" col="3"/&gt;
-					&lt;text width="1"/&gt;
+					&lt;literal width="1"/&gt;
 					&lt;field value="category" width="10" align="left" col="4"/&gt;
 				&lt;/Line&gt;
 			&lt;/Output&gt;
@@ -246,7 +246,7 @@ dtos(database.somedatefield)-7
 	&lt;PageFooter&gt;
 		&lt;Output&gt;
 			&lt;Line&gt;
-				&lt;text&gt;Page: &lt;/text&gt;	
+				&lt;literal&gt;Page: &lt;/literal&gt;	
 				&lt;field value="r.pageno" width="3" align="right"/&gt;
 			&lt;/Line&gt;
 		&lt;/Output&gt;
@@ -322,20 +322,20 @@ dtos(database.somedatefield)-7
 	<sect1>
 		<title>Line</title>
 		<para>
-			Lines contain text and fields.
+			Lines contain literals and fields.
 		</para>	
 		<para>
-			fontSize - expN default font size for text and fields on the line
+			fontSize - expN default font size for literals and fields on the line
 		</para>	
 		<para>
-			color - expS default foreground color for text and fields on the line
+			color - expS default foreground color for literals and fields on the line
 		</para>	
 		<para>
 			bgcolor - expS default background color for fields on the line
 		</para>	
 	</sect1>
 	<sect1>
-		<title>Text</title>
+		<title>Literals</title>
 		<para>
 			Contains plain text data. The actual displayed text goes between the tag
 		</para>	
@@ -346,13 +346,13 @@ dtos(database.somedatefield)-7
 			align - expS left, right, center...
 		</para>
 		<para>
-			color - expS default foreground color for text and fields on the line
+			color - expS default foreground color 
 		</para>	
 		<para>
 			col - expN column for csv output
 		</para>	
 		<para>
-			bgcolor - expS default background color for fields on the line
+			bgcolor - expS background color 
 		</para>	
 		<para>
 			link - expS .. a url to link to
@@ -379,10 +379,10 @@ dtos(database.somedatefield)-7
 			format - expS see format section
 		</para>
 		<para>
-			color - expS default foreground color for text and fields on the line
+			color - expS foreground color 
 		</para>	
 		<para>
-			bgcolor - expS default background color for fields on the line
+			bgcolor - expS background color
 		</para>	
 		<para>
 			link - expS .. a url to link to

@@ -18,7 +18,7 @@
 <!ELEMENT ReportFooter (Output)* >
 <!ELEMENT PageFooter (Output)* >
 <!ELEMENT Output (Line | HorizontalLine | Image)* >
-<!ELEMENT Line (field | text)* >
+<!ELEMENT Line (field | literal)* >
 <!ATTLIST Line 
 	fontSize CDATA #IMPLIED
 	suppress CDATA #IMPLIED
@@ -49,8 +49,8 @@
 	link CDATA #IMPLIED
 	maxlines CDATA #IMPLIED
 	col CDATA #IMPLIED >
-<!ELEMENT text (#PCDATA) >
-<!ATTLIST text
+<!ELEMENT literal (#PCDATA) >
+<!ATTLIST literal
 	width CDATA #IMPLIED
 	align CDATA #IMPLIED
 	bgcolor CDATA #IMPLIED

@@ -69,8 +69,8 @@ struct report_element * parse_line_array(struct rlib_report *rep, xmlDocPtr doc,
 			f->xml_maxlines = xmlGetProp(cur, (const xmlChar *) "maxlines");
 			current->data = f;
 			current->type = REPORT_ELEMENT_FIELD;
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "text"))) {
-			struct report_text *t = g_malloc(sizeof(struct report_text));
+		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "literal"))) {
+			struct report_literal *t = g_malloc(sizeof(struct report_literal));
 			current = g_new0(struct report_element, 1);
 			utf8_to_8813(rep, t->value, xmlNodeListGetString(doc, cur->xmlChildrenNode, 1));
 			t->xml_align = xmlGetProp(cur, (const xmlChar *) "align");
@@ -79,7 +79,7 @@ struct report_element * parse_line_array(struct rlib_report *rep, xmlDocPtr doc,
 			t->xml_width = xmlGetProp(cur, (const xmlChar *) "width");
 			t->col = xmlGetProp(cur, (const xmlChar *) "col");
 			current->data = t;
-			current->type = REPORT_ELEMENT_TEXT;
+			current->type = REPORT_ELEMENT_LITERAL;
 		} else if (!xmlStrcmp(cur->name, "comment")) {
 			/* ignore comments */
 		} else {

@@ -9,7 +9,7 @@
 			exprS must be either a valid color name or hex color triplet ie 0xFFFFFF.
 		</para>
 		<para>
-			Use the forground color to change the text in fields and text strings.
+			Use the forground color to change the color for literals and fields
 		</para>
 	</sect1>
 	<sect1>
@@ -21,7 +21,7 @@
 			exprS must be either a valid color name or hex color triplet ie 0xFFFFFF.
 		</para>
 		<para>
-			Use the background color to change the text in fields and text strings.
+			Use the background color to change the color for literals and fields
 		</para>
 	</sect1>
 	<sect1>

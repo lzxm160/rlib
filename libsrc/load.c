@@ -73,10 +73,10 @@ struct report_horizontal_line * read_hr(gchar **ptr) {
 	return hr;
 }
 
-struct report_text * read_text(gchar **ptr) {
-	struct report_text *rt;
+struct report_literal * read_text(gchar **ptr) {
+	struct report_literal *rt;
 	gchar *tmp;
-	rt = g_malloc(sizeof(struct report_text));
+	rt = g_malloc(sizeof(struct report_literal));
 	*ptr += sizeof(gint32);
 	tmp = read_xml_str(ptr);
 	if(tmp != NULL)
@@ -136,9 +136,9 @@ struct report_lines * read_line(gchar **ptr) {
 				break;
 			if(*type == REPORT_ELEMENT_FIELD)
 				pointer = read_field(ptr);
-			if(*type == REPORT_ELEMENT_TEXT)
+			if(*type == REPORT_ELEMENT_LITERAL)
 				pointer = read_text(ptr);
-			if(*type == REPORT_ELEMENT_FIELD || *type == REPORT_ELEMENT_TEXT) {
+			if(*type == REPORT_ELEMENT_FIELD || *type == REPORT_ELEMENT_LITERAL) {
 				if(rl->e == NULL) {
 					rl->e = g_malloc(sizeof(struct report_element));
 					current = rl->e;
