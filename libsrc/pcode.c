@@ -154,7 +154,8 @@ int rvalcmp(struct rlib_value *v1, struct rlib_value *v2) {
 }
 
 struct rlib_pcode_operand * rlib_new_operand(rlib *r, char *str) {
-	int resultset, field;
+	int resultset;
+	void *field;
 	char *memresult;
 	struct rlib_pcode_operand *o;
 	struct report_variable *rv;
@@ -399,7 +400,7 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, char *infix) {
 					int pcount=1;
 					int ccount=0;
 					char *save_ptr, *iif, *save_iif;
-					char *evaulation, *true, *false;
+					char *evaulation, *true=NULL, *false=NULL;
 					struct rlib_pcode_if *rpif;
 					struct rlib_pcode_operand *o;
 					moving_ptr +=  op->taglen;
@@ -516,7 +517,6 @@ struct rlib_value * rlib_value_new(struct rlib_value *rval, int type, int free, 
 }
 
 struct rlib_value * rlib_value_new_number(struct rlib_value *rval, long long value) {
-	long long *tmp;
 	return rlib_value_new(rval, RLIB_VALUE_NUMBER, FALSE, &value);
 }
 

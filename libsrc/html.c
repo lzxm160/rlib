@@ -231,7 +231,6 @@ static void rlib_html_end_text(rlib *r) {
 }
 
 static void rlib_html_init_output(rlib *r) {
-	char buf[MAXSTRLEN];
 	print_text(r, "<head>", FALSE);	
 }
 
@@ -281,6 +280,7 @@ static int rlib_html_is_single_page(rlib *r) {
 static int rlib_html_free(rlib *r) {
 	rfree(OUTPUT_PRIVATE(r));
 	rfree(OUTPUT(r));
+	return 0;
 }
 
 void rlib_html_new_output_filter(rlib *r) {

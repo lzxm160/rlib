@@ -102,7 +102,13 @@ struct report_text {
 
 struct rlib_resultset_field {
 	int resultset;
-	int field;
+	void * field;
+};
+
+struct rlib_results {
+	char *name;
+	void *result;
+	void *input_engine;
 };
 
 struct rlib_line_extra_data {
@@ -316,6 +322,8 @@ struct rlib {
 	struct rip_reports reportstorun[RLIB_MAXIMUM_REPORTS];
 
 	int results_count;
+	struct rlib_results results[RLIB_MAXIMUM_QUERIES];
+	
 	struct report *reports[RLIB_MAXIMUM_REPORTS];
 	int reports_count;
 	int current_report;
@@ -428,7 +436,7 @@ int rlib_resolve_rlib_variable(rlib *r, char *name);
 char * rlib_resolve_memory_variable(rlib *r, char *name);
 char * rlib_resolve_field_value(rlib *r, struct rlib_resultset_field *rf);
 int rlib_lookup_result(rlib *r, char *name);
-int rlib_resolve_resultset_field(rlib *r, char *name, int *value, int *xxresultset);
+int rlib_resolve_resultset_field(rlib *r, char *name, void *rtn_field, int *rtn_resultset);
 struct report_variable *rlib_resolve_variable(rlib *r, char *name);
 void rlib_resolve_fields(rlib *r);
 

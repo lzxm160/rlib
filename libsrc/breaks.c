@@ -162,7 +162,6 @@ void rlib_break_all_below_in_reverse_order(rlib *r, struct report_element *e) {
 	int count=0,i=0,j=0;
 	struct break_fields *bf;
 	int do_endpage = FALSE;
-	void * temp;
 
 	if(!OUTPUT(r)->do_break)
 		return;
@@ -184,13 +183,13 @@ void rlib_break_all_below_in_reverse_order(rlib *r, struct report_element *e) {
 /*
 	Fun little hack so break lines reflect the correct value.. not the next row
 */
-		temp = INPUT(r)->fetch_row(INPUT(r), r->current_result);
-		INPUT(r)->set_row_pointer(INPUT(r), r->current_result, INPUT(r)->get_last_row_pointer(INPUT(r), r->current_result));
+
+		INPUT(r)->previous(INPUT(r), r->results[r->current_result].result);
 		
 		rlib_print_break_footer_lines(r, rb, rb->footer, FALSE);
-		
-		INPUT(r)->set_row_pointer(INPUT(r), r->current_result, temp);
-		
+
+		INPUT(r)->next(INPUT(r), r->results[r->current_result].result);
+
 		rlib_reset_variables_on_break(r, rb->name);
 
 		if(rb->newpage) {
@@ -198,7 +197,7 @@ void rlib_break_all_below_in_reverse_order(rlib *r, struct report_element *e) {
 		}
 	}
 	if(do_endpage) {
-		if(temp != NULL) {
+		if(!INPUT(r)->isdone(INPUT(r), r->results[r->current_result].result)) {
 			OUTPUT(r)->rlib_end_page(r);
 			rlib_force_break_headers(r);
 		}
@@ -227,8 +226,7 @@ void rlib_handle_break_footers(rlib *r) {
 		for(be = rb->fields; be != NULL; be=be->next) {
 			struct rlib_value rval_tmp;
 			bf = be->data;
-//			if(dobreak && (r->results[r->current_result].row == NULL || rvalcmp(bf->rval, rlib_execute_pcode(r, &rval_tmp, bf->code, NULL)))) {
-			if(dobreak && (INPUT(r)->get_row_pointer(INPUT(r), r->current_result) == NULL || rvalcmp(bf->rval, rlib_execute_pcode(r, &rval_tmp, bf->code, NULL)))) {
+			if(dobreak && (INPUT(r)->isdone(INPUT(r), r->results[r->current_result].result) || rvalcmp(bf->rval, rlib_execute_pcode(r, &rval_tmp, bf->code, NULL)))) {
 				dobreak=1;
 			} else {
 				dobreak = 0;

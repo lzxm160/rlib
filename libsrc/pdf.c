@@ -169,6 +169,7 @@ static int rlib_pdf_is_single_page(rlib *r) {
 static int rlib_pdf_free(rlib *r) {
 	rfree(OUTPUT_PRIVATE(r));
 	rfree(OUTPUT(r));
+	return 0;
 }
 
 

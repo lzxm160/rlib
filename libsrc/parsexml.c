@@ -269,7 +269,7 @@ static struct report_element * parse_report_variables(xmlDocPtr doc, xmlNsPtr ns
 struct report * parse_report_file(char *filename) {
 	xmlDocPtr doc;
 	struct report *ret;
-	xmlNsPtr ns;
+	xmlNsPtr ns = NULL;
 	xmlNodePtr cur;
 
 	doc = xmlParseFile(filename);

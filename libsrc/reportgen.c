@@ -318,8 +318,8 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 }	
 
 void find_stuff_in_common(rlib *r, struct rlib_line_extra_data *extra_data, int count) {
-	int i;
-	struct rlib_line_extra_data *e_ptr, *save_ptr, *previous_ptr;
+	int i = 0;
+	struct rlib_line_extra_data *e_ptr = NULL, *save_ptr = NULL, *previous_ptr = NULL;
 	int state = STATE_NONE;
 	
 	previous_ptr = &extra_data[i];
@@ -547,7 +547,7 @@ void rlib_print_report_footer(rlib *r) {
 int rlib_fetch_first_rows(rlib *r) {
 	int i;
 	for(i=0;i<r->results_count;i++)
-		INPUT(r)->rlib_fetch_row_from_result(INPUT(r), i);
+		INPUT(r)->first(INPUT(r), r->results[i].result);
 	return 0;
 }
 
@@ -626,7 +626,6 @@ void rlib_process_variables(rlib *r) {
 int make_report(rlib *r) {
 	int i = 0;
 	int report = 0;
-	void * last;
 	
 	if(r->format == RLIB_FORMAT_HTML)
 		rlib_html_new_output_filter(r);
@@ -646,7 +645,6 @@ int make_report(rlib *r) {
 	r->current_report = 0;
 	r->current_result = 0;
 	r->start_of_new_report = TRUE;
-	INPUT(r)->set_row_pointer(INPUT(r), r->current_result, NULL);
 
 	OUTPUT(r)->rlib_init_output(r);
 	rlib_fetch_first_rows(r);
@@ -672,8 +670,7 @@ int make_report(rlib *r) {
 		rlib_init_variables(r);
 		rlib_init_page(r, TRUE);		
 		OUTPUT(r)->rlib_begin_text(r);
-		while (INPUT(r)->get_row_pointer(INPUT(r), r->current_result)) {
-			void * temp=NULL;
+		while (1) {
 			rlib_handle_break_headers(r);
 			
 			if(!will_line_fit(r, r->reports[r->current_report]->detail.fields)) {
@@ -688,24 +685,19 @@ int make_report(rlib *r) {
 
 			r->detail_line_count++;
 			i++;
-			last = temp;
-			temp = INPUT(r)->fetch_row(INPUT(r), r->current_result);
-			INPUT(r)->set_last_row_pointer(INPUT(r), r->current_result, INPUT(r)->get_row_pointer(INPUT(r), r->current_result));
-			if(temp == NULL) {
-				INPUT(r)->set_row_pointer(INPUT(r), r->current_result, temp);
+
+			if(INPUT(r)->next(INPUT(r), r->results[r->current_result].result) == FALSE) {
+				INPUT(r)->last(INPUT(r), r->results[r->current_result].result);
 				rlib_handle_break_footers(r);
 				break;
-			} else
-				INPUT(r)->set_row_pointer(INPUT(r), r->current_result, temp);
+			} 
 
 			rlib_handle_break_footers(r);
-
 		}
 
-		INPUT(r)->set_row_pointer(INPUT(r), r->current_result, INPUT(r)->get_last_row_pointer(INPUT(r), r->current_result));
+		INPUT(r)->last(INPUT(r), r->results[r->current_result].result);
 
-		if(INPUT(r)->get_row_pointer(INPUT(r), r->current_result) != NULL)
-			rlib_print_report_footer(r);
+		rlib_print_report_footer(r);
 	
 		if(report+1 < r->reports_count) {
 			OUTPUT(r)->rlib_end_text(r);

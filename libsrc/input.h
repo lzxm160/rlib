@@ -20,24 +20,25 @@
  
 #define INPUT(r) (r->input)
 
+#define TRUE	1
+#define FALSE	0
+
 struct input_filter {
 	void *private;
-	int (*rlib_input_close)(void *);
-	int (*rlib_fetch_row_from_result)(void *, int);
-	int (*set_row_pointer)(void *, int, void *);
-	void * (*get_row_pointer)(void *, int);
-	void * (*fetch_row)(void *, int);
-	void * (*get_last_row_pointer)(void *, int);
-	int (*set_last_row_pointer)(void *, int, void *);
-	void * (*rlib_input_connect)(void *, char *, char *, char *, char *);
-	void (*query_and_set_result)(void *, int, char *);
-	void (*set_query_result_name)(void *, int, char *);
-	void * (*get_result_pointer)(void *, int);
-	char * (*get_row_value)(void *, int, int);	
-	char * (*get_resultset_name)(void *, int);	
-	void (*seek_field)(void *, int, int);
-	void * (*fetch_field)(void *, int);
-	void * (*fetch_field_name)(void *, void *);
-	void (*rlib_free_result)(void *, int);	
+	void * (*input_connect)(void *, char *, char *, char *, char *);
+	int (*input_close)(void *);
+	void * (*new_result_from_query)(void *, char *);
 	int (*free)(void *);
+	
+	int (*first)(void *, void *);
+	int (*next)(void *, void *);
+	int (*previous)(void *, void *);
+	int (*last)(void *, void *);
+	int (*isdone)(void *, void *);
+
+	char * (*get_field_value_as_string)(void *, void *, void *);	
+
+	void * (*resolve_field_pointer)(void *, void *, char *);
+
+	void (*rlib_free_result)(void *, void *);	
 };

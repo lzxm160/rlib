@@ -1,4 +1,22 @@
 2003-10-16  Bob Doan  <bdoan@sicompos.com>
+	* configure.in:	bump version number up to 1.1.1 so I don't forget later
+	* libsrc/Makefile.am: new INPUT (database) backend, plus.. clean up some warning w/ -Wall. 
+	* libsrc/breaks.c: likewise
+	* libsrc/csv.c: likewise
+	* libsrc/free.c: likewise
+	* libsrc/html.c: likewise
+	* libsrc/init.c: likewise
+	* libsrc/input.h: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/pcode.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/sql.c: likewise
+	* libsrc/txt.c: likewise
+
+2003-10-16  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/environment.c: add free method
 	* libsrc/environment.c: add free method
 	* libsrc/free.c: free lots more stuff

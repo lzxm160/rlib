@@ -55,24 +55,23 @@ int rlib_resolve_rlib_variable(rlib *r, char *name) {
 }
 
 char * rlib_resolve_field_value(rlib *r, struct rlib_resultset_field *rf) {
-	return INPUT(r)->get_row_value(INPUT(r), rf->resultset, rf->field);
+	return INPUT(r)->get_field_value_as_string(INPUT(r), r->results[rf->resultset].result , rf->field);
 }
 
 int rlib_lookup_result(rlib *r, char *name) {
 	int i;
 	for(i=0;i<r->results_count;i++) {
-		if(!strcmp(INPUT(r)->get_resultset_name(INPUT(r), i), name))
+		if(!strcmp(r->results[i].name, name))
 			return i;
 	}
 	return -1;
 }
 
 
-int rlib_resolve_resultset_field(rlib *r, char *name, int *value, int *xxresultset) {
-	int x = 0, resultset=0;
+int rlib_resolve_resultset_field(rlib *r, char *name, void *rtn_field, int *rtn_resultset) {
+	int resultset=0;
 	int found = FALSE;
 	char *right_side = NULL, *result_name = NULL;
-	void *field;
 	resultset = r->current_result;
 	right_side = memchr(name, '.', strlen(name));
 	if(right_side != NULL) {
@@ -92,16 +91,11 @@ int rlib_resolve_resultset_field(rlib *r, char *name, int *value, int *xxresults
 		}
 		rfree(result_name);
 	}
-	INPUT(r)->seek_field(INPUT(r), resultset, 0);
-	while((field = INPUT(r)->fetch_field(INPUT(r), resultset))) {
-		if(!strcmp(INPUT(r)->fetch_field_name(INPUT(r), field), name)) {
-			found = TRUE;
-			break;
-		}
-		x++;
-	}
-	*value = x;
-	*xxresultset = resultset;
+	rtn_field = INPUT(r)->resolve_field_pointer(INPUT(r), r->results[resultset].result, name);
+	
+	if(rtn_field != NULL)
+		found = TRUE;
+	*rtn_resultset = resultset;
 	return found;
 }
 

@@ -117,8 +117,6 @@ static void rlib_free_fields(rlib *r, struct report_output_array *roa) {
 }
 
 void rlib_free_report(rlib *r, int which) {
-	struct report_element *e;
-
 	rlib_free_fields(r, r->reports[which]->report_header);
 	rlib_free_fields(r, r->reports[which]->page_header);
 	rlib_free_fields(r, r->reports[which]->page_footer);
@@ -141,7 +139,7 @@ void rlib_free_tree(rlib *r) {
 void free_results(rlib *r) {
 	int i;
 	for(i=0;i<r->queries_count;i++) {
-		INPUT(r)->rlib_free_result(INPUT(r), i);
+		INPUT(r)->rlib_free_result(INPUT(r), r->results[i].result);
 	}
 }
 
@@ -150,7 +148,7 @@ int rlib_free(rlib *r) {
 	xmlCleanupParser();
 	
 	free_results(r);
-	INPUT(r)->rlib_input_close(INPUT(r));
+	INPUT(r)->input_close(INPUT(r));
 	INPUT(r)->free(INPUT(r));	
 
 	OUTPUT(r)->rlib_free(r);
@@ -158,4 +156,5 @@ int rlib_free(rlib *r) {
 	ENVIRONMENT(r)->free(r);
 				
 	rfree(r);
+	return 0;
 }

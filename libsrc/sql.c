@@ -33,18 +33,20 @@
 
 #define INPUT_PRIVATE(input) (((struct _private *)input->private))
 
-struct rlib_results {
+struct rlib_mysql_results {
 	MYSQL_RES *result;
 	char *name;
-	MYSQL_ROW row;
+	MYSQL_ROW this_row;
+	MYSQL_ROW previous_row;
+	MYSQL_ROW save_row;
 	MYSQL_ROW last_row;
+	int didprevious;
 };
 
+//	struct rlib_mysql_results results[RLIB_MAXIMUM_QUERIES]; 
 struct _private {
-	struct rlib_results results[RLIB_MAXIMUM_QUERIES]; 
 	MYSQL *mysql;	
 };
-
 
 void * rlib_mysql_real_connect(void * woot, char *host, char *user, char *password, char *database) {
 	struct input_filter *input = woot;
@@ -72,7 +74,7 @@ static int rlib_mysql_input_close(void *woot) {
 	return 0;
 }
 
-MYSQL_RES * rlib_mysql_query(MYSQL *mysql, char *query) {
+static MYSQL_RES * rlib_mysql_query(MYSQL *mysql, char *query) {
 	MYSQL_RES *result = NULL;
 	int rtn;
 	
@@ -84,97 +86,114 @@ MYSQL_RES * rlib_mysql_query(MYSQL *mysql, char *query) {
 	return NULL;
 }
 
-static int rlib_mysql_fetch_row_from_result(void *woot, int i) {
-	struct input_filter *input = woot;
-	INPUT_PRIVATE(input)->results[i].row = mysql_fetch_row(INPUT_PRIVATE(input)->results[i].result);
-	return 1;
+static int rlib_mysql_first(void *input_ptr, void *result_ptr) {
+	struct rlib_mysql_results *result = result_ptr;
+	result->this_row = mysql_fetch_row(result->result);
+	result->previous_row = NULL;
+	result->last_row = NULL;
+	result->didprevious = FALSE;
+	return TRUE;
 }
 
-static int mysql_set_row_pointer(void *woot, int i, void *data) {
-	struct input_filter *input = woot;
-	INPUT_PRIVATE(input)->results[i].row = data;
-	return 1;
-}
-
-static void * mysql_get_row_pointer(void *woot, int i) {
-	struct input_filter *input = woot;
-	return INPUT_PRIVATE(input)->results[i].row;
-}
-
-static void * xxmysql_fetch_row(void *woot, int i) {
-	struct input_filter *input = woot;
+static int rlib_mysql_next(void *input_ptr, void *result_ptr) {
+	struct rlib_mysql_results *result = result_ptr;
 	MYSQL_ROW row;
-	row = mysql_fetch_row(INPUT_PRIVATE(input)->results[i].result);
-	return (void *)row;
+	if(result->didprevious == TRUE) {
+		result->didprevious = FALSE;
+		result->this_row = result->save_row;
+		return TRUE;
+	} else {
+		row = mysql_fetch_row(result->result);
+		if(row != NULL) {
+			result->previous_row = result->this_row;
+			result->this_row = row;
+			return TRUE;
+		} else {
+			result->previous_row = result->this_row;
+			result->last_row = result->this_row;
+			result->this_row = NULL;
+			return FALSE;	
+		}
+	}
 }
 
-static char * mysql_get_row_value(void *woot, int resultset, int i) {
+static int rlib_mysql_isdone(void *input_ptr, void *result_ptr) {
+	struct rlib_mysql_results *result = result_ptr;
+	if(result->this_row == NULL)
+		return TRUE;
+	else
+		return FALSE;
+}
+
+static int rlib_mysql_previous(void *input_ptr, void *result_ptr) {
+	struct rlib_mysql_results *result = result_ptr;
+	result->save_row = result->save_row;
+	result->this_row = result->previous_row;
+	if(result->previous_row == NULL) {
+		result->didprevious = FALSE;
+		return FALSE;
+	} else {
+		result->didprevious = TRUE;
+		return TRUE;
+	}
+}
+
+static int rlib_mysql_last(void *input_ptr, void *result_ptr) {
+	struct rlib_mysql_results *result = result_ptr;
+	result->this_row = result->last_row;
+	if(result->last_row == NULL)
+		return FALSE;
+	else
+		return TRUE;
+}
+
+static char * rlib_mysql_get_field_value_as_string(void *input_ptr, void *result_ptr, void *field_ptr) {
+	struct rlib_mysql_results *result = result_ptr;
+	long field = *(long *)field_ptr;
+	return result->this_row[field];
+}
+
+static void * rlib_mysql_resolve_field_pointer(void *input_ptr, void *result_ptr, char *name) {
+	struct rlib_mysql_results *result = result_ptr;
+	long rtn;
+	int x=0;
+	MYSQL_FIELD *field;
+	mysql_field_seek(result->result, 0);
+	
+	while((field = mysql_fetch_field(result->result))) {
+		if(!strcmp(field->name, name)) {
+			rtn = x;
+			return (void *)rtn;
+		}
+		x++;
+	}
+	return NULL;
+}
+
+void * mysql_new_result_from_query(void *woot, char *query) {
 	struct input_filter *input = woot;
-	return INPUT_PRIVATE(input)->results[resultset].row[i];
+	MYSQL_RES *result;
+	struct rlib_mysql_results *results;
+	result = rlib_mysql_query(INPUT_PRIVATE(input)->mysql, query);
+	if(result == NULL)
+		return NULL;
+	else {
+		results = rmalloc(sizeof(struct rlib_mysql_results));
+		results->result = result;
+	}
+	return results;
 }
 
-static char * mysql_get_resultset_name(void *woot, int resultset) {
-	struct input_filter *input = woot;
-	return INPUT_PRIVATE(input)->results[resultset].name;
+static void rlib_mysql_rlib_free_result(void *input_ptr, void *result_ptr) {
+	struct rlib_mysql_results *result = result_ptr;
+	mysql_free_result(result->result);
 }
-
-static void * mysql_get_last_row_pointer(void *woot, int i) {
-	struct input_filter *input = woot;
-	return INPUT_PRIVATE(input)->results[i].last_row;
-}
-
-void mysql_seek_field(void *woot, int i, int offset) {
-	struct input_filter *input = woot;
-	mysql_field_seek(INPUT_PRIVATE(input)->results[i].result, offset);
-	return;
-}
-
-int mysql_set_last_row_pointer(void *woot, int i, void *set) {
-	struct input_filter *input = woot;
-	INPUT_PRIVATE(input)->results[i].last_row = set;
-	return 1;
-}
-
-void mysql_query_and_set_result(void *woot, int i, char *query) {
-	struct input_filter *input = woot;
-	INPUT_PRIVATE(input)->results[i].result = rlib_mysql_query(INPUT_PRIVATE(input)->mysql, query);
-	return;
-}
-
-void mysql_set_query_result_name(void *woot, int i, char *name) {
-	struct input_filter *input = woot;
-	INPUT_PRIVATE(input)->results[i].name = name;
-	return;
-}
-
-static void * mysql_get_result_pointer(void *woot, int i) {
-	struct input_filter *input = woot;
-	return INPUT_PRIVATE(input)->results[i].result;
-}
-
-static void * xxmysql_fetch_field(void *woot, int i) {
-	struct input_filter *input = woot;
-	return mysql_fetch_field(INPUT_PRIVATE(input)->results[i].result);
-}
-
-static void * xxmysql_fetch_field_name(void *woot, void *xfield) {
-	struct input_filter *input = woot;
-	MYSQL_FIELD *field = xfield;
-	return field->name;
-}
-
-static void rlib_mysql_rlib_free_result(void *woot, int i) {
-	struct input_filter *input = woot;
-	mysql_free_result(INPUT_PRIVATE(input)->results[i].result);
-}
-
 
 static int rlib_mysql_free_input_filter(void *woot) {
 	struct input_filter *input = woot;
-//TODO.. rework api so I know which result are mine... 
-//	mysql_free_result(INPUT_PRIVATE(input)->result)
 	rfree(input->private);
 	rfree(input);
+	return 0;
 }
 
 void * rlib_mysql_new_input_filter() {
@@ -183,22 +202,18 @@ void * rlib_mysql_new_input_filter() {
 	input = rmalloc(sizeof(struct input_filter));
 	input->private = rmalloc(sizeof(struct _private));
 	bzero(input->private, sizeof(struct _private));
-	input->rlib_input_close = rlib_mysql_input_close;
-	input->rlib_fetch_row_from_result = rlib_mysql_fetch_row_from_result;
-	input->set_row_pointer = mysql_set_row_pointer;
-	input->get_row_pointer = mysql_get_row_pointer;
-	input->fetch_row = xxmysql_fetch_row;
-	input->get_last_row_pointer = mysql_get_last_row_pointer;
-	input->set_last_row_pointer = mysql_set_last_row_pointer;
-	input->rlib_input_connect = rlib_mysql_real_connect;
-	input->query_and_set_result = mysql_query_and_set_result;
-	input->set_query_result_name = mysql_set_query_result_name;
-	input->get_result_pointer = mysql_get_result_pointer;
-	input->get_row_value = mysql_get_row_value;
-	input->get_resultset_name = mysql_get_resultset_name;
-	input->seek_field = mysql_seek_field;
-	input->fetch_field = xxmysql_fetch_field;
-	input->fetch_field_name = xxmysql_fetch_field_name;
+	input->input_close = rlib_mysql_input_close;
+	input->first = rlib_mysql_first;
+	input->next = rlib_mysql_next;
+	input->previous = rlib_mysql_previous;
+	input->last = rlib_mysql_last;
+	input->isdone = rlib_mysql_isdone;
+	input->input_connect = rlib_mysql_real_connect;
+	input->new_result_from_query = mysql_new_result_from_query;
+	input->get_field_value_as_string = rlib_mysql_get_field_value_as_string;
+
+	input->resolve_field_pointer = rlib_mysql_resolve_field_pointer;
+
 	input->free = rlib_mysql_free_input_filter;
 	input->rlib_free_result = rlib_mysql_rlib_free_result;
 	return input;

@@ -46,12 +46,13 @@ rlib * rlib_init(struct environment_filter *environment) {
 int rlib_add_datasource_mysql(rlib *r, char *database_host, char *database_user, char *database_password, char *database_database) {
 	void *mysql;
 
-	mysql = INPUT(r)->rlib_input_connect(INPUT(r), database_host, database_user, database_password, database_database);
+	mysql = INPUT(r)->input_connect(INPUT(r), database_host, database_user, database_password, database_database);
 
 	if(mysql == NULL) {
 		debugf("ERROR: Could not connect to MYSQL\n");
 		return -1;
 	}
+	return 0;
 }
 
 int rlib_add_query_as(rlib *r, char *sql, char *name) {
@@ -78,16 +79,14 @@ int rlib_add_report(rlib *r, char *name, char *mainloop) {
 
 int rlib_execute(rlib *r) {
 	int i,j;
-	void *mysql;
 
 	for(i=0;i<r->queries_count;i++) {
-		INPUT(r)->query_and_set_result(INPUT(r), i, r->queries[i].sql);
-		if(INPUT(r)->get_result_pointer(INPUT(r), i) == NULL) {
-			rfree(r);
+		r->results[i].result = INPUT(r)->new_result_from_query(INPUT(r), r->queries[i].sql);
+		if(r->results[i].result == NULL) {
 			debugf("Failed To Run A Query!\n");			
 			return -1;
 		}
-		INPUT(r)->set_query_result_name(INPUT(r), i, r->queries[i].name);
+		r->results[i].name =  r->queries[i].name;
 	}
 //TODO: this is stupid
 	r->results_count = r->queries_count;
