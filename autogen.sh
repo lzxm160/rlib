@@ -73,8 +73,9 @@ do
     echo skipping $dr -- flagged as no auto-gen
   else
     echo processing $dr
-    macrodirs=`sed -n -e 's,AM_ACLOCAL_INCLUDE(\(.*\)),\1,gp' < $coin`
-	 #macrodirs="$ORIGDIR/m4"
+
+    #macrodirs=`sed -n -e 's,AM_ACLOCAL_INCLUDE(\(.*\)),\1,gp' < $coin`
+	 macrodirs="$ORIGDIR/m4"
     ( cd $dr
       aclocalinclude="$ACLOCAL_FLAGS"
       for k in $macrodirs; do

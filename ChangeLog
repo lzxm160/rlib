@@ -1,4 +1,18 @@
 2005-03-06  Bob Doan  <bdoan@sicompos.com>
+	* autogen.sh: don't have binding flags in RLIB_CFLAGS and gstart to get PERL bindings in place
+	* bindings/interfaces/librlib.pm: likewise
+	* bindings/java/Makefile.am: likewise
+	* bindings/perl/Makefile.am: likewise
+	* bindings/perl/perl.c: likewise
+	* bindings/php/Makefile.am: likewise
+	* bindings/python/Makefile.am: likewise
+	* configure.in: likewise
+	* doc/Makefile: NADA
+	* src/examples/Makefile.am: likewise
+	* src/examples/perl/Makefile.am: likewise
+	* src/examples/perl/example.pm: likewise
+
+2005-03-06  Bob Doan  <bdoan@sicompos.com>
 	* bindings/interfaces/Makefile.am: Make python and java work again, make utf8 disabled the defualt, don't -Werror on swig stuff 
 	* bindings/interfaces/SWIGTYPE_p_f_p_rlib_p_void__int.java: likewise
 	* bindings/interfaces/SWIGTYPE_p_void.java:  likewise

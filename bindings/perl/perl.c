@@ -764,7 +764,8 @@ static void _swig_create_magic(CPerlObj *pPerl, SV *sv, const char *name, int (C
 /* -------- TYPES TABLE (BEGIN) -------- */
 
 #define  SWIGTYPE_p_rlib swig_types[0] 
-static swig_type_info *swig_types[2];
+#define  SWIGTYPE_p_f_p_rlib_p_void__int swig_types[1] 
+static swig_type_info *swig_types[3];
 
 /* -------- TYPES TABLE (END) -------- */
 
@@ -907,6 +908,45 @@ XS(_wrap_rlib_add_datasource_postgre) {
 }
 
 
+XS(_wrap_rlib_add_datasource_odbc) {
+    {
+        rlib *arg1 = (rlib *) 0 ;
+        char *arg2 ;
+        char *arg3 ;
+        char *arg4 ;
+        char *arg5 ;
+        int result;
+        int argvi = 0;
+        dXSARGS;
+        
+        if ((items < 5) || (items > 5)) {
+            SWIG_croak("Usage: rlib_add_datasource_odbc(r,input_name,source,user,password);");
+        }
+        {
+            if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
+                SWIG_croak("Type error in argument 1 of rlib_add_datasource_odbc. Expected _p_rlib");
+            }
+        }
+        if (!SvOK((SV*) ST(1))) arg2 = 0;
+        else arg2 = (char *) SvPV(ST(1), PL_na);
+        if (!SvOK((SV*) ST(2))) arg3 = 0;
+        else arg3 = (char *) SvPV(ST(2), PL_na);
+        if (!SvOK((SV*) ST(3))) arg4 = 0;
+        else arg4 = (char *) SvPV(ST(3), PL_na);
+        if (!SvOK((SV*) ST(4))) arg5 = 0;
+        else arg5 = (char *) SvPV(ST(4), PL_na);
+        result = (int)rlib_add_datasource_odbc(arg1,arg2,arg3,arg4,arg5);
+        
+        ST(argvi) = sv_newmortal();
+        sv_setiv(ST(argvi++), (IV) result);
+        XSRETURN(argvi);
+        fail:
+        ;
+    }
+    croak(Nullch);
+}
+
+
 XS(_wrap_rlib_add_query_as) {
     {
         rlib *arg1 = (rlib *) 0 ;
@@ -947,13 +987,12 @@ XS(_wrap_rlib_add_report) {
     {
         rlib *arg1 = (rlib *) 0 ;
         char *arg2 ;
-        char *arg3 ;
         int result;
         int argvi = 0;
         dXSARGS;
         
-        if ((items < 3) || (items > 3)) {
-            SWIG_croak("Usage: rlib_add_report(r,name,mainloop);");
+        if ((items < 2) || (items > 2)) {
+            SWIG_croak("Usage: rlib_add_report(r,name);");
         }
         {
             if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
@@ -962,9 +1001,37 @@ XS(_wrap_rlib_add_report) {
         }
         if (!SvOK((SV*) ST(1))) arg2 = 0;
         else arg2 = (char *) SvPV(ST(1), PL_na);
-        if (!SvOK((SV*) ST(2))) arg3 = 0;
-        else arg3 = (char *) SvPV(ST(2), PL_na);
-        result = (int)rlib_add_report(arg1,arg2,arg3);
+        result = (int)rlib_add_report(arg1,arg2);
+        
+        ST(argvi) = sv_newmortal();
+        sv_setiv(ST(argvi++), (IV) result);
+        XSRETURN(argvi);
+        fail:
+        ;
+    }
+    croak(Nullch);
+}
+
+
+XS(_wrap_rlib_add_report_from_buffer) {
+    {
+        rlib *arg1 = (rlib *) 0 ;
+        char *arg2 ;
+        int result;
+        int argvi = 0;
+        dXSARGS;
+        
+        if ((items < 2) || (items > 2)) {
+            SWIG_croak("Usage: rlib_add_report_from_buffer(r,buffer);");
+        }
+        {
+            if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
+                SWIG_croak("Type error in argument 1 of rlib_add_report_from_buffer. Expected _p_rlib");
+            }
+        }
+        if (!SvOK((SV*) ST(1))) arg2 = 0;
+        else arg2 = (char *) SvPV(ST(1), PL_na);
+        result = (int)rlib_add_report_from_buffer(arg1,arg2);
         
         ST(argvi) = sv_newmortal();
         sv_setiv(ST(argvi++), (IV) result);
@@ -1003,28 +1070,29 @@ XS(_wrap_rlib_execute) {
 }
 
 
-XS(_wrap_rlib_set_output_format_from_text) {
+XS(_wrap_rlib_get_content_type_as_text) {
     {
         rlib *arg1 = (rlib *) 0 ;
-        char *arg2 ;
-        int result;
+        char *result;
         int argvi = 0;
         dXSARGS;
         
-        if ((items < 2) || (items > 2)) {
-            SWIG_croak("Usage: rlib_set_output_format_from_text(r,name);");
+        if ((items < 1) || (items > 1)) {
+            SWIG_croak("Usage: rlib_get_content_type_as_text(r);");
         }
         {
             if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
-                SWIG_croak("Type error in argument 1 of rlib_set_output_format_from_text. Expected _p_rlib");
+                SWIG_croak("Type error in argument 1 of rlib_get_content_type_as_text. Expected _p_rlib");
             }
         }
-        if (!SvOK((SV*) ST(1))) arg2 = 0;
-        else arg2 = (char *) SvPV(ST(1), PL_na);
-        result = (int)rlib_set_output_format_from_text(arg1,arg2);
+        result = (char *)rlib_get_content_type_as_text(arg1);
         
         ST(argvi) = sv_newmortal();
-        sv_setiv(ST(argvi++), (IV) result);
+        if (result) {
+            sv_setpv((SV*)ST(argvi++), (char *) result);
+        } else {
+            sv_setsv((SV*)ST(argvi++), &PL_sv_undef);
+        }
         XSRETURN(argvi);
         fail:
         ;
@@ -1060,22 +1128,126 @@ XS(_wrap_rlib_spool) {
 }
 
 
-XS(_wrap_rlib_free) {
+XS(_wrap_rlib_set_output_format) {
     {
         rlib *arg1 = (rlib *) 0 ;
+        int arg2 ;
         int result;
         int argvi = 0;
         dXSARGS;
         
-        if ((items < 1) || (items > 1)) {
-            SWIG_croak("Usage: rlib_free(r);");
+        if ((items < 2) || (items > 2)) {
+            SWIG_croak("Usage: rlib_set_output_format(r,format);");
         }
         {
             if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
-                SWIG_croak("Type error in argument 1 of rlib_free. Expected _p_rlib");
+                SWIG_croak("Type error in argument 1 of rlib_set_output_format. Expected _p_rlib");
             }
         }
-        result = (int)rlib_free(arg1);
+        arg2 = (int) SvIV(ST(1));
+        result = (int)rlib_set_output_format(arg1,arg2);
+        
+        ST(argvi) = sv_newmortal();
+        sv_setiv(ST(argvi++), (IV) result);
+        XSRETURN(argvi);
+        fail:
+        ;
+    }
+    croak(Nullch);
+}
+
+
+XS(_wrap_rlib_add_resultset_follower_n_to_1) {
+    {
+        rlib *arg1 = (rlib *) 0 ;
+        char *arg2 ;
+        char *arg3 ;
+        char *arg4 ;
+        char *arg5 ;
+        int result;
+        int argvi = 0;
+        dXSARGS;
+        
+        if ((items < 5) || (items > 5)) {
+            SWIG_croak("Usage: rlib_add_resultset_follower_n_to_1(r,leader,leader_field,follower,follower_field);");
+        }
+        {
+            if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
+                SWIG_croak("Type error in argument 1 of rlib_add_resultset_follower_n_to_1. Expected _p_rlib");
+            }
+        }
+        if (!SvOK((SV*) ST(1))) arg2 = 0;
+        else arg2 = (char *) SvPV(ST(1), PL_na);
+        if (!SvOK((SV*) ST(2))) arg3 = 0;
+        else arg3 = (char *) SvPV(ST(2), PL_na);
+        if (!SvOK((SV*) ST(3))) arg4 = 0;
+        else arg4 = (char *) SvPV(ST(3), PL_na);
+        if (!SvOK((SV*) ST(4))) arg5 = 0;
+        else arg5 = (char *) SvPV(ST(4), PL_na);
+        result = (int)rlib_add_resultset_follower_n_to_1(arg1,arg2,arg3,arg4,arg5);
+        
+        ST(argvi) = sv_newmortal();
+        sv_setiv(ST(argvi++), (IV) result);
+        XSRETURN(argvi);
+        fail:
+        ;
+    }
+    croak(Nullch);
+}
+
+
+XS(_wrap_rlib_add_resultset_follower) {
+    {
+        rlib *arg1 = (rlib *) 0 ;
+        char *arg2 ;
+        char *arg3 ;
+        int result;
+        int argvi = 0;
+        dXSARGS;
+        
+        if ((items < 3) || (items > 3)) {
+            SWIG_croak("Usage: rlib_add_resultset_follower(r,leader,follower);");
+        }
+        {
+            if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
+                SWIG_croak("Type error in argument 1 of rlib_add_resultset_follower. Expected _p_rlib");
+            }
+        }
+        if (!SvOK((SV*) ST(1))) arg2 = 0;
+        else arg2 = (char *) SvPV(ST(1), PL_na);
+        if (!SvOK((SV*) ST(2))) arg3 = 0;
+        else arg3 = (char *) SvPV(ST(2), PL_na);
+        result = (int)rlib_add_resultset_follower(arg1,arg2,arg3);
+        
+        ST(argvi) = sv_newmortal();
+        sv_setiv(ST(argvi++), (IV) result);
+        XSRETURN(argvi);
+        fail:
+        ;
+    }
+    croak(Nullch);
+}
+
+
+XS(_wrap_rlib_set_output_format_from_text) {
+    {
+        rlib *arg1 = (rlib *) 0 ;
+        char *arg2 ;
+        int result;
+        int argvi = 0;
+        dXSARGS;
+        
+        if ((items < 2) || (items > 2)) {
+            SWIG_croak("Usage: rlib_set_output_format_from_text(r,name);");
+        }
+        {
+            if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
+                SWIG_croak("Type error in argument 1 of rlib_set_output_format_from_text. Expected _p_rlib");
+            }
+        }
+        if (!SvOK((SV*) ST(1))) arg2 = 0;
+        else arg2 = (char *) SvPV(ST(1), PL_na);
+        result = (int)rlib_set_output_format_from_text(arg1,arg2);
         
         ST(argvi) = sv_newmortal();
         sv_setiv(ST(argvi++), (IV) result);
@@ -1121,7 +1293,7 @@ XS(_wrap_rlib_get_output) {
 XS(_wrap_rlib_get_output_length) {
     {
         rlib *arg1 = (rlib *) 0 ;
-        long result;
+        int result;
         int argvi = 0;
         dXSARGS;
         
@@ -1133,7 +1305,7 @@ XS(_wrap_rlib_get_output_length) {
                 SWIG_croak("Type error in argument 1 of rlib_get_output_length. Expected _p_rlib");
             }
         }
-        result = (long)rlib_get_output_length(arg1);
+        result = (int)rlib_get_output_length(arg1);
         
         ST(argvi) = sv_newmortal();
         sv_setiv(ST(argvi++), (IV) result);
@@ -1145,70 +1317,36 @@ XS(_wrap_rlib_get_output_length) {
 }
 
 
-XS(_wrap_rlib_mysql_report) {
+XS(_wrap_rlib_signal_connect) {
     {
-        char *arg1 ;
-        char *arg2 ;
-        char *arg3 ;
-        char *arg4 ;
-        char *arg5 ;
-        char *arg6 ;
-        char *arg7 ;
-        int result;
-        int argvi = 0;
-        dXSARGS;
-        
-        if ((items < 7) || (items > 7)) {
-            SWIG_croak("Usage: rlib_mysql_report(hostname,username,password,database,xmlfilename,sqlquery,outputformat);");
-        }
-        if (!SvOK((SV*) ST(0))) arg1 = 0;
-        else arg1 = (char *) SvPV(ST(0), PL_na);
-        if (!SvOK((SV*) ST(1))) arg2 = 0;
-        else arg2 = (char *) SvPV(ST(1), PL_na);
-        if (!SvOK((SV*) ST(2))) arg3 = 0;
-        else arg3 = (char *) SvPV(ST(2), PL_na);
-        if (!SvOK((SV*) ST(3))) arg4 = 0;
-        else arg4 = (char *) SvPV(ST(3), PL_na);
-        if (!SvOK((SV*) ST(4))) arg5 = 0;
-        else arg5 = (char *) SvPV(ST(4), PL_na);
-        if (!SvOK((SV*) ST(5))) arg6 = 0;
-        else arg6 = (char *) SvPV(ST(5), PL_na);
-        if (!SvOK((SV*) ST(6))) arg7 = 0;
-        else arg7 = (char *) SvPV(ST(6), PL_na);
-        result = (int)rlib_mysql_report(arg1,arg2,arg3,arg4,arg5,arg6,arg7);
-        
-        ST(argvi) = sv_newmortal();
-        sv_setiv(ST(argvi++), (IV) result);
-        XSRETURN(argvi);
-        fail:
-        ;
-    }
-    croak(Nullch);
-}
-
-
-XS(_wrap_rlib_postgre_report) {
-    {
-        char *arg1 ;
-        char *arg2 ;
-        char *arg3 ;
-        char *arg4 ;
+        rlib *arg1 = (rlib *) 0 ;
+        int arg2 ;
+        int (*arg3)(rlib *,void *) = (int (*)(rlib *,void *)) 0 ;
+        void *arg4 = (void *) 0 ;
         int result;
         int argvi = 0;
         dXSARGS;
         
         if ((items < 4) || (items > 4)) {
-            SWIG_croak("Usage: rlib_postgre_report(connstr,xmlfilename,sqlquery,outputformat);");
+            SWIG_croak("Usage: rlib_signal_connect(r,signal_number,signal_function,data);");
         }
-        if (!SvOK((SV*) ST(0))) arg1 = 0;
-        else arg1 = (char *) SvPV(ST(0), PL_na);
-        if (!SvOK((SV*) ST(1))) arg2 = 0;
-        else arg2 = (char *) SvPV(ST(1), PL_na);
-        if (!SvOK((SV*) ST(2))) arg3 = 0;
-        else arg3 = (char *) SvPV(ST(2), PL_na);
-        if (!SvOK((SV*) ST(3))) arg4 = 0;
-        else arg4 = (char *) SvPV(ST(3), PL_na);
-        result = (int)rlib_postgre_report(arg1,arg2,arg3,arg4);
+        {
+            if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
+                SWIG_croak("Type error in argument 1 of rlib_signal_connect. Expected _p_rlib");
+            }
+        }
+        arg2 = (int) SvIV(ST(1));
+        {
+            if (SWIG_ConvertPtr(ST(2), (void **) &arg3, SWIGTYPE_p_f_p_rlib_p_void__int,0) < 0) {
+                SWIG_croak("Type error in argument 3 of rlib_signal_connect. Expected _p_f_p_rlib_p_void__int");
+            }
+        }
+        {
+            if (SWIG_ConvertPtr(ST(3), (void **) &arg4, 0,0) < 0) {
+                SWIG_croak("Type error in argument 4 of rlib_signal_connect. Expected _p_void");
+            }
+        }
+        result = (int)rlib_signal_connect(arg1,arg2,arg3,arg4);
         
         ST(argvi) = sv_newmortal();
         sv_setiv(ST(argvi++), (IV) result);
@@ -1220,34 +1358,37 @@ XS(_wrap_rlib_postgre_report) {
 }
 
 
-XS(_wrap_rlib_add_datasource_odbc) {
+XS(_wrap_rlib_signal_connect_string) {
     {
         rlib *arg1 = (rlib *) 0 ;
         char *arg2 ;
-        char *arg3 ;
-        char *arg4 ;
-        char *arg5 ;
+        int (*arg3)(rlib *,void *) = (int (*)(rlib *,void *)) 0 ;
+        void *arg4 = (void *) 0 ;
         int result;
         int argvi = 0;
         dXSARGS;
         
-        if ((items < 5) || (items > 5)) {
-            SWIG_croak("Usage: rlib_add_datasource_odbc(r,input_name,source,user,password);");
+        if ((items < 4) || (items > 4)) {
+            SWIG_croak("Usage: rlib_signal_connect_string(r,signal_name,signal_function,data);");
         }
         {
             if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
-                SWIG_croak("Type error in argument 1 of rlib_add_datasource_odbc. Expected _p_rlib");
+                SWIG_croak("Type error in argument 1 of rlib_signal_connect_string. Expected _p_rlib");
             }
         }
         if (!SvOK((SV*) ST(1))) arg2 = 0;
         else arg2 = (char *) SvPV(ST(1), PL_na);
-        if (!SvOK((SV*) ST(2))) arg3 = 0;
-        else arg3 = (char *) SvPV(ST(2), PL_na);
-        if (!SvOK((SV*) ST(3))) arg4 = 0;
-        else arg4 = (char *) SvPV(ST(3), PL_na);
-        if (!SvOK((SV*) ST(4))) arg5 = 0;
-        else arg5 = (char *) SvPV(ST(4), PL_na);
-        result = (int)rlib_add_datasource_odbc(arg1,arg2,arg3,arg4,arg5);
+        {
+            if (SWIG_ConvertPtr(ST(2), (void **) &arg3, SWIGTYPE_p_f_p_rlib_p_void__int,0) < 0) {
+                SWIG_croak("Type error in argument 3 of rlib_signal_connect_string. Expected _p_f_p_rlib_p_void__int");
+            }
+        }
+        {
+            if (SWIG_ConvertPtr(ST(3), (void **) &arg4, 0,0) < 0) {
+                SWIG_croak("Type error in argument 4 of rlib_signal_connect_string. Expected _p_void");
+            }
+        }
+        result = (int)rlib_signal_connect_string(arg1,arg2,arg3,arg4);
         
         ST(argvi) = sv_newmortal();
         sv_setiv(ST(argvi++), (IV) result);
@@ -1259,28 +1400,22 @@ XS(_wrap_rlib_add_datasource_odbc) {
 }
 
 
-XS(_wrap_rlib_add_resultset_follower) {
+XS(_wrap_rlib_query_refresh) {
     {
         rlib *arg1 = (rlib *) 0 ;
-        char *arg2 ;
-        char *arg3 ;
         int result;
         int argvi = 0;
         dXSARGS;
         
-        if ((items < 3) || (items > 3)) {
-            SWIG_croak("Usage: rlib_add_resultset_follower(r,leader,follower);");
+        if ((items < 1) || (items > 1)) {
+            SWIG_croak("Usage: rlib_query_refresh(r);");
         }
         {
             if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
-                SWIG_croak("Type error in argument 1 of rlib_add_resultset_follower. Expected _p_rlib");
+                SWIG_croak("Type error in argument 1 of rlib_query_refresh. Expected _p_rlib");
             }
         }
-        if (!SvOK((SV*) ST(1))) arg2 = 0;
-        else arg2 = (char *) SvPV(ST(1), PL_na);
-        if (!SvOK((SV*) ST(2))) arg3 = 0;
-        else arg3 = (char *) SvPV(ST(2), PL_na);
-        result = (int)rlib_add_resultset_follower(arg1,arg2,arg3);
+        result = (int)rlib_query_refresh(arg1);
         
         ST(argvi) = sv_newmortal();
         sv_setiv(ST(argvi++), (IV) result);
@@ -1325,23 +1460,59 @@ XS(_wrap_rlib_add_parameter) {
 }
 
 
-XS(_wrap_rlib_version) {
+XS(_wrap_rlib_set_locale) {
     {
-        char *result;
+        rlib *arg1 = (rlib *) 0 ;
+        char *arg2 ;
+        int result;
         int argvi = 0;
         dXSARGS;
         
-        if ((items < 0) || (items > 0)) {
-            SWIG_croak("Usage: rlib_version();");
+        if ((items < 2) || (items > 2)) {
+            SWIG_croak("Usage: rlib_set_locale(r,locale);");
         }
-        result = (char *)rlib_version();
+        {
+            if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
+                SWIG_croak("Type error in argument 1 of rlib_set_locale. Expected _p_rlib");
+            }
+        }
+        if (!SvOK((SV*) ST(1))) arg2 = 0;
+        else arg2 = (char *) SvPV(ST(1), PL_na);
+        result = (int)rlib_set_locale(arg1,arg2);
         
         ST(argvi) = sv_newmortal();
-        if (result) {
-            sv_setpv((SV*)ST(argvi++), (char *) result);
-        } else {
-            sv_setsv((SV*)ST(argvi++), &PL_sv_undef);
+        sv_setiv(ST(argvi++), (IV) result);
+        XSRETURN(argvi);
+        fail:
+        ;
+    }
+    croak(Nullch);
+}
+
+
+XS(_wrap_rlib_set_output_parameter) {
+    {
+        rlib *arg1 = (rlib *) 0 ;
+        char *arg2 ;
+        char *arg3 ;
+        int argvi = 0;
+        dXSARGS;
+        
+        if ((items < 3) || (items > 3)) {
+            SWIG_croak("Usage: rlib_set_output_parameter(r,parameter,value);");
         }
+        {
+            if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
+                SWIG_croak("Type error in argument 1 of rlib_set_output_parameter. Expected _p_rlib");
+            }
+        }
+        if (!SvOK((SV*) ST(1))) arg2 = 0;
+        else arg2 = (char *) SvPV(ST(1), PL_na);
+        if (!SvOK((SV*) ST(2))) arg3 = 0;
+        else arg3 = (char *) SvPV(ST(2), PL_na);
+        rlib_set_output_parameter(arg1,arg2,arg3);
+        
+        
         XSRETURN(argvi);
         fail:
         ;
@@ -1378,26 +1549,24 @@ XS(_wrap_rlib_set_output_encoding) {
 }
 
 
-XS(_wrap_rlib_set_report_output_encoding) {
+XS(_wrap_rlib_set_database_encoding) {
     {
         rlib *arg1 = (rlib *) 0 ;
-        int arg2 ;
-        char *arg3 ;
+        char *arg2 ;
         int argvi = 0;
         dXSARGS;
         
-        if ((items < 3) || (items > 3)) {
-            SWIG_croak("Usage: rlib_set_report_output_encoding(r,reportnum,encoding);");
+        if ((items < 2) || (items > 2)) {
+            SWIG_croak("Usage: rlib_set_database_encoding(r,encoding);");
         }
         {
             if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
-                SWIG_croak("Type error in argument 1 of rlib_set_report_output_encoding. Expected _p_rlib");
+                SWIG_croak("Type error in argument 1 of rlib_set_database_encoding. Expected _p_rlib");
             }
         }
-        arg2 = (int) SvIV(ST(1));
-        if (!SvOK((SV*) ST(2))) arg3 = 0;
-        else arg3 = (char *) SvPV(ST(2), PL_na);
-        rlib_set_report_output_encoding(arg1,arg2,(char const *)arg3);
+        if (!SvOK((SV*) ST(1))) arg2 = 0;
+        else arg2 = (char *) SvPV(ST(1), PL_na);
+        rlib_set_database_encoding(arg1,(char const *)arg2);
         
         
         XSRETURN(argvi);
@@ -1408,27 +1577,57 @@ XS(_wrap_rlib_set_report_output_encoding) {
 }
 
 
-XS(_wrap_rlib_set_pdf_font) {
+XS(_wrap_rlib_set_datasource_encoding) {
     {
         rlib *arg1 = (rlib *) 0 ;
         char *arg2 ;
         char *arg3 ;
+        int result;
         int argvi = 0;
         dXSARGS;
         
         if ((items < 3) || (items > 3)) {
-            SWIG_croak("Usage: rlib_set_pdf_font(r,encoding,fontname);");
+            SWIG_croak("Usage: rlib_set_datasource_encoding(r,input_name,encoding);");
         }
         {
             if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
-                SWIG_croak("Type error in argument 1 of rlib_set_pdf_font. Expected _p_rlib");
+                SWIG_croak("Type error in argument 1 of rlib_set_datasource_encoding. Expected _p_rlib");
             }
         }
         if (!SvOK((SV*) ST(1))) arg2 = 0;
         else arg2 = (char *) SvPV(ST(1), PL_na);
         if (!SvOK((SV*) ST(2))) arg3 = 0;
         else arg3 = (char *) SvPV(ST(2), PL_na);
-        rlib_set_pdf_font(arg1,(char const *)arg2,(char const *)arg3);
+        result = (int)rlib_set_datasource_encoding(arg1,arg2,arg3);
+        
+        ST(argvi) = sv_newmortal();
+        sv_setiv(ST(argvi++), (IV) result);
+        XSRETURN(argvi);
+        fail:
+        ;
+    }
+    croak(Nullch);
+}
+
+
+XS(_wrap_rlib_set_parameter_encoding) {
+    {
+        rlib *arg1 = (rlib *) 0 ;
+        char *arg2 ;
+        int argvi = 0;
+        dXSARGS;
+        
+        if ((items < 2) || (items > 2)) {
+            SWIG_croak("Usage: rlib_set_parameter_encoding(r,encoding);");
+        }
+        {
+            if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
+                SWIG_croak("Type error in argument 1 of rlib_set_parameter_encoding. Expected _p_rlib");
+            }
+        }
+        if (!SvOK((SV*) ST(1))) arg2 = 0;
+        else arg2 = (char *) SvPV(ST(1), PL_na);
+        rlib_set_parameter_encoding(arg1,(char const *)arg2);
         
         
         XSRETURN(argvi);
@@ -1439,29 +1638,84 @@ XS(_wrap_rlib_set_pdf_font) {
 }
 
 
-XS(_wrap_rlib_set_pdf_font_directories) {
+XS(_wrap_rlib_set_encodings) {
     {
         rlib *arg1 = (rlib *) 0 ;
         char *arg2 ;
         char *arg3 ;
+        char *arg4 ;
         int argvi = 0;
         dXSARGS;
         
-        if ((items < 3) || (items > 3)) {
-            SWIG_croak("Usage: rlib_set_pdf_font_directories(r,d1,d2);");
+        if ((items < 4) || (items > 4)) {
+            SWIG_croak("Usage: rlib_set_encodings(r,outputencoding,dbencoding,paramencoding);");
         }
         {
             if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
-                SWIG_croak("Type error in argument 1 of rlib_set_pdf_font_directories. Expected _p_rlib");
+                SWIG_croak("Type error in argument 1 of rlib_set_encodings. Expected _p_rlib");
             }
         }
         if (!SvOK((SV*) ST(1))) arg2 = 0;
         else arg2 = (char *) SvPV(ST(1), PL_na);
         if (!SvOK((SV*) ST(2))) arg3 = 0;
         else arg3 = (char *) SvPV(ST(2), PL_na);
-        rlib_set_pdf_font_directories(arg1,(char const *)arg2,(char const *)arg3);
+        if (!SvOK((SV*) ST(3))) arg4 = 0;
+        else arg4 = (char *) SvPV(ST(3), PL_na);
+        rlib_set_encodings(arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
         
         
+        XSRETURN(argvi);
+        fail:
+        ;
+    }
+    croak(Nullch);
+}
+
+
+XS(_wrap_rlib_free) {
+    {
+        rlib *arg1 = (rlib *) 0 ;
+        int result;
+        int argvi = 0;
+        dXSARGS;
+        
+        if ((items < 1) || (items > 1)) {
+            SWIG_croak("Usage: rlib_free(r);");
+        }
+        {
+            if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
+                SWIG_croak("Type error in argument 1 of rlib_free. Expected _p_rlib");
+            }
+        }
+        result = (int)rlib_free(arg1);
+        
+        ST(argvi) = sv_newmortal();
+        sv_setiv(ST(argvi++), (IV) result);
+        XSRETURN(argvi);
+        fail:
+        ;
+    }
+    croak(Nullch);
+}
+
+
+XS(_wrap_rlib_version) {
+    {
+        char *result;
+        int argvi = 0;
+        dXSARGS;
+        
+        if ((items < 0) || (items > 0)) {
+            SWIG_croak("Usage: rlib_version();");
+        }
+        result = (char *)rlib_version();
+        
+        ST(argvi) = sv_newmortal();
+        if (result) {
+            sv_setpv((SV*)ST(argvi++), (char *) result);
+        } else {
+            sv_setsv((SV*)ST(argvi++), &PL_sv_undef);
+        }
         XSRETURN(argvi);
         fail:
         ;
@@ -1474,9 +1728,11 @@ XS(_wrap_rlib_set_pdf_font_directories) {
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
 static swig_type_info _swigt__p_rlib[] = {{"_p_rlib", 0, "rlib *", 0},{"_p_rlib"},{0}};
+static swig_type_info _swigt__p_f_p_rlib_p_void__int[] = {{"_p_f_p_rlib_p_void__int", 0, "int (*)(rlib *,void *)", 0},{"_p_f_p_rlib_p_void__int"},{0}};
 
 static swig_type_info *swig_types_initial[] = {
 _swigt__p_rlib, 
+_swigt__p_f_p_rlib_p_void__int, 
 0
 };
 
@@ -1496,24 +1752,32 @@ static swig_command_info swig_commands[] = {
 {"librlibc::rlib_init", _wrap_rlib_init},
 {"librlibc::rlib_add_datasource_mysql", _wrap_rlib_add_datasource_mysql},
 {"librlibc::rlib_add_datasource_postgre", _wrap_rlib_add_datasource_postgre},
+{"librlibc::rlib_add_datasource_odbc", _wrap_rlib_add_datasource_odbc},
 {"librlibc::rlib_add_query_as", _wrap_rlib_add_query_as},
 {"librlibc::rlib_add_report", _wrap_rlib_add_report},
+{"librlibc::rlib_add_report_from_buffer", _wrap_rlib_add_report_from_buffer},
 {"librlibc::rlib_execute", _wrap_rlib_execute},
-{"librlibc::rlib_set_output_format_from_text", _wrap_rlib_set_output_format_from_text},
+{"librlibc::rlib_get_content_type_as_text", _wrap_rlib_get_content_type_as_text},
 {"librlibc::rlib_spool", _wrap_rlib_spool},
-{"librlibc::rlib_free", _wrap_rlib_free},
+{"librlibc::rlib_set_output_format", _wrap_rlib_set_output_format},
+{"librlibc::rlib_add_resultset_follower_n_to_1", _wrap_rlib_add_resultset_follower_n_to_1},
+{"librlibc::rlib_add_resultset_follower", _wrap_rlib_add_resultset_follower},
+{"librlibc::rlib_set_output_format_from_text", _wrap_rlib_set_output_format_from_text},
 {"librlibc::rlib_get_output", _wrap_rlib_get_output},
 {"librlibc::rlib_get_output_length", _wrap_rlib_get_output_length},
-{"librlibc::rlib_mysql_report", _wrap_rlib_mysql_report},
-{"librlibc::rlib_postgre_report", _wrap_rlib_postgre_report},
-{"librlibc::rlib_add_datasource_odbc", _wrap_rlib_add_datasource_odbc},
-{"librlibc::rlib_add_resultset_follower", _wrap_rlib_add_resultset_follower},
+{"librlibc::rlib_signal_connect", _wrap_rlib_signal_connect},
+{"librlibc::rlib_signal_connect_string", _wrap_rlib_signal_connect_string},
+{"librlibc::rlib_query_refresh", _wrap_rlib_query_refresh},
 {"librlibc::rlib_add_parameter", _wrap_rlib_add_parameter},
-{"librlibc::rlib_version", _wrap_rlib_version},
+{"librlibc::rlib_set_locale", _wrap_rlib_set_locale},
+{"librlibc::rlib_set_output_parameter", _wrap_rlib_set_output_parameter},
 {"librlibc::rlib_set_output_encoding", _wrap_rlib_set_output_encoding},
-{"librlibc::rlib_set_report_output_encoding", _wrap_rlib_set_report_output_encoding},
-{"librlibc::rlib_set_pdf_font", _wrap_rlib_set_pdf_font},
-{"librlibc::rlib_set_pdf_font_directories", _wrap_rlib_set_pdf_font_directories},
+{"librlibc::rlib_set_database_encoding", _wrap_rlib_set_database_encoding},
+{"librlibc::rlib_set_datasource_encoding", _wrap_rlib_set_datasource_encoding},
+{"librlibc::rlib_set_parameter_encoding", _wrap_rlib_set_parameter_encoding},
+{"librlibc::rlib_set_encodings", _wrap_rlib_set_encodings},
+{"librlibc::rlib_free", _wrap_rlib_free},
+{"librlibc::rlib_version", _wrap_rlib_version},
 {0,0}
 };
 

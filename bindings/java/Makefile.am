@@ -22,5 +22,5 @@
 lib_LTLIBRARIES = librlibjava.la
 librlibjava_la_SOURCES = java.c 
 librlibjava_la_LIBADD = -L${top_builddir}/libsrc/ -lr $(RLIB_LIBS)
-INCLUDES = -I${top_srcdir}/libsrc/ $(RLIB_CFLAGS) -fno-strict-aliasing
+INCLUDES = -I${top_srcdir}/libsrc/ $(RLIB_CFLAGS) $(JAVA_CFLAGS) -fno-strict-aliasing
 librlibjava_la_LDFLAGS = -release $(RLIB_VERSION)

@@ -32,11 +32,16 @@ if HAVE_JAVA
 JAVA_EXAMPLES=java
 endif
 
+if HAVE_PERL
+PERL_EXAMPLES=perl
+endif
+
 SUBDIRS = \
 	common \
 	c \
 	$(PHP_EXAMPLES) \
 	$(PYTHON_EXAMPLES) \
-	$(JAVA_EXAMPLES) 
+	$(JAVA_EXAMPLES) \
+	$(PERL_EXAMPLES) 
 
 EXTRA_DIST = README

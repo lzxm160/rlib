@@ -1,6 +1,6 @@
-## bindings/php/Makefile.am for RLIB
+## bin/Makefile.am for RLIB
 
-## Copyright (c) 2003 SICOM Systems Inc (bdoan@sicompos.com)
+## Copyright (c) 2003-2005 SICOM Systems Inc (bdoan@sicompos.com)
 ## rlib is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 2, or (at your option)
@@ -19,9 +19,12 @@
 ## Report bugs to rlib-devel@lists.sourceforge.net
 ##
 ## Process this file with automake to produce Makefile.in
-lib_LTLIBRARIES = librlib.la
-librlib_la_SOURCES = environment.c php.c array_data_source.c rlib_php.h
-librlib_la_LIBADD = -L${top_builddir}/libsrc/ -lr $(RLIB_LIBS)
-INCLUDES = -I${top_srcdir}/libsrc/ $(RLIB_CFLAGS) $(PHP_CFLAGS) $(RLIB_WERROR)
-librlib_la_LDFLAGS = -release $(RLIB_VERSION)
-libdir = $(PHP_EXTENSION_DIR)
+
+noinst_SCRIPTS = products.xml
+
+products.xml: 
+	cp ../common/products.xml .
+
+CLEANFILES = *.xml 
+
+EXTRADIST=example.pm
