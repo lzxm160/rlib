@@ -45,13 +45,13 @@ static void print_text(rlib *r, gchar *text, gint backwards) {
 	if(backwards) {
 		make_more_space_if_necessary(&OUTPUT_PRIVATE(r)->bottom[OUTPUT_PRIVATE(r)->page_number].data, 
 			&OUTPUT_PRIVATE(r)->bottom[OUTPUT_PRIVATE(r)->page_number].size, 
-			&OUTPUT_PRIVATE(r)->bottom[OUTPUT_PRIVATE(r)->page_number].total_size, text_size);
+			&OUTPUT_PRIVATE(r)->bottom[OUTPUT_PRIVATE(r)->page_number].total_size, text_size+1);
 		str_ptr = OUTPUT_PRIVATE(r)->bottom[OUTPUT_PRIVATE(r)->page_number].data;
 		size = &OUTPUT_PRIVATE(r)->bottom[OUTPUT_PRIVATE(r)->page_number].size;
 	} else {
 		make_more_space_if_necessary(&OUTPUT_PRIVATE(r)->top[OUTPUT_PRIVATE(r)->page_number].data, 
 			&OUTPUT_PRIVATE(r)->top[OUTPUT_PRIVATE(r)->page_number].size, 
-			&OUTPUT_PRIVATE(r)->top[OUTPUT_PRIVATE(r)->page_number].total_size, text_size);
+			&OUTPUT_PRIVATE(r)->top[OUTPUT_PRIVATE(r)->page_number].total_size, text_size+1);
 		str_ptr = OUTPUT_PRIVATE(r)->top[OUTPUT_PRIVATE(r)->page_number].data;	
 		size = &OUTPUT_PRIVATE(r)->top[OUTPUT_PRIVATE(r)->page_number].size;
 	}
@@ -105,6 +105,8 @@ static void rlib_txt_end_report(rlib *r) {
 	gint i;
 	gint pages_accross = r->reports[r->current_report]->pages_accross;
 	gint sofar = OUTPUT_PRIVATE(r)->length;
+
+	
 	for(i=0;i<pages_accross;i++) {
 		OUTPUT_PRIVATE(r)->both = g_realloc(OUTPUT_PRIVATE(r)->both, sofar + OUTPUT_PRIVATE(r)->top[i].size + OUTPUT_PRIVATE(r)->bottom[i].size);
 		memcpy(OUTPUT_PRIVATE(r)->both + sofar , OUTPUT_PRIVATE(r)->top[i].data, OUTPUT_PRIVATE(r)->top[i].size);
@@ -119,6 +121,7 @@ static void rlib_txt_end_report(rlib *r) {
 	}
 	g_free(OUTPUT_PRIVATE(r)->top);
 	g_free(OUTPUT_PRIVATE(r)->bottom);
+
 }
 
 static void rlib_txt_end_page(rlib *r) {

@@ -1,3 +1,15 @@
+2004-07-23  Bob Doan  <bdoan@sicompos.com>
+	* configure.in: bump version
+	* inputs/mysql/Makefile.am: don't link w/ rlib here
+	* inputs/odbc/Makefile.am: likewise
+	* inputs/postgre/Makefile.am: likewise
+	* libsrc/api.c: a new function to not dup the query
+	* libsrc/free.c: 
+	* libsrc/parsexml.c: and check fro iconv error
+	* libsrc/pcode.h: flag a free byte
+	* libsrc/rlib.h: likewise
+	* libsrc/txt.c: writing was off by 1 sometimes
+
 2004-07-20  Bob Doan  <bdoan@sicompos.com>
 	* autogen.sh: take out warnings by default
 	* configure.in: bump version to offical stable release

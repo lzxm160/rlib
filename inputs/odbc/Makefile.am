@@ -23,7 +23,7 @@
 lib_LTLIBRARIES = libr-odbc.la
 libr_odbc_la_SOURCES = odbc.c
 
-libr_odbc_la_LIBADD = $(RLIB_LIBS) -L${top_builddir}/libsrc/ -lr
+libr_odbc_la_LIBADD = $(RLIB_LIBS) 
 
 INCLUDES = $(RLIB_CFLAGS) -I${top_srcdir}/libsrc/
 

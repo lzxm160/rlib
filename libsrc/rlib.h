@@ -337,7 +337,7 @@ struct count_amount {
 #define REPORT_VARIABLE_LOWEST		5
 #define REPORT_VARIABLE_HIGHEST		6
 
-#define RLIB_VARIABLE_CA(a)	((struct count_amount *)a->dude)
+#define RLIB_VARIABLE_CA(a)	((struct count_amount *)a->data)
 
 struct report_variable {
 	xmlChar *name;
@@ -347,7 +347,7 @@ struct report_variable {
 
 	gint type;
 	struct rlib_pcode *code;
-	gpointer dude;	
+	gpointer data;	
 };
 
 
@@ -547,6 +547,7 @@ gint64 rlib_fxp_div(gint64 num, gint64 denom, gint places);
 rlib * rlib_init(void);
 rlib * rlib_init_with_environment(struct environment_filter *environment);
 gint rlib_add_query_as(rlib *r, gchar *input_name, gchar *sql, gchar *name);
+gint rlib_add_query_pointer_as(rlib *r, gchar *input_source, gchar *sql, gchar *name);
 gint rlib_add_report(rlib *r, gchar *name, gchar *mainloop);
 gint rlib_execute(rlib *r);
 char * rlib_get_content_type_as_text(rlib *r);

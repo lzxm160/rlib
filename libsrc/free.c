@@ -281,10 +281,11 @@ void free_results(rlib *r) {
 
 gint rlib_free(rlib *r) {
 	int i;
-
 	rlib_char_encoder_destroy(&r->db_encoder);
 	rlib_char_encoder_destroy(&r->param_encoder);
 	rlib_char_encoder_destroy(&r->output_encoder);
+
+
 	rlib_free_tree(r);
 	xmlCleanupParser();
 	free_results(r);
