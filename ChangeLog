@@ -1,5 +1,9 @@
+2005-01-20  Bob Doan  <bdoan@sicompos.com>
+	* NEWS: Release Time
+	* configure.in: Snow Patrol is a pretty good band.  Chceck them out
+
 2005-01-14  Bob Doan  <bdoan@sicompos.com>
-	* libsrc/graphing.c: Don't try to graph a dataset with only 1 row
+	* libsrc/graphing.c: Don't try to graph a dataset <= 1 row
 
 2005-01-14  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/html.c: vertical text on x axis w/ line graphs now is in the right spot.

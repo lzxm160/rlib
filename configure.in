@@ -479,7 +479,7 @@ rlib-$VERSION:
     PERL:                    ${enable_perl}
      PERL entension dir:     ${PERL_EXTENSION_DIR}
 
-   Music:                    R.E.M
+   Music:                    Snow Patrol
 	
    Having Problems:          rlib-users@lists.sf.net 	
    Want to contribute:       rlib-devel@lists.sf.net	
