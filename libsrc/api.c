@@ -162,6 +162,7 @@ long rlib_get_output_length(rlib *r) {
 	return OUTPUT(r)->rlib_get_output_length(r);
 }
 
+#if HAVE_MYSQL
 int rlib_mysql_report(char *hostname, char *username, char *password, char *database, char *xmlfilename, char *sqlquery, char *outputformat) {
 	rlib *r;
 	r = rlib_init();
@@ -176,7 +177,9 @@ int rlib_mysql_report(char *hostname, char *username, char *password, char *data
 	rlib_free(r);
 	return 0;
 }
+#endif
 
+#if HAVE_POSTGRE
 int rlib_postgre_report(char *connstr, char *xmlfilename, char *sqlquery, char *outputformat) {
 	rlib *r;
 	r = rlib_init();
@@ -191,3 +194,4 @@ int rlib_postgre_report(char *connstr, char *xmlfilename, char *sqlquery, char *
 	rlib_free(r);
 	return 0;
 }
+#endif

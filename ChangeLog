@@ -1,3 +1,11 @@
+2003-11-07  Bob Doan  <bdoan@sicompos.com>
+	* NEWS: new news
+	* libsrc/api.c: only have easy api if configured for it
+	* doc/symboltable.sgm: new date() function
+	* libsrc/pcode.c: likewise
+	* libsrc/pcode.h: likewise
+	* libsrc/pcode_op_functions.c: likewise
+
 2003-11-05  Bob Doan  <bdoan@sicompos.com>
 
 	* configure.in: better checks for cpdflib

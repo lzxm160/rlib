@@ -1,3 +1,13 @@
+1.1.3
+===
+
+- New One Line Functions for simple reports from John Buckman <john@magnatune.com>
+- Python Bindings
+- new date() function to retuen date/time to rlib
+- allow for non lowercase database file names
+- better error checking/ less crashes
+- faster report generation
+
 1.1.2
 ===
 

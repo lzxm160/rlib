@@ -788,3 +788,12 @@ int rlib_pcode_operator_wiyo(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	rlib_pcode_operator_fatal_execption("wiyo", 2, v1, v2, NULL);
 	return FALSE;
 }
+
+int rlib_pcode_operator_date(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+	struct rlib_value rval_rtn;
+	struct tm *ptr;
+	long now = time(NULL);
+	ptr = localtime(&now);
+	rlib_value_stack_push(vs, rlib_value_new_date(&rval_rtn, ptr));
+	return TRUE;
+}

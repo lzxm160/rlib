@@ -386,4 +386,13 @@
 			<emphasis> Returns</emphasis> NUMBER
 		</para>
 	</sect1>		
+	<sect1>
+		<title>date()</title>
+		<para>
+			Returns the current date time in RLIB DATE Format
+		</para>
+		<para>
+			<emphasis> Returns</emphasis> DATE
+		</para>
+	</sect1>		
 </chapter>

@@ -84,6 +84,7 @@ struct rlib_pcode_operator rlib_pcode_verbs[] = {
       {"dim(", 	4, 0,	TRUE,	OP_DIM,  	TRUE, 	rlib_pcode_operator_dim},
       {"wiy(", 	4, 0,	TRUE,	OP_WIY,  	TRUE, 	rlib_pcode_operator_wiy},
       {"wiyo(", 	5, 0,	TRUE,	OP_WIYO,  	TRUE, 	rlib_pcode_operator_wiyo},
+      {"date(", 	5, 0,	TRUE,	OP_DATE,  	TRUE, 	rlib_pcode_operator_date},
       { NULL, 	 	0, 0, FALSE,-1,			TRUE,		NULL}
 };
 
