@@ -148,22 +148,24 @@ void rlib_char_encoder_set_buffer(rlib_char_encoder *rce, gchar *buf, gint max) 
 const gchar *rlib_char_encoder_encode(rlib_char_encoder *rce, const gchar *text) {
 	const gchar *result = text;
 	if (rce) {
-		if (!rce->buffer && !rce->isUTF8) {
-			rce->allocatedbuffer = rce->buffer = g_malloc(MAXSTRLEN);
-			rce->buffer[0] = '\0';
-			rce->bufsize = MAXSTRLEN;
-		}
-		if ((rce->encoder == (iconv_t) -1) && !rce->isUTF8) {
-			if (!rce->error) { // No previous error on open attempt
-				rce->encoder = (rce->output)? iconv_open(rce->name, "UTF-8") : iconv_open("UTF-8", rce->name);
-				if (rce->encoder == (iconv_t) -1) {
-					rce->error = TRUE;
-					r_error("Could not create iconv for %s", rce->name);
+		if (!rce->isUTF8) {
+			if (!rce->buffer) {
+				rce->allocatedbuffer = rce->buffer = g_malloc(MAXSTRLEN);
+				rce->buffer[0] = '\0';
+				rce->bufsize = MAXSTRLEN;
+			}
+			if (rce->encoder == (iconv_t) -1) {
+				if (!rce->error) { // No previous error on open attempt
+					rce->encoder = (rce->output)? iconv_open(rce->name, "UTF-8") : iconv_open("UTF-8", rce->name);
+					if (rce->encoder == (iconv_t) -1) {
+						rce->error = TRUE;
+						r_error("Could not create iconv for %s", rce->name);
+					}
 				}
 			}
-		}
-		result = encode(rce->buffer, rce->bufsize, rce->encoder, text);
+			result = encode(rce->buffer, rce->bufsize, rce->encoder, text);
 //		if (rce->output) r_debug("encode_text OUTPUT is [%s], input[%s]", result, text);
+		}
 	} else {
 		r_error("Encoder was NULL");
 	}
