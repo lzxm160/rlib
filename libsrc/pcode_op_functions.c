@@ -781,8 +781,8 @@ static gint rlib_pcode_operator_stod_common(rlib *r, struct rlib_value_stack *vs
 	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_STRING(v1)) {
-		gint year = 1900, month = 1, day = 1;
-		gint hour = 0, minute = 0, second = 0;
+		gint year = 1980, month = 1, day = 1; //A safe date when we only need time.
+		gint hour = 12, minute = 0, second = 0; //safe time for date only.
 		gchar ampm = 'a';
 		struct tm tm_date;
 		time_t tmp_time;
@@ -807,7 +807,7 @@ static gint rlib_pcode_operator_stod_common(rlib *r, struct rlib_value_stack *vs
 					}
 				}
 			}
-			if (toupper(ampm == 'P')) hour += 12;
+			if (toupper(ampm) == 'P') hour += 12;
 			hour %= 24;
 		} else { //convert date
 			if (sscanf(tstr, "%4d-%2d-%2d", &year, &month, &day) != 3) {
@@ -828,6 +828,7 @@ static gint rlib_pcode_operator_stod_common(rlib *r, struct rlib_value_stack *vs
 			tmp_time = mktime(&tm_date);
 			localtime_r(&tmp_time, &tm_date);		
 			rlib_value_free(v1);
+
 			rlib_value_stack_push(vs, rlib_value_new_date(&rval_rtn, &tm_date));
 			return TRUE;
 		}
