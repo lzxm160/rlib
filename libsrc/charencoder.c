@@ -34,10 +34,13 @@
 #include <langinfo.h>
 #include <errno.h>
 
+#include <config.h>
+
 #include "rlib.h"
 #include "rlib_input.h"
 
-
+#if DISABLE_UTF8
+#else
 static const gchar *encode(gchar *encodebuf, size_t len, iconv_t cd, const gchar *txt) {
 	size_t slen;
 	gchar *dest = encodebuf;
@@ -92,7 +95,7 @@ static const gchar *encode(gchar *encodebuf, size_t len, iconv_t cd, const gchar
 	}
 	return ret;
 }
-
+#endif
 
 /*static iconv_t open_input_encoder(const gchar *encoding) {
 	if (!g_strcasecmp(encoding, "UTF-8") || !g_strcasecmp(encoding, "UTF8")) {

@@ -1,4 +1,4 @@
-## bin/Makefile.am for RLIB
+## src/examples/c/Makefile.am for RLIB
 
 ## Copyright (c) 2003 SICOM Systems Inc (bdoan@sicompos.com)
 ## rlib is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@ noinst_PROGRAMS = example
 INCLUDES = $(RLIB_CFLAGS) -I${top_srcdir}/libsrc/  
 
 example_SOURCES= example.c
-example_LDADD = -L${top_builddir}/libsrc/ $(RLIB_LIBS) -lr -lr-mysql
+example_LDADD = -L${top_builddir}/libsrc/ -L${top_builddir}/inputs/mysql/ $(RLIB_LIBS) -lr -lr-mysql
 
 noinst_SCRIPTS = products.xml
 

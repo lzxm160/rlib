@@ -30,6 +30,7 @@
 #include <string.h>
 #include <langinfo.h>
 
+#include <config.h>
 #include "rlib.h"
 #include "pcode.h"
 #include "rlib_input.h"
@@ -1167,8 +1168,10 @@ gint make_report(rlib *r) {
 		rlib_txt_new_output_filter(r);
 	else if(r->format == RLIB_FORMAT_CSV)
 		rlib_csv_new_output_filter(r);
+#ifdef HAVE_LIBCPDF
 	else
 		rlib_pdf_new_output_filter(r);
+#endif
 	r->current_font_point = -1;
 
 	OUTPUT(r)->rlib_set_fg_color(r, -1, -1, -1);

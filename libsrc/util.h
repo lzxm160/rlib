@@ -25,7 +25,7 @@
 #define RLIBUTIL_H
 
 #include <glib.h>
-
+#include <config.h>
 
 struct rgb {
 	gfloat r;
@@ -76,7 +76,7 @@ gchar *str2hex(const gchar *str);
 #define r_strcmp(s1,s2) (strcmp(s1, s2))
 #define r_strupr(s) (strupr(s))
 #define r_strlwr(s) (strlwr(s))
-#define r_ptrfromindex(s, idx) (g_utf8_offset_to_pointer(s, idx))
+#define r_ptrfromindex(s, idx) (s+idx)
 
 #else
 #define r_charcount(s) (g_utf8_strlen(s, -1))
@@ -87,7 +87,7 @@ gchar *str2hex(const gchar *str);
 #define r_strcmp(a,b) (g_utf8_collate(a, b))
 #define r_strupr(a) (g_utf8_strup(a, -1))
 #define r_strlwr(a) (g_utf8_strdown(a, -1))
-#define r_ptrfromindex(s, idx) (s+idx)
+#define r_ptrfromindex(s, idx) (g_utf8_offset_to_pointer(s, idx))
 
 #endif
 

@@ -31,10 +31,13 @@
 #include <locale.h>
 #include <langinfo.h>
 
+#include "config.h"
 #include "rlib.h"
 #include "rlib_input.h"
 
-//void rlib_set_encodings(rlib *r, const char *outputencoding, const char *dbencoding, const char *paramencoding);
+#ifndef CODESET
+#define CODESET _NL_CTYPE_CODESET_NAME
+#endif
 
 rlib * rlib_init_with_environment(struct environment_filter *environment) {
 	gchar *lc_encoding;
@@ -140,9 +143,11 @@ gint rlib_execute(rlib *r) {
 
 gchar * rlib_get_content_type_as_text(rlib *r) {
 	static char buf[256];
-	if(r->format == RLIB_CONTENT_TYPE_PDF) {
+#ifdef HAVE_LIBCPDF	
+	if(r->format == RLIB_CONTENT_TYPE_PDF)
 		return RLIB_WEB_CONTENT_TYPE_PDF;
-	} else if(r->format == RLIB_CONTENT_TYPE_CSV) {
+#endif
+	if(r->format == RLIB_CONTENT_TYPE_CSV) {
 		return RLIB_WEB_CONTENT_TYPE_CSV;
 	} else {
 		const char *charset = (r->current_output_encoder)? 
@@ -204,9 +209,11 @@ gint rlib_add_resultset_follower(rlib *r, gchar *leader, gchar *follower) {
 }
 
 gint rlib_set_output_format_from_text(rlib *r, gchar *name) {
+#ifdef HAVE_LIBCPDF	
 	if(!strcasecmp(name, "PDF"))
 		r->format = RLIB_FORMAT_PDF;
-	else if(!strcasecmp(name, "HTML"))
+#endif
+	if(!strcasecmp(name, "HTML"))
 		r->format = RLIB_FORMAT_HTML;
 	else if(!strcasecmp(name, "TXT"))
 		r->format = RLIB_FORMAT_TXT;

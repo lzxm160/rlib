@@ -20,6 +20,7 @@
 #include <locale.h>
 #include <string.h>
 #include <cpdflib.h>
+#include <config.h>
 
 #include "rlib.h"
 
@@ -173,7 +174,11 @@ static void rlib_pdf_set_font_point(rlib *r, gint point) {
 		encoding = (*r->pdf_encoding)? r->pdf_encoding : NULL;
 		fontname = (*r->pdf_fontname)? r->pdf_fontname : "Courier";
 //r_debug("Fontname %s, encoding %s", fontname, encoding);
+#if DISABLE_UTF8
+		result = cpdf_setFont(OUTPUT_PRIVATE(r)->pdf, fontname, "WinAnsiEncoding", point);
+#else
 		result = cpdf_setFont(OUTPUT_PRIVATE(r)->pdf, fontname, encoding, point);
+#endif
 //r_debug("cpdf_setFont returned %d for f:%s, e:%s", result, fontname, encoding);
 		r->current_font_point = point;
 	}

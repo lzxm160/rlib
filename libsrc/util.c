@@ -42,6 +42,30 @@
 gint64 llabs(gint64 j);
 
 
+#ifndef LC_PAPER
+#define LC_PAPER 7
+#endif
+
+#ifndef LC_NAME
+#define LC_NAME 8
+#endif
+
+#ifndef LC_ADDRESS
+#define LC_ADDRESS 9
+#endif
+
+#ifndef LC_TELEPHONE
+#define LC_TELEPHONE 10
+#endif
+
+#ifndef LC_MEASUREMENT
+#define LC_MEASUREMENT 11
+#endif
+
+#ifndef LC_IDENTIFICATION
+#define LC_IDENTIFICATION 12
+#endif
+
 int locale_codes[] = {
 	LC_ALL,
 	LC_COLLATE,

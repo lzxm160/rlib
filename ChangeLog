@@ -1,3 +1,16 @@
+2004-06-28  Bob Doan  <bdoan@sicompos.com>
+	* configure.in: Fix utf8 problems and be able to disable cpdf
+	* libsrc/Makefile.am: likewise
+	* libsrc/api.c: likewise
+	* libsrc/charencoder.c: likewise
+	* libsrc/pcode.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/util.c: likewise
+	* libsrc/util.h: likewise
+	* src/examples/c/Makefile.am: likewise
+
 2004-06-21  Chet Heilman <cheilman@sicompos.com>
 	* libsrc/pcode.c: (rlib_str_to_long_long):
 		Fix numeric conversion so '-' works when the integer value is 0.

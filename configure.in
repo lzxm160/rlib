@@ -22,10 +22,10 @@ dnl Process this file with autoconf to produce a configure script.
 
 
 AC_INIT(libsrc/rlib.h)
-AM_INIT_AUTOMAKE(rlib, 1.1.8)
+AM_INIT_AUTOMAKE(rlib, 1.1.9)
 AM_MAINTAINER_MODE
 AC_DISABLE_STATIC
-RLIB_VERSION=1.1.8
+RLIB_VERSION=1.1.9
 AC_SUBST(RLIB_VERSION)
 
 dnl Checks for programs.
@@ -287,8 +287,6 @@ AM_CONDITIONAL(HAVE_PERL, test x$enable_perl = xyes)
 AC_SUBST(PERL_CFLAGS)
 AC_SUBST(PERL_EXTENSION_DIR)
 
-
-
 dnl check for iconv.h
 AC_CHECK_HEADERS(iconv.h,,AC_MSG_ERROR(cannot find iconf.h))
 
@@ -354,8 +352,21 @@ if test x$enable_warningfun = xyes; then
 fi
 AC_SUBST(RLIB_WARNINGS)
 
+AC_ARG_ENABLE(cpdf,              [  --disable-cpdf         disable cpdf output],,enable_cpdf=yes)
+CPDF_LIBS=""
+if test x$enable_cpdf = xyes; then
+	AC_CHECK_HEADER([cpdflib.h],
+		[AC_DEFINE([HAVE_CPDFLIB_H], [], [CPDF Header])],
+		[AC_MSG_ERROR([You must have cpdflib properly installed in order for rlib to work.. missing cpdflib.h])])
+	AC_CHECK_LIB(cpdf, cpdf_init, [], [AC_MSG_ERROR([You must have cpdflib properly installed in order for rlib to work.. missing libcpdf.so])])
+	CPDF_LIBS="-lcpdf"
+fi
+
+AC_SUBST(CPDF_LIBS)
+AM_CONDITIONAL(ENABLE_CPDF, test x$enable_cpdf = xyes)
+
 RLIB_CFLAGS="$LIBXML_CFLAGS $LIBGLIB_CFLAGS $LIBGMODULE_CFLAGS $MYSQL_CFLAGS $POSTGRE_CFLAGS $ODBC_CFLAGS $PHP_CFLAGS $PYTHON_CFLAGS $JAVA_CFLAGS $PERL_CFLAGS $RLIB_WARNINGS"
-RLIB_LIBS="$LIBXML_LIBS $LIBGLIB_LIBS $LIBGMODULE_LIBS $MYSQL_LIBS $POSTGRE_LIBS $ODBC_LIBS $ICONVLIBS -lcpdf"
+RLIB_LIBS="$LIBXML_LIBS $LIBGLIB_LIBS $LIBGMODULE_LIBS $MYSQL_LIBS $POSTGRE_LIBS $ODBC_LIBS $ICONVLIBS $CPDF_LIBS"
 AC_SUBST(RLIB_CFLAGS)
 AC_SUBST(RLIB_LIBS)
 
@@ -363,11 +374,6 @@ dnl Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS(fcntl.h unistd.h)
 AC_C_CONST
-
-AC_CHECK_HEADER([cpdflib.h],
-	[AC_DEFINE([HAVE_CPDFLIB_H], [], [CPDF Header])],
-	[AC_MSG_ERROR([You must have cpdflib properly installed in order for rlib to work.. missing cpdflib.h])])
-AC_CHECK_LIB(cpdf, cpdf_init, [], [AC_MSG_ERROR([You must have cpdflib properly installed in order for rlib to work.. missing libcpdf.so])])
 
 AC_ARG_ENABLE(memdebug,              [  --enable-memdebug       enable memory debugging],enable_memdebug="$enableval",enable_memdebug=no)
 if test x$enable_memdebug = xyes; then
@@ -426,6 +432,12 @@ rlib-$VERSION:
 	 POSTGRE:                 ${enable_postgre}
 	 ODBC:                    ${enable_odbc}
 
+   OUTPUTS:
+	 PDF:                     ${enable_cpdf}
+	 HTML:                    Always
+	 CSV:                     Always
+	 TEXT:                    Always
+	 
 	BINDINGS:
 	 PHP:                     ${enable_php}
 	  PHP entension dir:      ${PHP_EXTENSION_DIR}

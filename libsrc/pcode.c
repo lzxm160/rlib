@@ -31,6 +31,10 @@
 #include "rlib.h"
 #include "pcode.h"
 
+#ifndef RADIXCHAR
+#define RADIXCHAR DECIMAL_POINT
+#endif
+
 /*
 	This will convert a infix string i.e.: 1 * 3 (3+2) + amount + v.whatever
 	and convert it to a math stack... sorta like using postfix
