@@ -4,8 +4,8 @@
 		<title>Example 1</title>
 		<para>
 			It is assumed that you have a working PHP, APACHE, and MySQL setup.  You will have to substitute the
-			MySQL host, username, password, and database to what ever you creared.  The example is in three sections.
-			First creating the datababse.  Second we create the PHP source.  Third we create the RLIB XML file.
+			MySQL host, username, password, and database to what ever you created.  The example is in three sections.
+			First creating the database.  Second we create the PHP source.  Third we create the RLIB XML file.
 		</para>
 		<para>
 			MySQL Table Creation

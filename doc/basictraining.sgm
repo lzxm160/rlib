@@ -59,7 +59,7 @@ dtos(database.somedatefield)-7
 		</para>
 		<tip><title>Note</title>
 		<para>
-			ALL Result set fields come into RLIB as STRINGs!
+			All Result set fields come into RLIB as STRINGS!
 			you will have to frequently do VAL or FXPVAL. to turn them into numbers
 		</para> 
 		</tip>
@@ -90,7 +90,7 @@ dtos(database.somedatefield)-7
 		<para>
 			So you could have an expression like this in rlib
 			<programlisting>
-				str((val(m.some_environment_value)+r.some_sum_value*val(field1)),7,2) + " hi"
+				str((val(m.some_environment_value)+r.some_sum_value*val(field1)),7,2) + ' hi'
 			</programlisting>
 		</para>
 	</sect1>
@@ -127,27 +127,6 @@ dtos(database.somedatefield)-7
 			for the data subsection.
 		</para>
 
-		<para>
-			The following 2 images were generated from RLIB.  It shows Page Headers, Report Headers, Page Footers, Report Footers,
-			and Data Lines.  The image also demonstrates more advanced concepts in RLIB such as format strings, color, and background color.
-			Don't worry about that now.
-		</para>
-		
-
-<para>
-<screenshot>
-<screeninfo>800x600</screeninfo>
-
-<graphic fileref="IMAGES/example1-top.png"></graphic>
-</screenshot>
-</para>
-<para>
-<screenshot>
-<screeninfo>800x600</screeninfo>
-
-<graphic fileref="IMAGES/example1-bot.png"></graphic>
-</screenshot>
-</para>
 	</sect1>
 	<sect1>
 		<title>Breaks Explained</title>
