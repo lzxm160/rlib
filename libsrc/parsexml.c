@@ -431,65 +431,9 @@ static void parse_report(struct rlib_report *report, xmlDocPtr doc, xmlNsPtr ns,
 	}
 }
 
-static struct rlib_report_element * parse_part_td(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
-	return NULL;
-}
-
-static struct rlib_report_element * parse_part_tr(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
-	struct rlib_report_element *e = NULL;
-
-	cur = cur->xmlChildrenNode;
-	while (cur != NULL) {      
-		if ((!xmlStrcmp(cur->name, (const xmlChar *) "td"))) {
-			if(e == NULL) {
-				e = parse_part_td(doc, ns, cur);
-			} else {
-				struct rlib_report_element *xxx = e;
-				for(;xxx->next != NULL; xxx=xxx->next) {};
-				xxx->next = parse_part_td(doc, ns, cur);				
-			}
-		} else if (ignoreElement(cur->name)) {
-			/* ignore comments, etc */
-		} else {
-			rlogit("Unknown element [%s] in <tr>. Expected td.\n", cur->name);
-		}
-		cur = cur->next;
-	}	
-	return e;
-
-}
-
-static void parse_part(struct rlib_part *part, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
-	while (cur && xmlIsBlankNode (cur)) 
-		cur = cur -> next;
-
-	if(cur == 0)
-		return;
-
-	part->name = xmlGetProp(cur, (const xmlChar *) "name");
-	part->layout = xmlGetProp(cur, (const xmlChar *) "layout");
-	cur = cur->xmlChildrenNode;
-	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *) "tr"))) {
-			if(part->e == NULL) {
-				part->e = parse_part_tr(doc, ns, cur);
-			} else {
-				struct rlib_report_element *xxx = part->e;
-				for(;xxx->next != NULL; xxx=xxx->next) {};
-					xxx->next = parse_part_tr(doc, ns, cur);				
-			}
-		} else if (!ignoreElement(cur->name)) //must be last
-			/* ignore comments, etc */
-			rlogit("Unknown element [%s] in <Part>\n", cur->name);
-		cur = cur->next;
-	}
-
-}
-
 struct rlib_report * parse_report_file(gchar *filename) {
 	xmlDocPtr doc;
 	struct rlib_report *report;
-	struct rlib_part *part;
 	xmlNsPtr ns = NULL;
 	xmlNodePtr cur;
 	int found = FALSE;
@@ -517,30 +461,19 @@ struct rlib_report * parse_report_file(gchar *filename) {
 		return(NULL);
 	}
 
-	part = (struct rlib_part *) g_new0(struct rlib_part, 1);
-	if(part == NULL) {
-		r_error("Out of Memory :(\n");
-		xmlFreeDoc(doc);
-		return(NULL);
-	}
-	
+
 	if((xmlStrcmp(cur->name, (const xmlChar *) "Report"))==0) {
 		parse_report(report, doc, ns, cur);
 		found = TRUE;
 	}
 
-	if((xmlStrcmp(cur->name, (const xmlChar *) "Part"))==0) {
-		parse_part(part, doc, ns, cur);
-		found = TRUE;
-	}
-	
+
 	if(!found) {
-		rlogit("document of the wrong type, was '%s', Report or Part expected", cur->name);
+		rlogit("document of the wrong type, was '%s', Report expected", cur->name);
 		rlogit("xmlDocDump follows\n");
 		xmlDocDump ( stderr, doc );
 		xmlFreeDoc(doc);
 		g_free(report);
-		g_free(part);
 		return(NULL);
 	}
 

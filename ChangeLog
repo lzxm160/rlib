@@ -1,3 +1,7 @@
+2004-09-16  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/parsexml.c: get rid of part stuff
+	* libsrc/rlib.h: likewise
+
 2004-09-03  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/Makefile.am: Merge bug fixes from head
 	* bindings/php/array_data_source.c: likewise

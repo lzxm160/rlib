@@ -350,25 +350,6 @@ struct rlib_report_variable {
 	gpointer data;	
 };
 
-struct rlib_part_td {
-	xmlChar *width;
-	struct rlib_pcode *width_code;
-	struct rlib_report_element *e;
-};
-
-struct rlib_part_tr {
-	xmlChar *height;
-	struct rlib_pcode *height_code;
-	struct rlib_report_element *e;
-};
-
-struct rlib_part {
-	xmlChar *name;
-	xmlChar *layout;
-	struct rlib_report_element *e;
-	struct rlib_pcode *name_code;
-	struct rlib_pcode *layout_code;
-};
 
 struct rlib_report {
 	xmlDocPtr doc;
