@@ -93,18 +93,36 @@ long long int llabs(long long int j);
 #define RLIB_FILE_BREAK 		950
 #define RLIB_FILE_BREAK_FIELD	975
 
+#define RLIB_PAPER_LETTER     1
+#define RLIB_PAPER_LEGAL      2
+#define RLIB_PAPER_A4         3
+#define RLIB_PAPER_B5         4
+#define RLIB_PAPER_C5         5
+#define RLIB_PAPER_DL         6
+#define RLIB_PAPER_EXECUTIVE  7
+#define RLIB_PAPER_COMM10     8
+#define RLIB_PAPER_MONARCH    9
+#define RLIB_PAPER_FILM35MM   10
+
+#define RLIB_PDF_DPI 72.0
+
+struct rlib_paper {
+	char type;
+	long width;
+	long height;
+	char name[30];
+};
+
 struct rgb {
 	gfloat r;
 	gfloat g;
 	gfloat b;
 };
 
-
 struct rlib_datetime {
 	GDate date;
 	long ltime;
 };
-
 
 struct rlib_value {
 	gint type;
@@ -255,7 +273,6 @@ struct report_image {
 	struct rlib_pcode *height_code;
 };
 
-
 struct report_lines {
 	xmlChar *bgcolor;
 	xmlChar *color;
@@ -342,6 +359,7 @@ struct rlib_report {
 	xmlChar *xml_top_margin;
 	xmlChar *xml_left_margin;
 	xmlChar *xml_bottom_margin;
+	xmlChar *xml_paper_type;
 	xmlChar *xml_pages_accross;
 	xmlChar *xml_suppress_page_header_first_page;
 	
@@ -368,12 +386,13 @@ struct rlib_report {
 	gint mainloop_query;
 
 	char output_encoding_name[64];
-	
+	struct rlib_paper *paper;
 	struct rlib_pcode *font_size_code;
 	struct rlib_pcode *orientation_code;
 	struct rlib_pcode *top_margin_code;
 	struct rlib_pcode *left_margin_code;
 	struct rlib_pcode *bottom_margin_code;
+	struct rlib_pcode *paper_type_code;
 	struct rlib_pcode *pages_across_code;
 	struct rlib_pcode *suppress_page_header_first_page_code;
 };
@@ -465,7 +484,6 @@ struct environment_filter {
 #define OUTPUT(r) (r->o)
 #define OUTPUT_PRIVATE(r) (((struct _private *)r->o->private))
 
-
 struct output_filter {
 	gpointer *private;
 	gint do_align;
@@ -502,7 +520,6 @@ struct output_filter {
 	long (*rlib_get_output_length)(rlib *);
 	int (*rlib_free)(rlib *r);
 };
-
 
 /***** PROTOTYPES: breaks.c ***************************************************/
 void rlib_force_break_headers(rlib *r);
@@ -576,6 +593,8 @@ void rlib_process_variables(rlib *r);
 void rlib_init_page(rlib *r, gchar report_header);
 gint make_report(rlib *r);
 gint rlib_finalize(rlib *r);
+struct rlib_paper * rlib_get_paper(rlib *r, gint paper_type);
+struct rlib_paper * rlib_get_paper_by_name(rlib *r, gchar *paper_name);
 
 /***** PROTOTYPES: resolution.c ***********************************************/
 gint rlib_resolve_rlib_variable(rlib *r, gchar *name);
@@ -657,7 +676,6 @@ gint save_report(struct rlib_report *rep, char *filename);
 /***** PROTOTYPES: load.c *****************************************************/
 struct rlib_report * load_report(gchar *filename);
 
-
 /* temp/test stuff */
 void rlib_set_pdf_font(rlib *r, const char *encoding, const char *fontname);
 void rlib_set_pdf_font_directories(rlib *r, const char *d1, const char *d2);
@@ -677,4 +695,3 @@ int rlib_datetime_daysdiff(struct rlib_datetime *dt, struct rlib_datetime *dt2);
 
 #define charcount(s) g_utf8_strlen(s, -1)
 #define bytelength(s) strlen(s)
-

@@ -35,7 +35,7 @@ static gfloat rlib_pdf_get_string_width(rlib *r, gchar *text) {
 //	struct rlib_report *rr = r->reports[r->current_report]; //Should be a better way
 //	if (rr->output_encoder != (iconv_t) -1) text = (gchar *) encode(rr->output_encoder, text);
 //	else if(r->output_encoder != (iconv_t) -1) text = (gchar *) encode(r->output_encoder, text);
-	return cpdf_stringWidth(OUTPUT_PRIVATE(r)->pdf, text)/(72.0);
+	return cpdf_stringWidth(OUTPUT_PRIVATE(r)->pdf, text)/(RLIB_PDF_DPI);
 }
 
 static void rlib_pdf_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *t, gint backwards, gint col) {
@@ -90,7 +90,7 @@ static void rlib_pdf_drawbox(rlib *r, gfloat left_origin, gfloat bottom_origin, 
 
 static void rlib_pdf_hr(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
 struct rgb *color, gfloat indent, gfloat length) {
-	how_tall = how_tall / 72.0;
+	how_tall = how_tall / RLIB_PDF_DPI;
 	rlib_pdf_drawbox(r, left_origin, bottom_origin, how_long, how_tall, color);
 }
 
@@ -123,7 +123,6 @@ gfloat nheight) {
 	OUTPUT(r)->rlib_set_bg_color(r, 0, 0, 0);
 }
 
-
 static void rlib_pdf_set_font_point(rlib *r, gint point) {
 	char *encoding;
 	char *fontname;
@@ -143,20 +142,22 @@ static void rlib_pdf_set_font_point(rlib *r, gint point) {
 }
 
 static void rlib_pdf_start_new_page(rlib *r) {
+	struct rlib_report *report = r->reports[r->current_report];
 	gint i=0;
-	gint pages_accross = r->reports[r->current_report]->pages_accross;
+	gint pages_accross = report->pages_accross;
 	gint page_number = r->current_page_number * pages_accross;
-	
+	gchar paper_type[40];
+	sprintf(paper_type, "0 0 %d %d", report->paper->width, report->paper->height);
 	for(i=0;i<pages_accross;i++) {
-		if(r->reports[r->current_report]->orientation == RLIB_ORIENTATION_LANDSCAPE) {
-			r->reports[r->current_report]->position_bottom[i] = 8.5-GET_MARGIN(r)->bottom_margin;
-			cpdf_pageInit(OUTPUT_PRIVATE(r)->pdf, page_number+i, LANDSCAPE, LETTER, LETTER); 
-			cpdf_translate(OUTPUT_PRIVATE(r)->pdf, 0.0, 11.0);	/* 11.0 must be changed for non-LETTER size */
+		if(report->orientation == RLIB_ORIENTATION_LANDSCAPE) {
+			report->position_bottom[i] = (report->paper->width/RLIB_PDF_DPI)-GET_MARGIN(r)->bottom_margin;
+			cpdf_pageInit(OUTPUT_PRIVATE(r)->pdf, page_number+i, LANDSCAPE, paper_type, paper_type); 
+			cpdf_translate(OUTPUT_PRIVATE(r)->pdf, 0.0, (report->paper->height/RLIB_PDF_DPI));	
 		   cpdf_rotate(OUTPUT_PRIVATE(r)->pdf, -90.0);
 			r->landscape = 1;
 		} else {
-			r->reports[r->current_report]->position_bottom[i] = 11-GET_MARGIN(r)->bottom_margin;
-			cpdf_pageInit(OUTPUT_PRIVATE(r)->pdf, page_number+i, PORTRAIT, LETTER, LETTER); 
+			report->position_bottom[i] = 11-GET_MARGIN(r)->bottom_margin;
+			cpdf_pageInit(OUTPUT_PRIVATE(r)->pdf, page_number+i, PORTRAIT, paper_type, paper_type); 
 			r->landscape = 0;
 		}
 		cpdf_beginText(OUTPUT_PRIVATE(r)->pdf, 0);	
@@ -169,7 +170,6 @@ static void rlib_pdf_set_working_page(rlib *r, gint page) {
 	page--;
 	cpdf_setCurrentPage(OUTPUT_PRIVATE(r)->pdf, page_number + page);
 }
-
 
 static void rlib_pdf_end_text(rlib *r) {
 	gint i=0;
@@ -190,7 +190,6 @@ static void rlib_pdf_init_end_page(rlib *r) {
 	}
 
 }
-
 
 static void rlib_pdf_init_output(rlib *r) {
 	CPDFdoc *pdf;

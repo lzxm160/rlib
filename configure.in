@@ -316,11 +316,11 @@ size_t iconv (iconv_t a, const char ** b, size_t *c, char **d, size_t *e);
 iconv_oldstyle=1, iconv_oldstyle=0)
 if test $iconv_oldstyle = 1; then
         AC_MSG_RESULT(const char **)
-        AC_DEFINE(ICONV_CONST_CHAR_PP,1)
+        AC_DEFINE(ICONV_CONST_CHAR_PP, [1], [ICONV Pointer Test])
 else
 
         AC_MSG_RESULT(char **)
-        AC_DEFINE(ICONV_CONST_CHAR_PP,0)
+        AC_DEFINE(ICONV_CONST_CHAR_PP, [0], [ICONV Pointer Test])
 fi
 
 
@@ -339,9 +339,9 @@ AC_RUN_IFELSE(
         }
         ],
         AC_MSG_RESULT(ISO-8859-1)
-        AC_DEFINE(ICONV_ISO,[ISO-8859-1]),
+        AC_DEFINE(ICONV_ISO,[ISO-8859-1], [ICONV Check]),
         AC_MSG_RESULT(ISO8859-1)
-        AC_DEFINE(ICONV_ISO,[ISO8859-1])
+        AC_DEFINE(ICONV_ISO,[ISO8859-1], [ICONV Check])
 )
 
 RLIB_WARNINGS=""
@@ -363,7 +363,7 @@ AC_CHECK_HEADERS(fcntl.h unistd.h)
 AC_C_CONST
 
 AC_CHECK_HEADER([cpdflib.h],
-	[AC_DEFINE([HAVE_CPDFLIB_H])],
+	[AC_DEFINE([HAVE_CPDFLIB_H], [], [CPDF Header])],
 	[AC_MSG_ERROR([You must have cpdflib properly installed in order for rlib to work.. missing cpdflib.h])])
 AC_CHECK_LIB(cpdf, cpdf_init, [], [AC_MSG_ERROR([You must have cpdflib properly installed in order for rlib to work.. missing libcpdf.so])])
 
@@ -377,6 +377,7 @@ if test x$enable_crash = xyes; then
 	AC_DEFINE(ENABLE_CRASH,1,[ENABLE CRASH DETECTION])
 fi
 
+AM_CONFIG_HEADER(config.h)
 
 AC_OUTPUT([
 Makefile

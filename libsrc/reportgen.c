@@ -35,8 +35,7 @@
 #include "rlib_input.h"
 
 #define FONTPOINT 	10.0
-#define RLIB_GET_LINE(a) ((float)(a/72.0))
-#define LENGTH_OF_LINE_ACCROSS_PAGE (r->landscape ? (11-(GET_MARGIN(r)->left_margin*2)) : (8.5-(GET_MARGIN(r)->left_margin*2)))
+#define RLIB_GET_LINE(a) ((float)(a/RLIB_PDF_DPI))
 
 //Not used: static struct rgb COLOR_BLACK = {0, 0, 0};
 
@@ -47,14 +46,12 @@ static gchar *orientations[] = {
 	NULL
 };
 
-
 static gchar *aligns[] = {
 	"left",
 	"right",
 	"center",
 	NULL
 };
-
 
 static gchar *truefalses[] = {
 	"no",
@@ -64,6 +61,39 @@ static gchar *truefalses[] = {
 	NULL
 };
 
+static struct rlib_paper paper[] = {
+	{RLIB_PAPER_LETTER,612, 792, "LETTER"},
+	{RLIB_PAPER_LEGAL, 612, 1008, "LEGAL"},
+	{RLIB_PAPER_A4, 595, 842, "A4"},
+	{RLIB_PAPER_B5, 499, 708, "B5"},
+	{RLIB_PAPER_C5, 459, 649, "C5"},
+	{RLIB_PAPER_DL, 312, 624, "DL"},
+	{RLIB_PAPER_EXECUTIVE, 522, 756, "EXECUTIVE"},
+	{RLIB_PAPER_COMM10, 297, 684, "COMM10"},
+	{RLIB_PAPER_MONARCH, 279, 540, "MONARCH"},
+	{RLIB_PAPER_FILM35MM, 528, 792, "FILM35MM"},
+	{0},
+};
+
+struct rlib_paper * rlib_get_paper(rlib *r, gint paper_type) {
+	gint i;
+	for(i=0;paper[i].type != 0;i++)
+		if(paper[i].type == paper_type)
+			return &paper[i];
+	return NULL;
+}
+
+struct rlib_paper * rlib_get_paper_by_name(rlib *r, gchar *paper_name) {
+	gint i;
+	rlogit("\nlooking for %s\n", paper_name);
+	if(paper_name == NULL)
+		return NULL;
+		
+	for(i=0;paper[i].type != 0;i++)
+		if(!strcasecmp(paper[i].name, paper_name))
+			return &paper[i];
+	return NULL;
+}
 
 static gint rlib_execute_as_int(rlib *r, struct rlib_pcode *pcode, gint *result) {
 	struct rlib_value val;
@@ -83,9 +113,25 @@ static gint rlib_execute_as_int(rlib *r, struct rlib_pcode *pcode, gint *result)
 	return isok;
 }
 
-
 static gint rlib_execute_as_boolean(rlib *r, struct rlib_pcode *pcode, gint *result) {
 	return rlib_execute_as_int(r, pcode, result)? TRUE : FALSE;
+}
+
+static gint rlib_execute_as_string(rlib *r, struct rlib_pcode *pcode, gchar *buf, gint buf_len) {
+	struct rlib_value val;
+	gint isok = FALSE;
+
+	if (pcode) {
+		rlib_execute_pcode(r, &val, pcode, NULL);
+		if (RLIB_VALUE_IS_STRING((&val))) {
+			strncpy(buf, RLIB_VALUE_GET_AS_STRING((&val)), buf_len);
+			isok = TRUE;
+		} else {
+			rlogit("Expecting string value from pcode");
+		}
+		rlib_value_free(&val);
+	}
+	return isok;
 }
 
 
@@ -118,18 +164,20 @@ static gint rlib_execute_as_int_inlist(rlib *r, struct rlib_pcode *pcode, gint *
 }
 
 gfloat get_page_width(rlib *r) {
+	struct rlib_report *report = r->reports[r->current_report];
 	if(!r->landscape)
-		return (8.5);
+		return (report->paper->width/RLIB_PDF_DPI);
 	else
-		return (11.0);
+		return (report->paper->height/RLIB_PDF_DPI);
 }
 
 static gfloat rlib_get_next_line(rlib *r, gfloat x, gfloat fp) {
+	struct rlib_report *report = r->reports[r->current_report];
 	gfloat f;
 	if(r->landscape)
-		f = (8.5 - (x + RLIB_GET_LINE(fp)));
+		f = ((report->paper->width/RLIB_PDF_DPI) - (x + RLIB_GET_LINE(fp)));
 	else
-		f = (11.0 - (x + RLIB_GET_LINE(fp)));
+		f = ((report->paper->height/RLIB_PDF_DPI) - (x + RLIB_GET_LINE(fp)));
 
 	return f;
 }
@@ -624,6 +672,18 @@ gint calc_memo_lines(struct report_lines *rl) {
 	return nlines;
 }
 
+static gfloat length_of_line_accross_page(rlib *r) {
+	struct rlib_report *report = r->reports[r->current_report];
+	gfloat rtn;
+	if(r->landscape) {
+		rtn = (report->paper->height/RLIB_PDF_DPI) - (GET_MARGIN(r)->left_margin*2);
+	} else {
+		rtn = (report->paper->width/RLIB_PDF_DPI) - (GET_MARGIN(r)->left_margin*2);
+	}
+	return rtn;
+}
+
+
 static gint print_report_output_private(rlib *r, struct report_output_array *roa, gint backwards, gint page) {
 	struct report_element *e=NULL;
 	gint j=0;
@@ -782,7 +842,7 @@ static gint print_report_output_private(rlib *r, struct report_output_array *roa
 
 					if(length == 0)
 						OUTPUT(r)->rlib_hr(r, backwards, GET_MARGIN(r)->left_margin+indent, rlib_get_next_line(r, *rlib_position, 
-							rhl->realsize),LENGTH_OF_LINE_ACCROSS_PAGE-indent, rhl->realsize, &bgcolor, indent, length);
+							rhl->realsize),length_of_line_accross_page(r)-indent, rhl->realsize, &bgcolor, indent, length);
 					else
 						OUTPUT(r)->rlib_hr(r, backwards, GET_MARGIN(r)->left_margin+indent, rlib_get_next_line(r, *rlib_position, rhl->realsize),
 							length, rhl->realsize, &bgcolor, indent, length);
@@ -1061,10 +1121,10 @@ void rlib_process_variables(rlib *r) {
 	
 }
 
-
 static void rlib_evaluate_report_attributes(rlib *r) {
 	struct rlib_report *thisreport = r->reports[r->current_report];
 	gint t;
+	char buf[MAXSTRLEN];
 	
 	if (rlib_execute_as_int_inlist(r, thisreport->orientation_code, &t, orientations))
 		if ((t == RLIB_ORIENTATION_PORTRAIT) || (t == RLIB_ORIENTATION_LANDSCAPE))
@@ -1081,8 +1141,12 @@ static void rlib_evaluate_report_attributes(rlib *r) {
 		thisreport->pages_accross = t;
 	if (rlib_execute_as_int(r, thisreport->suppress_page_header_first_page_code, &t))
 		thisreport->suppress_page_header_first_page = t;
+	if (rlib_execute_as_string(r, thisreport->paper_type_code, buf, MAXSTRLEN)) {
+		struct rlib_paper *paper = rlib_get_paper_by_name(r, buf);
+		if(paper != NULL)
+			thisreport->paper = paper;
+	}
 }
-
 
 static void rlib_evaluate_break_attributes(rlib *r) {
 	struct report_break *rb;

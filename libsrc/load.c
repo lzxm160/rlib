@@ -18,6 +18,7 @@
  * Boston, MA 02111-1307, USA.
  */
  
+#include <config.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -362,6 +363,7 @@ struct rlib_report * load_report(gchar *filename) {
 	rep->xml_top_margin = read_xml_str(&ptr);
 	rep->xml_left_margin = read_xml_str(&ptr);
 	rep->xml_bottom_margin = read_xml_str(&ptr);
+	rep->xml_paper_type = read_xml_str(&ptr);
 	rep->xml_pages_accross = read_xml_str(&ptr);
 	rep->xml_suppress_page_header_first_page = read_xml_str(&ptr);
 

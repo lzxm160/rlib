@@ -158,6 +158,7 @@ void rlib_free_report(rlib *r, gint which) {
 	free_pcode(thisreport->top_margin_code);
 	free_pcode(thisreport->left_margin_code);
 	free_pcode(thisreport->bottom_margin_code);
+	free_pcode(thisreport->paper_type_code);
 	free_pcode(thisreport->pages_across_code);
 	free_pcode(thisreport->suppress_page_header_first_page_code);
 	

@@ -255,6 +255,8 @@ void rlib_resolve_fields(rlib *r) {
 	thisreport->left_margin_code = rlib_infix_to_pcode(r, thisreport->xml_left_margin);
 	thisreport->bottom_margin = DEFAULT_BOTTOM_MARGIN;
 	thisreport->bottom_margin_code = rlib_infix_to_pcode(r, thisreport->xml_bottom_margin);
+	thisreport->paper = rlib_get_paper(r, RLIB_PAPER_LETTER);
+	thisreport->paper_type_code = rlib_infix_to_pcode(r, thisreport->xml_paper_type);
 	thisreport->pages_accross = 1;
 	thisreport->pages_across_code = rlib_infix_to_pcode(r, thisreport->xml_pages_accross);
 	thisreport->suppress_page_header_first_page = FALSE;

@@ -18,6 +18,7 @@
  * Boston, MA 02111-1307, USA.
  */
  
+#include <config.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -445,6 +446,7 @@ struct rlib_report * parse_report_file(gchar *filename) {
 	ret->xml_top_margin = xmlGetProp(cur, (const xmlChar *) "topMargin");
 	ret->xml_left_margin = xmlGetProp(cur, (const xmlChar *) "leftMargin");
 	ret->xml_bottom_margin = xmlGetProp(cur, (const xmlChar *) "bottomMargin");
+	ret->xml_paper_type = xmlGetProp(cur, (const xmlChar *) "paperType");
 	ret->xml_pages_accross = xmlGetProp(cur, (const xmlChar *) "pagesAcross");
 	ret->xml_suppress_page_header_first_page = xmlGetProp(cur, (const xmlChar *) "suppressPageHeaderFirstPage");
 	

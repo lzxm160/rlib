@@ -17,7 +17,8 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
- 
+
+#include <config.h> 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -220,6 +221,7 @@ gint save_report(struct rlib_report *rep, gchar *filename) {
 	write_xml_str(fd, rep->xml_top_margin); 
 	write_xml_str(fd, rep->xml_left_margin);
 	write_xml_str(fd, rep->xml_bottom_margin);
+	write_xml_str(fd, rep->xml_paper_type);
 	write_xml_str(fd, rep->xml_pages_accross);
 	write_xml_str(fd, rep->xml_suppress_page_header_first_page);
 	

@@ -23,6 +23,7 @@
  * for the RLIB library functions.
  */
 
+#include <config.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -212,7 +213,6 @@ gint rlib_get_output_length(rlib *r) {
 	return OUTPUT(r)->rlib_get_output_length(r);
 }
 
-
 /**
  *	Add name/value pair to the memory constants.
  *  Saves copies of the name and value, NOT pointers.
@@ -251,18 +251,15 @@ gint rlib_set_locale(rlib *r, gchar *locale) {
 	return (cur)? TRUE : FALSE;
 }
 
-
 void rlib_init_profiler() {
 	g_mem_set_vtable(glib_mem_profiler_table);
 }
-
 
 void rlib_dump_profile_stdout(gint profilenum) {
 	printf("\nRLIB memory profile #%d:\n", profilenum);
 	g_mem_profile();
 	fflush(stdout);
 }
-
 
 void rlib_dump_profile(gint profilenum, const gchar *filename) {
 	FILE *newout = NULL;
@@ -288,7 +285,6 @@ void rlib_dump_profile(gint profilenum, const gchar *filename) {
 	close(fd);
 }
 
-
 /**
  * put calls to this where you want to debug, then just set a breakpoint here.
  */
@@ -306,13 +302,11 @@ void rlib_set_report_output_encoding(rlib *r, int rptnum, const char *encoding) 
 	}
 }
 
-
 void rlib_set_output_encoding(rlib *r, const char *encoding) {
 	if (!encoding) encoding = "";
 //r_debug("Setting encoding in rlib_set_output_encoding to %s", encoding);
 	g_strlcpy(r->output_encoding_name, encoding, sizeof(r->output_encoding_name));
 }
-
 
 void rlib_set_pdf_font_directories(rlib *r, const char *d1, const char *d2) {
 	if (d1) g_strlcpy(r->pdf_fontdir1, d1, sizeof(r->pdf_fontdir1) - 1);
@@ -322,7 +316,6 @@ void rlib_set_pdf_font_directories(rlib *r, const char *d1, const char *d2) {
 	if (d1 && !d2) strcpy(r->pdf_fontdir2, d1);
 	if (d2 && !d1) strcpy(r->pdf_fontdir1, d2);
 }
-
 
 void rlib_set_pdf_font(rlib *r, const char *encoding, const char *fontname) {
 	if (encoding) g_strlcpy(r->pdf_encoding, encoding, sizeof(r->pdf_encoding) - 1);
@@ -339,8 +332,6 @@ gchar *rlib_version() {
 	return "Unknown";
 }
 #endif
-
-
 
 #if HAVE_MYSQL
 gint rlib_mysql_report(gchar *hostname, gchar *username, gchar *password, gchar *database, gchar *xmlfilename, gchar *sqlquery, 
