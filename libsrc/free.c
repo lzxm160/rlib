@@ -247,12 +247,6 @@ void free_results(rlib *r) {
 }
 
 
-static void ht_entry_free(gpointer key, gpointer val, gpointer userdata) {
-	if (key) g_free(key);
-	if (val) g_free(val);
-}
-
-
 gint rlib_free(rlib *r) {
 	int i;
 	rlib_free_tree(r);
@@ -267,8 +261,7 @@ gint rlib_free(rlib *r) {
 	}
 
 	if (r->htParameters) {
-		g_hash_table_foreach(r->htParameters, ht_entry_free, NULL);
-		g_hash_table_destroy(r->htParameters);
+		rlib_hashtable_destroy(r->htParameters);
 	}
 	
 	OUTPUT(r)->rlib_free(r);

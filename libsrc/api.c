@@ -199,13 +199,13 @@ gint rlib_get_output_length(rlib *r) {
  */
 gint rlib_add_parameter(rlib *r, const gchar *name, const gchar *value) {
 	gint result = 1;
-	GHashTable *ht = r->htParameters;
+	rlib_hashtable_ptr ht = r->htParameters;
 	
 	if (!ht) { //If no hashtable - add one
-		ht = r->htParameters = g_hash_table_new(g_str_hash, g_str_equal);
+		ht = r->htParameters = rlib_hashtable_new_copyboth();
 	}
 	if (ht) {
-		g_hash_table_insert(ht, g_strdup(name), g_strdup(value));
+		rlib_hashtable_insert(ht, (gpointer) name, (gpointer) value);
 		result = 0;
 	}
 	return result;

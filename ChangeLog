@@ -1,4 +1,12 @@
 2003-12-31  Chet Heilman <cheilman@sicompos.com>
+	* libsrc/Makefile.am: Add containers.h and containers.c
+	* libsrc/api.c: (rlib_add_parameter): Use rlib_hashtable instead of
+	GHashTable.
+	* libsrc/free.c: (rlib_free): same
+	* libsrc/resolution.c: (rlib_resolve_memory_variable): same
+	* libsrc/rlib.h: same
+
+2003-12-31  Chet Heilman <cheilman@sicompos.com>
 	* libsrc/api.c: (rlib_init_with_environment): Change all ralloc
 	module references to equivalent glib functions.
 	* libsrc/csv.c: (rlib_csv_free), (rlib_csv_new_output_filter):

@@ -24,7 +24,7 @@ lib_LTLIBRARIES = libr.la
 libr_la_SOURCES = parsexml.c reportgen.c api.c resolution.c util.c pcode.c \
 	pcode_op_functions.c formatstring.c fxp.c breaks.c pdf.c html.c txt.c \
 	datasource.c csv.c ralloc.c environment.c free.c navigation.c save.c rlib_input.h \
-	pcode.h ralloc.h rlib.h
+	pcode.h ralloc.h rlib.h containers.h containers.c
 
 libr_la_LIBADD = $(RLIB_LIBS) -ldl 
 

@@ -22,6 +22,8 @@
 #include <time.h>
 #include <glib.h>
 
+#include "containers.h"
+
 #define RLIB_WEB_CONTENT_TYPE_HTML "Content-Type: text/html\n"
 #define RLIB_WEB_CONTENT_TYPE_TEXT "Content-Type: text/plain\n"
 #define RLIB_WEB_CONTENT_TYPE_PDF "Content-Type: application/pdf\n"
@@ -375,7 +377,7 @@ struct rlib {
 	struct output_filter *o;
 	struct input_filters inputs[MAX_INPUT_FILTERS];
 	struct environment_filter *environment;
-	GHashTable *htParameters;
+	rlib_hashtable_ptr htParameters;
 };
 typedef struct rlib rlib;
 
