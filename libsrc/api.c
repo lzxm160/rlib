@@ -302,6 +302,7 @@ gboolean rlib_signal_connect_string(rlib *r, gchar *signal_name, gboolean (*sign
 gboolean rlib_query_refresh(rlib *r) {
 	rlib_free_results(r);
 	rlib_execute_queries(r);
+	rlib_fetch_first_rows(r);
 	return TRUE;
 }
 
