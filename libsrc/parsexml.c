@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003 SICOM Systems, INC.
+ *  Copyright (C) 2003-2004 SICOM Systems, INC.
  *
  *  Authors: Bob Doan <bdoan@sicompos.com>
  *
@@ -87,7 +87,12 @@ static struct rlib_element * parse_line_array(xmlDocPtr doc, xmlNsPtr ns, xmlNod
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "field"))) {
 			struct rlib_report_field *f = g_new0(struct rlib_report_field, 1);
 			current = (void *)g_new0(struct rlib_element, 1);
+#if DISABLE_UTF8
 			utf8_to_8813(f->value, xmlGetProp(cur, (const xmlChar *) "value"));
+#else
+			safestrncpy(f->value, xmlGetProp(cur, (const xmlChar *) "value"));
+#endif
+
 //Nevermind			//TODO: we need to utf to 8813 all string values in single quotes
 			strcpy(f->value, xmlGetProp(cur, (const xmlChar *) "value"));
 			f->xml_align = xmlGetProp(cur, (const xmlChar *) "align");
@@ -401,11 +406,9 @@ static struct rlib_element * parse_report_variables(xmlDocPtr doc, xmlNsPtr ns, 
 static void parse_report(struct rlib_part *part, struct rlib_report *report, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
 	report->doc = doc;
 	report->contents = NULL;
-	if (doc->encoding) g_strlcpy(report->xml_encoding_name, doc->encoding, sizeof(report->xml_encoding_name));
-#if DISABLE_UTF8
-	cd = iconv_open(ICONV_ISO, "UTF-8");
-	cd = (void *)-1;
-#endif
+	if (doc->encoding) 
+		g_strlcpy(report->xml_encoding_name, doc->encoding, sizeof(report->xml_encoding_name));
+
 	while (cur && xmlIsBlankNode (cur)) 
 		cur = cur -> next;
 
@@ -609,7 +612,10 @@ struct rlib_part * parse_part_file(gchar *filename, gchar type) {
 	xmlNodePtr cur;
 	int found = FALSE;
 
-
+#if DISABLE_UTF8
+	cd = iconv_open(ICONV_ISO, "UTF-8");
+	cd = (void *)-1;
+#endif
 
 	if(type == RLIB_REPORT_TYPE_BUFFER) 
 		doc = xmlReadMemory(filename, strlen(filename), NULL, NULL, XML_PARSE_XINCLUDE);

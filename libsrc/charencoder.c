@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003 SICOM Systems, INC.
+ *  Copyright (C) 2003-2004 SICOM Systems, INC.
  *
  *  Authors: Chet Heilman <cheilman@sicompos.com>
  *

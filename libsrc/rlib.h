@@ -24,7 +24,6 @@
  *
  */
 #include <libxml/parser.h>
-#include <iconv.h>
 #include <time.h>
 #include <glib.h>
 
@@ -452,7 +451,6 @@ struct rlib_report {
 	xmlChar *xml_height;
 	
 	gchar xml_encoding_name[ENCODING_NAME_SIZE]; //UTF8 if "", else whatever specified in xml
-	iconv_t cd;
 	rlib_char_encoder *output_encoder;
 	
 	gfloat *position_top;
