@@ -25,6 +25,7 @@
 
 int main(int argc, char **argv) {
 	char *filename;
+	char buf[MAXSTRLEN];
 	struct rlib_report *rep;
 	if(argc != 2) {
 		fprintf(stderr, "Usage: rlibc filename.xml\nOr: rlibc --help\n\n");
@@ -41,6 +42,9 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "Invalid RLIB XML FILE %s\n", filename);
 		return 1;
 	}
+
+	sprintf(buf, "%s.rlib", filename);
+	save_report(rep, buf);
 
 	return 0;
 }

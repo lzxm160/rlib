@@ -1,3 +1,12 @@
+2003-12-31  Bob Doan  <bdoan@sicompos.com>
+	* bin/rlibc.c: hook it up to save
+	* inputs/mysql/mysql.c: use g* not r* for memory
+	* inputs/odbc/odbc.c: likewise
+	* inputs/postgre/postgre.c: likewise
+	* libsrc/parsexml.c: 
+	* libsrc/rlib.h: 
+	* libsrc/save.c: ability to save a XML file as a .rlib
+
 2003-12-31  Chet Heilman <cheilman@sicompos.com>
 	* libsrc/Makefile.am: Add containers.h to install.
 	* libsrc/api.c: (rlib_init_profiler), (rlib_dump_profile): Move functions

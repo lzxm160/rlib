@@ -571,3 +571,5 @@ gint rlib_add_datasource_odbc(rlib *r, gchar *input_name, gchar *source, gchar *
 gpointer rlib_postgre_new_input_filter();
 gpointer rlib_postgre_connect(gpointer input_ptr, gchar *conn);
 
+/***** PROTOTYPES: save.c *****************************************************/
+int save_report(struct rlib_report *rep, char *filename);

@@ -24,7 +24,6 @@
 #include <mysql.h>
 #include <glib.h>
  
-#include "ralloc.h"
 #include "rlib_input.h"
 
 #define INPUT_PRIVATE(input) (((struct _private *)input->private))
@@ -167,11 +166,11 @@ void * mysql_new_result_from_query(gpointer input_ptr, gchar *query) {
 	if(result == NULL)
 		return NULL;
 	else {
-		results = rmalloc(sizeof(struct rlib_mysql_results));
+		results = g_malloc(sizeof(struct rlib_mysql_results));
 		results->result = result;
 	}
 	count = mysql_field_count(INPUT_PRIVATE(input)->mysql);
-	results->fields = rmalloc(sizeof(gint) * count);
+	results->fields = g_malloc(sizeof(gint) * count);
 	for(i=0;i<count;i++) {
 		results->fields[i] = i+1;
 	}
@@ -181,22 +180,22 @@ void * mysql_new_result_from_query(gpointer input_ptr, gchar *query) {
 static void rlib_mysql_rlib_free_result(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_mysql_results *results = result_ptr;
 	mysql_free_result(results->result);
-	rfree(results->fields);
-	rfree(results);
+	g_free(results->fields);
+	g_free(results);
 }
 
 static gint rlib_mysql_free_input_filter(gpointer input_ptr) {
 	struct input_filter *input = input_ptr;
-	rfree(input->private);
-	rfree(input);
+	g_free(input->private);
+	g_free(input);
 	return 0;
 }
 
 gpointer rlib_mysql_new_input_filter() {
 	struct input_filter *input;
 	
-	input = rmalloc(sizeof(struct input_filter));
-	input->private = rmalloc(sizeof(struct _private));
+	input = g_malloc(sizeof(struct input_filter));
+	input->private = g_malloc(sizeof(struct _private));
 	bzero(input->private, sizeof(struct _private));
 	input->input_close = rlib_mysql_input_close;
 	input->first = rlib_mysql_first;

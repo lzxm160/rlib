@@ -26,7 +26,6 @@
 #include <sqlext.h>
 #include <sqltypes.h>
  
-#include "ralloc.h"
 #include "rlib.h"
 #include "rlib_input.h"
 
@@ -251,16 +250,16 @@ gpointer odbc_new_result_from_query(gpointer input_ptr, gchar *query) {
 	if(V_OD_hstmt == NULL)
 		return NULL;
 	else {
-		results = rmalloc(sizeof(struct rlib_odbc_results));
+		results = g_malloc(sizeof(struct rlib_odbc_results));
 		results->V_OD_hstmt = V_OD_hstmt;
 	}
 
 	SQLNumResultCols (V_OD_hstmt, &ncols);
 
-	results->fields = rmalloc(sizeof(struct odbc_fields) * ncols);
-	results->values = rmalloc(sizeof(struct odbc_field_values) * ncols);
-	results->more_values = rmalloc(sizeof(struct odbc_field_values) * ncols);
-	results->save_values = rmalloc(sizeof(struct odbc_field_values) * ncols);
+	results->fields = g_malloc(sizeof(struct odbc_fields) * ncols);
+	results->values = g_malloc(sizeof(struct odbc_field_values) * ncols);
+	results->more_values = g_malloc(sizeof(struct odbc_field_values) * ncols);
+	results->save_values = g_malloc(sizeof(struct odbc_field_values) * ncols);
 
 	results->total_size = 0;
 	for(i=0;i<ncols;i++) {
@@ -270,11 +269,11 @@ gpointer odbc_new_result_from_query(gpointer input_ptr, gchar *query) {
 		results->fields[i].col = i;
 		strcpy(results->fields[i].name, name);
 		results->values[i].len = col_size;
-		results->values[i].value = rmalloc(col_size+1);
+		results->values[i].value = g_malloc(col_size+1);
 		results->more_values[i].len = col_size;
-		results->more_values[i].value = rmalloc(col_size+1);
+		results->more_values[i].value = g_malloc(col_size+1);
 		results->save_values[i].len = col_size;
-		results->save_values[i].value = rmalloc(col_size+1);
+		results->save_values[i].value = g_malloc(col_size+1);
 		results->total_size += col_size+1;
 	}
 
@@ -291,15 +290,15 @@ static void rlib_odbc_rlib_free_result(gpointer input_ptr, gpointer result_ptr) 
 
 	SQLFreeHandle(SQL_HANDLE_STMT,results->V_OD_hstmt);
 	for(i=0;i<results->tot_fields;i++) {
-		rfree(results->values[i].value);
-		rfree(results->more_values[i].value);
-		rfree(results->save_values[i].value);
+		g_free(results->values[i].value);
+		g_free(results->more_values[i].value);
+		g_free(results->save_values[i].value);
 	}
-	rfree(results->fields);
-	rfree(results->values);
-	rfree(results->more_values);
-	rfree(results->save_values);
-	rfree(results);
+	g_free(results->fields);
+	g_free(results->values);
+	g_free(results->more_values);
+	g_free(results->save_values);
+	g_free(results);
 }
 
 static gint rlib_odbc_free_input_filter(gpointer input_ptr) {
@@ -307,15 +306,15 @@ static gint rlib_odbc_free_input_filter(gpointer input_ptr) {
 	SQLDisconnect(INPUT_PRIVATE(input)->V_OD_hdbc);
 	SQLFreeHandle(SQL_HANDLE_DBC,INPUT_PRIVATE(input)->V_OD_hdbc);
 	SQLFreeHandle(SQL_HANDLE_ENV,INPUT_PRIVATE(input)-> V_OD_Env);
-	rfree(input->private);
-	rfree(input);
+	g_free(input->private);
+	g_free(input);
 	return 0;
 }
 
 gpointer rlib_odbc_new_input_filter() {
 	struct input_filter *input;
-	input = rmalloc(sizeof(struct input_filter));
-	input->private = rmalloc(sizeof(struct _private));
+	input = g_malloc(sizeof(struct input_filter));
+	input->private = g_malloc(sizeof(struct _private));
 	bzero(input->private, sizeof(struct _private));
 	input->input_close = rlib_odbc_input_close;
 	input->first = rlib_odbc_first;

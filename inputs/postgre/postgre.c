@@ -25,8 +25,6 @@
 #include <glib.h>
 
 #include "libpq-fe.h"
- 
-#include "ralloc.h"
 #include "rlib_input.h"
 
 #define INPUT_PRIVATE(input) (((struct _private *)input->private))
@@ -148,11 +146,11 @@ gpointer postgre_new_result_from_query(gpointer input_ptr, gchar *query) {
 	if(result == NULL)
 		return NULL;
 	else {
-		results = rmalloc(sizeof(struct rlib_postgre_results));
+		results = g_malloc(sizeof(struct rlib_postgre_results));
 		results->result = result;
 	}
 	count = PQnfields(result);
-	results->fields = rmalloc(sizeof(int) * count);
+	results->fields = g_malloc(sizeof(int) * count);
 	for(i=0;i<count;i++) {
 		results->fields[i] = i+1;
 	}
@@ -164,22 +162,22 @@ gpointer postgre_new_result_from_query(gpointer input_ptr, gchar *query) {
 static void rlib_postgre_rlib_free_result(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_postgre_results *results = result_ptr;
 	PQclear(results->result);
-	rfree(results->fields);
-	rfree(results);
+	g_free(results->fields);
+	g_free(results);
 }
 
 static gint rlib_postgre_free_input_filter(gpointer input_ptr) {
 	struct input_filter *input = input_ptr;
-	rfree(input->private);
-	rfree(input);
+	g_free(input->private);
+	g_free(input);
 	return 0;
 }
 
 gpointer rlib_postgre_new_input_filter() {
 	struct input_filter *input;
 	
-	input = rmalloc(sizeof(struct input_filter));
-	input->private = rmalloc(sizeof(struct _private));
+	input = g_malloc(sizeof(struct input_filter));
+	input->private = g_malloc(sizeof(struct _private));
 	bzero(input->private, sizeof(struct _private));
 	input->input_close = rlib_postgre_input_close;
 	input->first = rlib_postgre_first;
