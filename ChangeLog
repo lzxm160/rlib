@@ -1,4 +1,14 @@
 2004-04-07  Chet Heilman  <cheilman@sicompos.com>
+	* libsrc/charencoder.c: (encode), (open_input_encoder),
+	(fix_encoding_name), (rlib_char_encoder_new),
+	(rlib_char_encoder_destroy), (rlib_char_encoder_set_buffer),
+	(rlib_char_encoder_encode), (rlib_char_encoder_get_name),
+	(rlib_char_encoder_isUTF8):
+		Add rlib_char_encoder to manage encodings.
+	* libsrc/charencoder.h:
+		Add rlib_char_encoder to manage encodings.
+
+2004-04-07  Chet Heilman  <cheilman@sicompos.com>
 	* bindings/php/php.c: (ZEND_FUNCTION):
 		Change name of function.
 	* libsrc/Makefile.am:
