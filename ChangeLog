@@ -1,3 +1,8 @@
+2004-08-06  Bob Doan  <bdoan@sicompos.com>
+	* bindings/php/array_data_source.c: make breaks work for the last break
+	* src/examples/php/array_test.php: an example w/ breaks to properly test breaking
+	* src/examples/php/array_test.xml: likewise
+
 2004-08-05  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/pcode.c: Correctly find OP_SUB
 	* libsrc/resolution.c: nada

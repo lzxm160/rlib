@@ -35,6 +35,7 @@ struct rlib_php_array_results {
 	zval *zend_value;
 	int cols;
 	int rows;
+	int isdone;
 	char **data;
 	int current_row;
 };
@@ -56,23 +57,22 @@ static gint rlib_php_array_first(gpointer input_ptr, gpointer result_ptr) {
 static gint rlib_php_array_next(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_php_array_results *result = result_ptr;
 	result->current_row++;
+	result->isdone = FALSE;
 	if(result->current_row < result->rows)
 		return TRUE;
-	else
-		return FALSE;
+	result->isdone = TRUE;
+	return FALSE;
 }
 
 static gint rlib_php_array_isdone(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_php_array_results *result = result_ptr;
-	if(result->current_row < result->rows)
-		return FALSE;
-	else
-		return TRUE;
+	return result->isdone;
 }
 
 static gint rlib_php_array_previous(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_php_array_results *result = result_ptr;
 	result->current_row--;
+	result->isdone = FALSE;
 	if(result->current_row >= 1)
 		return TRUE;
 	else
