@@ -72,7 +72,6 @@ gint rlib_lookup_result(rlib *r, gchar *name) {
 	return -1;
 }
 
-
 gint rlib_resolve_resultset_field(rlib *r, char *name, void **rtn_field, gint *rtn_resultset) {
 	gint resultset=0;
 	gint found = FALSE;

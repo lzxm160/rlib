@@ -127,10 +127,10 @@ struct rlib_pcode_operator * rlib_find_operator(gchar *ptr, struct rlib_operator
 	struct rlib_pcode_operator *op;
 	op = rlib_pcode_verbs;
 	while(op && op->tag != NULL) {
-		if(len >= op->taglen) {		
+		if(len >= op->taglen) {
 			if(!strncmp(ptr, op->tag, op->taglen)) {
 				if(op->opnum == OP_SUB) {
-					if(have_operand) 
+					if(have_operand || p->count > 0) 
 						return op;				
 				} else
 					return op;

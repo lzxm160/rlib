@@ -1,3 +1,8 @@
+2004-08-05  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/pcode.c: Correctly find OP_SUB
+	* libsrc/resolution.c: nada
+	* src/examples/php/array_test.xml: nada
+
 2004-08-04  Steve Tilden  <stilden@sicompos.com>
 	* doc/symboltable.sgm: add stodtsql, grouped time fncs, spelling
 
