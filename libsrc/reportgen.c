@@ -1038,23 +1038,23 @@ void rlib_init_variables(rlib *r) {
 	for(e = r->reports[r->current_report]->variables; e != NULL; e=e->next) {
 		struct rlib_report_variable *rv = e->data;
 		if(rv->type == REPORT_VARIABLE_EXPRESSION) {
-			RLIB_VARIABLE_CA(rv) = g_malloc(sizeof(struct rlib_count_amount));
+			rv->data = g_malloc(sizeof(struct rlib_count_amount));
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		} else if(rv->type == REPORT_VARIABLE_COUNT) {
-			RLIB_VARIABLE_CA(rv) = g_malloc(sizeof(struct rlib_count_amount));
+			rv->data = g_malloc(sizeof(struct rlib_count_amount));
 			RLIB_VARIABLE_CA(rv)->count = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->count, 0);
 		} else if(rv->type == REPORT_VARIABLE_SUM) {
-			RLIB_VARIABLE_CA(rv) = g_malloc(sizeof(struct rlib_count_amount));
+			rv->data = g_malloc(sizeof(struct rlib_count_amount));
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		} else if(rv->type == REPORT_VARIABLE_AVERAGE) {
-			RLIB_VARIABLE_CA(rv) = g_malloc(sizeof(struct rlib_count_amount));
+			rv->data = g_malloc(sizeof(struct rlib_count_amount));
 			RLIB_VARIABLE_CA(rv)->count = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->count, 0);
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		} else if(rv->type == REPORT_VARIABLE_LOWEST) {
-			RLIB_VARIABLE_CA(rv) = g_malloc(sizeof(struct rlib_count_amount));
+			rv->data = g_malloc(sizeof(struct rlib_count_amount));
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		} else if(rv->type == REPORT_VARIABLE_HIGHEST) {
-			RLIB_VARIABLE_CA(rv) = g_malloc(sizeof(struct rlib_count_amount));
+			rv->data = g_malloc(sizeof(struct rlib_count_amount));
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		}
 	}

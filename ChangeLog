@@ -1,3 +1,15 @@
+2004-07-26  Bob Doan  <bdoan@sicompos.com>
+	* inputs/mysql/Makefile.am: merge fixes from stable branch, IE content type, a invalid free, compile fixes
+	* inputs/odbc/Makefile.am: likewise
+	* inputs/postgre/Makefile.am: likewise
+	* libsrc/api.c: likewise
+	* libsrc/free.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/pcode.h: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/txt.c: likewise
+
 2004-07-21  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/parsexml.c: More loadings of parts (with out breaking anything but it leaks)
 	* libsrc/rlib.h: likewise

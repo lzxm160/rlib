@@ -42,7 +42,7 @@ static void utf8_to_8813(struct rlib_report *report, gchar *dest, gchar *str) {
 	size_t slen;
 	gchar *olddest = dest;
 	if(str != NULL && str[0] != 0) {
-		if(report->cd != NULL) {
+		if(rep->cd != NULL && rep->cd != (void *)-1) {
 			slen = strlen(str);
 			memset(dest, 0, MAXSTRLEN);
 #if ICONV_CONST_CHAR_PP

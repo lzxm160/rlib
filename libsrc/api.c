@@ -66,6 +66,25 @@ rlib * rlib_init() {
 	return rlib_init_with_environment(NULL);
 }
 
+gint rlib_add_query_pointer_as(rlib *r, gchar *input_source, gchar *sql, gchar *name) {
+	gint i;
+	if(r->queries_count > (RLIB_MAXIMUM_QUERIES-1)) {
+		return -1;
+	}
+
+	r->queries[r->queries_count].sql = sql;
+	r->queries[r->queries_count].name = g_strdup(name);
+	for(i=0;i<r->inputs_count;i++) {
+		if(!strcmp(r->inputs[i].name, input_source)) {
+			r->queries[r->queries_count].input = r->inputs[i].input;
+		}
+	}
+	
+	r->queries_count++;
+	return r->queries_count;
+}
+
+
 gint rlib_add_query_as(rlib *r, gchar *input_source, gchar *sql, gchar *name) {
 	gint i;
 	if(r->queries_count > (RLIB_MAXIMUM_QUERIES-1)) {
@@ -144,7 +163,8 @@ gchar * rlib_get_content_type_as_text(rlib *r) {
 	static char buf[256];
 #ifdef HAVE_LIBCPDF	
 	if(r->format == RLIB_CONTENT_TYPE_PDF)
-		return RLIB_WEB_CONTENT_TYPE_PDF;
+		sprintf(buf, "Content-Type: application/pdf\nContent-Length: %d%c", OUTPUT(r)->rlib_get_output_length(r), 10);
+		return buf;
 #endif
 	if(r->format == RLIB_CONTENT_TYPE_CSV) {
 		return RLIB_WEB_CONTENT_TYPE_CSV;
@@ -251,9 +271,7 @@ gint rlib_add_parameter(rlib *r, const gchar *name, const gchar *value) {
 		rlib_hashtable_insert(ht, (gpointer) buf, (gpointer) rlib_char_encoder_encode(r->param_encoder, value));
 #if 0
 //The rlib_hashtable_new_copyboth() hashtable already duplicates the strings (see docs above)
-=======
 rlib_hashtable_insert(ht, (gpointer) g_strdup(name), (gpointer) g_strdup(value));
->>>>>>> 1.23
 #endif
 result = 0;
 	}
