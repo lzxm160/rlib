@@ -48,9 +48,9 @@ void * rlib_postgre_connect(void * input_ptr, char *conninfo) {
 	PGconn *conn;
 
 	conn = PQconnectdb(conninfo);
-
 	if (PQstatus(conn) != CONNECTION_OK) {
 		PQfinish(conn);
+		conn = NULL;
 	}
 
 	INPUT_PRIVATE(input)->conn = conn;	
@@ -69,6 +69,7 @@ static PGresult * rlib_postgre_query(PGconn *conn, char *query) {
 	int rtn;
 
 	result = PQexec(conn, query);
+
 	if (PQresultStatus(result) != PGRES_TUPLES_OK) {
 		PQclear(result);
 		PQfinish(conn);

@@ -1,3 +1,10 @@
+2003-11-10  Bob Doan  <bdoan@sicompos.com>
+	* configure.in: bump version to 1.1.4
+	* inputs/postgre/postgre.c: better connection checks
+	* libsrc/parsexml.c: utf8 problems fixed
+	* libsrc/reportgen.c: fixed bug w/ colors
+	* libsrc/txt.c: used precalculated length
+
 2003-11-08  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/rlib.h: convert libxml2 UTF-8 strings into 8859-1 strings so most western languages work in RLIB
 	* inputs/mysql/mysql.c: likewise
@@ -17,11 +24,9 @@
 	* libsrc/pcode_op_functions.c: likewise
 
 2003-11-05  Bob Doan  <bdoan@sicompos.com>
-
 	* configure.in: better checks for cpdflib
 
 2003-11-05  Bob Doan  <bdoan@sicompos.com>
-
 	* autogen.sh: Fixed bug with pdf field caching, have pything bindings now, removed init.c, renamed to api.c
 		New functions from John Buckman <john@magnatune.com> to make rlib easier for scripting rlib_mysql_report
 		I also made new functions so that you can write the output buffer instead of spooling it.. and I updated some

@@ -207,15 +207,15 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 			if(rf->link_code != NULL)	
 				rlib_execute_pcode(r, &extra_data[i].rval_link, rf->link_code, NULL);
 
-			if(rf->color_code != NULL)	
-				rlib_execute_pcode(r, &extra_data[i].rval_color, rf->color_code, NULL);
-			else if(rl->color_code != NULL)
+			if(rl->color_code != NULL)
 				extra_data[i].rval_color = line_rval_color;
+			else if(rf->color_code != NULL)	
+				rlib_execute_pcode(r, &extra_data[i].rval_color, rf->color_code, NULL);
 
-			if(rf->bgcolor_code != NULL)
-				rlib_execute_pcode(r, &extra_data[i].rval_bgcolor, rf->bgcolor_code, NULL);
-			else if(rl->bgcolor_code != NULL)
+			if(rl->bgcolor_code != NULL)
 				extra_data[i].rval_bgcolor = line_rval_bgcolor;
+			else if(rf->bgcolor_code != NULL)
+				rlib_execute_pcode(r, &extra_data[i].rval_bgcolor, rf->bgcolor_code, NULL);
 
 			rlib_format_string(r, rf, &extra_data[i].rval_code, buf);
 			align_text(r, extra_data[i].formatted_string, MAXSTRLEN, buf, rf->align, rf->width);
@@ -228,15 +228,15 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 			char buf[MAXSTRLEN];
 			rt = e->data;
 
-			if(rt->color_code != NULL)	
-				rlib_execute_pcode(r, &extra_data[i].rval_color, rt->color_code, NULL);
-			else if(rl->color_code != NULL)
+			if(rl->color_code != NULL)
 				extra_data[i].rval_color = line_rval_color;
+			else if(rt->color_code != NULL)	
+				rlib_execute_pcode(r, &extra_data[i].rval_color, rt->color_code, NULL);
 
-			if(rt->bgcolor_code != NULL)
-				rlib_execute_pcode(r, &extra_data[i].rval_bgcolor, rt->bgcolor_code, NULL);
-			else if(rl->bgcolor_code != NULL)
+			if(rl->bgcolor_code != NULL)
 				extra_data[i].rval_bgcolor = line_rval_bgcolor;
+			else if(rt->bgcolor_code != NULL)
+				rlib_execute_pcode(r, &extra_data[i].rval_bgcolor, rt->bgcolor_code, NULL);
 
 
 			if(rt->value == NULL)
@@ -279,12 +279,12 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 				
 		extra_data[i].found_bgcolor = FALSE;
 		if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_bgcolor))) {
-			char *colorstring;
+			char *colorstring, *ocolor;
 			if(!RLIB_VALUE_IS_STRING((&extra_data[i].rval_bgcolor))) {
 				rlogit("RLIB ENCOUNTERED AN ERROR PROCESSING THE BGCOLOR FOR THIS VALUE [%s].. BGCOLOR VALUE WAS NOT OF TYPE STRING\n", text);
 			} else {
 				char *idx;
-				colorstring = RLIB_VALUE_GET_AS_STRING((&extra_data[i].rval_bgcolor));
+				ocolor = colorstring = rstrdup(RLIB_VALUE_GET_AS_STRING((&extra_data[i].rval_bgcolor)));
 				if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_code)) && RLIB_VALUE_IS_NUMBER((&extra_data[i].rval_code)) && index(colorstring, ':')) {
 					colorstring = rstrdup(colorstring);
 					idx = index(colorstring, ':');
@@ -295,18 +295,19 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 				}
 				parsecolor(&extra_data[i].bgcolor, colorstring);
 				extra_data[i].found_bgcolor = TRUE;
+				rfree(ocolor);
 			}
 
 		}
-		
+	
 		extra_data[i].found_color = FALSE;
 		if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_color))) {
-			char *colorstring ;
+			char *colorstring, *ocolor;
 			if(!RLIB_VALUE_IS_STRING((&extra_data[i].rval_color))) {
 				rlogit("RLIB ENCOUNTERED AN ERROR PROCESSING THE COLOR FOR THIS VALUE [%s].. COLOR VALUE WAS NOT OF TYPE STRING\n", text);
 			} else {
 				char *idx;
-				colorstring = RLIB_VALUE_GET_AS_STRING((&extra_data[i].rval_color));
+				ocolor = colorstring = rstrdup(RLIB_VALUE_GET_AS_STRING((&extra_data[i].rval_color)));
 				if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_code)) && RLIB_VALUE_IS_NUMBER((&extra_data[i].rval_code)) && index(colorstring, ':')) {
 					idx = index(colorstring, ':');
 					if(RLIB_VALUE_GET_AS_NUMBER((&extra_data[i].rval_code)) >= 0)
@@ -316,6 +317,7 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 				}
 				parsecolor(&extra_data[i].color, colorstring);
 				extra_data[i].found_color = TRUE;
+				rfree(ocolor);
 			}
 		}
 
@@ -412,7 +414,7 @@ static void print_detail_line_private(rlib *r, struct report_output_array *roa, 
 			find_stuff_in_common(r, extra_data, count);
 			count = 0;
 
-			if(OUTPUT(r)->do_grouptext) {
+			if(0) {
 				char buf[MAXSTRLEN];
 				float fun_width=0;
 				int start_count=-1;

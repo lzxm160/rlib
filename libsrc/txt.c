@@ -98,8 +98,8 @@ static void rlib_txt_finalize_private(rlib *r) {
 }
 
 static void rlib_txt_spool_private(rlib *r) {
-	ENVIRONMENT(r)->rlib_write_output(OUTPUT_PRIVATE(r)->top, strlen(OUTPUT_PRIVATE(r)->top));
-	ENVIRONMENT(r)->rlib_write_output(OUTPUT_PRIVATE(r)->bottom, strlen(OUTPUT_PRIVATE(r)->bottom));
+	ENVIRONMENT(r)->rlib_write_output(OUTPUT_PRIVATE(r)->top, OUTPUT_PRIVATE(r)->top_size);
+	ENVIRONMENT(r)->rlib_write_output(OUTPUT_PRIVATE(r)->bottom, OUTPUT_PRIVATE(r)->bottom_size);
 }
 
 static void rlib_txt_start_line(rlib *r, int backwards) {}

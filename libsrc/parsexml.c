@@ -31,10 +31,15 @@
 void utf8_to_8813(struct rlib_report *rep, char *dest, char *str) {
 	size_t len = MAXSTRLEN;
 	size_t slen;
-	
-	if(str != NULL && str[0] != '\0') {
-		strlen(str);
-		iconv(rep->cd, &str, &slen, &dest, &len);
+	char *olddest = dest;
+	if(str != NULL && str[0] != 0) {
+		if(rep->cd != NULL) {
+			slen = strlen(str);
+			bzero(dest, MAXSTRLEN);
+			iconv(rep->cd, &str, &slen, &olddest, &len);
+		} else {
+			strcpy(dest, str);
+		}
 	} else {
 		dest[0] = 0;
 	}
@@ -50,7 +55,8 @@ struct report_element * parse_line_array(struct rlib_report *rep, xmlDocPtr doc,
 		current->next = NULL;
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "field"))) {
 			struct report_field *f = rmalloc(sizeof(struct report_field));
-			utf8_to_8813(rep, f->value, xmlGetProp(cur, (const xmlChar *) "value"));
+			//utf8_to_8813(rep, f->value, xmlGetProp(cur, (const xmlChar *) "value"));
+			strcpy(f->value, xmlGetProp(cur, (const xmlChar *) "value"));
 			f->xml_align = xmlGetProp(cur, (const xmlChar *) "align");
 			f->bgcolor = xmlGetProp(cur, (const xmlChar *) "bgcolor");
 			f->color = xmlGetProp(cur, (const xmlChar *) "color");
