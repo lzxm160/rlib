@@ -1,3 +1,15 @@
+2004-03-25  Chet Heilman  <set EMAIL_ADDRESS environment variable>
+	* libsrc/pcode.c: (rlib_new_operand):
+		Change order of operand checks to stop calls to variable containers
+		when operand is a constant.
+	* libsrc/reportgen.c: (rlib_execute_as_int), (encode_text),
+	(align_text), (execute_pcodes_for_line):
+		Remove some debug code. Fix encode_text and add some additional
+		checking. General clean up and minor bug fixes. Plus more error
+		checking and logging.
+	* libsrc/resolution.c: (rlib_resolve_resultset_field):
+		Added error message for NULL resultset field and set error text.
+		
 2004-03-22  Bob Doan  <bdoan@sicompos.com>
 	* Makefile.am: config.h support and paper types
 	* configure.in: likewise

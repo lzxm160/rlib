@@ -93,6 +93,8 @@ gint rlib_resolve_resultset_field(rlib *r, char *name, void **rtn_field, gint *r
 	
 	if(*rtn_field != NULL)
 		found = TRUE;
+	else
+		r_error("The field [%s.%s] does not exist", result_name, name);
 	*rtn_resultset = resultset;
 	return found;
 }

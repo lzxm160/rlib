@@ -219,21 +219,6 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, gchar *str) {
 		o->type = OPERAND_NUMBER;
 		*newnum = FALSE  * RLIB_DECIMAL_PRECISION;
 		o->value = newnum;
-	} else if((rv = rlib_resolve_variable(r, str))) {
-		o->type = OPERAND_VARIABLE;
-		o->value = rv;
-	} else if((memresult = rlib_resolve_memory_variable(r, str))) {
-		o->type = OPERAND_MEMORY_VARIABLE;
-		o->value = memresult;
-	} else if((rvar = rlib_resolve_rlib_variable(r, str))) {
-		o->type = OPERAND_RLIB_VARIABLE;
-		o->value = (void *)rvar;
-	} else if(rlib_resolve_resultset_field(r, str, &field, &resultset)) {
-		struct rlib_resultset_field *rf = g_malloc(sizeof(struct rlib_resultset_field));
-		rf->resultset = resultset;
-		rf->field = field;
-		o->type = OPERAND_FIELD;
-		o->value = rf;
 	} else if (!g_strcasecmp(str, "left")) {
 		gint64 *newnum = g_malloc(sizeof(long long));
 		o->type = OPERAND_NUMBER;
@@ -264,6 +249,21 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, gchar *str) {
 		o->type = OPERAND_NUMBER;
 		*newnum = rlib_str_to_long_long(str);
 		o->value = newnum;
+	} else if((rv = rlib_resolve_variable(r, str))) {
+		o->type = OPERAND_VARIABLE;
+		o->value = rv;
+	} else if((memresult = rlib_resolve_memory_variable(r, str))) {
+		o->type = OPERAND_MEMORY_VARIABLE;
+		o->value = memresult;
+	} else if((rvar = rlib_resolve_rlib_variable(r, str))) {
+		o->type = OPERAND_RLIB_VARIABLE;
+		o->value = (void *)rvar;
+	} else if(rlib_resolve_resultset_field(r, str, &field, &resultset)) {
+		struct rlib_resultset_field *rf = g_malloc(sizeof(struct rlib_resultset_field));
+		rf->resultset = resultset;
+		rf->field = field;
+		o->type = OPERAND_FIELD;
+		o->value = rf;
 	} else {
 		gchar *err = "BAD_OPERAND";
 		gchar *newstr = g_malloc(bytelength(err)+1);

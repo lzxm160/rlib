@@ -106,7 +106,13 @@ static gint rlib_execute_as_int(rlib *r, struct rlib_pcode *pcode, gint *result)
 			*result = RLIB_VALUE_GET_AS_NUMBER((&val)) / RLIB_DECIMAL_PRECISION;
 			isok = TRUE;
 		} else {
-			rlogit("Expecting numeric value from pcode");
+			gchar *whatgot = "don't know";
+			gchar *gotval = "";
+			if (RLIB_VALUE_IS_STRING((&val))) {
+				whatgot = "string";
+				gotval = RLIB_VALUE_GET_AS_STRING((&val));
+			}
+			rlogit("Expecting numeric value from pcode. Got %s=%s", whatgot, gotval);
 		}
 		rlib_value_free(&val);
 	}
@@ -257,10 +263,18 @@ struct rlib_line_extra_data *extra_data) {
  * Convert UTF8 to the desired character encoding, IF specified in rlib object.
  */
 static const gchar *encode_text(rlib *r, const gchar *text) {
-	if (r->current_output_encoder != (iconv_t) -1) {
-		text = (gchar *) encode(r->current_output_encoder, text);
+	gchar *result = "";
+	if (text == NULL) {
+		r_error("encode_text called with NULL text");
+		result = "!ERR_ENC1";
+	} else if ((*text != '\0') && (r->current_output_encoder != (iconv_t) -1)) {
+		result = (gchar *) encode(r->current_output_encoder, text);
+		if (result == NULL) {
+			r_error("encode returned NULL result input was[%s], len=%d", text, strlen(text));
+			result = "!ERR_ENC2";
+		}
 	}
-	return text;
+	return result;
 }
 
 
@@ -310,7 +324,7 @@ gchar *align_text(rlib *r, gchar *rtn, gint len, gchar *src, gint align, gint wi
 
 	if(align == RLIB_ALIGN_LEFT || width == -1) {
 	} else {
-		if(align == RLIB_ALIGN_RIGHT) {
+		if(align == RLIB_ALIGN_RIGHT) {        
 			gint x = width - charcount(src);
 			if (x > (len - 1)) x = len - 1;
 			if(x > 0) {
@@ -318,16 +332,6 @@ gchar *align_text(rlib *r, gchar *rtn, gint len, gchar *src, gint align, gint wi
 				g_strlcpy(rtn+x, src, len - x);
 			}
 		}
-#if 0
-		if(align == RLIB_ALIGN_CENTER) {
-			gint x = (width - charcount(src))/2;
-r_debug("TEST width=%d, x=%d, src is:[%s]", width, x, src);
-			if(x > 0) {
-				memset(rtn, ' ', x);
-				strcpy(rtn+x, src);
-			}
-		}
-#else
 		if(align == RLIB_ALIGN_CENTER) {
 			gint x = (width - charcount(src))/2;
 			if (x > (len - 1)) x = len -1;
@@ -336,7 +340,6 @@ r_debug("TEST width=%d, x=%d, src is:[%s]", width, x, src);
 				g_strlcpy(rtn+x, src, len - x);
 			}
 		}
-#endif
 	}
 	return rtn;
 }
@@ -367,38 +370,33 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 
 	RLIB_VALUE_TYPE_NONE(&line_rval_color);
 	RLIB_VALUE_TYPE_NONE(&line_rval_bgcolor);
-
 	if(rl->color_code != NULL)
 		rlib_execute_pcode(r, &line_rval_color, rl->color_code, NULL);
 	if(rl->bgcolor_code != NULL)
 		rlib_execute_pcode(r, &line_rval_bgcolor, rl->bgcolor_code, NULL);
-
 	for(; e != NULL; e=e->next) {
 		RLIB_VALUE_TYPE_NONE(&extra_data[i].rval_bgcolor);
-		if(e->type == REPORT_ELEMENT_FIELD) {
+		if (e->type == REPORT_ELEMENT_FIELD) {
 			gchar buf[MAXSTRLEN];
-
 			rf = e->data;
-
+			if (rf == NULL) r_error("report_field is NULL ... will crash");
+			else if (rf->code == NULL) r_error("There is no code for field");
 			rlib_execute_pcode(r, &extra_data[i].rval_code, rf->code, NULL);	
-
-			if(rf->link_code != NULL)	
+			if(rf->link_code != NULL) {	
 				rlib_execute_pcode(r, &extra_data[i].rval_link, rf->link_code, NULL);
-
-			if(rf->color_code != NULL)
+			}
+			if(rf->color_code != NULL) {
 				rlib_execute_pcode(r, &extra_data[i].rval_color, rf->color_code, NULL);
-			else if(rl->color_code != NULL) {
+			} else if(rl->color_code != NULL) {
 				extra_data[i].rval_color = line_rval_color;
 				rlib_value_dup_contents(&extra_data[i].rval_color);
 			}
-
-			if(rf->bgcolor_code != NULL)
+			if(rf->bgcolor_code != NULL) {
 				rlib_execute_pcode(r, &extra_data[i].rval_bgcolor, rf->bgcolor_code, NULL);
-			else if(rl->bgcolor_code != NULL) {
+			} else if(rl->bgcolor_code != NULL) {
 				extra_data[i].rval_bgcolor = line_rval_bgcolor;
 				rlib_value_dup_contents(&extra_data[i].rval_bgcolor);
 			}
-
 			if (rf->align_code) {
 				gint t;
 				if (rlib_execute_as_int_inlist(r, rf->align_code, &t, aligns)) {
@@ -407,7 +405,7 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 			}
 			if (rf->width_code) {
 				gint t;
-				if (rlib_execute_as_int(r, rf->width_code, &t)) {
+			if (rlib_execute_as_int(r, rf->width_code, &t)) { 
 					rf->width = t;
 				}
 			}
@@ -417,11 +415,9 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 			extra_data[i].width = rf->width;
 			
 			rlib_execute_pcode(r, &extra_data[i].rval_col, rf->col_code, NULL);
-		}
-		if(e->type == REPORT_ELEMENT_LITERAL) {
+		} else if(e->type == REPORT_ELEMENT_LITERAL) {
 			gchar buf[MAXSTRLEN];
 			rt = e->data;
-
 			if(rt->color_code != NULL)	
 				rlib_execute_pcode(r, &extra_data[i].rval_color, rt->color_code, NULL);
 			else if(rl->color_code != NULL) {
@@ -457,19 +453,17 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 				
 			extra_data[i].width = rt->width;
 			rlib_execute_pcode(r, &extra_data[i].rval_col, rt->col_code, NULL);	
+		} else {
+			r_error("Line has invalid content");
 		}
-
 		if(rl->font_point == -1)
 			extra_data[i].font_point = r->font_point;
 		else
 			extra_data[i].font_point = rl->font_point;
-
-
 		text = extra_data[i].formatted_string;
 
 		if(text == NULL)
 			text = "";
-
 		if(extra_data[i].width == -1)
 			extra_data[i].width = charcount(text);
 		else {
@@ -484,7 +478,6 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 				*g_utf8_offset_to_pointer(text, extra_data[i].width) = '\0';
 			}
 		}
-				
 		extra_data[i].found_bgcolor = FALSE;
 		if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_bgcolor))) {
 			gchar *colorstring, *ocolor;
@@ -507,7 +500,6 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 			}
 
 		}
-	
 		extra_data[i].found_color = FALSE;
 		if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_color))) {
 			gchar *colorstring, *ocolor;
@@ -528,7 +520,6 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 				g_free(ocolor);
 			}
 		}
-
 		extra_data[i].col = 0;
 		if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_col))) {
 			if(!RLIB_VALUE_IS_NUMBER((&extra_data[i].rval_col))) {
@@ -537,7 +528,6 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 				extra_data[i].col = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER((&extra_data[i].rval_col)));
 			}
 		}
-	
 		extra_data[i].found_link = FALSE;
 		if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_link))) {
 			if(!RLIB_VALUE_IS_STRING((&extra_data[i].rval_link))) {
@@ -549,14 +539,11 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 				}
 			}
 		}
-		
 		extra_data[i].output_width = estimate_string_width_from_extra_data(r, &extra_data[i]);		
 		i++;
 	}
-	
 	rlib_value_free(&line_rval_color);
 	rlib_value_free(&line_rval_bgcolor);
-	
 }	
 
 void find_stuff_in_common(rlib *r, struct rlib_line_extra_data *extra_data, gint count) {
