@@ -942,6 +942,7 @@ void rlib_process_variables(rlib *r) {
 gint make_report(rlib *r) {
 	gint i = 0;
 	gint report = 0;
+	gint processed_variables = FALSE;
 	if(r->format == RLIB_FORMAT_HTML)
 		rlib_html_new_output_filter(r);
 	else if(r->format == RLIB_FORMAT_TXT)
@@ -964,6 +965,7 @@ gint make_report(rlib *r) {
 	rlib_fetch_first_rows(r);
 
 	for(report=0;report<r->reports_count;report++) {
+		processed_variables = FALSE;
 		r->current_report = report;
 		if(report > 0) {
 			if(r->reports[r->current_report]->mainloop_query != -1)
@@ -975,13 +977,18 @@ gint make_report(rlib *r) {
 			r->font_point = r->reports[r->current_report]->font_size;
 		OUTPUT(r)->rlib_start_report(r);
 		rlib_init_variables(r);
+		rlib_process_variables(r);
+		processed_variables = TRUE;
 		rlib_init_page(r, TRUE);		
 		OUTPUT(r)->rlib_begin_text(r);
 		if(INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result) != TRUE) {
 			while (1) {
 				gint page;
 				gint output_count = 0;
-				rlib_process_variables(r);
+				if(processed_variables == FALSE) {
+					rlib_process_variables(r);
+					processed_variables = TRUE;
+				}
 				rlib_handle_break_headers(r);
 			
 				if(rlib_end_page_if_line_wont_fit(r, r->reports[r->current_report]->detail.fields))
@@ -1004,6 +1011,7 @@ gint make_report(rlib *r) {
 				} 
 
 				rlib_handle_break_footers(r);
+				processed_variables = FALSE;
 			}
 		}
 
