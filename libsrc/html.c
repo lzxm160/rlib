@@ -344,9 +344,20 @@ static void rlib_html_end_tr(rlib *r) {
 	print_text(r, "</tr></table>", FALSE);
 }
 
-static void rlib_html_start_td(rlib *r, int width) {
-	char buf[50];
-	sprintf(buf, "<td width=\"%d%%\" valign=\"top\"><pre> <!-- REAL TD -->", width);
+static void rlib_html_start_td(rlib *r, struct rlib_part *part, gfloat left_margin, gfloat top_margin, int width, int height, int border_width, struct rlib_rgb *color) {
+	char buf[150];
+	char border_color[150];
+	
+	if(color != NULL)
+		get_html_color(border_color, color);
+	else
+		border_color[0] = 0;
+	
+	if(border_width > 0) {
+		sprintf(buf, "<td width=\"%d%%\" valign=\"top\" style=\"border:solid %dpx %s\"><pre>", width, border_width, border_color);
+	}
+	else
+		sprintf(buf, "<td width=\"%d%%\" valign=\"top\"><pre>", width);
 	print_text(r, buf, FALSE);
 }
 

@@ -787,6 +787,31 @@ gint rlib_execute_as_int(rlib *r, struct rlib_pcode *pcode, gint *result) {
 	return isok;
 }
 
+gint rlib_execute_as_float(rlib *r, struct rlib_pcode *pcode, gfloat *result) {
+	struct rlib_value val;
+	gint isok = FALSE;
+
+	*result = 0;
+	if (pcode) {
+		rlib_execute_pcode(r, &val, pcode, NULL);
+		if (RLIB_VALUE_IS_NUMBER((&val))) {
+			*result = (gdouble)RLIB_VALUE_GET_AS_NUMBER((&val)) / (gdouble)RLIB_DECIMAL_PRECISION;
+			isok = TRUE;
+		} else {
+			gchar *whatgot = "don't know";
+			gchar *gotval = "";
+			if (RLIB_VALUE_IS_STRING((&val))) {
+				whatgot = "string";
+				gotval = RLIB_VALUE_GET_AS_STRING((&val));
+			}
+			rlogit("Expecting numeric value from pcode. Got %s=%s", whatgot, gotval);
+		}
+		rlib_value_free(&val);
+	}
+	return isok;
+}
+
+
 gint rlib_execute_as_boolean(rlib *r, struct rlib_pcode *pcode, gint *result) {
 	return rlib_execute_as_int(r, pcode, result)? TRUE : FALSE;
 }

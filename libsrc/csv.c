@@ -148,9 +148,9 @@ static void rlib_csv_start_table(rlib *r) {}
 static void rlib_csv_end_table(rlib *r) {}
 static void rlib_csv_start_tr(rlib *r) {}
 static void rlib_csv_end_tr(rlib *r) {}
-static void rlib_csv_start_td(rlib *r, int width) {}
+static void rlib_csv_start_td(rlib *r, struct rlib_part *part, gfloat left_margin, gfloat top_margin, int width, int height, int border_width, struct rlib_rgb *color) {}
 static void rlib_csv_end_td(rlib *r) {}
-static void rlib_csv_set_raw_page(rlib *r, struct rlib_part *part, gint page)  {}
+static void rlib_csv_set_raw_page(rlib *r, struct rlib_part *part, int page)  {}
 
 static int rlib_csv_free(rlib *r) {
 	g_free(OUTPUT_PRIVATE(r)->top);

@@ -121,7 +121,7 @@ static const gchar *rlib_encode_text(rlib *r, const gchar *text) {
 	return result;
 }
 
-static gfloat rlib_layout_get_next_line(rlib *r, struct rlib_part *part, gfloat position, gfloat foint_point) {
+gfloat rlib_layout_get_next_line(rlib *r, struct rlib_part *part, gfloat position, gfloat foint_point) {
 	if(part->landscape)
 		return ((part->paper->width/RLIB_PDF_DPI) - (position + RLIB_GET_LINE(foint_point)));
 	else

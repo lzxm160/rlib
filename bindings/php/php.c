@@ -46,6 +46,7 @@ ZEND_FUNCTION(rlib_add_datasource_array);
 ZEND_FUNCTION(rlib_add_query_as);
 ZEND_FUNCTION(rlib_add_resultset_follower);
 ZEND_FUNCTION(rlib_add_report);
+ZEND_FUNCTION(rlib_add_report_from_buffer);
 ZEND_FUNCTION(rlib_set_output_format_from_text);
 ZEND_FUNCTION(rlib_execute);
 ZEND_FUNCTION(rlib_spool);
@@ -84,6 +85,7 @@ zend_function_entry rlib_functions[] =
 	ZEND_FE(rlib_add_query_as, NULL)
 	ZEND_FE(rlib_add_resultset_follower, NULL)
 	ZEND_FE(rlib_add_report, NULL)
+	ZEND_FE(rlib_add_report_from_buffer, NULL)
 	ZEND_FE(rlib_set_output_format_from_text, NULL)
 	ZEND_FE(rlib_execute, NULL)
 	ZEND_FE(rlib_spool, NULL)
@@ -301,6 +303,22 @@ ZEND_FUNCTION(rlib_add_report) {
 	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
 
 	rlib_add_report(rip->r, estrdup(name));
+		
+}
+
+ZEND_FUNCTION(rlib_add_report_from_buffer) {
+	zval *z_rip = NULL;
+	gint whatever;
+	gchar *buffer;
+	rlib_inout_pass *rip;
+	gint id = -1;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &z_rip, &buffer, &whatever) == FAILURE)
+		return;
+	
+	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
+
+	rlib_add_report_from_buffer(rip->r, estrdup(buffer));
 		
 }
 

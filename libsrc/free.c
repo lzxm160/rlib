@@ -260,6 +260,9 @@ void rlib_free_part_td(rlib *r, struct rlib_part *part, struct rlib_element *e_t
 	for(e=e_td;e != NULL;e=e->next) {
 		struct rlib_part_td *td = e->data;
 		free_pcode(td->width_code);
+		free_pcode(td->height_code);
+		free_pcode(td->border_width_code);
+		free_pcode(td->border_color_code);
 
 		for(td_contents=td->e;td_contents != NULL;td_contents=td_contents->next) {
 			if(td_contents->type == RLIB_ELEMENT_REPORT) {

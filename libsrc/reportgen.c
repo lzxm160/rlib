@@ -241,7 +241,7 @@ gint will_outputs_fit(rlib *r, struct rlib_part *part, struct rlib_report *repor
 void rlib_set_report_from_part(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat top_margin_offset) {
 	gint i;
 	for(i=0;i<report->pages_across;i++) {
-		report->position_top[i] = part->position_top[0] + top_margin_offset;
+		report->position_top[i] = report->top_margin + part->position_top[0] + top_margin_offset;
 		report->bottom_size[i] = part->bottom_size[0];
 		report->position_bottom[i] = part->position_bottom[0];
 	}
@@ -359,18 +359,19 @@ static void rlib_process_variables(rlib *r, struct rlib_report *report) {
 
 static void rlib_evaluate_report_attributes(rlib *r, struct rlib_report *report) {
 	gint t;
+	gfloat f;
 	
 	if (rlib_execute_as_int_inlist(r, report->orientation_code, &t, orientations))
 		if ((t == RLIB_ORIENTATION_PORTRAIT) || (t == RLIB_ORIENTATION_LANDSCAPE))
 			report->orientation = t;
 	if (rlib_execute_as_int(r, report->font_size_code, &t))
 		report->font_size = t;
-	if (rlib_execute_as_int(r, report->top_margin_code, &t))
-		report->top_margin = t;
-	if (rlib_execute_as_int(r, report->left_margin_code, &t))
-		report->left_margin = t;
-	if (rlib_execute_as_int(r, report->bottom_margin_code, &t))
-		report->bottom_margin = t;
+	if (rlib_execute_as_float(r, report->top_margin_code, &f))
+		report->top_margin = f;
+	if (rlib_execute_as_float(r, report->left_margin_code, &f))
+		report->left_margin = f;
+	if (rlib_execute_as_float(r, report->bottom_margin_code, &f))
+		report->bottom_margin = f;
 	if (rlib_execute_as_int(r, report->pages_across_code, &t))
 		report->pages_across = t;
 	if (rlib_execute_as_int(r, report->suppress_page_header_first_page_code, &t))
@@ -417,6 +418,7 @@ void rlib_process_expression_variables(rlib *r, struct rlib_report *report) {
 
 static void rlib_evaluate_part_attributes(rlib *r, struct rlib_part *part) {
 	gint t;
+	gfloat f;
 	char buf[MAXSTRLEN];
 	
 	if (rlib_execute_as_int_inlist(r, part->orientation_code, &t, orientations))
@@ -424,14 +426,14 @@ static void rlib_evaluate_part_attributes(rlib *r, struct rlib_part *part) {
 			part->orientation = t;
 	if (rlib_execute_as_int(r, part->font_size_code, &t))
 		part->font_size = t;
-	if (rlib_execute_as_int(r, part->top_margin_code, &t))
-		part->top_margin = t;
-	if (rlib_execute_as_int(r, part->left_margin_code, &t))
-		part->left_margin = t;
-	if (rlib_execute_as_int(r, part->bottom_margin_code, &t))
-		part->bottom_margin = t;
-	if (rlib_execute_as_int(r, part->pages_across_code, &t))
-		part->pages_across = t;
+	if (rlib_execute_as_float(r, part->top_margin_code, &f))
+		part->top_margin = f;
+	if (rlib_execute_as_float(r, part->left_margin_code, &f))
+		part->left_margin = f;
+	if (rlib_execute_as_float(r, part->bottom_margin_code, &f))
+		part->bottom_margin = f;
+	if (rlib_execute_as_float(r, part->pages_across_code, &f))
+		part->pages_across = f;
 	if (rlib_execute_as_string(r, part->paper_type_code, buf, MAXSTRLEN)) {
 		struct rlib_paper *paper = rlib_layout_get_paper_by_name(r, buf);
 		if(paper != NULL)
@@ -467,7 +469,8 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 
 	rlib_set_report_from_part(r, part, report, top_margin_offset);
 
-	report->left_margin += left_margin_offset;
+	report->left_margin += left_margin_offset + part->left_margin;
+rlogit("LEFT MARGIN IS NOW %f\n", report->left_margin);
 
 	if(report->font_size != -1)
 		r->font_point = report->font_size;
@@ -546,20 +549,31 @@ void rlib_layout_part_td(rlib *r, struct rlib_part *part, struct rlib_element *e
 	for(e=e_td;e != NULL;e=e->next) {
 		gfloat running_top_margin = 0;
 		struct rlib_part_td *td = e->data;
-		gint width;
-
+		gint width, height, border_width;
+		gchar border_color[MAXSTRLEN];
+		struct rlib_rgb bgcolor;
+		
 		if(!rlib_execute_as_int(r, td->width_code, &width))
 			width = 100;
-		OUTPUT(r)->start_td(r, width);
 
+		if(!rlib_execute_as_int(r, td->height_code, &height))
+			height = 0;
 
-		rlogit("    TD %d\n", width);
+		if(!rlib_execute_as_int(r, td->border_width_code, &border_width))
+			border_width = 0;
+			
+		if(!rlib_execute_as_string(r, td->border_color_code, border_color, MAXSTRLEN))
+			border_color[0] = 0;
+
+		parsecolor(&bgcolor, border_color);
+		
+		OUTPUT(r)->start_td(r, part, running_left_margin+part->left_margin, rlib_layout_get_next_line(r, part, running_top_margin+position_top+part->position_top[0], 0), width,  height, border_width, border_color[0] == 0 ? NULL : &bgcolor);
+
 		for(td_contents=td->e;td_contents != NULL;td_contents=td_contents->next) {
 			if(td_contents->type == RLIB_ELEMENT_REPORT) {
 				struct rlib_report *report = td_contents->data;
 				
 				report->page_width = (((gfloat)width/100) * paper_width);
-				rlogit("-- REPORT -- SETTING PAGE NUMBER TO %d\n", page_number);
 				OUTPUT(r)->set_raw_page(r, part, page_number);
 				report->raw_page_number = page_number;
 				rlib_layout_report(r, part, report, running_left_margin, running_top_margin+position_top);
@@ -572,9 +586,10 @@ void rlib_layout_part_td(rlib *r, struct rlib_part *part, struct rlib_element *e
 						rrp->position_top = report->position_top[0];
 				}
 			} else {
-				rlogit("UNKNOWN\n");
+				r_error("UNKNOWN ELEMENT IN TD\n");
 			}
 		}
+		rlogit("========== TD WIDTH WAS %f\n", (((gfloat)width/100) * paper_width));
 		running_left_margin += (((gfloat)width/100) * paper_width);
 		OUTPUT(r)->end_td(r);
 	}	
@@ -664,78 +679,7 @@ gint make_report(rlib *r) {
 		OUTPUT(r)->end_report(r, part);
 	}
 	
-	
-/*	for(report=0;report<r->reports_count;report++) {
-		struct rlib_report *rr;
-				
-		processed_variables = FALSE;
-		r->current_report = report;
-		rr = r->reports[report];
-		if(report > 0) {
-			if(rr->mainloop_query != -1) {
-				r->current_result = rr->mainloop_query;
-				// Reset the query to be used again
-				first_result = INPUT(r,r->current_result)->first(INPUT(r,r->current_result), r->results[r->current_result].result);
-			}
-		}
-// If this report has a specific output converter, use it otherwise use the reports encoder.
-		r->current_output_encoder = (rr->output_encoder)? rr->output_encoder : r->output_encoder;
-//		r->current_db_encoder = (rr->db_encoder)? rr->db_encoder : r->db_encoder;
-//		r->current_param_encoder = (rr->param_encoder)? rr->param_encoder : r->param_encoder;
-		rlib_resolve_report_fields(r);
-		rlib_init_variables(r);
-		rlib_process_variables(r);
-		processed_variables = TRUE;
-		rlib_evaluate_report_attributes(r);
-		if(rr->font_size != -1)
-			r->font_point = rr->font_size;
-		OUTPUT(r)->start_report(r);
-		rlib_init_page(r, TRUE);		
-		if (!first_result) {
-			rlib_layout_report_output(r, rr->alternate.nodata, FALSE);
-		} else {
-			if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
-				while (1) {
-					gint page;
-					gint output_count = 0;
-					if(!processed_variables) {
-						rlib_process_variables(r);
-						processed_variables = TRUE;
-					}
-					rlib_evaluate_break_attributes(r);
-					rlib_handle_break_headers(r);
-
-					if(rlib_end_page_if_line_wont_fit(r, rr->detail.fields))
-						for (page = 0; page < rr->pages_across; page++)
-							rlib_force_break_headers(r);
-
-					if(OUTPUT(r)->do_break)
-						output_count = rlib_layout_report_output(r, rr->detail.fields, FALSE);
-					else
-						output_count = rlib_layout_report_output_with_break_headers(r);
-
-					if(output_count > 0)
-						r->detail_line_count++;
-					i++;
-
-					if(rlib_navigate_next(r, r->current_result) == FALSE) {
-						rlib_navigate_last(r, r->current_result);
-						rlib_handle_break_footers(r);
-						break;
-					} 
-
-					rlib_evaluate_break_attributes(r);
-					rlib_handle_break_footers(r);
-					processed_variables = FALSE;
-				}
-			}
-
-			rlib_navigate_last(r, r->current_result);
-
-			rlib_print_report_footer(r);
-		}
-		OUTPUT(r)->end_report(r);
-
+/*
 		if(report+1 < r->reports_count) {
 			r->current_page_number++;
 			r->start_of_new_report = TRUE;
@@ -744,8 +688,8 @@ gint make_report(rlib *r) {
 			r->font_point = FONTPOINT;
 		}
 		rlib_char_encoder_destroy(&rr->output_encoder); //Destroy if was one.
-//		rlib_char_encoder_destroy(&rr->db_encoder); //Destroy if was one.
-//		rlib_char_encoder_destroy(&rr->param_encoder); //Destroy if was one.
+		rlib_char_encoder_destroy(&rr->db_encoder); //Destroy if was one.
+		rlib_char_encoder_destroy(&rr->param_encoder); //Destroy if was one.
 	}
 	*/
 	return 0;

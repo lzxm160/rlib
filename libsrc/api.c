@@ -108,6 +108,17 @@ gint rlib_add_report(rlib *r, gchar *name) {
 		return - 1;
 	}
 	r->reportstorun[r->parts_count].name = g_strdup(name);
+	r->reportstorun[r->parts_count].type = RLIB_REPORT_TYPE_FILE;
+	r->parts_count++;
+	return r->parts_count;
+}
+
+gint rlib_add_report_from_buffer(rlib *r, gchar *buffer) {
+	if(r->parts_count > (RLIB_MAXIMUM_REPORTS-1)) {
+		return - 1;
+	}
+	r->reportstorun[r->parts_count].name = g_strdup(buffer);
+	r->reportstorun[r->parts_count].type = RLIB_REPORT_TYPE_BUFFER;
 	r->parts_count++;
 	return r->parts_count;
 }
@@ -131,9 +142,10 @@ gint rlib_execute(rlib *r) {
 
 	xmlKeepBlanksDefault(0);
 	for(i=0;i<r->parts_count;i++) {
-		sprintf(newfile, "%s.rlib", r->reportstorun[i].name);
-		if((r->parts[i] = load_report(newfile)) == NULL)
-			r->parts[i] = parse_part_file(r->reportstorun[i].name);
+		if(r->reportstorun[i].type == RLIB_REPORT_TYPE_FILE)
+			sprintf(newfile, "%s.rlib", r->reportstorun[i].name);
+		if(r->reportstorun[i].type == RLIB_REPORT_TYPE_BUFFER || (r->parts[i] = load_report(newfile)) == NULL)
+			r->parts[i] = parse_part_file(r->reportstorun[i].name, r->reportstorun[i].type);
 		xmlCleanupParser();		
 		if(r->parts[i] == NULL) {
 			r_error("Failed to load a report file [%s]\n", r->reportstorun[i].name);
@@ -145,7 +157,6 @@ gint rlib_execute(rlib *r) {
 	rlib_finalize(r);
 	return 0;
 }
-
 
 gchar * rlib_get_content_type_as_text(rlib *r) {
 	static char buf[256];

@@ -308,6 +308,9 @@ void rlib_resolve_part_td(rlib *r, struct rlib_part *part, struct rlib_element *
 	for(e=e_td;e != NULL;e=e->next) {
 		struct rlib_part_td *td = e->data;
 		td->width_code = rlib_infix_to_pcode(r, NULL, td->xml_width);
+		td->height_code = rlib_infix_to_pcode(r, NULL, td->xml_height);
+		td->border_width_code = rlib_infix_to_pcode(r, NULL, td->xml_border_width);
+		td->border_color_code = rlib_infix_to_pcode(r, NULL, td->xml_border_color);
 	}
 }
 

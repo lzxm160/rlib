@@ -457,6 +457,9 @@ static struct rlib_element * parse_part_td(struct rlib_part *part, xmlDocPtr doc
 	struct rlib_element *e = g_new0(struct rlib_element, 1);
 	struct rlib_part_td *td = g_new0(struct rlib_part_td, 1);	
 	td->xml_width =  xmlGetProp(cur, (const xmlChar *) "width");
+	td->xml_height =  xmlGetProp(cur, (const xmlChar *) "height");
+	td->xml_border_width =  xmlGetProp(cur, (const xmlChar *) "border_width");
+	td->xml_border_color =  xmlGetProp(cur, (const xmlChar *) "border_color");
 	e->data = td;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {      
@@ -591,7 +594,7 @@ void dump_part(struct rlib_part *part) {
 	rlogit("DONE!\n");
 }
 
-struct rlib_part * parse_part_file(gchar *filename) {
+struct rlib_part * parse_part_file(gchar *filename, gchar type) {
 	xmlDocPtr doc;
 	struct rlib_report *report;
 	struct rlib_part *part = NULL;
@@ -599,7 +602,13 @@ struct rlib_part * parse_part_file(gchar *filename) {
 	xmlNodePtr cur;
 	int found = FALSE;
 
-	doc = xmlReadFile(filename, NULL, XML_PARSE_XINCLUDE);
+
+
+	if(type == RLIB_REPORT_TYPE_BUFFER) 
+		doc = xmlReadMemory(filename, strlen(filename), NULL, NULL, XML_PARSE_XINCLUDE);
+	else
+		doc = xmlReadFile(filename, NULL, XML_PARSE_XINCLUDE);
+		
 	xmlXIncludeProcess(doc);
 	
 	if (doc == NULL)  {

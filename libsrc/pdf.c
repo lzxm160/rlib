@@ -357,6 +357,41 @@ static long rlib_pdf_get_output_length(rlib *r) {
 	return OUTPUT_PRIVATE(r)->length;
 }
 
+static void rlib_pdf_start_td(rlib *r, struct rlib_part *part, gfloat left_margin, gfloat bottom_margin, int width, int height, int border_width, struct rlib_rgb *border_color) {
+	struct rlib_rgb color;
+	gfloat real_width;
+	gfloat real_height;
+	gfloat box_width = width / RLIB_PDF_DPI / 100;
+	gfloat space = part->position_bottom[0] - part->position_top[0];
+
+	if(part->orientation == RLIB_ORIENTATION_LANDSCAPE) {
+		real_height = space * ((gfloat)height/100);
+	} else {
+		real_height = space * ((gfloat)height/100);
+	}
+
+
+	if(part->orientation == RLIB_ORIENTATION_LANDSCAPE) {
+		real_width = ((part->paper->height/RLIB_PDF_DPI) - (part->left_margin*2)) * ((gfloat)width/100);
+	} else {
+		real_width = ((part->paper->width/RLIB_PDF_DPI) - (part->left_margin*2)) * ((gfloat)width/100);
+	}
+	
+	bzero(&color, sizeof(struct rlib_rgb));
+	
+	if(border_color == NULL)
+		border_color = &color;
+
+	if(border_width > 0) {
+		rlib_pdf_drawbox(r, left_margin, bottom_margin - real_height, box_width, real_height, border_color);
+		rlib_pdf_drawbox(r, left_margin + real_width - (box_width * 2), bottom_margin - real_height, box_width, real_height, border_color);
+
+		rlib_pdf_drawbox(r, left_margin, bottom_margin - real_height, real_width, box_width, border_color);
+		rlib_pdf_drawbox(r, left_margin, bottom_margin, real_width, box_width, border_color);
+	}
+}
+
+static void rlib_pdf_end_td(rlib *r) {}
 static void rlib_pdf_stub_line(rlib *r, int backwards) {}
 static void rlib_pdf_end_output_section(rlib *r) {}
 static void rlib_pdf_start_output_section(rlib *r) {}
@@ -368,8 +403,6 @@ static void rlib_pdf_start_table(rlib *r) {}
 static void rlib_pdf_end_table(rlib *r) {}
 static void rlib_pdf_start_tr(rlib *r) {}
 static void rlib_pdf_end_tr(rlib *r) {}
-static void rlib_pdf_start_td(rlib *r, int width) {}
-static void rlib_pdf_end_td(rlib *r) {}
 
 void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r) = g_malloc(sizeof(struct output_filter));
