@@ -332,7 +332,6 @@ struct rlib_report_break {
 	xmlChar *xml_suppressblank;
 
 	gint didheader;
-	gint newpage;
 	gint headernewpage;
 	gint suppressblank;
 
@@ -759,6 +758,7 @@ void rlib_new_c_environment(rlib *r);
 /***** PROTOTYPES: free.c *****************************************************/
 int rlib_free(rlib *r);
 void rlib_free_results(rlib *r);
+void rlib_free_pcode(struct rlib_pcode *code);
 
 /***** PROTOTYPES: pdf.c ******************************************************/
 void rlib_pdf_new_output_filter(rlib *r);

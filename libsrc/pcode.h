@@ -101,6 +101,7 @@
 #define OP_SETTIMESECS	54
 #define OP_FORMAT		55
 #define OP_STODSQL 	56
+#define OP_EVAL 	57
 
 
 struct rlib_value_stack {
@@ -227,4 +228,5 @@ int rlib_pcode_operator_chgtimeof(rlib *r, struct rlib_value_stack *vs, struct r
 int rlib_pcode_operator_gettimeinsecs(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
 int rlib_pcode_operator_settimeinsecs(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
 int rlib_pcode_operator_format(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-gint rlib_pcode_operator_stodtsql(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
+int rlib_pcode_operator_stodtsql(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
+int rlib_pcode_operator_eval(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);

@@ -423,8 +423,6 @@ static void rlib_evaluate_break_attributes(rlib *r, struct rlib_report *report) 
 	
 	for(e = report->breaks; e != NULL; e = e->next) {
 		rb = e->data;
-		if (rlib_execute_as_boolean(r, rb->newpage_code, &t))
-			rb->newpage = t;
 		if (rlib_execute_as_boolean(r, rb->headernewpage_code, &t))
 			rb->headernewpage = t;
 		if (rlib_execute_as_boolean(r, rb->suppressblank_code, &t))

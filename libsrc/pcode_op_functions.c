@@ -1544,3 +1544,23 @@ gint rlib_pcode_operator_date(rlib *r, struct rlib_value_stack *vs, struct rlib_
 	rlib_value_stack_push(vs, rlib_value_new_date(&rval_rtn, &dt));
 	return TRUE;
 }
+
+gint rlib_pcode_operator_eval(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+	struct rlib_value *v1, rval_rtn;
+	v1 = rlib_value_stack_pop(vs);
+	if(v1 != NULL) {
+		if(RLIB_VALUE_IS_STRING(v1)) {
+			struct rlib_pcode *code;
+			code = rlib_infix_to_pcode(r, NULL, RLIB_VALUE_GET_AS_STRING(v1));
+			rlib_execute_pcode(r, &rval_rtn, code, this_field_value);		
+			rlib_free_pcode(code);
+			rlib_value_free(v1);
+			rlib_value_stack_push(vs,&rval_rtn);
+			return TRUE;
+		}
+	}
+	rlib_pcode_operator_fatal_execption("eval", 1, v1, NULL, NULL);
+	rlib_value_free(v1);
+	rlib_value_stack_push(vs, rlib_value_new_error(&rval_rtn));
+	return FALSE;
+}

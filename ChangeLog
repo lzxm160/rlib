@@ -1,3 +1,12 @@
+2004-11-16  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/breaks.c: make new page dynamic
+	* libsrc/free.c: make rlib_free_pcode public
+	* libsrc/pcode.c: new eval
+	* libsrc/pcode.h: likewise
+	* libsrc/pcode_op_functions.c: likewise
+	* libsrc/rlib.h: likewise
+	* src/examples/php/array.xml: test eval
+
 2004-11-07  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/array_data_source.c: roll back incorrect return FALSE on first if source has no data
 

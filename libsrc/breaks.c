@@ -181,7 +181,8 @@ void rlib_reset_variables_on_break(rlib *r, struct rlib_part *part, struct rlib_
 
 void rlib_break_all_below_in_reverse_order(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_element *e) {
 	gint count=0,i=0,j=0;
-	gint do_endpage = FALSE;
+	gint newpage = FALSE;
+	gboolean t;
 	struct rlib_report_break *rb;
 	struct rlib_element *xxx, *be;
 	struct rlib_break_fields *bf;
@@ -210,11 +211,11 @@ void rlib_break_all_below_in_reverse_order(rlib *r, struct rlib_part *part, stru
 
 		rlib_reset_variables_on_break(r, part, report, rb->xml_name);
 		rlib_process_expression_variables(r, report);
-		if(rb->newpage) {
-			do_endpage = TRUE;
-		}
+		if (rlib_execute_as_boolean(r, rb->newpage_code, &t))
+			newpage = t;
+		
 	}
-	if(do_endpage && OUTPUT(r)->do_break) {
+	if(newpage && OUTPUT(r)->do_break) {
 		if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
 			rlib_layout_end_page(r, part, report);
 			rlib_force_break_headers(r, part, report);
