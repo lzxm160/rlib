@@ -122,6 +122,7 @@ struct rlib_pcode_if {
 	struct rlib_pcode *evaulation;
 	struct rlib_pcode *true;
 	struct rlib_pcode *false;		
+	char *str_ptr;
 };
 
 #define OPERAND_NUMBER				1

@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
 	rlib_add_report(r, "report.xml", NULL);
 	rlib_add_report(r, "report.xml", "example2");
 	rlib_add_report(r, "report2.xml", "example3");
-	r->format = RLIB_FORMAT_PDF;
+	rlib_set_output_format(r, RLIB_FORMAT_PDF);
 	rlib_execute(r);
 	rlib_finalize(r);
 	rlib_spool(r);

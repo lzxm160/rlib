@@ -38,5 +38,6 @@ struct input_filter {
 	void (*seek_field)(void *, int, int);
 	void * (*fetch_field)(void *, int);
 	void * (*fetch_field_name)(void *, void *);
+	void (*rlib_free_result)(void *, int);	
 	int (*free)(void *);
 };

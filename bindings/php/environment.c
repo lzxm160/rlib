@@ -36,6 +36,10 @@ static int rlib_php_write_output(char *data, int len) {
 	return php_write(data, len TSRMLS_CC);
 }
 
+void rlib_php_free(rlib *r) {
+	rfree(ENVIRONMENT(r));
+}
+
 
 struct environment_filter * rlib_php_new_environment() {
 	struct environment_filter *ef;
@@ -43,4 +47,5 @@ struct environment_filter * rlib_php_new_environment() {
 
 	ef->rlib_resolve_memory_variable = rlib_php_resolve_memory_variable;
 	ef->rlib_write_output = rlib_php_write_output;
+	ef->free = rlib_php_free;
 }

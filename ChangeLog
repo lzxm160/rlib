@@ -1,3 +1,16 @@
+2003-10-16  Bob Doan  <bdoan@sicompos.com>
+	* bindings/php/environment.c: add free method
+	* libsrc/environment.c: add free method
+	* libsrc/free.c: free lots more stuff
+	* libsrc/input.h: add free method
+	* libsrc/parsexml.c: add pointer in the right place
+	* libsrc/pcode.c: free more stuff
+	* libsrc/pcode.h: free more stuff
+	* libsrc/reportgen.c: free more stuff, new set_output_method
+	* libsrc/rlib.h: free more stuff
+	* libsrc/sql.c: free and close the connection
+	* tests/test1.c: use set output method
+
 2003-10-15  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/csv.c: new free method
 	* libsrc/free.c: free lots more stuff and don't crash

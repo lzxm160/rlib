@@ -31,10 +31,15 @@ static int rlib_c_write_output(char *data, int len) {
 	return write(1, data, len);
 }
 
+void rlib_c_free(rlib *r) {
+	rfree(ENVIRONMENT(r));
+}
+
 
 void rlib_new_c_environment(rlib *r) {
 	ENVIRONMENT(r) = rmalloc(sizeof(struct environment_filter));
 
 	ENVIRONMENT(r)->rlib_resolve_memory_variable = rlib_c_resolve_memory_variable;
 	ENVIRONMENT(r)->rlib_write_output = rlib_c_write_output;
+	ENVIRONMENT(r)->free = rlib_c_free;
 }

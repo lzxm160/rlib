@@ -715,8 +715,6 @@ int make_report(rlib *r) {
 			r->detail_line_count = 0;
 			r->font_point = FONTPOINT;
 		}
-
-
 	}	
 	OUTPUT(r)->rlib_end_text(r);
 	
@@ -730,5 +728,10 @@ int rlib_finalize(rlib *r) {
 
 int rlib_spool(rlib *r) {
 	OUTPUT(r)->rlib_spool_private(r);
+	return 0;
+}
+
+int rlib_set_output_format(rlib *r, int format) {
+	r->format = format;
 	return 0;
 }

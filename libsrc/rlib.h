@@ -334,6 +334,7 @@ struct environment_filter {
 	void *private;
 	char *(*rlib_resolve_memory_variable)(char *);
 	int (*rlib_write_output)(char *, int);
+	void (*free)(rlib *);
 };
 
 #define OUTPUT(r) (r->o)
@@ -420,6 +421,7 @@ void rlib_init_page(rlib *r, char report_header);
 int make_report(rlib *r);
 int rlib_spool(rlib *r);
 int rlib_finalize(rlib *r);
+int rlib_set_output_format(rlib *r, int format);
 
 /***** PROTOTYPES: resolution.c ***********************************************/
 int rlib_resolve_rlib_variable(rlib *r, char *name);

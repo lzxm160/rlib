@@ -33,7 +33,7 @@ static void free_pcode(struct rlib_pcode *code) {
 	for(i=0;i<code->count;i++) {
 		if(code->instructions[i].instruction == PCODE_PUSH) {
 			struct rlib_pcode_operand *o = code->instructions[i].value;
-			if(o->type == OPERAND_STRING || o->type == OPERAND_NUMBER)
+			if(o->type == OPERAND_STRING || o->type == OPERAND_NUMBER || o->type == OPERAND_FIELD)
 				rfree(o->value);
 			if(o->type == OPERAND_IIF) {
 				struct rlib_pcode_if *rpif = o->value;
@@ -42,6 +42,7 @@ static void free_pcode(struct rlib_pcode *code) {
 				free_pcode(rpif->false);
 				rfree(rpif);				
 			}
+			rfree(o);
 		}
 	}
 
@@ -111,6 +112,7 @@ static void rlib_free_fields(rlib *r, struct report_output_array *roa) {
 		}
 		rfree(ro);
 	}
+	rfree(roa->data);
 	rfree(roa);
 }
 
@@ -131,17 +133,29 @@ void rlib_free_tree(rlib *r) {
 	for(i=0;i<r->reports_count;i++) {
 		rlib_free_report(r, i);
 		xmlFreeDoc(r->reports[i]->doc);
+		rfree(r->reports[i]);
+		r->reports[i] = NULL;
+	}
+}
+
+void free_results(rlib *r) {
+	int i;
+	for(i=0;i<r->queries_count;i++) {
+		INPUT(r)->rlib_free_result(INPUT(r), i);
 	}
 }
 
 int rlib_free(rlib *r) {
 	rlib_free_tree(r);
-
+	xmlCleanupParser();
+	
+	free_results(r);
 	INPUT(r)->rlib_input_close(INPUT(r));
 	INPUT(r)->free(INPUT(r));	
 
 	OUTPUT(r)->rlib_free(r);
-	xmlCleanupParser();
-			
+	
+	ENVIRONMENT(r)->free(r);
+				
 	rfree(r);
 }

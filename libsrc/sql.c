@@ -49,9 +49,9 @@ struct _private {
 void * rlib_mysql_real_connect(void * woot, char *host, char *user, char *password, char *database) {
 	struct input_filter *input = woot;
 	MYSQL *mysql;
-	mysql = rmalloc(sizeof(MYSQL));
+	
 
-	mysql_init(mysql);
+	mysql = mysql_init(NULL);
 
 	if (mysql_real_connect(mysql,host,user,password, database, 0, NULL, 0) == NULL) {
 		return NULL;
@@ -67,6 +67,8 @@ void * rlib_mysql_real_connect(void * woot, char *host, char *user, char *passwo
 static int rlib_mysql_input_close(void *woot) {
 	struct input_filter *input = woot;
 	mysql_close(INPUT_PRIVATE(input)->mysql);
+	INPUT_PRIVATE(input)->mysql = NULL;
+	
 	return 0;
 }
 
@@ -161,6 +163,12 @@ static void * xxmysql_fetch_field_name(void *woot, void *xfield) {
 	return field->name;
 }
 
+static void rlib_mysql_rlib_free_result(void *woot, int i) {
+	struct input_filter *input = woot;
+	mysql_free_result(INPUT_PRIVATE(input)->results[i].result);
+}
+
+
 static int rlib_mysql_free_input_filter(void *woot) {
 	struct input_filter *input = woot;
 //TODO.. rework api so I know which result are mine... 
@@ -192,5 +200,6 @@ void * rlib_mysql_new_input_filter() {
 	input->fetch_field = xxmysql_fetch_field;
 	input->fetch_field_name = xxmysql_fetch_field_name;
 	input->free = rlib_mysql_free_input_filter;
+	input->rlib_free_result = rlib_mysql_rlib_free_result;
 	return input;
 }

@@ -273,6 +273,7 @@ struct report * parse_report_file(char *filename) {
 	xmlNodePtr cur;
 
 	doc = xmlParseFile(filename);
+
 	if (doc == NULL)  {
 		debugf("xmlParseError \n");
 		return(NULL);
@@ -299,9 +300,10 @@ struct report * parse_report_file(char *filename) {
 	}
 	
 	ret->report_header = NULL;
-	ret->doc = doc;
 
 	bzero(ret, sizeof(struct report));
+
+	ret->doc = doc;
 
 	while ( cur && xmlIsBlankNode ( cur ) ) {
 		cur = cur -> next;

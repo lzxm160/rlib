@@ -398,7 +398,7 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, char *infix) {
 				if(op->opnum == OP_IIF) {
 					int pcount=1;
 					int ccount=0;
-					char *save_ptr, *iif;
+					char *save_ptr, *iif, *save_iif;
 					char *evaulation, *true, *false;
 					struct rlib_pcode_if *rpif;
 					struct rlib_pcode_operand *o;
@@ -413,7 +413,7 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, char *infix) {
 						if(pcount == 0)
 							break;
 					}
-					iif = rmalloc(moving_ptr - save_ptr);
+					save_iif = iif = rmalloc(moving_ptr - save_ptr);
 					memcpy(iif, save_ptr, moving_ptr-save_ptr);
 					iif[moving_ptr-save_ptr-1] = '\0';
 					evaulation = iif;
@@ -434,10 +434,12 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, char *infix) {
 						}
 						iif++;
 					}
+	
 					rpif = rmalloc(sizeof(struct rlib_pcode_if));
 					rpif->evaulation = rlib_infix_to_pcode(r, evaulation);			
 					rpif->true = rlib_infix_to_pcode(r, true);			
 					rpif->false = rlib_infix_to_pcode(r, false);
+					rpif->str_ptr = iif;
 					smart_add_pcode(pcodes, &os, op);
 					o = rmalloc(sizeof(struct rlib_pcode_operand));			
 					o->type = OPERAND_IIF;
@@ -451,6 +453,7 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, char *infix) {
 					moving_ptr-=1;
 					op_pointer = moving_ptr;
 					move_pointers = FALSE;
+					rfree(save_iif);
 				} else {
 					smart_add_pcode(pcodes, &os, op);
 					last_op_was_function = op->is_function;
