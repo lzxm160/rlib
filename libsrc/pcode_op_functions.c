@@ -1404,14 +1404,17 @@ gint rlib_pcode_operator_proper(rlib *r, struct rlib_value_stack *vs, struct rli
 	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_STRING(v1)) {
-		gchar *tmp = g_strdup(RLIB_VALUE_GET_AS_STRING(v1));
-		rlib_value_free(v1);
-
+		if(RLIB_VALUE_GET_AS_STRING(v1) == NULL || RLIB_VALUE_GET_AS_STRING(v1)[0] == '\0') {
+			rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, ""));	
+			return TRUE;	
+		} else {
+			gchar *tmp = g_strdup(RLIB_VALUE_GET_AS_STRING(v1));
+			rlib_value_free(v1);
 //TODO: find or write a utf8 version  of strproper.
-
-		rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, strproper(tmp)));
-		g_free(tmp);
-		return TRUE;
+			rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, strproper(tmp)));
+			g_free(tmp);
+			return TRUE;
+		}
 	}
 	rlib_pcode_operator_fatal_execption("proper", 1, v1, NULL, NULL);
 	rlib_value_free(v1);

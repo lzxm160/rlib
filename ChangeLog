@@ -1,5 +1,9 @@
-2004-09-03  Michael Roth  <mroth@sicompos.com>
+2004-09-03  Bob Doan  <bdoan@sicompos.com>
+	* inputs/mysql/mysql.c: remove debug stuff
+	* libsrc/api.c: nada
+	* libsrc/pcode_op_functions.c: don't try to propper an empty string
 
+2004-09-03  Michael Roth  <mroth@sicompos.com>
 	* bindings/php/array_data_source.c: (rlib_php_array_first), change to set to first element 
 	(php_array_new_result_from_query): 
 	* inputs/mysql/mysql.c: (rlib_mysql_first): add mysql_data_seek - return to first element

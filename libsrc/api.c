@@ -120,7 +120,6 @@ gint rlib_execute(rlib *r) {
 	r->now = time(NULL);
 	for(i=0;i<r->queries_count;i++) {
 		r->results[i].input = r->queries[i].input;
-
 		r->results[i].result = INPUT(r,i)->new_result_from_query(INPUT(r,i), r->queries[i].sql);
 		if(r->results[i].result == NULL) {
 			rlogit("Failed To Run A Query [%s]\n", r->queries[i].sql);
