@@ -40,6 +40,7 @@
 #include "rlib.h"
 #include "rlib_gd.h"
 
+#ifdef HAVE_GD
 static char *unique_file_name(gchar *buf, gchar *image_directory) {
 	struct timeval tv;
 	gint pid = getpid();
@@ -70,7 +71,6 @@ int get_color_pool(struct rlib_gd *rgd, struct rlib_rgb *rgb) {
 }
 
 
-#ifdef HAVE_GD
 struct rlib_gd * rlib_gd_new(gint width, gint height, gchar *image_directory) {
 	struct rlib_gd *rgd = g_malloc(sizeof(struct rlib_gd));
 	char file_name[MAXSTRLEN];

@@ -27,6 +27,8 @@
 #include <gdfontmb.h>
 #include <gdfontl.h>
 #include <gdfontg.h>
+#else
+#define gdMaxColors 256
 #endif
 
 struct rlib_gd {

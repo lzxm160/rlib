@@ -1,3 +1,9 @@
+2005-02-25  Chet Heilman <cheilman@sicompos.com>
+	* libsrc/gd.c:
+	Fix compile error when libgd is not found.
+	* libsrc/rlib_gd.h:
+	Fix compile error when libgd is not found.
+
 2005-02-24  Bob Doan  <bdoan@sicom.com>
 	* Makefile.am: include doc
 	* libsrc/graphing.c: always hint legend
