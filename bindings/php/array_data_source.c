@@ -51,6 +51,7 @@ static gint rlib_php_array_input_close(gpointer input_ptr) {
 static gint rlib_php_array_first(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_php_array_results *result = result_ptr;
 	result->current_row = 1;
+	result->isdone = FALSE;
 	if(result->rows <= 1) {
 		result->isdone = TRUE;
 		return FALSE;
@@ -114,6 +115,8 @@ void * php_array_new_result_from_query(gpointer input_ptr, gchar *query) {
 	struct rlib_php_array_results *result = emalloc(sizeof(struct rlib_php_array_results));
 	long size;
 	void *data, *lookup_data;
+	char *data_result;
+	char dstr[64];
 	HashTable *ht1, *ht2;
 	HashPosition pos1, pos2;
 	zval *zend_value, *lookup_value;
@@ -153,26 +156,37 @@ void * php_array_new_result_from_query(gpointer input_ptr, gchar *query) {
 			zend_hash_get_current_data_ex(ht2, &lookup_data, &pos2);
 			lookup_value = *(zval **)lookup_data;
 			zend_hash_move_forward_ex(ht2, &pos2);
-			result->data[(row*result->cols)+col] = Z_STRVAL_P(lookup_value);
+
+			data_result = NULL;
+			memset(dstr,0,64);
+			if( Z_TYPE_P(lookup_value) == IS_STRING )	
+				data_result = Z_STRVAL_P(lookup_value);
+			else if( Z_TYPE_P(lookup_value) == IS_LONG ) {	
+				sprintf(dstr,"%ld",Z_LVAL_P(lookup_value));
+				data_result = estrdup(dstr);
+			} else if( Z_TYPE_P(lookup_value) == IS_DOUBLE ) {	
+				sprintf(dstr,"%f",Z_DVAL_P(lookup_value));
+				data_result = estrdup(dstr);
+			} else if( Z_TYPE_P(lookup_value) == IS_NULL ) {	
+				data_result = estrdup("");
+			} else {
+				sprintf(dstr,"ZEND Z_TYPE %d NOT SUPPORTED",Z_TYPE_P(lookup_value));
+				data_result = estrdup(dstr);
+			}
+
+			result->data[(row*result->cols)+col] = data_result;
 			col++;
-			if(col >= result->cols)
+			if(col >= result->cols) {
 				break;
+			}
 		}
 		row++;
-		if(row >= result->rows)
+		if(row >= result->rows) {
 			break;
+		}
 		zend_hash_move_forward_ex(ht1, &pos1);
 	}
 	
-
-/*	for(row=0;row<result->rows;row++) {
-		for(col=0;col<result->cols;col++) {
-			fprintf(stderr, "%s ", result->data[(row*result->cols)+col]);
-		}
-		fprintf(stderr, "\n");
-	}
-*/
-
 	return result;
 }
 

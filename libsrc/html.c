@@ -266,7 +266,6 @@ static void rlib_html_end_report(rlib *r) {
 	gint i;
 	gint pages_accross = r->reports[r->current_report]->pages_accross;
 	gint sofar = OUTPUT_PRIVATE(r)->length;
-
 	print_text(r, "</pre></td></tr></table>", TRUE);
 
 	for(i=0;i<pages_accross;i++) {
@@ -275,12 +274,13 @@ static void rlib_html_end_report(rlib *r) {
 		memcpy(OUTPUT_PRIVATE(r)->both + sofar + OUTPUT_PRIVATE(r)->top[i].size, OUTPUT_PRIVATE(r)->bottom[i].data, OUTPUT_PRIVATE(r)->bottom[i].size);
 		sofar += OUTPUT_PRIVATE(r)->top[i].size + OUTPUT_PRIVATE(r)->bottom[i].size;	
 	}
-	OUTPUT_PRIVATE(r)->length += sofar;
+	OUTPUT_PRIVATE(r)->length = sofar;
 
 	for(i=0;i<pages_accross;i++) {
 		g_free(OUTPUT_PRIVATE(r)->top[i].data);
 		g_free(OUTPUT_PRIVATE(r)->bottom[i].data);
 	}
+
 	g_free(OUTPUT_PRIVATE(r)->top);
 	g_free(OUTPUT_PRIVATE(r)->bottom);
 }

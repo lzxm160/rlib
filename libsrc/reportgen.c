@@ -1211,8 +1211,11 @@ gint make_report(rlib *r) {
 		r->current_report = report;
 		rr = r->reports[report];
 		if(report > 0) {
-			if(rr->mainloop_query != -1)
+			if(rr->mainloop_query != -1) {
 				r->current_result = rr->mainloop_query;
+				// Reset the query to be used again
+				first_result = INPUT(r,r->current_result)->first(INPUT(r,r->current_result), r->results[r->current_result].result);
+			}
 		}
 // If this report has a specific output converter, use it otherwise use the reports encoder.
 		r->current_output_encoder = (rr->output_encoder)? rr->output_encoder : r->output_encoder;

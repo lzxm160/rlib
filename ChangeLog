@@ -1,3 +1,12 @@
+2004-09-03  Michael Roth  <mroth@sicompos.com>
+
+	* bindings/php/array_data_source.c: (rlib_php_array_first), change to set to first element 
+	(php_array_new_result_from_query): 
+	* inputs/mysql/mysql.c: (rlib_mysql_first): add mysql_data_seek - return to first element
+	* libsrc/html.c: (rlib_html_end_report): calculate size of report (HTML) correctly.
+	* libsrc/reportgen.c: (make_report): Goto first element of query on each mainloop so that the same query may be used again w/o re-query 
+	* src/examples/php/array_test.php:
+
 2004-08-25  Chet Heilman  <set EMAIL_ADDRESS environment variable>
 	* libsrc/datetime.c: (rlib_datetime_valid_date),
 	(rlib_datetime_set_date), (rlib_datetime_format_date):
