@@ -1,3 +1,13 @@
+2003-11-08  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/rlib.h: convert libxml2 UTF-8 strings into 8859-1 strings so most western languages work in RLIB
+	* inputs/mysql/mysql.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/reportgen.c:  likewise
+	* libsrc/pdf.c: use WinAnsiEncoding instead of Courier.. for better western font support
+	* libsrc/rlib_input.h: ..
+	* bindings/php/rlib_php.h: move a #define around
+	* tests/test1.c: i even tested it
+
 2003-11-07  Bob Doan  <bdoan@sicompos.com>
 	* NEWS: new news
 	* libsrc/api.c: only have easy api if configured for it

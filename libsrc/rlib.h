@@ -18,6 +18,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include <libxml/parser.h>
+#include <iconv.h>
 #include <time.h>
 
 #define RLIB_WEB_CONTENT_TYPE_HTML "Content-Type: text/html\n"
@@ -29,13 +30,18 @@
 //man 3 llabs says the prototype is in stdlib.. no it aint!
 long long int llabs(long long int j);
 
+#ifndef TRUE
 #define TRUE	1
+#endif
+
+#ifndef FALSE
 #define FALSE	0
+#endif
 
+#ifndef MAXSTRLEN
 #define MAXSTRLEN 1024
+#endif
 
-/*********** STUFF FOR THE PHP SIDE OF THINGS                                  */
-#define LE_RLIB_NAME "rlib"
 #define RLIB_MAXIMUM_QUERIES	50
 #define RLIB_MAXIMUM_REPORTS	5
 
@@ -90,7 +96,7 @@ struct report_element {
 
 
 struct report_text {
-	xmlChar *value;
+	char value[MAXSTRLEN];
 	xmlChar *xml_align;
 	xmlChar *color;
 	xmlChar *bgcolor;
@@ -146,7 +152,7 @@ struct rlib_line_extra_data {
 };
 
 struct report_field {
-	xmlChar *value;
+	char value[MAXSTRLEN];
 	xmlChar *xml_align;
 	xmlChar *bgcolor;
 	xmlChar *color;
@@ -293,6 +299,7 @@ struct rlib_report {
 	struct report_element *variables;
 	struct report_element *breaks;
 	int mainloop_query;
+	iconv_t cd;
 };
 
 struct rlib_queries {

@@ -18,6 +18,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#define LE_RLIB_NAME "rlib"
+
 struct rlib_inout_pass {
 	rlib *r;
 	int content_type;

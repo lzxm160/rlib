@@ -100,7 +100,8 @@ static void rlib_pdf_drawimage(rlib *r, float left_origin, float bottom_origin, 
 
 static void rlib_pdf_set_font_point(rlib *r, int point) {
 	if(r->current_font_point != point) {
-		cpdf_setFont(OUTPUT_PRIVATE(r)->pdf, "Courier", "Courier", point);
+//		cpdf_setFont(OUTPUT_PRIVATE(r)->pdf, "Courier", "Courier", point);
+		cpdf_setFont(OUTPUT_PRIVATE(r)->pdf, "Courier", "WinAnsiEncoding", point);		
 		r->current_font_point = point;
 	}
 }

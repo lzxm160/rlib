@@ -28,7 +28,19 @@
 #include "ralloc.h"
 #include "rlib.h"
 
-struct report_element * parse_line_array(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
+void utf8_to_8813(struct rlib_report *rep, char *dest, char *str) {
+	size_t len = MAXSTRLEN;
+	size_t slen;
+	
+	if(str != NULL && str[0] != '\0') {
+		strlen(str);
+		iconv(rep->cd, &str, &slen, &dest, &len);
+	} else {
+		dest[0] = 0;
+	}
+}
+
+struct report_element * parse_line_array(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
 	struct report_element *e, *current;
 	e = NULL;
 	
@@ -38,8 +50,8 @@ struct report_element * parse_line_array(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr 
 		current->next = NULL;
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "field"))) {
 			struct report_field *f = rmalloc(sizeof(struct report_field));
+			utf8_to_8813(rep, f->value, xmlGetProp(cur, (const xmlChar *) "value"));
 			f->xml_align = xmlGetProp(cur, (const xmlChar *) "align");
-			f->value = xmlGetProp(cur, (const xmlChar *) "value");
 			f->bgcolor = xmlGetProp(cur, (const xmlChar *) "bgcolor");
 			f->color = xmlGetProp(cur, (const xmlChar *) "color");
 			f->xml_width = xmlGetProp(cur, (const xmlChar *) "width");
@@ -52,7 +64,7 @@ struct report_element * parse_line_array(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr 
 
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "text"))) {
 			struct report_text *t = rmalloc(sizeof(struct report_text));
-			t->value = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			utf8_to_8813(rep, t->value, xmlNodeListGetString(doc, cur->xmlChildrenNode, 1));
 			t->xml_align = xmlGetProp(cur, (const xmlChar *) "align");
 			t->bgcolor = xmlGetProp(cur, (const xmlChar *) "bgcolor");
 			t->color = xmlGetProp(cur, (const xmlChar *) "color");
@@ -84,7 +96,7 @@ struct report_output * report_output_new(int type, void *data) {
 	return ro;
 }
 
-static struct report_output_array * parse_report_element(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
+static struct report_output_array * parse_report_element(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
 	struct report_output_array *roa = rmalloc(sizeof(struct report_output_array));
 	roa->count = 0;
 	roa->data = NULL;
@@ -104,7 +116,7 @@ static struct report_output_array * parse_report_element(xmlDocPtr doc, xmlNsPtr
 			else
 				rl->font_point = atoi(rl->fontSize);
 				
-			rl->e = parse_line_array(doc, ns, cur);
+			rl->e = parse_line_array(rep, doc, ns, cur);
 			roa->data = rrealloc(roa->data, sizeof(struct report_output_array *) * (roa->count + 1));
 			roa->data[roa->count++] = report_output_new(REPORT_PRESENTATION_DATA_LINE, rl);
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "HorizontalLine"))) {
@@ -150,7 +162,7 @@ static struct report_element * parse_break_field(xmlDocPtr doc, xmlNsPtr ns, xml
 	return e;
 }
 
-static struct report_element * parse_report_break(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
+static struct report_element * parse_report_break(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
 	struct report_element *e = rmalloc(sizeof(struct report_element));
 	struct report_break *rb = rmalloc(sizeof(struct report_break));
 	e->next = NULL;
@@ -165,10 +177,10 @@ static struct report_element * parse_report_break(xmlDocPtr doc, xmlNsPtr ns, xm
 	rb->footer = NULL;
 	while (cur != NULL) {
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "BreakHeader"))) {
-			rb->header = parse_report_element(doc, ns, cur);
+			rb->header = parse_report_element(rep, doc, ns, cur);
 		}
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "BreakFooter"))) {
-			rb->footer = parse_report_element(doc, ns, cur);
+			rb->footer = parse_report_element(rep, doc, ns, cur);
 		}
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "BreakFields"))) {
 			if(rb->fields == NULL)
@@ -176,7 +188,7 @@ static struct report_element * parse_report_break(xmlDocPtr doc, xmlNsPtr ns, xm
 			else {
 				struct report_element *xxx = rb->fields;
 				for(;xxx->next != NULL; xxx=xxx->next) {};
-				xxx->next = parse_report_break(doc, ns, cur);							
+				xxx->next = parse_report_break(rep, doc, ns, cur);							
 			}
 		}
 		cur = cur->next;
@@ -185,18 +197,18 @@ static struct report_element * parse_report_break(xmlDocPtr doc, xmlNsPtr ns, xm
 	return e;
 }
 
-static struct report_element * parse_report_breaks(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
+static struct report_element * parse_report_breaks(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
 	struct report_element *e = NULL;
 
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {      
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "Break"))) {
 			if(e == NULL) {
-				e = parse_report_break(doc, ns, cur);
+				e = parse_report_break(rep, doc, ns, cur);
 			} else {
 				struct report_element *xxx = e;
 				for(;xxx->next != NULL; xxx=xxx->next) {};
-				xxx->next = parse_report_break(doc, ns, cur);				
+				xxx->next = parse_report_break(rep, doc, ns, cur);				
 			}
 		}
 		cur = cur->next;
@@ -204,14 +216,14 @@ static struct report_element * parse_report_breaks(xmlDocPtr doc, xmlNsPtr ns, x
 	return e;
 }
 
-static void parse_detail(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur, struct report_detail *r) {
+static void parse_detail(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur, struct report_detail *r) {
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "FieldHeaders"))) {
-			r->textlines = parse_report_element(doc, ns, cur);
+			r->textlines = parse_report_element(rep, doc, ns, cur);
 		}
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "FieldDetails"))) {
-			r->fields = parse_report_element(doc, ns, cur);
+			r->fields = parse_report_element(rep, doc, ns, cur);
 		}
 		cur = cur->next;
 	}
@@ -304,6 +316,8 @@ struct rlib_report * parse_report_file(char *filename) {
 	bzero(ret, sizeof(struct rlib_report));
 
 	ret->doc = doc;
+	
+	ret->cd = iconv_open("ISO8859-1", "UTF-8");
 
 	while ( cur && xmlIsBlankNode ( cur ) ) {
 		cur = cur -> next;
@@ -332,22 +346,22 @@ struct rlib_report * parse_report_file(char *filename) {
 	ret->breaks = NULL;
 	while (cur != NULL) {
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "ReportHeader"))) {
-			ret->report_header = parse_report_element(doc, ns, cur);
+			ret->report_header = parse_report_element(ret, doc, ns, cur);
 		}
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "PageHeader"))) {
-			ret->page_header = parse_report_element(doc, ns, cur);
+			ret->page_header = parse_report_element(ret, doc, ns, cur);
 		}
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "PageFooter"))) {
-			ret->page_footer = parse_report_element(doc, ns, cur);
+			ret->page_footer = parse_report_element(ret, doc, ns, cur);
 		}
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "ReportFooter"))) {
-			ret->report_footer = parse_report_element(doc, ns, cur);
+			ret->report_footer = parse_report_element(ret, doc, ns, cur);
 		}
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "Detail"))) {
-			parse_detail(doc, ns, cur, &ret->detail);
+			parse_detail(ret, doc, ns, cur, &ret->detail);
 		}
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "Breaks"))) {
-			ret->breaks = parse_report_breaks(doc, ns, cur);
+			ret->breaks = parse_report_breaks(ret, doc, ns, cur);
 		}
 		
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "Variables"))) {
@@ -356,5 +370,8 @@ struct rlib_report * parse_report_file(char *filename) {
 
 		cur = cur->next;
 	}
+	
+	iconv_close(ret->cd);
+	
 	return(ret);
 }

@@ -45,11 +45,7 @@ int main(int argc, char **argv) {
 	r = rlib_init();
 	rlib_add_datasource_mysql(r, "local_mysql", hostname, username, password, database);
 	rlib_add_query_as(r, "local_mysql", "select * from example", "example");
-	rlib_add_query_as(r, "local_mysql", "select * from example order by name", "example2");
-	rlib_add_query_as(r, "local_mysql", "select * from example", "example3");
 	rlib_add_report(r, "report.xml", NULL);
-	rlib_add_report(r, "report.xml", "example2");
-	rlib_add_report(r, "report2.xml", "example3");
 	rlib_set_output_format(r, RLIB_FORMAT_PDF);
 	rlib_execute(r);
 	rlib_spool(r);

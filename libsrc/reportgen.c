@@ -120,7 +120,6 @@ static float rlib_output_text(rlib *r, int backwards, float left_origin, float b
 
 static float rlib_output_text_text(rlib *r, int backwards, float left_origin, float bottom_orgin, struct rlib_line_extra_data *extra_data, char *text) {
 	float rtn_width;
-
 	OUTPUT(r)->rlib_set_font_point(r, extra_data->font_point);
 	
 	if(extra_data->found_color)
