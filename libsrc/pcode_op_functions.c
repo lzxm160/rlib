@@ -22,6 +22,7 @@
 #include <string.h>
 #include <math.h>
 #include <time.h>
+#include <ctype.h>
 
 #include "rlib.h"
 #include "pcode.h"
@@ -775,28 +776,74 @@ gint rlib_pcode_operator_str(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	return FALSE;
 }
 
-gint rlib_pcode_operator_stod(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+
+static gint rlib_pcode_operator_stod_common(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, int which) {
 	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_STRING(v1)) {
-		gint year, month, day;
+		gint year = 1900, month = 1, day = 1;
+		gint hour = 0, minute = 0, second = 0;
+		gchar ampm = 'a';
 		struct tm tm_date;
 		time_t tmp_time;
-		sscanf(RLIB_VALUE_GET_AS_STRING(v1), "%4d-%2d-%2d", &year, &month, &day);
-		bzero(&tm_date, sizeof(struct tm));
-		tm_date.tm_year = year-1900;
-		tm_date.tm_mon = month-1;
-		tm_date.tm_mday = day;
-		tmp_time = mktime(&tm_date);
-		localtime_r(&tmp_time, &tm_date);		
-		rlib_value_free(v1);
-		rlib_value_stack_push(vs, rlib_value_new_date(&rval_rtn, &tm_date));
-		return TRUE;
+		gchar *tstr = RLIB_VALUE_GET_AS_STRING(v1);
+		int err = FALSE;
+		if (which) { //convert time
+			if (sscanf(tstr, "%2d:%2d:%2d%c", &hour, &minute, &second, &ampm) != 4) {
+				if (sscanf(tstr, "%2d:%2d:%2d", &hour, &minute, &second) != 3) {
+					second = 0;
+					if (sscanf(tstr, "%2d:%2d%c", &hour, &minute, &ampm) != 3) {
+						second = 0;
+						ampm = 0;
+						if (sscanf(tstr, "%2d:%2d", &hour, &minute) != 2) {
+							if (sscanf(tstr, "%2d%2d%2d", &hour, &minute, &second) != 3) {
+								second = 0;
+								if (sscanf(tstr, "%2d%2d", &hour, &minute) != 2) {
+									rlogit("Invalid Date format: stod(%s)", tstr);
+									err = TRUE;
+								}
+							}
+						}
+					}
+				}
+			}
+			if (toupper(ampm == 'P')) hour += 12;
+			hour %= 24;
+		} else { //convert date
+			if (sscanf(tstr, "%4d-%2d-%2d", &year, &month, &day) != 3) {
+				if (sscanf(tstr, "%4d%2d%2d", &year, &month, &day) != 3) {
+					rlogit("Invalid Date format: stod(%s)", tstr);
+					err = TRUE;
+				}
+			}
+		}
+		if (!err) {
+			bzero(&tm_date, sizeof(struct tm));
+			tm_date.tm_year = year-1900;
+			tm_date.tm_mon = month-1;
+			tm_date.tm_mday = day;
+			tm_date.tm_hour = hour;
+			tm_date.tm_min = minute;
+			tm_date.tm_sec = second;
+			tmp_time = mktime(&tm_date);
+			localtime_r(&tmp_time, &tm_date);		
+			rlib_value_free(v1);
+			rlib_value_stack_push(vs, rlib_value_new_date(&rval_rtn, &tm_date));
+			return TRUE;
+		}
 	}
 	rlib_pcode_operator_fatal_execption("stod", 1, v1, NULL, NULL);
 	rlib_value_free(v1);
 	rlib_value_stack_push(vs, rlib_value_new_error(&rval_rtn));		
 	return FALSE;
+}
+
+gint rlib_pcode_operator_stod(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+	return rlib_pcode_operator_stod_common(r, vs, this_field_value, 0);
+}
+
+gint rlib_pcode_operator_tstod(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+	return rlib_pcode_operator_stod_common(r, vs, this_field_value, 1);
 }
 
 gboolean rlib_pcode_operator_iif(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
@@ -838,11 +885,36 @@ gboolean rlib_pcode_operator_iif(rlib *r, struct rlib_value_stack *vs, struct rl
 	return thisresult;
 }
 
-gint rlib_pcode_operator_dtos(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+static gboolean rlib_pcode_operator_dtos_common(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, char *format) {
+	struct rlib_value *v1, rval_rtn;
+	gboolean result = FALSE;
+	v1 = rlib_value_stack_pop(vs);
+	if(RLIB_VALUE_IS_DATE(v1)) {
+		gchar buf[60];
+		struct tm *tmp = &RLIB_VALUE_GET_AS_DATE(v1);
+		strftime(buf, sizeof(buf) - 1, format, tmp);
+		rlib_value_free(v1);
+		rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, buf));
+		result = TRUE;
+	} else {
+		rlib_pcode_operator_fatal_execption("dtos", 1, v1, NULL, NULL);
+		rlib_value_free(v1);
+		rlib_value_stack_push(vs, rlib_value_new_error(&rval_rtn));
+	}
+	return result;
+}
+
+
+#if 0
+gint rlib_pcode_operator_dtos_common(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, char *fmtstr) {
 	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_DATE(v1)) {
-		gchar buf[20];
+		gchar buf[60];
+		struct tm *tmp = &RLIB_VALUE_GET_AS_DATE(v1);
+		strftime(buf, sizeof(buf) - 1, format, 
+		
+		
 		sprintf(buf, "%04d-%02d-%02d", RLIB_VALUE_GET_AS_DATE(v1).tm_year+1900, RLIB_VALUE_GET_AS_DATE(v1).tm_mon+1, RLIB_VALUE_GET_AS_DATE(v1).tm_mday);
 		rlib_value_free(v1);
 		rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, buf));
@@ -853,6 +925,32 @@ gint rlib_pcode_operator_dtos(rlib *r, struct rlib_value_stack *vs, struct rlib_
 	rlib_value_stack_push(vs, rlib_value_new_error(&rval_rtn));		
 	return FALSE;
 }
+#endif
+
+
+gboolean rlib_pcode_operator_dtos(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+	return rlib_pcode_operator_dtos_common(r, vs, this_field_value, "%Y-%m-%d");
+}
+
+
+gboolean rlib_pcode_operator_dtosf(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+	struct rlib_value rval_rtn, *v1 = rlib_value_stack_pop(vs);
+	gboolean result = FALSE;
+	if (RLIB_VALUE_IS_STRING(v1)) {
+		gchar *fmt = g_strdup(RLIB_VALUE_GET_AS_STRING(v1));
+		rlib_value_free(v1);
+		result = rlib_pcode_operator_dtos_common(r, vs, this_field_value, fmt);
+		g_free(fmt);
+	} else {
+		rlib_pcode_operator_fatal_execption("dtosf", 1, v1, NULL, NULL);
+		rlib_value_free(v1);
+		v1 = rlib_value_stack_pop(vs); //clear the stack
+		rlib_value_free(v1);
+		rlib_value_stack_push(vs, rlib_value_new_error(&rval_rtn));		
+	}
+	return result;
+}
+
 
 gint rlib_pcode_operator_year(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
 	struct rlib_value *v1, rval_rtn;
@@ -868,6 +966,7 @@ gint rlib_pcode_operator_year(rlib *r, struct rlib_value_stack *vs, struct rlib_
 	rlib_value_stack_push(vs, rlib_value_new_error(&rval_rtn));		
 	return FALSE;
 }
+
 
 gint rlib_pcode_operator_month(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
 	struct rlib_value *v1, rval_rtn;
