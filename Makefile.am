@@ -20,5 +20,5 @@
 ##
 ## Process this file with automake to produce Makefile.in
 
-EXTRA_DIST = AUTHORS CVS HACKING include install-sh README autogen.sh
+EXTRA_DIST = AUTHORS CVS HACKING install-sh README
 SUBDIRS = libsrc
