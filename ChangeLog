@@ -1,3 +1,7 @@
+2005-02-04  Michael Roth  <mroth@sicompos.com>
+
+	* libsrc/graphing.c: (rlib_graph): line size by font
+
 2005-02-03  Michael Roth  <mroth@sicompos.com>
 
 	* bindings/php/php.c: (ZEND_FUNCTION): Spelling paramater -> parameter

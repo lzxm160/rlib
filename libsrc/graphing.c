@@ -241,7 +241,7 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	
 	rlib_fetch_first_rows(r);
 	row_count = 0;
-	OUTPUT(r)->graph_start(r, left_margin_offset, rlib_layout_get_next_line(r, part, part->position_top[0]+(*top_margin_offset), 0), graph_width, graph_height, should_label_under_tick);
+	OUTPUT(r)->graph_start(r, left_margin_offset, rlib_layout_get_next_line_by_font_point(r, part, part->position_top[0]+(*top_margin_offset), 0), graph_width, graph_height, should_label_under_tick);
 	
 	rlib_fetch_first_rows(r);
 	if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
