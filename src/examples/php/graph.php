@@ -55,7 +55,7 @@
 	$line_data[0][11] = "os5";
 	$line_data[0][12] = "os6";
 
-	$line_data[1][0] = "Sun";
+	$line_data[1][0] = "Sunday";
 	$line_data[1][1] = "100";
 	$line_data[1][2] = "120";
 	$line_data[1][3] = "130";
@@ -69,7 +69,7 @@
 	$line_data[1][11] = "4";
 	$line_data[1][12] = "-1";
 
-	$line_data[2][0] = "Mon";
+	$line_data[2][0] = "Monday";
 	$line_data[2][1] = "120";
 	$line_data[2][2] = "110";
 	$line_data[2][3] = "120";
@@ -83,7 +83,7 @@
 	$line_data[2][11] = "2";
 	$line_data[2][12] = "-2";
 
-	$line_data[3][0] = "Tue";
+	$line_data[3][0] = "Tuesday";
 	$line_data[3][1] = "110";
 	$line_data[3][2] = "130";
 	$line_data[3][3] = "110";
@@ -97,7 +97,7 @@
 	$line_data[3][11] = "-4";
 	$line_data[3][12] = "5";
 
-	$line_data[4][0] = "Wed";
+	$line_data[4][0] = "Wednesday";
 	$line_data[4][1] = "30";
 	$line_data[4][2] = "50";
 	$line_data[4][3] = "40";
@@ -111,7 +111,7 @@
 	$line_data[4][11] = "13";
 	$line_data[4][12] = "-4";
 
-	$line_data[5][0] = "Thu";
+	$line_data[5][0] = "Thusday";
 	$line_data[5][1] = "60";
 	$line_data[5][2] = "100";
 	$line_data[5][3] = "90";
@@ -125,7 +125,7 @@
 	$line_data[5][11] = "1";
 	$line_data[5][12] = "0";
 
-	$line_data[6][0] = "Fri";
+	$line_data[6][0] = "Friday";
 	$line_data[6][1] = "100";
 	$line_data[6][2] = "120";
 	$line_data[6][3] = "130";
@@ -139,7 +139,7 @@
 	$line_data[6][11] = "-6";
 	$line_data[6][12] = "-7";
 
-	$line_data[7][0] = "Sat";
+	$line_data[7][0] = "Saturday";
 	$line_data[7][1] = "120";
 	$line_data[7][2] = "110";
 	$line_data[7][3] = "120";
@@ -226,19 +226,19 @@
 	$sales_data[0][1] = "net";
 	$sales_data[0][2] = "check";
 
-	$sales_data[1][0] = "Mon";
+	$sales_data[1][0] = "Monday";
 	$sales_data[1][1] = "8000";
 	$sales_data[1][2] = "5.00";
 
-	$sales_data[2][0] = "Tue";
+	$sales_data[2][0] = "Tuesday";
 	$sales_data[2][1] = "6000";
 	$sales_data[2][2] = "5.50";
 
-	$sales_data[3][0] = "Wed";
+	$sales_data[3][0] = "Wednesday";
 	$sales_data[3][1] = "6500";
 	$sales_data[3][2] = "4.50";
 
-	$sales_data[4][0] = "Thu";
+	$sales_data[4][0] = "Thursday";
 	$sales_data[4][1] = "5000";
 	$sales_data[4][2] = "7.00";
 
@@ -251,7 +251,7 @@
 	rlib_add_query_as($rlib, "local_array", "sales_data", "sales_data");
 	rlib_set_output_parameter($rlib, "html_image_directory", "/tmp");
 	rlib_add_report($rlib, "graph.xml");
-	rlib_set_output_format_from_text($rlib, "pdf");
+	rlib_set_output_format_from_text($rlib, "html");
 	rlib_execute($rlib);
 	header(rlib_get_content_type($rlib));
 	rlib_spool($rlib);

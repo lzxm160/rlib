@@ -259,7 +259,10 @@
 	<pr newpage="yes">
 		<pd width="48">
 			<Report fontSize="12" orientation="landscape" query="'line_data'">
-				<Graph type="'line'" subtype="'normal'" width="370" height="250" title="'Normal Line Charts!'" x_axis_title="'Day Of Week'" y_axis_title="'Sales $$$'">
+<!--
+				<Graph type="'line'" subtype="'normal'" width="370" height="250" title="'Normal Line Charts!'" x_axis_title="'Day Of Week Mike'" y_axis_title="'Sales $$$'">
+-->
+				<Graph type="'line'" subtype="'normal'" width="370" height="250" title="'Normal Line Charts!'" y_axis_title="'Sales $$$'">
 					<Plot axis="'x'" field="doy"/>
 					<Plot axis="'y'" field="val(rest1)" label="'BK 1'"/>
 					<Plot axis="'y'" field="val(rest2)" label="'BK 2'"/>
