@@ -1,0 +1,73 @@
+dnl Configure template for rlib - LAMP report writer
+
+dnl Copyright (c) 2003 SICOM Systems Inc (bdoan@sicompos.com)
+dnl RLIB is free software; you can redistribute it and/or modify
+dnl it under the terms of the GNU General Public License as published by
+dnl the Free Software Foundation; either version 2, or (at your option)
+dnl any later version.
+
+dnl RLIB is distributed in the hope that it will be useful,
+dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+dnl GNU General Public License for more details.
+
+dnl You should have received a copy of the GNU General Public License
+dnl along with this program; if not, write to the Free Software
+dnl Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+dnl 02111-1307, USA.
+
+dnl Report bugs to rlib-devel@lists.sourceforge.net
+dnl
+dnl Process this file with autoconf to produce a configure script.
+
+
+AC_INIT(rlib, 1.0.2, NO_URL_TO_BUGZILLA_YET)
+AM_INIT_AUTOMAKE(rlib, 1.0.2)
+AC_DISABLE_STATIC
+
+dnl Checks for programs.
+AC_PROG_CC
+AC_PROG_MAKE_SET
+AC_PROG_INSTALL
+AM_PROG_LIBTOOL
+
+dnl Checks for libraries.
+AC_CHECK_LIB(c, exit)
+AC_CHECK_LIB(m, exp)
+AC_CHECK_LIB(libr, rlib_init)
+
+AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
+
+PKG_CHECK_MODULES(RLIB, libxml-2.0 >= 2.4.0)
+AC_SUBST(RLIB_LIBS)
+AC_SUBST(RLIB_CFLAGS)
+
+AC_PATH_PROG(MYSQL_CONFIG, mysql_config, no)
+MYSQL_CFLAGS=`$MYSQL_CONFIG --cflags`
+MYSQL_LIBS=`$MYSQL_CONFIG --libs`
+AC_SUBST(MYSQL_CFLAGS)
+AC_SUBST(MYSQL_LIBS)
+
+AC_PATH_PROG(PHP_CONFIG, php-config, no)
+PHP_CFLAGS=`$PHP_CONFIG --includes`
+PHP_EXTENSTION_DIR=`$PHP_CONFIG --extension-dir`
+AC_SUBST(PHP_CFLAGS)
+AC_SUBST(PHP_EXTENSTION_DIR)
+
+AC_PREFIX_DEFAULT(`php-config --extension-dir`)
+echo "*****************************************************************"
+echo " RLIB IS GOING TO INSTALL IN $PHP_EXTENSTION_DIR "
+echo " THIS WAS PICKED UP FROM $PHP_CONFIG "
+echo " MAKE SURE THIS IS RIGHT "
+echo "*****************************************************************"
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS(fcntl.h unistd.h)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+
+dnl Checks for library functions.
+
+AC_OUTPUT(Makefile libsrc/Makefile)

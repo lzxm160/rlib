@@ -22,8 +22,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <xmlversion.h>
-#include <xmlmemory.h>
+#include <libxml/xmlversion.h>
+#include <libxml/xmlmemory.h>
 #include <mysql.h>
 
 #include "ralloc.h"

@@ -1,0 +1,8 @@
+There is lots of stuff that needs to be done:
+
+* Take Input Logic Out Of the Engine and add more INPUTS (POSTGREE, flat file.. ext)
+* Don't use PHP memory management
+* Split RLIB from PHP.. have different language bindings.. (PHP, PERL, PYTHON, C, .NET)
+* Graphing
+* Better HTML Exporting.. DHTML???
+* Millions of little things
