@@ -18,6 +18,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <locale.h>
 
@@ -222,22 +224,31 @@ void rlib_init_profiler() {
 }
 
 
+void rlib_dump_profile_fp(gint profilenum, FILE *fp) {
+	FILE *temp;
+	fflush(stdout);
+	temp = stdout;
+	if (fp) stdout = fp;
+	printf("\nRLIB memory profile #%d:\n", profilenum);
+	g_mem_profile();
+	fflush(stdout);
+	stdout = temp;
+}
+
+
 void rlib_dump_profile(gint profilenum, const gchar *filename) {
-	FILE *temp = NULL;
 	FILE *newout = NULL;
 	
 	if (filename) {
-		fflush(stdout);
 		newout = fopen(filename, "a");
-		if (newout) {
-			temp = stdout;
-			stdout = newout;
-		}
 	}
-	printf("\nRLIB memory profile #%d:\n", profilenum);
-	g_mem_profile();
-	if (newout) fclose(newout);
-	if (temp) stdout = temp;
+	if (newout) {
+		rlib_dump_profile_fp(profilenum, newout);
+		fclose(newout);
+	} else {
+		rlib_dump_profile_fp(profilenum, stdout);
+		rlogit("Could not open memory profile file: %s\n", filename);
+	}
 }
 
 
