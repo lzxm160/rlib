@@ -1,0 +1,146 @@
+<chapter label="6" id="examples">
+	<title>Examples</title>
+	<sect1>
+		<title>Example 1</title>
+		<para>
+			It is assumed that you have a working PHP, APACHE, and MySQL setup.  You will have to substitute the
+			MySQL host, username, password, and database to what ever you creared.  The example is in three sections.
+			First creating the datababse.  Second we create the PHP source.  Third we create the RLIB XML file.
+		</para>
+		<para>
+			MySQL Table Creation
+			<programlisting>
+DROP TABLE IF EXISTS example;
+
+CREATE TABLE example (
+	rn INT NOT NULL AUTO_INCREMENT,
+	name VARCHAR(30) NOT NULL DEFAULT "",
+	type INT NOT NULL,
+	price FLOAT NOT NULL,
+	PRIMARY KEY (rn),
+	KEY (name)
+);
+
+INSERT INTO example (name, type, price) 
+	VALUES
+	("Hammer", 1, 10.00),
+	("Screw Driver", 1, 7.00),
+	("Bolts", 1, 2.00),
+	("Hot Dog", 2, 1.50),
+	("Soda", 2, 1.00),
+	("Chips", 2, 1.00),
+
+	("Jaguar", 3, 50000.00),
+	("Lexus", 3, 60000.00),
+	("Pinto", 3, 2000.00);
+			</programlisting>
+		</para>
+		<para>
+			PHP Source 
+			<programlisting>
+&lt;? dl ("rlib/libr.so");
+
+	$format = "pdf";
+	/*assume database is on same server, user name is sicom, password is twinklwtoes, and the database is ship*/
+	$sql_host = "localhost";
+	$sql_users = "username";
+	$sql_password = "password";
+	$sql_database = "tablename";
+
+	$rlib =	rlib_init($sql_host, $sql_users, $sql_password, $sql_database);
+				rlib_add_query_as($rlib, "select * from example", "example");
+				rlib_add_report($rlib, "report.xml");
+				rlib_set_output_format($rlib, $format);
+				rlib_execute($rlib);
+				rlib_finalize($rlib);
+				header(	rlib_get_content_type($rlib));
+				rlib_spool($rlib);
+?&gt;
+			</programlisting>
+		</para>
+		<para>
+			RLIB XML SOURCE
+			<programlisting>
+&lt;?xml version="1.0"?&gt;
+&lt;!DOCTYPE report &gt;
+&lt;Report fontSize="9" orientation="landscape"&gt;
+	&lt;ReportHeader&gt;
+		&lt;Output&gt;
+			&lt;Image value="'logo.jpg'" type="'jpeg'" width="50" height="50"/&gt;
+			&lt;Line/&gt;
+			&lt;Line fontSize="12"&gt;
+				&lt;text width="8"/&gt;
+				&lt;text&gt;REPORT HEADER........&lt;/text&gt;
+			&lt;/Line&gt;
+			&lt;Line/&gt;
+			&lt;Line/&gt;
+			&lt;Line fontsize="4"/&gt;
+			&lt;HorizontalLine size="4" bgcolor="'white'"/&gt;
+			&lt;HorizontalLine size="2" bgcolor="'black'"/&gt;
+			&lt;HorizontalLine size="4" bgcolor="'white'"/&gt;
+		&lt;/Output&gt;				
+	&lt;/ReportHeader&gt;
+
+	&lt;PageHeader&gt;
+		&lt;Output&gt;
+			&lt;Line fontSize="11"&gt;
+				&lt;text&gt;Page Header (Example Report)&lt;/text&gt;
+			&lt;/Line&gt;
+			&lt;HorizontalLine size="4" bgcolor="'white'"/&gt;
+		&lt;/Output&gt;
+	&lt;/PageHeader&gt;		
+
+	&lt;Detail&gt;
+		&lt;FieldHeaders&gt;
+			&lt;Output&gt;
+				&lt;HorizontalLine size="1" bgcolor="'black'"/&gt;
+				&lt;Line bgcolor="'0xe5e5e5'"&gt;
+					&lt;text width="30" col="1"&gt;Name&lt;/text&gt;
+					&lt;text width="1"/&gt;
+					&lt;text width="5" col="2"&gt;Type&lt;/text&gt;
+					&lt;text width="1"/&gt;
+					&lt;text width="10" col="3"&gt;Price&lt;/text&gt;
+				&lt;/Line&gt;
+				&lt;HorizontalLine size="1" bgcolor="'black'"/&gt;
+				&lt;HorizontalLine size="4" bgcolor="'white'"/&gt;
+			&lt;/Output&gt;
+		&lt;/FieldHeaders&gt;		
+		&lt;FieldDetails&gt;
+			&lt;Output&gt;
+				&lt;Line bgcolor="iif(r.detailcnt%2,'0xe5e5e5','white')"&gt;
+					&lt;field value="name" width="30" align="left" col="1"/&gt;
+					&lt;text width="1"/&gt;
+					&lt;field value="type" width="5" align="left" col="2"/&gt;
+					&lt;text width="1"/&gt;
+					&lt;field value="val(price)" width="10" format="'%$.2d'" align="left" col="3"/&gt;
+				&lt;/Line&gt;
+			&lt;/Output&gt;
+		&lt;/FieldDetails&gt;
+	&lt;/Detail&gt;
+
+	&lt;PageFooter&gt;
+		&lt;Output&gt;
+			&lt;Line&gt;
+				&lt;text&gt;Page: &lt;/text&gt;	
+				&lt;field value="r.pageno" width="3" align="right"/&gt;
+			&lt;/Line&gt;
+		&lt;/Output&gt;
+	&lt;/PageFooter&gt;
+
+	&lt;ReportFooter&gt;
+		&lt;Output&gt;
+			&lt;Line fontSize="11"&gt;
+				&lt;text&gt;REPORT FOOTER&lt;/text&gt;
+			&lt;/Line&gt;
+		&lt;/Output&gt;
+	&lt;/ReportFooter&gt;
+&lt;/Report&gt;
+			</programlisting>
+		</para>
+		<para>
+			<screenshot>
+				<graphic fileref="IMAGES/example-report-1.png"></graphic>
+			</screenshot>
+		</para>
+	</sect1>
+</chapter>

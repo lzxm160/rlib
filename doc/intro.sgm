@@ -1,0 +1,50 @@
+<chapter label="1" id="intro">
+	<title>Introduction</title>
+	<sect1>
+		<title>RLIB in a nutshell</title>
+		<para>
+			RLIB is a report generation library/language.  It takes advantage of today's best web technology including PHP, SQL, and XML.  
+			Because speed is an extremely important with web applications, and requests must be completed with sub second response time, 
+			c was	chosen as the language in which to implement RLIB.
+		</para>
+		<para>
+			One of the main advantages to RLIB is that you don't have to be a programmer in order to use it. The file format for describing 
+			reports is XML.  RLIB supports full expression evaluation in human readable format so it is easy to follow the logic behind 
+			a report.
+		</para>
+		<para>
+			This manual assumes you have prior knowledge of XML and SQL, and also basic PHP.  DON'T PANIC if you don't know what these 
+			technologies are.	We will cover in detail the exact XML you are expected to know, and the PHP api to RLIB 
+			(which is all you need to know).  We won't cover SQL queries, except for the examples given.
+		</para>
+		<para>
+			RLIB is released under the GNU General Public License (GPL).  This means that you are free to modify, copy, and redistribute it
+			as long as you adhere to the terms of the GPL.  If you or your organization do not want to make your code free, an
+			alternative commercial license is available.  You can review the license at http://www.gnu.org/copyleft/gpl.html.
+		</para>
+		<para>
+			RLIB is open source.  Because of that, you might take the time to review the code and possibly make changes to improve
+			it.  SICOM Systems would be happy to review your changes, and possibly include them in future releases of RLIB.  To find
+			out more please visit the "Community" section on the RLIB web site.
+		</para>
+	</sect1>
+	<sect1>
+		<title>What is a Report Writer</title>
+		<para>
+			There are many report writers that exist, however the basic principles are the same.  Loop through data sets printing out 
+			records in a specified format.  Also allow for intelligent page breaking, report headers and footers, page headers and footers, 
+			allow for data	grouping and breaking for subtotal.  Be able to define variables that operate on columns (sum, average) that may 
+			reset on breaks.  Also allow report columns to be mathamatical equations supporting a variety of functions.
+		</para>
+		<para>
+			RLIB supports all of this and more.
+		</para>
+	</sect1>
+	<sect1>
+		<title>This Manual</title>
+		<para>
+			The RLIB manual will cover all aspects of RLIB programming.  Chapter 2 will cover RLIB terminology.  Chapter 3 will cover
+			rlib XML file format.  Chapter 4 will cover RLIB data types and functions.  Chapter 5 will discuss the PHP api to RLIB.
+		</para>
+	</sect1>
+</chapter>

@@ -1,0 +1,41 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V3.1//EN" [
+<!ENTITY intro SYSTEM "intro.sgm">
+<!ENTITY basictraining SYSTEM "basictraining.sgm">
+<!ENTITY symboltable SYSTEM "symboltable.sgm">
+<!ENTITY formating SYSTEM "formating.sgm">
+<!ENTITY api SYSTEM "api.sgm">
+<!ENTITY examples SYSTEM "examples.sgm">
+<!ENTITY gnulicense SYSTEM "gnulicense.sgm">
+]>
+<book>
+	<bookinfo>
+		<title>RLIB Programmers Manual
+			<inlinemediaobject>
+				<imageobject>
+					<imagedata fileref="IMAGES/rlib.png" align=center>
+				</imageobject>
+			</inlinemediaobject>		
+		</title>
+		<author><firstname>Bob</firstname><surname>Doan</surname></author>
+		<author><firstname>Robert</firstname><surname>Kratz</surname></author>
+		<copyright><year>2003</year><holder>SICOM Systems, INC</holder></copyright>
+		<legalnotice>
+			<para>
+      		Permission is granted to copy, distribute and/or modify this document
+		      under the terms of the GNU Free Documentation License, Version 1.2
+		      or any later version published by the Free Software Foundation;
+		      with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+			 	Texts.  A copy of the license is included in the section entitled "GNU
+		      Free Documentation License".			
+			</para>
+		</legalnotice>
+	</bookinfo>
+		
+	&intro;
+	&basictraining;
+	&symboltable;
+	&formating;
+	&api;
+	&examples;
+	&gnulicense;
+</book>

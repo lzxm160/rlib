@@ -1,0 +1,450 @@
+<chapter label="2" id="basics">
+	<title>Basic Training</title>
+	<sect1>
+		<title>A little Terminology</title>
+		<para>
+			In addition to being a report writer, RLIB is also an interpreted language (like Basic and FOXPRO).  RLIB handles all memory
+			management for you.  If you are familiar with FOXPRO, then you will feel at home with RLIB.  However, if you don't know
+			foxpro see the function reference (symbol table) to see all of the functions available to you.  In a nutshell its pretty 
+			powerful.  You can do stuff like this:
+			<programlisting>
+'hi' + ' ' + 'there' + database.stringfield
+1+2*87+(7*2)/98.2/database.numberfield
+dtos(database.somedatefield)-7
+			</programlisting>
+			RLIB has 3 data types that it uses internally. STRING, DATE, and NUMBER.  There are functions to turn datatypes
+			into other datatypes, plus all sorts of other goodies.  Almost all parameters in the RLIB xml file are expressions. This
+			means that the parameters are computed on the fly. The result must be a STRING, DATE, or NUMBER (usually STRING or NUMBER).
+			In our examples you will see stuff like expN, expS, expD.  expN means number expressions, expS means a string expression, and
+			expD means a date expression.
+		</para>
+		<tip><title>STRINGS are in single quotes</title>
+		<para>
+			Please note that STRINGS in rlib are between single quotes.  This is because XML uses double quotes.
+		</para>
+		</tip>
+		<para>			
+			lets take an example. 
+		</para>
+		<para>
+		   The round function is defined as round(expN).  This means that it must be given a number to round.  
+			In rlib you an do the following:
+			<programlisting>
+				round(7.2)
+				round(7.2+33)
+				round(val('7.2')*9/2)
+			</programlisting>
+			As long as it gets passed a expN.. got it? Good.  By the way,  val(expS) takes a string and turns it into a number.
+		</para>
+	</sect1>
+	<sect1>
+		<title>Fixed Point</title>
+		<para>
+			Numerical accuracy is important in RLIB, therefore all mathematical calculations are done with fixed point using 
+			8 decimal places of accuracy.  As you might know, floating point operations in computing are inherently inaccurate. 
+			It is especially true if you are looping through data doing computations.  Therefore, rlib uses FIXED POINT calculations 
+			internally in order to preserve accuracy.  Note, all of this is internal to rlib, and you never have to worry about it
+			when writing reports.			
+		</para>
+	</sect1>
+	<sect1>
+		<title>Data Sources</title>
+		<para>
+			RLIB has many data sources; databases, environment variables, rlib internal variables, and rlib user variables.
+		</para>
+		<para>
+			The first query you give rlib is the main query. In the XML you can reference your fields as the field names without
+			specifying the data source name ie (fld1+fld2).  For the main data source, just put the field names in from the result set.
+			You can still reference by the "RESULT SET NAME". Refer to the api "rlib_add_query_as".
+		</para>
+		<tip><title>Note</title>
+		<para>
+			ALL Result set fields come into RLIB as STRINGs!
+			you will have to frequently do VAL or FXPVAL. to turn them into numbers
+		</para> 
+		</tip>
+		<para>
+			All other queries are secondary queries. You <emphasis>must</emphasis> specify the data source name when you reference them. 
+			ie (result.fld1+result.fld2)
+		</para>
+		<para>
+			Environment variables are STRINGS coming from the environment that you can pick up to put on your report. If in php you had
+			<programlisting>
+				$start_date = "2003-01-01";
+			</programlisting>
+			In RLIB you reference thing as m.name.  So you would have
+			<programlisting>
+				m.start_date
+			</programlisting>
+		</para>
+		<para>
+			rlib has a few internal variables like pageno, lineno, detailcnt (detail line count). Reference them with  r.name. It
+			would be r.pageno, r.lineno, and r.detailcnt in your code.  
+			RLIB has one more variable r.value, which is the result of a "FIELD"'s expression.. This is good so say in the
+			color field, you DON'T HAVE TO RECALCULATE THE VALUE, you can use the "POINTER" to the value in order to color the field.
+			like if it is < 0 make it red, else make it black....
+		</para>
+		<para>
+			Finally,  rlib variables (discussed below) are referenced with a r.name, where name is the name you gave them.
+		</para>
+		<para>
+			So you could have an expression like this in rlib
+			<programlisting>
+				str((val(m.some_environment_value)+r.some_sum_value*val(field1)),7,2) + " hi"
+			</programlisting>
+		</para>
+	</sect1>
+	
+	<sect1>
+		<title>Report Layout</title>
+		<para>
+			Reports are laid out into logical sections.
+		</para>
+		<para>
+			<emphasis>Report Header</emphasis> - Appears at the top of the first page of a report.  Report headers commonly have information
+			such as organization name.
+		</para>
+		<para>
+			<emphasis>Page Header</emphasis> - Appears at the top of every page except the first page, where it appears below
+			the Report Header. Page headers commonly list the report name.
+		</para>
+		<para>
+			<emphasis>Page Footer</emphasis> - Appears at the bottom of each page.  Page number is commonly found on Page Footers.
+		</para>
+		<para>
+			<emphasis>Report Footer</emphasis> - Appears on the last page below the last element of data.  Report Data Totals are found
+			in the Report Footer
+		</para>
+		<para>
+			<emphasis>Data Lines</emphasis> - Appear for each row of data you have in your main result set.
+		</para>
+		<para>
+			<emphasis>Break Header(s)</emphasis> - A header record for your data breaks appear before the Data Lines 
+			that are in the break sub section.
+		</para>
+		<para>
+			<emphasis>Break Footers(s)</emphasis> - Appear below the data lines for the break sub section.  Might include sub totals
+			for the data subsection.
+		</para>
+
+		<para>
+			The following 2 images were generated from RLIB.  It shows Page Headers, Report Headers, Page Footers, Report Footers,
+			and Data Lines.  The image also demonstrates more advanced concepts in RLIB such as format strings, color, and background color.
+			Don't worry about that now.
+		</para>
+		
+
+<para>
+<screenshot>
+<screeninfo>800x600</screeninfo>
+
+<graphic fileref="IMAGES/example1-top.png"></graphic>
+</screenshot>
+</para>
+<para>
+<screenshot>
+<screeninfo>800x600</screeninfo>
+
+<graphic fileref="IMAGES/example1-bot.png"></graphic>
+</screenshot>
+</para>
+	</sect1>
+	<sect1>
+		<title>Breaks Explained</title>
+		<para>
+			It is often necessary to group data on a report in logical sections.  For example imagine a report with a data scope of 
+			a list of stores.  The stores are part of a hierarchy.  In this example the hierarchy could be 4 levels deep. 
+			ie: "District, Market, Region, Another Level".  It would be wasteful to have 4 columns on a report showing the same information
+			over and over again.  If the names were 20 characters long we would have just wasted at least 80 columns on our report.
+			Aside from wasting space, it is often necessary to produce sub totals on groups of data in a report.  Breaks are good for
+			this also.  The following example is a report that is breaking on a hierarchy schema.  There are count and amount subtotals
+			for each break.  It should also be noted here that RLIB knows how much room is left on a page.  It will not start a break at
+			the bottom of a page if at least 1 data line will fit.  Instead it will end the page and start the break on the next page.
+		</para>
+
+		<para>
+			Note the the break headers here are "District A", "Market a". The break footers are the maroon color and also
+			have "SUB TOTAL" in the date column.		
+		</para>
+<para>
+<screenshot>
+<screeninfo>800x600</screeninfo>
+
+<graphic fileref="IMAGES/example2.png"></graphic>
+</screenshot>
+</para>
+	
+	</sect1>
+	<sect1>
+		<title>Report Variables</title>
+		<para>
+			Report Variables are are expressions rlib evaulates for every detail line, and resets automatically if asked to
+			on breaks.  Report variables are useful things like COUNT, SUM, AVG, HIGHEST, LOWEST.  You may also use report
+			variables to simplify expressions that will be used (normally more than once) in other calculations.  To do this
+			use the type EXPRESSION.  Report variable can be "RESET" on the event of a BREAK (this does not apply to EXPRESSION)
+		</para>	
+	</sect1>
+
+
+
+	<sect1>
+		<title>Defining a Report</title>
+		<para>
+			RLIB reports are defined in the RLIB xml file.  The XML file encompases all topics discussed above.  Here is
+			a sample XML file.
+		</para>	
+	</sect1>
+	<sect1>
+		<title>SAMPLE XML FILE</title>
+		<para>
+		<programlisting>
+&lt;?xml version="1.0"?&gt;
+&lt;!DOCTYPE report &gt;
+
+&lt;Report fontSize="9" orientation="landscape"&gt;
+	&lt;ReportHeader&gt;
+		&lt;Output&gt;
+			&lt;Image value="'logo.jpg'" type="'jpeg'" width="50" height="50"/&gt;
+			&lt;Line/&gt;
+			&lt;Line fontSize="12"&gt;
+				&lt;text width="8"/&gt;
+				&lt;field value="header.name" align="left" col="1"/&gt;
+			&lt;/Line&gt;
+			&lt;Line fontSize="12"&gt;
+				&lt;text width="8"/&gt;
+				&lt;field value="header.name2" align="left" col="1"/&gt;
+			&lt;/Line&gt;
+			&lt;Line/&gt;
+			&lt;Line fontsize="4"/&gt;
+			&lt;HorizontalLine size="4" bgcolor="'white'"/&gt;
+			&lt;HorizontalLine size="2" bgcolor="'black'"/&gt;
+			&lt;HorizontalLine size="4" bgcolor="'white'"/&gt;
+		&lt;/Output&gt;				
+	&lt;/ReportHeader&gt;
+
+	&lt;PageHeader&gt;
+		&lt;Output&gt;
+			&lt;Line fontSize="11"&gt;
+				&lt;field value="header.report_name" width="40" align="left" col="1"/&gt;
+			&lt;/Line&gt;
+			&lt;HorizontalLine size="4" bgcolor="'white'"/&gt;
+		&lt;/Output&gt;
+	&lt;/PageHeader&gt;		
+
+	&lt;Detail&gt;
+		&lt;FieldHeaders&gt;
+			&lt;Output&gt;
+				&lt;HorizontalLine size="1" bgcolor="'black'"/&gt;
+				&lt;Line bgcolor="'0xe5e5e5'"&gt;
+					&lt;text width="15" col="1"&gt;Number&lt;/text&gt;
+					&lt;text width="1"/&gt;
+					&lt;text width="20" col="2"&gt;Name&lt;/text&gt;
+					&lt;text width="1"/&gt;
+					&lt;text width="10" col="3"&gt;Type&lt;/text&gt;
+					&lt;text width="1"/&gt;
+					&lt;text width="10" col="4"&gt;Category&lt;/text&gt;
+				&lt;/Line&gt;
+				&lt;HorizontalLine size="1" bgcolor="'black'"/&gt;
+				&lt;HorizontalLine size="4" bgcolor="'white'"/&gt;
+			&lt;/Output&gt;
+		&lt;/FieldHeaders&gt;		
+		&lt;FieldDetails&gt;
+			&lt;Output&gt;
+				&lt;Line bgcolor="iif(r.detailcnt%2,'0xe5e5e5','white')"&gt;
+					&lt;field value="plunum" width="15" align="left" col="1"/&gt;
+					&lt;text width="1"/&gt;
+					&lt;field value="name" width="20" align="left" col="2"/&gt;
+					&lt;text width="1"/&gt;
+					&lt;field value="type" width="10" align="left" col="3"/&gt;
+					&lt;text width="1"/&gt;
+					&lt;field value="category" width="10" align="left" col="4"/&gt;
+				&lt;/Line&gt;
+			&lt;/Output&gt;
+		&lt;/FieldDetails&gt;
+	&lt;/Detail&gt;
+
+	&lt;PageFooter&gt;
+		&lt;Output&gt;
+			&lt;Line&gt;
+				&lt;text&gt;Page: &lt;/text&gt;	
+				&lt;field value="r.pageno" width="3" align="right"/&gt;
+			&lt;/Line&gt;
+		&lt;/Output&gt;
+	&lt;/PageFooter&gt;
+
+	&lt;ReportFooter&gt;
+	&lt;/ReportFooter&gt;
+&lt;/Report&gt;
+		</programlisting>
+		</para>	
+	</sect1>
+	<sect1>
+		<title>Report</title>
+		<para>
+			All Reports are made up of the Report tag.
+		</para>	
+		<para>
+			fontSize - Font size .. 6-100
+		</para>	
+		<para>
+			orientation - "portrait" or "landscape"
+		</para>	
+	</sect1>
+	<sect1>
+		<title>Output</title>
+		<para>
+			All main sections of a report contain output.  Output is made up of Images, Lines, and Horizontal Lines.
+		</para>	
+	</sect1>
+	<sect1>
+		<title>Image</title>
+		<para>
+			value - expS with name of file [REQUIRED]
+		</para>	
+		<para>
+			type - expS with type of file (jpeg, gif) [REQUIRED]
+		</para>	
+		<para>
+			width - expN width of image [REQUIRED]
+		</para>	
+		<para>
+			height - expN with height of image [REQUIRED]
+		</para>	
+	</sect1>
+	<sect1>
+		<title>Line</title>
+		<para>
+			Lines contain text and fields.
+		</para>	
+		<para>
+			fontSize - expN default font size for text and fields on the line
+		</para>	
+		<para>
+			color - expS default foreground color for text and fields on the line
+		</para>	
+		<para>
+			bgcolor - expS default background color for fields on the line
+		</para>	
+	</sect1>
+	<sect1>
+		<title>Text</title>
+		<para>
+			Contains plain text data. The actual displayed text goes between the tag
+		</para>	
+		<para>
+			width - expN width of string
+		</para>	
+		<para>
+			align - expS left, right, center...
+		</para>
+		<para>
+			color - expS default foreground color for text and fields on the line
+		</para>	
+		<para>
+			col - expN column for csv output
+		</para>	
+		<para>
+			bgcolor - expS default background color for fields on the line
+		</para>	
+	</sect1>
+	<sect1>
+		<title>Field</title>
+		<para>
+			Contains Data
+		</para>	
+		<para>
+			value - EXPRESSION of any kind
+		</para>	
+		<para>
+			col - expN column for csv output
+		</para>	
+		<para>
+			width - expN width of string
+		</para>	
+		<para>
+			align - expS left, right, center
+		</para>
+		<para>
+			format - expS see format section
+		</para>
+		<para>
+			color - expS default foreground color for text and fields on the line
+		</para>	
+		<para>
+			bgcolor - expS default background color for fields on the line
+		</para>	
+	</sect1>
+	<sect1>
+		<title>ReportHeader</title>
+		<para>
+			Contains Output
+		</para>	
+	</sect1>
+	<sect1>
+		<title>ReportFooter</title>
+		<para>
+			Contains Output
+		</para>	
+	</sect1>
+	<sect1>
+		<title>PageHeader</title>
+		<para>
+			Contains Output
+		</para>	
+	</sect1>
+	<sect1>
+		<title>PageFooter</title>
+		<para>
+			Contains Output
+		</para>	
+	</sect1>
+	<sect1>
+		<title>Detail</title>
+		<para>
+			Contains Field Headers and Field Details.  Headers are essentially the column headers.  Field details are the lines 
+			repeated over and over again.
+		</para>	
+	</sect1>
+	<sect1>
+		<title>Variables</title>
+		<para>
+			Variables are used to manuiplate data on the floor and save it.  Variables can sum, count, average, or can be simple
+			expressions.  Variables have a name, a type and optionally when they should reset their value.
+		</para>	
+		<para>
+			name - expS the name of the variable, referenced in expressions as v.name [REQUIRED]				
+		</para>	
+		<para>
+			value - Any expression. If it is a sum, average, count it must be a expN
+		</para>	
+		<para>
+			resetonbreak - name of break that the variable should reset
+		</para>	
+	</sect1>
+	<sect1>
+		<title>Breaks</title>
+		<para>
+			Breaks are hierarchial groupings of data on a report.
+		</para>	
+		<para>
+			name - expS the name of the variable, referenced in expressions as v.name [REQUIRED]				
+		</para>	
+		<para>
+			value - Any expression If it is a sum, average, count it must be a expN
+		</para>	
+		<para>
+			newpage = [yes/no] No is default should the break start on a new page
+		</para>	
+		<para>
+			headernewpage = [yes/no] Yes is default. The break header will always appear on the top of every page
+		</para>	
+		<para>
+			breaks have BreakHeader and BreakFooter and both contain output. ONE NICE FEATURE IN RLIB IS THAT WHEN A BREAK EVENT
+			HAPPENS THE OUTPUT will be done while on current row (FOR FOOTER AND HEADER).  This makes subtotals much easier!
+		</para>	
+		<para>
+			Breaks also have BreakFields. An expression on how it breaks. There can be more then one and 
+			it has a value. The value is an expression.
+		</para>			
+	</sect1>
+</chapter>

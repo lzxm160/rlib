@@ -1,0 +1,125 @@
+<chapter label="5" id="api">
+	<title>API</title>
+	<sect1>
+		<title>rlib_init</title>
+		<para>
+			rlib_init(mysql_host, mysql_user, mysql_password, mysql_database)
+		</para>
+		<para>
+			All Parameters are strings and must be valid, no connection to the database is made at this time.
+		</para>
+		<para>
+			Returns a pointer to a <emphasis>rlib</emphasis>
+		</para>
+	</sect1>
+	<sect1>
+		<title>rlib_add_report</title>
+		<para>
+			rlib_add_report(<emphasis>rlib</emphasis>, rlib_xml_file)
+		</para>
+		<para>
+			A report is added to the report execution queue but not compiled at this time.
+		</para>
+	</sect1>
+	<sect1>
+		<title>rlib_add_query_as</title>
+		<para>
+			rlib_add_query_as(<emphasis>rlib</emphasis>, query, rlib_query_name)
+		</para>
+		<para>
+			The query is added to an execution queue, but it is not executed at this time.  The name is important
+			because you can reference result sets directly in your rlib xml files.  The first query added is assumed
+			to be the main loop query.
+		</para>
+	</sect1>
+	<sect1>
+		<title>rlib_set_output_format</title>
+		<para>
+			rlib_set_output_format(<emphasis>rlib</emphasis>, type)
+		</para>
+		<para>
+			Type can be one of the following: html, pdf, txt, or csv.
+		</para>
+	</sect1>
+	<sect1>
+		<title>rlib_execute</title>
+		<para>
+			rlib_execute(<emphasis>rlib</emphasis>)
+		</para>
+		<para>
+			Connects to the database, runs queries, compiles xmls and buffers up a report.
+		</para>
+	</sect1>
+	<sect1>
+		<title>rlib_finalize</title>
+		<para>
+			rlib_finalize(<emphasis>rlib</emphasis>)
+		</para>
+		<para>
+			If everything went well executing, this tells rlib you are done executing and you want it package up 
+			the finished product.
+		</para>
+	</sect1>
+	<sect1>
+		<title>rlib_get_content_type</title>
+		<para>
+			rlib_get_content_type(<emphasis>rlib</emphasis>)
+		</para>
+		<para>
+			This will return a string content type Use it with the <emphasis>php header function</emphasis>.
+			Even if you ask for a PDF you might not get a PDF because errors might occur. If this is the case, rlib
+			defaults to html and sends out error messages.
+		</para>
+	</sect1>
+	<sect1>
+		<title>rlib_spool</title>
+		<para>
+			rlib_spool(<emphasis>rlib</emphasis>)
+		</para>
+		<para>
+			Rlib will send the output out stdout.
+		</para>
+	</sect1>
+	<sect1>
+		<title>SAMPLE</title>
+		<para>
+			Here is a example.
+		</para>
+		<para>
+			dl ("rlib/libr.so");
+		</para>
+		<para>
+			$query = "SELECT * FROM plu";
+		</para>
+		<para>
+			$rlib =	rlib_init("localhost", "user", "password", "database");
+		</para>
+		<para>
+			$format = "PDF";
+		</para>
+		<para>
+			rlib_add_query_as($rlib, $query, "topline");
+		</para>
+		<para>
+			rlib_add_query_as($rlib, "select name from report_names where report_id = 12", "header");
+		</para>
+		<para>
+			rlib_add_report($rlib, "report_plu.xml");
+		</para>
+		<para>
+			rlib_set_output_format($rlib, $format);
+		</para>
+		<para>
+			rlib_execute($rlib);
+		</para>
+		<para>
+			rlib_finalize($rlib);
+		</para>
+		<para>
+			header(rlib_get_content_type($rlib));
+		</para>
+		<para>
+			rlib_spool($rlib);			
+		</para>
+	</sect1>
+</chapter>
