@@ -31,7 +31,6 @@
 rlib * rlib_init_with_environment(struct environment_filter *environment) {
 	rlib *r;
 	
-	setlocale (LC_NUMERIC, "en_US");
 	init_signals();
 
 	r = g_new0(rlib, 1);
@@ -217,9 +216,12 @@ gint rlib_add_parameter(rlib *r, const gchar *name, const gchar *value) {
 	return result;
 }
 
+
+/*
+*  Returns TRUE if locale was actually set, otherwise, FALSE
+*/
 gint rlib_set_locale(rlib *r, gchar *locale) {
-	setlocale (LC_NUMERIC, locale);
-	return TRUE;
+	return (setlocale(LC_ALL, locale) == NULL)? FALSE : TRUE;
 }
 
 
@@ -266,6 +268,25 @@ void rlib_dump_profile(gint profilenum, const gchar *filename) {
 void rlib_trap() {
 	return;
 }
+
+//These functions are currently a hack so I can test L10n stuff - Chet
+void rlib_set_pdf_font_directories(rlib *r, const char *d1, const char *d2) {
+	if (d1) strncpy(r->pdf_fontdir1, d1, sizeof(r->pdf_fontdir1) - 1);
+	else *r->pdf_fontdir1 = '\0';
+	if (d2) strncpy(r->pdf_fontdir2, d2, sizeof(r->pdf_fontdir2) - 1);
+	else *r->pdf_fontdir2 = '\0';
+	if (d1 && !d2) strcpy(r->pdf_fontdir2, d1);
+	if (d2 && !d1) strcpy(r->pdf_fontdir1, d2);
+}
+
+
+void rlib_set_pdf_font(rlib *r, const char *encoding, const char *fontname) {
+	if (encoding) strncpy(r->pdf_encoding, encoding, sizeof(r->pdf_encoding) - 1);
+	if (fontname) strncpy(r->pdf_fontname, fontname, sizeof(r->pdf_fontname) - 1);
+}
+
+
+
 
 
 

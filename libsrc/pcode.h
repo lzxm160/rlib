@@ -93,7 +93,8 @@
 #define OP_LEFT		46
 #define OP_TSTOD	47
 #define OP_DTOSF	48
-
+#define OP_DATEOF	49
+#define OP_TIMEOF	50
 
 struct rlib_value_stack {
 	int count;
@@ -208,4 +209,6 @@ int rlib_pcode_operator_date(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 int rlib_pcode_operator_left(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
 int rlib_pcode_operator_right(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
 int rlib_pcode_operator_substring(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
+int rlib_pcode_operator_dateof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
+int rlib_pcode_operator_timeof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
 

@@ -1,3 +1,31 @@
+2004-02-13  Chet Heilman  <cheilman@sicompos.com>
+	Add some changes for L10n. More to come.
+	* libsrc/api.c: (rlib_init_with_environment), (rlib_set_locale),
+	(rlib_set_pdf_font_directories), (rlib_set_pdf_font):
+		removed initial set of locale to en_US. Added functions to
+		set the pdf font parameters
+	* libsrc/formatstring.c: (format_money), (format_number),
+	(rlib_number_sprintf), (rlib_format_string):
+		Added new functions for localized formatting of money, numbers and 
+		dates. These use a "!$", "!#", or "!@" to precede a format for
+		strfmon, sprintf or strftime.
+	* libsrc/html.c: (rlib_html_start_report):
+		Added a meta tag to the html so that the content type uses the
+		utf8 charset.
+	* libsrc/pcode.c: Added dateof and timeof functions.
+	* libsrc/pcode.h: Added opcodes, etc. for above.
+	* libsrc/pcode_op_functions.c: (rlib_pcode_operator_add),
+	(rlib_pcode_operator_subtract), (rlib_pcode_operator_lte),
+	(rlib_pcode_operator_lt), (rlib_pcode_operator_gte),
+	(rlib_pcode_operator_gt), (rlib_pcode_operator_eql),
+	(rlib_pcode_operator_noteql): Corrected handling of date arithmetic 
+		and comparison.
+	* libsrc/pdf.c: (rlib_pdf_set_font_point): Added ability to use a 
+		different font / encoding, etc.
+	* libsrc/rlib.h: Added fields to hold font / encoding, etc.
+	* libsrc/util.c: (local_rlogit): Changed fprintf to fputs so that
+		% chars are not mis-interpreted in logs.
+
 2004-02-02  Chet Heilman  <cheilman@sicompos.com>
 	* libsrc/pcode.c: (rlib_str_to_long_long): Fix problem in conversion
 	of negative numbers.

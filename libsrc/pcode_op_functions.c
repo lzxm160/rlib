@@ -56,6 +56,7 @@ struct rlib_value *v3) {
 
 gint rlib_pcode_operator_add(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
 	struct rlib_value *v1, *v2, rval_rtn;
+	time_t t;
 	v1 = rlib_value_stack_pop(vs);
 	v2 = rlib_value_stack_pop(vs);
 	if(v1 != NULL && v2 != NULL) {
@@ -77,7 +78,6 @@ gint rlib_pcode_operator_add(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 			return TRUE;
 		}
 		if((RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_NUMBER(v2)) || (RLIB_VALUE_IS_NUMBER(v1) && RLIB_VALUE_IS_DATE(v2))) {
-			gint i;
 			struct rlib_value *number, *date;
 			struct tm tm_newday;
 			if(RLIB_VALUE_IS_DATE(v1)) {
@@ -88,9 +88,9 @@ gint rlib_pcode_operator_add(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 				number = v1;
 			}
 			tm_newday = RLIB_VALUE_GET_AS_DATE(date);
-			for(i=0;i<RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(number));i++) {
-				bumpday(&tm_newday.tm_year, &tm_newday.tm_mon, &tm_newday.tm_mday);
-			}
+			tm_newday.tm_mday += RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(number));
+			t = mktime(&tm_newday);
+			tm_newday = *localtime(&t);
 			rlib_value_free(v1);
 			rlib_value_free(v2);
 			rlib_value_stack_push(vs, rlib_value_new_date(&rval_rtn, &tm_newday));
@@ -107,6 +107,7 @@ gint rlib_pcode_operator_add(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 
 gint rlib_pcode_operator_subtract(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
 	struct rlib_value *v1, *v2, rval_rtn;
+	time_t t;
 	v1 = rlib_value_stack_pop(vs);
 	v2 = rlib_value_stack_pop(vs);
 	if(v1 != NULL && v2 != NULL) {
@@ -118,7 +119,6 @@ gint rlib_pcode_operator_subtract(rlib *r, struct rlib_value_stack *vs, struct r
 			return TRUE;
 		}
 		if((RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_NUMBER(v2)) || (RLIB_VALUE_IS_NUMBER(v1) && RLIB_VALUE_IS_DATE(v2))) {
-			gint i;
 			struct rlib_value *number, *date;
 			struct tm tm_newday;
 			if(RLIB_VALUE_IS_DATE(v1)) {
@@ -129,9 +129,9 @@ gint rlib_pcode_operator_subtract(rlib *r, struct rlib_value_stack *vs, struct r
 				number = v1;
 			}
 			tm_newday = RLIB_VALUE_GET_AS_DATE(date);
-			for(i=0;i<RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(number));i++) {
-				bumpdaybackwords(&tm_newday.tm_year, &tm_newday.tm_mon, &tm_newday.tm_mday);
-			}
+			tm_newday.tm_mday -= RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(number));
+			t = mktime(&tm_newday);
+			tm_newday = *localtime(&t);
 			rlib_value_free(v1);
 			rlib_value_free(v2);
 			rlib_value_stack_push(vs, rlib_value_new_date(&rval_rtn, &tm_newday));
@@ -255,6 +255,17 @@ gint rlib_pcode_operator_lte(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 			return TRUE;
 		}
 	}
+	if(RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_DATE(v2)) {
+		long long val;		
+		time_t t1, t2;
+		t1 = mktime(&RLIB_VALUE_GET_AS_DATE(v1));
+		t2 = mktime(&RLIB_VALUE_GET_AS_DATE(v2));
+		val = (t2 <= t1)? RLIB_DECIMAL_PRECISION : 0;
+		rlib_value_free(v1);
+		rlib_value_free(v2);
+		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, val));
+		return TRUE;
+	}
 	rlib_pcode_operator_fatal_execption("<=", 2, v1, v2, NULL);
 	rlib_value_free(v1);
 	rlib_value_free(v2);
@@ -292,6 +303,17 @@ gint rlib_pcode_operator_lt(rlib *r, struct rlib_value_stack *vs, struct rlib_va
 			return TRUE;
 		}	
 	}
+	if(RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_DATE(v2)) {
+		long long val;		
+		time_t t1, t2;
+		t1 = mktime(&RLIB_VALUE_GET_AS_DATE(v1));
+		t2 = mktime(&RLIB_VALUE_GET_AS_DATE(v2));
+		val = (t2 < t1)? RLIB_DECIMAL_PRECISION : 0;
+		rlib_value_free(v1);
+		rlib_value_free(v2);
+		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, val));
+		return TRUE;
+	}
 	rlib_pcode_operator_fatal_execption("<", 2, v1, v2, NULL);
 	rlib_value_free(v1);
 	rlib_value_free(v2);
@@ -327,6 +349,17 @@ gint rlib_pcode_operator_gte(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 		}
 		return TRUE;
 	}
+	if(RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_DATE(v2)) {
+		long long val;		
+		time_t t1, t2;
+		t1 = mktime(&RLIB_VALUE_GET_AS_DATE(v1));
+		t2 = mktime(&RLIB_VALUE_GET_AS_DATE(v2));
+		val = (t2 >= t1)? RLIB_DECIMAL_PRECISION : 0;
+		rlib_value_free(v1);
+		rlib_value_free(v2);
+		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, val));
+		return TRUE;
+	}
 	rlib_pcode_operator_fatal_execption(">=", 2, v1, v2, NULL);
 	rlib_value_free(v1);
 	rlib_value_free(v2);
@@ -360,6 +393,17 @@ gint rlib_pcode_operator_gt(rlib *r, struct rlib_value_stack *vs, struct rlib_va
 			rlib_value_free(v2);
 			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, 0));
 		}
+		return TRUE;
+	}
+	if(RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_DATE(v2)) {
+		long long val;		
+		time_t t1, t2;
+		t1 = mktime(&RLIB_VALUE_GET_AS_DATE(v1));
+		t2 = mktime(&RLIB_VALUE_GET_AS_DATE(v2));
+		val = (t2 > t1)? RLIB_DECIMAL_PRECISION : 0;
+		rlib_value_free(v1);
+		rlib_value_free(v2);
+		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, val));
 		return TRUE;
 	}
 	rlib_pcode_operator_fatal_execption(">", 2, v1, v2, NULL);
@@ -403,15 +447,14 @@ gint rlib_pcode_operator_eql(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 		return TRUE;
 	}
 	if(RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_DATE(v2)) {
-		if(memcmp(&RLIB_VALUE_GET_AS_DATE(v2), &RLIB_VALUE_GET_AS_DATE(v1), sizeof(struct tm)) == 0) {
-			rlib_value_free(v1);
-			rlib_value_free(v2);
-			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
-		} else {
-			rlib_value_free(v1);
-			rlib_value_free(v2);
-			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, 0));
-		}
+		long long val;		
+		time_t t1, t2;
+		t1 = mktime(&RLIB_VALUE_GET_AS_DATE(v1));
+		t2 = mktime(&RLIB_VALUE_GET_AS_DATE(v2));
+		val = (t1 == t2)? RLIB_DECIMAL_PRECISION : 0;
+		rlib_value_free(v1);
+		rlib_value_free(v2);
+		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, val));
 		return TRUE;
 	}
 	rlib_pcode_operator_fatal_execption("==", 2, v1, v2, NULL);
@@ -450,15 +493,15 @@ gint rlib_pcode_operator_noteql(rlib *r, struct rlib_value_stack *vs, struct rli
 		return TRUE;
 	}
 	if(RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_DATE(v2)) {
-		if(memcmp(&RLIB_VALUE_GET_AS_DATE(v2), &RLIB_VALUE_GET_AS_DATE(v1), sizeof(struct tm)) != 0) {
-			rlib_value_free(v1);
-			rlib_value_free(v2);
-			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
-		} else {
-			rlib_value_free(v1);
-			rlib_value_free(v2);
-			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, 0));
-		}	
+		long long val;		
+		time_t t1, t2;
+		t1 = mktime(&RLIB_VALUE_GET_AS_DATE(v1));
+		t2 = mktime(&RLIB_VALUE_GET_AS_DATE(v2));
+		val = (t1 != t2)? RLIB_DECIMAL_PRECISION : 0;
+		rlib_value_free(v1);
+		rlib_value_free(v2);
+		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, val));
+		return TRUE;
 	}
 	rlib_pcode_operator_fatal_execption("!=", 2, v1, v2, NULL);
 	rlib_value_free(v1);
@@ -886,6 +929,7 @@ gboolean rlib_pcode_operator_iif(rlib *r, struct rlib_value_stack *vs, struct rl
 	return thisresult;
 }
 
+
 static gboolean rlib_pcode_operator_dtos_common(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, char *format) {
 	struct rlib_value *v1, rval_rtn;
 	gboolean result = FALSE;
@@ -904,6 +948,7 @@ static gboolean rlib_pcode_operator_dtos_common(rlib *r, struct rlib_value_stack
 	}
 	return result;
 }
+
 
 
 #if 0
@@ -927,6 +972,46 @@ gint rlib_pcode_operator_dtos_common(rlib *r, struct rlib_value_stack *vs, struc
 	return FALSE;
 }
 #endif
+
+
+gboolean rlib_pcode_operator_dateof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+	struct rlib_value rval_rtn, *v1;
+	
+	v1 = rlib_value_stack_pop(vs);
+	if (RLIB_VALUE_IS_DATE(v1)) {
+		struct tm tm_date = RLIB_VALUE_GET_AS_DATE(v1);
+		tm_date.tm_hour = 12;
+		tm_date.tm_min = 0;
+		tm_date.tm_sec = 0;
+		rlib_value_free(v1);
+		rlib_value_stack_push(vs, rlib_value_new_date(&rval_rtn, &tm_date));
+		return TRUE;
+	}
+	rlib_pcode_operator_fatal_execption("dateof", 1, v1, NULL, NULL);
+	rlib_value_free(v1);
+	rlib_value_stack_push(vs, rlib_value_new_error(&rval_rtn));		
+	return FALSE;
+}
+
+
+gboolean rlib_pcode_operator_timeof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+	struct rlib_value rval_rtn, *v1;
+	
+	v1 = rlib_value_stack_pop(vs);
+	if (RLIB_VALUE_IS_DATE(v1)) {
+		struct tm tm_date = RLIB_VALUE_GET_AS_DATE(v1);
+		tm_date.tm_year = 71;
+		tm_date.tm_mon = 0;
+		tm_date.tm_mday = 1;
+		rlib_value_free(v1);
+		rlib_value_stack_push(vs, rlib_value_new_date(&rval_rtn, &tm_date));
+		return TRUE;
+	}
+	rlib_pcode_operator_fatal_execption("dateof", 1, v1, NULL, NULL);
+	rlib_value_free(v1);
+	rlib_value_stack_push(vs, rlib_value_new_error(&rval_rtn));		
+	return FALSE;
+}
 
 
 gboolean rlib_pcode_operator_dtos(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {

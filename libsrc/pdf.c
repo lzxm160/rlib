@@ -97,8 +97,15 @@ gfloat nheight) {
 }
 
 static void rlib_pdf_set_font_point(rlib *r, gint point) {
+	char *encoding;
+	char *fontname;
 	if(r->current_font_point != point) {
-		cpdf_setFont(OUTPUT_PRIVATE(r)->pdf, "Courier", "WinAnsiEncoding", point);		
+		if (*r->pdf_fontdir1) { //if one set other is guaranteed to be set
+			cpdf_setFontDirectories(OUTPUT_PRIVATE(r)->pdf, r->pdf_fontdir1, r->pdf_fontdir2);
+		}
+		encoding = (*r->pdf_encoding)? r->pdf_encoding : "WinAnsiEncoding";
+		fontname = (*r->pdf_fontname)? r->pdf_fontname : "Courier";
+		cpdf_setFont(OUTPUT_PRIVATE(r)->pdf, fontname, encoding, point);		
 		r->current_font_point = point;
 	}
 }

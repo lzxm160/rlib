@@ -25,14 +25,36 @@
 #include <ctype.h>
 #include <math.h>
 #include <time.h>
+#include <langinfo.h>
+#include <monetary.h>
 
 #include "rlib.h"
 #include "pcode.h"
+
+
+/*
+* Formats numbers in money format using locale parameters and moneyformat codes
+*/
+static gint format_money(char *dest, int max, const char *moneyformat, long long x) { 
+	double d = ((double) x) / RLIB_DECIMAL_PRECISION;
+	int result;
+
+	result = strfmon(dest, max - 1, moneyformat, d);
+	return (result >= 0)? strlen(dest) : 0;
+}
+
+
+static gint format_number(char *dest, int max, const char *fmt, long long x) {
+	double d = (((double) x) / RLIB_DECIMAL_PRECISION);
+	return snprintf(dest, max - 1, fmt, d);
+}
+
 
 gint rlb_string_sprintf(gchar *dest, gchar *fmtstr, struct rlib_value *rval) {
 	gchar *value = RLIB_VALUE_GET_AS_STRING(rval);
 	return sprintf(dest, fmtstr, value);
 }
+
 
 gint rlib_number_sprintf(gchar *dest, gchar *fmtstr, const struct rlib_value *rval, gint special_format) {
 	gint dec=0;
@@ -45,10 +67,12 @@ gint rlib_number_sprintf(gchar *dest, gchar *fmtstr, const struct rlib_value *rv
 	gint where=0;
 	gint commatize=0;
 	gchar *c;
+//	char *radixchar = nl_langinfo(RADIXCHAR);
 
 	for(c=fmtstr;*c && (*c != 'd');c++) {
-		if(*c=='$')
+		if(*c=='$') {
 			commatize=1;
+		}
 		if(*c=='%')
 			where=0;
 		else if(*c=='.') {
@@ -157,6 +181,28 @@ gint rlib_format_string(rlib *r, struct report_field *rf, struct rlib_value *rva
 			return FALSE;
 		} else {
 			formatstring = RLIB_VALUE_GET_AS_STRING(rval_fmtstr);
+			if (*formatstring == '!') {
+				char *tfmt = formatstring + 1;
+				switch (*tfmt) {
+				case '$': //Format as money
+					if (RLIB_VALUE_IS_NUMBER(rval)) {
+						return format_money(buf, 100, tfmt + 1, RLIB_VALUE_GET_AS_NUMBER(rval));
+					}
+					++formatstring;
+					break;
+				case '#': //Format as number
+					if (RLIB_VALUE_IS_NUMBER(rval)) {
+						return format_number(buf, 100, tfmt + 1, RLIB_VALUE_GET_AS_NUMBER(rval));
+					}
+					++formatstring;
+					break;
+				case '@': //Format as time/date
+					if(RLIB_VALUE_IS_DATE(rval)) {
+						strftime(buf, 100, tfmt + 1, &RLIB_VALUE_GET_AS_DATE(rval));				
+					}
+					break;
+				}
+			}
 			if(RLIB_VALUE_IS_DATE(rval)) {
 				strftime(buf, 100, formatstring, &RLIB_VALUE_GET_AS_DATE(rval));				
 			} else {	
@@ -180,12 +226,14 @@ gint rlib_format_string(rlib *r, struct report_field *rf, struct rlib_value *rva
 				
 				for(i=0;i<len_formatstring;i++) {
 					if(formatstring[i] == '%' && ((i+1) < len_formatstring && formatstring[i+1] != '%')) {
+						int tchar;
 						while(formatstring[i] != 's' && formatstring[i] != 'd' && i <=len_formatstring) {
 							fmtstr[fpos++] = formatstring[i++];
 						}
 						fmtstr[fpos++] = formatstring[i];
 						fmtstr[fpos] = '\0';
-						if(fmtstr[fpos-1] == 'd') {
+						tchar = fmtstr[fpos - 1];
+						if ((tchar == 'd') || (tchar == 'i') || (tchar == 'n')) {
 							if(RLIB_VALUE_IS_NUMBER(rval)) {
 								gchar tmp[50];
 								
@@ -197,7 +245,7 @@ gint rlib_format_string(rlib *r, struct report_field *rf, struct rlib_value *rva
 								rlib_value_free(rval_fmtstr);
 								return FALSE;
 							}
-						} else if(fmtstr[fpos-1] == 's') {
+						} else if (tchar == 's') {
 							if(RLIB_VALUE_IS_STRING(rval)) {
 								gchar tmp[500];
 								rlb_string_sprintf(tmp, fmtstr, rval);

@@ -126,7 +126,7 @@ gchar *rmwhitespacesexceptquoted(gchar *s) {
 
 
 static void local_rlogit(const gchar *message) {
-	fprintf(stderr, message);
+	fputs(message, stderr);
 	return;
 }
 

@@ -92,6 +92,9 @@ struct rlib_pcode_operator rlib_pcode_verbs[] = {
       {"tstod(", 	6, 0,	TRUE,	OP_TSTOD,  	TRUE, 	rlib_pcode_operator_tstod},
       {"dtosf(", 	6, 0,	TRUE,	OP_DTOSF,  	TRUE, 	rlib_pcode_operator_dtosf},
 
+      {"dateof(", 	7, 0,	TRUE,	OP_DATEOF,  	TRUE, 	rlib_pcode_operator_dateof},
+      {"timeof(", 	7, 0,	TRUE,	OP_TIMEOF,  	TRUE, 	rlib_pcode_operator_timeof},
+
       { NULL, 	 	0, 0, FALSE,-1,			TRUE,		NULL}
 };
 

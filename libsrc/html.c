@@ -243,7 +243,7 @@ static void rlib_html_start_report(rlib *r) {
 		OUTPUT_PRIVATE(r)->bottom[i].total_size = 0;
 	}
 
-	print_text(r, "<head><style type=\"text/css\">", FALSE);
+	print_text(r, "<head><meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"><style type=\"text/css\">", FALSE);
 	sprintf(buf, "pre { margin:0; padding:0; margin-top:0; margin-bottom:0; font-size: %dpt;}\n", r->font_point);
 	print_text(r, buf, FALSE);
 	print_text(r, "DIV { position: absolute; left: 0; }\n", FALSE);

@@ -395,6 +395,11 @@ struct rlib {
 
 	gint current_font_point;
 
+	char pdf_fontdir1[256];
+	char pdf_fontdir2[256];
+	char pdf_encoding[256];
+	char pdf_fontname[256];
+
 	struct rlib_queries queries[RLIB_MAXIMUM_QUERIES];
 
 	gint mainloop_queries_count;
@@ -617,3 +622,8 @@ gint save_report(struct rlib_report *rep, char *filename);
 
 /***** PROTOTYPES: load.c *****************************************************/
 struct rlib_report * load_report(gchar *filename);
+
+
+/* temp/test stuff */
+void rlib_set_pdf_font(rlib *r, const char *encoding, const char *fontname);
+void rlib_set_pdf_font_directories(rlib *r, const char *d1, const char *d2);
