@@ -129,10 +129,12 @@ int rlib_pcode_operator_multiply(rlib *r, struct rlib_value_stack *vs, struct rl
 	struct rlib_value *v1, *v2, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	v2 = rlib_value_stack_pop(vs);
-	if(RLIB_VALUE_IS_NUMBER(v1) && RLIB_VALUE_IS_NUMBER(v2)) {
-		long long result = RLIB_FXP_MUL(RLIB_VALUE_GET_AS_NUMBER(v1), RLIB_VALUE_GET_AS_NUMBER(v2));
-		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, result));
-		return TRUE;
+	if(v1 != NULL && v2 != NULL) {
+		if(RLIB_VALUE_IS_NUMBER(v1) && RLIB_VALUE_IS_NUMBER(v2)) {
+			long long result = RLIB_FXP_MUL(RLIB_VALUE_GET_AS_NUMBER(v1), RLIB_VALUE_GET_AS_NUMBER(v2));
+			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, result));
+			return TRUE;
+		}
 	}
 	rlib_pcode_operator_fatal_execption("MULTIPLY", 2, v1, v2, NULL);
 	return FALSE;

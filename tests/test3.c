@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
 	password = argv[3];
 	database = argv[4];
 
-	sprintf(query, "");
+	sprintf(query, " ");
 	sprintf(query, "%s SELECT store_hierarchy.g0_name, store_hierarchy.g1_name, store_hierarchy.g2_name, store_hierarchy.g3_name, store_hierarchy.g4_name,", query);
 	sprintf(query, "%s stores.name, topline.date, topline.rn as stores_rn, ", query);
 	sprintf(query, "%s sum(topline.foodsales_amount) as foodsales_amount, sum(topline.nonfood_amount) as nonfood_amount,  ", query);

@@ -269,7 +269,6 @@ static struct report_element * parse_report_variable(xmlDocPtr doc, xmlNsPtr ns,
 	rv->str_type = xmlGetProp(cur, (const xmlChar *) "type");
 	rv->value = xmlGetProp(cur, (const xmlChar *) "value");
 	rv->resetonbreak = xmlGetProp(cur, (const xmlChar *) "resetonbreak");
-
 	rv->type = REPORT_VARIABLE_UNDEFINED;
 	if(rv->str_type != NULL && rv->str_type[0] != '\0') {
 		if(!strcmp(rv->str_type, "expression"))

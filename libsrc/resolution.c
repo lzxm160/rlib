@@ -86,7 +86,7 @@ int rlib_resolve_resultset_field(rlib *r, char *name, void **rtn_field, int *rtn
 			resultset = t;
 		} else {
 			if(!isdigit(*result_name))
-				rlogit("rlib_resolve_namevalue: INVALID RESULT SET %s\n", result_name);
+				rlogit("rlib_resolve_namevalue: INVALID RESULT SET %s, name was [%s]\n", result_name, name);
 		}
 		rfree(result_name);
 	}
@@ -236,6 +236,7 @@ struct report_variable *rlib_resolve_variable(rlib *r, char *name) {
 			if(!strcmp(name, rv->name))
 				return rv;
 		}	
+		rlogit("rlib_resolve_variable: Could not find [%s]\n", name);
 	}
 	return NULL;
 }

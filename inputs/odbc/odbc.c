@@ -152,7 +152,7 @@ int odbc_read_next(void *result_ptr) {
 	
 	if(SQL_SUCCEEDED(( V_OD_erg = SQLFetch (results->V_OD_hstmt)))) {
 		for (i=0;i<results->tot_fields;i++)
-			V_OD_erg = SQLGetData (results->V_OD_hstmt, i+1, SQL_C_CHAR, results->values[i].value, results->values[i].len, &ind);
+			V_OD_erg = SQLGetData (results->V_OD_hstmt, i+1, SQL_C_CHAR, results->values[i].value, results->values[i].len+1, &ind);
 		return TRUE;
 	}
 	return FALSE;
@@ -177,15 +177,14 @@ static void copy_to_from(struct rlib_odbc_results *results, struct odbc_field_va
 
 static int rlib_odbc_next(void *input_ptr, void *result_ptr) {
 	struct rlib_odbc_results *results = result_ptr;
-	
-	if(results->state_previous) {
-		copy_to_from(results, results->values, results->save_values);
-	} else {
-		copy_to_from(results, results->more_values, results->values);
-		odbc_read_next(result_ptr);
-	}
-	
 	if(results->row+1 < results->tot_rows) {
+		if(results->state_previous) {
+			results->state_previous = FALSE;
+			copy_to_from(results, results->values, results->save_values);
+		} else {
+			copy_to_from(results, results->more_values, results->values);
+			odbc_read_next(result_ptr);
+		}
 		results->row++;
 		results->isdone = FALSE;
 		return TRUE;
@@ -202,12 +201,13 @@ static int rlib_odbc_isdone(void *input_ptr, void *result_ptr) {
 static int rlib_odbc_previous(void *input_ptr, void *result_ptr) {
 	struct rlib_odbc_results *results = result_ptr;
 
-	copy_to_from(results, results->save_values, results->values);
-	copy_to_from(results, results->values, results->more_values);
-
 	if(results->row-1 > 0) {
 		results->row--;
 		results->isdone = FALSE;
+		results->state_previous = TRUE;
+		rlogit("GOING PREVIOUS\n");
+		copy_to_from(results, results->save_values, results->values);
+		copy_to_from(results, results->values, results->more_values);
 		return TRUE;
 	}
 	results->isdone = TRUE;
@@ -314,7 +314,6 @@ static int rlib_odbc_free_input_filter(void *input_ptr) {
 
 void * rlib_odbc_new_input_filter() {
 	struct input_filter *input;
-	
 	input = rmalloc(sizeof(struct input_filter));
 	input->private = rmalloc(sizeof(struct _private));
 	bzero(input->private, sizeof(struct _private));
