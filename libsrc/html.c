@@ -23,7 +23,6 @@
  * formatted report from the rlib object.
  *
  */
-
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -32,10 +31,12 @@
 #include "rlib.h"
 #include "rlib_gd.h"
 
-struct _data {
-	gchar *data;
-	gint size;
-	gint total_size;
+#define TEXT 1
+#define DELAY 2
+
+struct _packet {
+	char type;
+	gpointer data;
 };
 
 struct _graph {
@@ -73,8 +74,9 @@ struct _graph {
 struct _private {
 	struct rlib_rgb current_fg_color;
 	struct rlib_rgb current_bg_color;
-	struct _data *top;
-	struct _data *bottom;
+	GSList **top;
+	GSList **bottom;
+	
 	gchar *both;
 	gint did_bg;
 	gint bg_backwards;
@@ -88,25 +90,15 @@ struct _private {
 };
 
 static void print_text(rlib *r, gchar *text, gint backwards) {
-	gchar *str_ptr;
-	gint text_size = strlen(text);
-	gint *size = NULL;
-
-	if(backwards) {
-		make_more_space_if_necessary(&OUTPUT_PRIVATE(r)->bottom[OUTPUT_PRIVATE(r)->page_number].data, 
-			&OUTPUT_PRIVATE(r)->bottom[OUTPUT_PRIVATE(r)->page_number].size, 
-			&OUTPUT_PRIVATE(r)->bottom[OUTPUT_PRIVATE(r)->page_number].total_size, text_size);
-		str_ptr = OUTPUT_PRIVATE(r)->bottom[OUTPUT_PRIVATE(r)->page_number].data;
-		size = &OUTPUT_PRIVATE(r)->bottom[OUTPUT_PRIVATE(r)->page_number].size;
-	} else {
-		make_more_space_if_necessary(&OUTPUT_PRIVATE(r)->top[OUTPUT_PRIVATE(r)->page_number].data, 
-			&OUTPUT_PRIVATE(r)->top[OUTPUT_PRIVATE(r)->page_number].size, 
-			&OUTPUT_PRIVATE(r)->top[OUTPUT_PRIVATE(r)->page_number].total_size, text_size);
-		str_ptr = OUTPUT_PRIVATE(r)->top[OUTPUT_PRIVATE(r)->page_number].data;	
-		size = &OUTPUT_PRIVATE(r)->top[OUTPUT_PRIVATE(r)->page_number].size;
-	}
-	memcpy(str_ptr + (*size), text, text_size+1);
-	*size = (*size) + text_size;
+	gint current_page = OUTPUT_PRIVATE(r)->page_number;
+	struct _packet *packet = g_new0(struct _packet, 1);
+	packet->type = TEXT;
+	packet->data = g_strdup(text);
+	
+	if(backwards)
+		OUTPUT_PRIVATE(r)->bottom[current_page] = g_slist_append(OUTPUT_PRIVATE(r)->bottom[current_page], packet);
+	else
+		OUTPUT_PRIVATE(r)->top[current_page] = g_slist_append(OUTPUT_PRIVATE(r)->top[current_page], packet);
 }
 
 static gfloat rlib_html_get_string_width(rlib *r, gchar *text) {
@@ -282,26 +274,49 @@ static void rlib_html_set_font_point(rlib *r, gint point) {
 }
 
 static void rlib_html_start_new_page(rlib *r, struct rlib_part *part) {
+	r->current_page_number++;
 	part->position_bottom[0] = 11-part->bottom_margin;
 }
+
+static void html_callback(gchar *data, gint len, struct rlib_delayed_extra_data *delayed_data) {
+	struct rlib_line_extra_data *extra_data = &delayed_data->extra_data;
+	rlib *r = delayed_data->r;
+	char buf[MAXSTRLEN];
+	
+	rlib_execute_pcode(r, &extra_data->rval_code, extra_data->field_code, NULL);	
+	rlib_format_string(r, extra_data->report_field, &extra_data->rval_code, buf);
+	align_text(r, extra_data->formatted_string, MAXSTRLEN, buf, extra_data->report_field->align, extra_data->report_field->width);
+	memcpy(data, buf, len);
+	data[len-1] = 0;
+	g_free(delayed_data);
+}
+
+static void rlib_html_print_text_delayed(rlib *r, struct rlib_delayed_extra_data *delayed_data, int backwards) {
+	gint current_page = OUTPUT_PRIVATE(r)->page_number;
+	struct _packet *packet = g_new0(struct _packet, 1);
+	packet->type = DELAY;
+	packet->data = delayed_data;
+	
+	if(backwards)
+		OUTPUT_PRIVATE(r)->bottom[current_page] = g_slist_append(OUTPUT_PRIVATE(r)->bottom[current_page], packet);
+	else
+		OUTPUT_PRIVATE(r)->top[current_page] = g_slist_append(OUTPUT_PRIVATE(r)->top[current_page], packet);
+}
+
 
 
 static void rlib_html_start_report(rlib *r, struct rlib_part *part) {
 	gchar buf[MAXSTRLEN];
-	gint pages_across = part->pages_across;
-	gint i;
 	gchar *meta;
+	gchar *link;
+	gint pages_across = part->pages_across;
 
-	OUTPUT_PRIVATE(r)->bottom = g_malloc(sizeof(struct _data) * pages_across);
-	OUTPUT_PRIVATE(r)->top = g_malloc(sizeof(struct _data) * pages_across);
-	for(i=0;i<pages_across;i++) {
-		OUTPUT_PRIVATE(r)->top[i].data = NULL;
-		OUTPUT_PRIVATE(r)->top[i].size = 0;
-		OUTPUT_PRIVATE(r)->top[i].total_size = 0;
-		OUTPUT_PRIVATE(r)->bottom[i].data = NULL;
-		OUTPUT_PRIVATE(r)->bottom[i].size = 0;
-		OUTPUT_PRIVATE(r)->bottom[i].total_size = 0;
-	}
+	OUTPUT_PRIVATE(r)->top = g_new0(GSList *, pages_across);
+	OUTPUT_PRIVATE(r)->bottom = g_new0(GSList *, pages_across);
+	
+	link = g_hash_table_lookup(r->output_parameters, "trim_links");
+	if(link != NULL)
+		OUTPUT(r)->trim_links = TRUE;
 	sprintf(buf, "<head>\n<style type=\"text/css\">\n");
 	print_text(r, buf, FALSE);
 	sprintf(buf, "pre { margin:0; padding:0; margin-top:0; margin-bottom:0;}\n");
@@ -316,48 +331,57 @@ static void rlib_html_start_report(rlib *r, struct rlib_part *part) {
 		
 	print_text(r, "</head>\n", FALSE);
 	
-	print_text(r, "<body><table><tr><td><pre>", FALSE);
-	
+	print_text(r, "<body><table><tr><td><pre>", FALSE);	
 }
 
 static void rlib_html_end_part(rlib *r, struct rlib_part *part) {
 	gint i;
-	gint pages_across = part->pages_across;
-	gint sofar = OUTPUT_PRIVATE(r)->length;
-//	gchar *str1 = "<table><tr>";
-//	gchar *str2 = "<td nowrap><pre>";
-	gchar *str3 = "</td>";
-	gchar *str4 = "</tr></table>";
+	gchar *old;
+	char buf[MAXSTRLEN];
 	print_text(r, "</pre></td></tr></table>", TRUE);
+	for(i=0;i<part->pages_across;i++) {
+		GSList *list = OUTPUT_PRIVATE(r)->top[i]; 
+		while(list != NULL) {
+			struct _packet *packet = list->data;
+			
+			
+			if(OUTPUT_PRIVATE(r)->both  == NULL) {
+				OUTPUT_PRIVATE(r)->both  = packet->data;
+			} else {
+				old = OUTPUT_PRIVATE(r)->both ;
+				OUTPUT_PRIVATE(r)->both  = g_strconcat(OUTPUT_PRIVATE(r)->both , packet->data, NULL);
+				g_free(old);
+				g_free(packet->data);
+			}
+			list = list->next;
+		}
 
-//	OUTPUT_PRIVATE(r)->both = g_realloc(OUTPUT_PRIVATE(r)->both, sofar + 11);
-//	memcpy(OUTPUT_PRIVATE(r)->both + sofar , str1, 11);
-//	sofar += 11;
-	for(i=0;i<pages_across;i++) {
-//		OUTPUT_PRIVATE(r)->both = g_realloc(OUTPUT_PRIVATE(r)->both, sofar + 16);
-//		memcpy(OUTPUT_PRIVATE(r)->both + sofar, str2, 16);
-//		sofar += 16;
+		list = OUTPUT_PRIVATE(r)->bottom[i]; 
+		while(list != NULL) {
+			struct _packet *packet = list->data;
+			if(packet->type == DELAY) {
+				html_callback(buf, MAXSTRLEN-1, packet->data);
+				packet->data = g_strdup(buf);
+			}
+			if(OUTPUT_PRIVATE(r)->both  == NULL) {
+				OUTPUT_PRIVATE(r)->both  = packet->data;
+			} else {
+				old = OUTPUT_PRIVATE(r)->both ;
+				OUTPUT_PRIVATE(r)->both  = g_strconcat(OUTPUT_PRIVATE(r)->both , packet->data, NULL);
+				g_free(old);
+				g_free(packet->data);
+			}
+			list = list->next;
+		}
+		old = OUTPUT_PRIVATE(r)->both ;
+		OUTPUT_PRIVATE(r)->both  = g_strconcat(OUTPUT_PRIVATE(r)->both , "</td>", NULL);
+		g_free(old);
 
-		OUTPUT_PRIVATE(r)->both = g_realloc(OUTPUT_PRIVATE(r)->both, sofar + OUTPUT_PRIVATE(r)->top[i].size + OUTPUT_PRIVATE(r)->bottom[i].size);
-		memcpy(OUTPUT_PRIVATE(r)->both + sofar , OUTPUT_PRIVATE(r)->top[i].data, OUTPUT_PRIVATE(r)->top[i].size);
-		memcpy(OUTPUT_PRIVATE(r)->both + sofar + OUTPUT_PRIVATE(r)->top[i].size, OUTPUT_PRIVATE(r)->bottom[i].data, OUTPUT_PRIVATE(r)->bottom[i].size);
-		sofar += OUTPUT_PRIVATE(r)->top[i].size + OUTPUT_PRIVATE(r)->bottom[i].size;	
-		OUTPUT_PRIVATE(r)->both = g_realloc(OUTPUT_PRIVATE(r)->both, sofar + 5);
-		memcpy(OUTPUT_PRIVATE(r)->both + sofar, str3, 5);
-		sofar += 5;
 	}
-	OUTPUT_PRIVATE(r)->both = g_realloc(OUTPUT_PRIVATE(r)->both, sofar + 13);
-	memcpy(OUTPUT_PRIVATE(r)->both + sofar, str4, 13);
-	sofar += 13;
-	OUTPUT_PRIVATE(r)->length = sofar;
-
-	for(i=0;i<pages_across;i++) {
-		g_free(OUTPUT_PRIVATE(r)->top[i].data);
-		g_free(OUTPUT_PRIVATE(r)->bottom[i].data);
-	}
-
-	g_free(OUTPUT_PRIVATE(r)->top);
-	g_free(OUTPUT_PRIVATE(r)->bottom);
+	old = OUTPUT_PRIVATE(r)->both;
+	OUTPUT_PRIVATE(r)->both = g_strconcat(OUTPUT_PRIVATE(r)->both, "</tr></table>", NULL);
+	g_free(old);
+	OUTPUT_PRIVATE(r)->length = strlen(OUTPUT_PRIVATE(r)->both);
 }
 
 static void rlib_html_spool_private(rlib *r) {
@@ -434,11 +458,7 @@ static void rlib_html_end_italics(rlib *r) {
 	OUTPUT_PRIVATE(r)->is_italics = FALSE;
 }
 
-
-
-static void html_graph_draw_line(rlib *r, gfloat x, gfloat y, gfloat new_x, gfloat new_y, struct rlib_rgb *color) {
-
-}
+static void html_graph_draw_line(rlib *r, gfloat x, gfloat y, gfloat new_x, gfloat new_y, struct rlib_rgb *color) {}
 
 static void html_graph_start(rlib *r, gfloat left, gfloat top, gfloat width, gfloat height, gboolean x_axis_labels_are_under_tick) {
 	char buf[MAXSTRLEN];
@@ -785,11 +805,6 @@ static void html_graph_finalize(rlib *r) {
 	rlib_gd_free(OUTPUT_PRIVATE(r)->rgd);
 }
 
-
-
-
-
-
 static void rlib_html_init_end_page(rlib *r) {}
 static void rlib_html_init_output(rlib *r) {}
 static void rlib_html_finalize_private(rlib *r) {}
@@ -818,9 +833,11 @@ void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT(r)->do_break = TRUE;
 	OUTPUT(r)->do_grouptext = FALSE;	
 	OUTPUT(r)->paginate = FALSE;
+	OUTPUT(r)->trim_links = FALSE;
 	
 	OUTPUT(r)->get_string_width = rlib_html_get_string_width;
 	OUTPUT(r)->print_text = rlib_html_print_text;
+	OUTPUT(r)->print_text_delayed = rlib_html_print_text_delayed;
 	OUTPUT(r)->set_fg_color = rlib_html_set_fg_color;
 	OUTPUT(r)->set_bg_color = rlib_html_set_bg_color;
 	OUTPUT(r)->hr = rlib_html_hr;

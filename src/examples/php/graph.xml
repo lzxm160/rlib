@@ -4,7 +4,8 @@
 	<PageHeader>
 		<Output>
 			<Line fontSize="26">
-				<literal>RLIB IS Graphing</literal>
+				<literal link="'http://www.yahoo.com'">RLIB IS Graphing       </literal>
+				<literal>YES!</literal>
 			</Line>
 			<HorizontalLine size="4" bgcolor="'black'"/>
 			<HorizontalLine size="10" bgcolor="'white'"/>
@@ -643,13 +644,13 @@
 			</Report>
 		</pd>
 	</pr>
-
-	
 	<PageFooter>
 		<Output>
 			<Line>
 				<literal>Page: </literal>	
 				<field value="r.pageno" width="3" align="right"/>
+				<literal>/</literal>	
+				<field value="r.totpages" width="3" align="right" delayed="yes"/>
 			</Line>
 		</Output>
 	</PageFooter>

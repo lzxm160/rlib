@@ -54,6 +54,7 @@ static void rlib_text_free_pcode(rlib *r, struct rlib_report_literal *rt) {
 	rlib_pcode_free(rt->bold_code);
 	rlib_pcode_free(rt->italics_code);
 	rlib_pcode_free(rt->align_code);
+	rlib_pcode_free(rt->link_code);
 	g_free(rt);
 }
 
@@ -64,6 +65,7 @@ static void rlib_field_free_pcode(rlib *r, struct rlib_report_field *rf) {
 	rlib_pcode_free(rf->color_code);
 	rlib_pcode_free(rf->bgcolor_code);
 	rlib_pcode_free(rf->col_code);
+	rlib_pcode_free(rf->delayed_code);
 	rlib_pcode_free(rf->width_code);
 	rlib_pcode_free(rf->bold_code);
 	rlib_pcode_free(rf->italics_code);
@@ -143,6 +145,7 @@ static void rlib_free_graph(rlib *r, struct rlib_graph *graph) {
 	rlib_pcode_free(graph->title_code);
 	rlib_pcode_free(graph->x_axis_title_code);
 	rlib_pcode_free(graph->y_axis_title_code);
+	rlib_pcode_free(graph->y_axis_mod_code);
 	rlib_pcode_free(graph->y_axis_title_right_code);
 	for(list=graph->plots;list != NULL; list = g_slist_next(list)) {
 		plot = list->data;

@@ -24,39 +24,32 @@
 #include "config.h"
 #include "rlib.h"
 
-struct _data {
-	gchar *data;
-	gint size;
-	gint total_size;
+#define TEXT 1
+#define DELAY 2
+
+struct _packet {
+	char type;
+	gpointer data;
 };
 
 struct _private {
-	struct _data *top;
-	struct _data *bottom;
+	GSList **top;
+	GSList **bottom;
 	gchar *both;
 	gint length;
 	gint page_number;
 };
 
 static void print_text(rlib *r, gchar *text, gint backwards) {
-	gchar *str_ptr;
-	gint text_size = strlen(text);
-	gint *size = NULL;
-	if(backwards) {
-		make_more_space_if_necessary(&OUTPUT_PRIVATE(r)->bottom[OUTPUT_PRIVATE(r)->page_number].data, 
-			&OUTPUT_PRIVATE(r)->bottom[OUTPUT_PRIVATE(r)->page_number].size, 
-			&OUTPUT_PRIVATE(r)->bottom[OUTPUT_PRIVATE(r)->page_number].total_size, text_size+1);
-		str_ptr = OUTPUT_PRIVATE(r)->bottom[OUTPUT_PRIVATE(r)->page_number].data;
-		size = &OUTPUT_PRIVATE(r)->bottom[OUTPUT_PRIVATE(r)->page_number].size;
-	} else {
-		make_more_space_if_necessary(&OUTPUT_PRIVATE(r)->top[OUTPUT_PRIVATE(r)->page_number].data, 
-			&OUTPUT_PRIVATE(r)->top[OUTPUT_PRIVATE(r)->page_number].size, 
-			&OUTPUT_PRIVATE(r)->top[OUTPUT_PRIVATE(r)->page_number].total_size, text_size+1);
-		str_ptr = OUTPUT_PRIVATE(r)->top[OUTPUT_PRIVATE(r)->page_number].data;	
-		size = &OUTPUT_PRIVATE(r)->top[OUTPUT_PRIVATE(r)->page_number].size;
-	}
-	memcpy(str_ptr + (*size), text, text_size+1);
-	*size = (*size) + text_size;
+	gint current_page = OUTPUT_PRIVATE(r)->page_number;
+	struct _packet *packet = g_new0(struct _packet, 1);
+	packet->type = TEXT;
+	packet->data = g_strdup(text);
+	
+	if(backwards)
+		OUTPUT_PRIVATE(r)->bottom[current_page] = g_slist_append(OUTPUT_PRIVATE(r)->bottom[current_page], packet);
+	else
+		OUTPUT_PRIVATE(r)->top[current_page] = g_slist_append(OUTPUT_PRIVATE(r)->top[current_page], packet);
 }
 
 static gfloat rlib_txt_get_string_width(rlib *r, gchar *text) {
@@ -85,41 +78,65 @@ static void rlib_txt_end_line(rlib *r, int backwards) {
 
 static void rlib_txt_start_report(rlib *r, struct rlib_part *part) {
 	gint pages_across = part->pages_across;
-	gint i;
-
-	OUTPUT_PRIVATE(r)->bottom = g_malloc(sizeof(struct _data) * pages_across);
-	OUTPUT_PRIVATE(r)->top = g_malloc(sizeof(struct _data) * pages_across);
-	for(i=0;i<pages_across;i++) {
-		OUTPUT_PRIVATE(r)->top[i].data = NULL;
-		OUTPUT_PRIVATE(r)->top[i].size = 0;
-		OUTPUT_PRIVATE(r)->top[i].total_size = 0;
-		OUTPUT_PRIVATE(r)->bottom[i].data = NULL;
-		OUTPUT_PRIVATE(r)->bottom[i].size = 0;
-		OUTPUT_PRIVATE(r)->bottom[i].total_size = 0;
-	}	
+	OUTPUT_PRIVATE(r)->top = g_new0(GSList *, pages_across);
+	OUTPUT_PRIVATE(r)->bottom = g_new0(GSList *, pages_across);
 }
+
+static void txt_callback(gchar *data, gint len, struct rlib_delayed_extra_data *delayed_data) {
+	struct rlib_line_extra_data *extra_data = &delayed_data->extra_data;
+	rlib *r = delayed_data->r;
+	char buf[MAXSTRLEN];
+	
+	rlib_execute_pcode(r, &extra_data->rval_code, extra_data->field_code, NULL);	
+	rlib_format_string(r, extra_data->report_field, &extra_data->rval_code, buf);
+	align_text(r, extra_data->formatted_string, MAXSTRLEN, buf, extra_data->report_field->align, extra_data->report_field->width);
+	memcpy(data, buf, len);
+	data[len-1] = 0;
+	g_free(delayed_data);
+}
+
 
 static void rlib_txt_end_part(rlib *r, struct rlib_part *part) {
 	gint i;
-	gint pages_across = part->pages_across;
-	gint sofar = OUTPUT_PRIVATE(r)->length;
+	gchar *old;
+	char buf[MAXSTRLEN];
+	for(i=0;i<part->pages_across;i++) {
+		GSList *list = OUTPUT_PRIVATE(r)->top[i]; 
+		while(list != NULL) {
+			struct _packet *packet = list->data;
+			
+			
+			if(OUTPUT_PRIVATE(r)->both  == NULL) {
+				OUTPUT_PRIVATE(r)->both  = packet->data;
+			} else {
+				old = OUTPUT_PRIVATE(r)->both ;
+				OUTPUT_PRIVATE(r)->both  = g_strconcat(OUTPUT_PRIVATE(r)->both , packet->data, NULL);
+				g_free(old);
+				g_free(packet->data);
+			}
+			list = list->next;
+		}
 
-	
-	for(i=0;i<pages_across;i++) {
-		OUTPUT_PRIVATE(r)->both = g_realloc(OUTPUT_PRIVATE(r)->both, sofar + OUTPUT_PRIVATE(r)->top[i].size + OUTPUT_PRIVATE(r)->bottom[i].size);
-		memcpy(OUTPUT_PRIVATE(r)->both + sofar , OUTPUT_PRIVATE(r)->top[i].data, OUTPUT_PRIVATE(r)->top[i].size);
-		memcpy(OUTPUT_PRIVATE(r)->both + sofar + OUTPUT_PRIVATE(r)->top[i].size, OUTPUT_PRIVATE(r)->bottom[i].data, OUTPUT_PRIVATE(r)->bottom[i].size);
-		sofar += OUTPUT_PRIVATE(r)->top[i].size + OUTPUT_PRIVATE(r)->bottom[i].size;	
+		list = OUTPUT_PRIVATE(r)->bottom[i]; 
+		while(list != NULL) {
+			struct _packet *packet = list->data;
+			if(packet->type == DELAY) {
+				txt_callback(buf, MAXSTRLEN-1, packet->data);
+				packet->data = g_strdup(buf);
+			}
+			if(OUTPUT_PRIVATE(r)->both  == NULL) {
+				OUTPUT_PRIVATE(r)->both  = packet->data;
+			} else {
+				old = OUTPUT_PRIVATE(r)->both ;
+				OUTPUT_PRIVATE(r)->both  = g_strconcat(OUTPUT_PRIVATE(r)->both , packet->data, NULL);
+				g_free(old);
+				g_free(packet->data);
+			}
+			list = list->next;
+		}
+
 	}
-	OUTPUT_PRIVATE(r)->length += sofar;
-
-	for(i=0;i<pages_across;i++) {
-		g_free(OUTPUT_PRIVATE(r)->top[i].data);
-		g_free(OUTPUT_PRIVATE(r)->bottom[i].data);
-	}
-	g_free(OUTPUT_PRIVATE(r)->top);
-	g_free(OUTPUT_PRIVATE(r)->bottom);
-
+	OUTPUT_PRIVATE(r)->length = strlen(OUTPUT_PRIVATE(r)->both);
 }
 
 static void rlib_txt_end_page(rlib *r, struct rlib_part *part) {
@@ -204,6 +221,7 @@ void rlib_txt_new_output_filter(rlib *r) {
 	OUTPUT(r)->do_break = TRUE;
 	OUTPUT(r)->do_grouptext = FALSE;	
 	OUTPUT(r)->paginate = FALSE;
+	OUTPUT(r)->trim_links = FALSE;
 	
 	OUTPUT(r)->get_string_width = rlib_txt_get_string_width;
 	OUTPUT(r)->print_text = rlib_txt_print_text;

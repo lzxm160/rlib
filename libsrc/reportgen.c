@@ -732,7 +732,7 @@ gint rlib_make_report(rlib *r) {
 	OUTPUT(r)->set_fg_color(r, -1, -1, -1);
 	OUTPUT(r)->set_bg_color(r, -1, -1, -1);
 
-	r->current_page_number = 1;
+	r->current_page_number = 0;
 	r->current_result = 0;
 	r->start_of_new_report = TRUE;
 

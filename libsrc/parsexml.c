@@ -113,6 +113,7 @@ static struct rlib_element * parse_line_array(xmlDocPtr doc, xmlNsPtr ns, xmlNod
 			f->xml_format = xmlGetProp(cur, (const xmlChar *) "format");
 			f->xml_link = xmlGetProp(cur, (const xmlChar *) "link");
 			f->xml_col = xmlGetProp(cur, (const xmlChar *) "col");
+			f->xml_delayed = xmlGetProp(cur, (const xmlChar *) "delayed");
 			f->xml_memo = xmlGetProp(cur, (const xmlChar *) "memo");
 			f->xml_memo_height = xmlGetProp(cur, (const xmlChar *) "memo_height");
 			f->xml_memo_wrap_chars = xmlGetProp(cur, (const xmlChar *) "memo_wrap_chars");
@@ -132,6 +133,7 @@ static struct rlib_element * parse_line_array(xmlDocPtr doc, xmlNsPtr ns, xmlNod
 			t->xml_width = xmlGetProp(cur, (const xmlChar *) "width");
 			t->xml_bold = xmlGetProp(cur, (const xmlChar *) "bold");
 			t->xml_italics = xmlGetProp(cur, (const xmlChar *) "italics");
+			t->xml_link = xmlGetProp(cur, (const xmlChar *) "link");
 			t->xml_col = xmlGetProp(cur, (const xmlChar *) "col");
 			current->data = t;
 			current->type = RLIB_ELEMENT_LITERAL;
@@ -378,6 +380,7 @@ static void parse_graph(struct rlib_report *report, xmlDocPtr doc, xmlNsPtr ns, 
 	graph->xml_title = xmlGetProp(cur, (const xmlChar *) "title");
 	graph->xml_x_axis_title = xmlGetProp(cur, (const xmlChar *) "x_axis_title");
 	graph->xml_y_axis_title = xmlGetProp(cur, (const xmlChar *) "y_axis_title");
+	graph->xml_y_axis_mod = xmlGetProp(cur, (const xmlChar *) "y_axis_mod");
 	graph->xml_y_axis_title_right = xmlGetProp(cur, (const xmlChar *) "y_axis_title_right");
 	graph->plots = NULL;
 	cur = cur->xmlChildrenNode;

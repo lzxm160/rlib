@@ -42,6 +42,13 @@
 #include "rlib_input.h"
 #include "util.h"
 
+int goodIncs_normal[15] = {1, 2, 3, 4, 5, 8, 10, 15, 20, 25, 30, 40, 50, 60, 75};
+int numGoodIncs_normal = 15;
+int goodIncs_15[6] = {3, 5, 7, 11, 13, 15};
+int numGoodIncs_15 = 6;
+
+
+
 #define MAX_COLOR_POOL 32
 gchar *color_pool[MAX_COLOR_POOL] = {"0x9999ff", "0x993366", "0xfcfa44", "0xccffff", "0x660066", "0xff8080", "0x0066cc", "0xccccff", "0x000080", 
 	"0xff00ff", "0xffff00", "0x00ffff", "0x800080", "0x800000", "0x008080", "0x0000ff", "0x00ccff", "0xccffff", "0xccffcc", "0xffff99", "0x99ccff", 
@@ -180,6 +187,7 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	gint row_count = 0;
 	gint y_ticks = 10, fake_y_ticks;
 	gint i = 0;
+	gint y_axis_mod = 0;
 	gboolean have_right_side = FALSE;
 	gint side = RLIB_SIDE_LEFT;
 	gfloat tmp;
@@ -194,7 +202,8 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	gboolean should_label_under_tick = FALSE;
 	gfloat value = 0;
 	gint did_set = FALSE;
-	
+	gint *goodIncs = goodIncs_normal;
+	gint numGoodIncs = numGoodIncs_normal;
 	left_margin_offset += part->left_margin;
 
 		
@@ -214,6 +223,8 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 		y_axis_title[0] = 0;
 	if(!rlib_execute_as_string(r, graph->y_axis_title_right_code, y_axis_title_right, MAXSTRLEN))
 		y_axis_title_right[0] = 0;
+	if(rlib_execute_as_int(r, graph->y_axis_mod_code, &i))
+		y_axis_mod = i;
 
 	if(!rlib_will_this_fit(r, part, report, graph_height / RLIB_PDF_DPI, 1)) {
 		*top_margin_offset = 0;
@@ -337,26 +348,52 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 		}
 	}
 
+	if(y_min[RLIB_SIDE_LEFT]> 1 || y_min[RLIB_SIDE_LEFT] < 1)
+		y_min[RLIB_SIDE_LEFT] = (long)y_min[RLIB_SIDE_LEFT];
+		
+	if(y_max[RLIB_SIDE_LEFT] > 1 || y_max[RLIB_SIDE_LEFT] < 1)
+		y_max[RLIB_SIDE_LEFT] = (long)y_max[RLIB_SIDE_LEFT];
+
 	if(is_percent_graph(graph_type) || is_pie_graph(graph_type)) {
 		y_min[RLIB_SIDE_LEFT] = y_min[RLIB_SIDE_RIGHT] = 0;
 		y_max[RLIB_SIDE_LEFT] = y_max[RLIB_SIDE_RIGHT] = 100;
 		y_ticks = 10;
 	} else {
+		if(y_axis_mod > 0) {
+			if((gint)y_min[RLIB_SIDE_LEFT] % y_axis_mod > 0)
+				y_min[RLIB_SIDE_LEFT] = (((gint)y_min[RLIB_SIDE_LEFT] / y_axis_mod)-1)*y_axis_mod;
+			if((gint)y_max[RLIB_SIDE_LEFT] % y_axis_mod > 0)
+				y_max[RLIB_SIDE_LEFT] = (((gint)y_max[RLIB_SIDE_LEFT] / y_axis_mod)+1)*y_axis_mod;
+
+			if(y_axis_mod % 15 == 0) { //TIME
+				goodIncs = goodIncs_15;
+				numGoodIncs = numGoodIncs_15;
+			}
+
+		}
+
 		if(y_min[RLIB_SIDE_LEFT] == y_max[RLIB_SIDE_LEFT]) {
 			y_min[RLIB_SIDE_LEFT] = 0;
 			y_ticks = 1;
 		} else {
-			adjust_limits(y_min[RLIB_SIDE_LEFT], y_max[RLIB_SIDE_LEFT], is_row_graph(graph_type), 5, 11, &y_ticks, &tmi, &y_min[RLIB_SIDE_LEFT], &y_max[RLIB_SIDE_LEFT]);
+			adjust_limits(y_min[RLIB_SIDE_LEFT], y_max[RLIB_SIDE_LEFT], is_row_graph(graph_type), 5, 11, &y_ticks, &tmi, &y_min[RLIB_SIDE_LEFT], &y_max[RLIB_SIDE_LEFT], goodIncs, numGoodIncs);
 		}
 		if(have_right_side) {
 			if(y_min[RLIB_SIDE_RIGHT] == y_max[RLIB_SIDE_RIGHT]) {
 				y_min[RLIB_SIDE_RIGHT] = 0;
 				y_ticks = 1;
 			} else {
-				adjust_limits(y_min[RLIB_SIDE_RIGHT], y_max[RLIB_SIDE_RIGHT], is_row_graph(graph_type), 2, y_ticks, &fake_y_ticks, &tmi, &y_min[RLIB_SIDE_RIGHT], &y_max[RLIB_SIDE_RIGHT]);
+				adjust_limits(y_min[RLIB_SIDE_RIGHT], y_max[RLIB_SIDE_RIGHT], is_row_graph(graph_type), 2, y_ticks, &fake_y_ticks, &tmi, &y_min[RLIB_SIDE_RIGHT], &y_max[RLIB_SIDE_RIGHT], goodIncs, numGoodIncs);
 			}
 		}
-
+	}
+	
+	if(y_axis_mod > 0) {
+		if((gint)y_min[RLIB_SIDE_LEFT] % y_axis_mod > 0)
+			y_min[RLIB_SIDE_LEFT] = (((gint)y_min[RLIB_SIDE_LEFT] / y_axis_mod)-1)*y_axis_mod;
+		if((gint)y_max[RLIB_SIDE_LEFT] % y_axis_mod > 0)
+			y_max[RLIB_SIDE_LEFT] = (((gint)y_max[RLIB_SIDE_LEFT] / y_axis_mod)+1)*y_axis_mod;
+	
 	}
 
 	rlib_graph_label_y_axis(r, RLIB_SIDE_LEFT, FALSE, y_ticks, y_min[RLIB_SIDE_LEFT], y_max[RLIB_SIDE_LEFT], y_origin[RLIB_SIDE_LEFT]);

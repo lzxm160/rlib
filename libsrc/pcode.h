@@ -150,10 +150,11 @@ struct rlib_pcode_if {
 #define OPERAND_IIF             9
 
 #define RLIB_RLIB_VARIABLE_PAGENO    1
-#define RLIB_RLIB_VARIABLE_VALUE     2
-#define RLIB_RLIB_VARIABLE_LINENO    3
-#define RLIB_RLIB_VARIABLE_DETAILCNT 4
-#define RLIB_RLIB_VARIABLE_FORMAT    5
+#define RLIB_RLIB_VARIABLE_TOTPAGES  2
+#define RLIB_RLIB_VARIABLE_VALUE     3
+#define RLIB_RLIB_VARIABLE_LINENO    4
+#define RLIB_RLIB_VARIABLE_DETAILCNT 5
+#define RLIB_RLIB_VARIABLE_FORMAT    6
 
 
 struct rlib_pcode_operand {

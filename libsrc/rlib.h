@@ -170,6 +170,7 @@ struct rlib_report_literal {
 	xmlChar *xml_bold;
 	xmlChar *xml_italics;
 	xmlChar *xml_col;
+	xmlChar *xml_link;
 	
 	gint width;
 	gint align;
@@ -181,6 +182,7 @@ struct rlib_report_literal {
 	struct rlib_pcode *bold_code;
 	struct rlib_pcode *italics_code;
 	struct rlib_pcode *align_code;
+	struct rlib_pcode *link_code;
 };
 
 struct rlib_resultset_field {
@@ -215,6 +217,7 @@ struct rlib_line_extra_data {
 	gchar formatted_string[MAXSTRLEN];
 	gint width;	
 	gint col;	
+	gint delayed;	
 	struct rlib_rgb bgcolor;
 	gint found_bgcolor;
 	gchar *link;
@@ -228,6 +231,17 @@ struct rlib_line_extra_data {
 	gfloat running_link_total;
 	gboolean is_bold;
 	gboolean is_italics;
+	
+	struct rlib_pcode *field_code;
+	struct rlib_report_field *report_field;
+};
+
+struct rlib_delayed_extra_data {
+	void *r;
+	struct rlib_line_extra_data extra_data;
+	gint backwards;
+	gfloat left_origin;
+	gfloat bottom_orgin;
 };
 
 struct rlib_report_field {
@@ -241,6 +255,7 @@ struct rlib_report_field {
 	xmlChar *xml_format;
 	xmlChar *xml_link;
 	xmlChar *xml_col;
+	xmlChar *xml_delayed;
 	xmlChar *xml_memo;
 	xmlChar *xml_memo_height;
 	xmlChar *xml_memo_wrap_chars;
@@ -254,6 +269,7 @@ struct rlib_report_field {
 	struct rlib_pcode *color_code;
 	struct rlib_pcode *bgcolor_code;
 	struct rlib_pcode *col_code;
+	struct rlib_pcode *delayed_code;
 	struct rlib_pcode *width_code;
 	struct rlib_pcode *bold_code;
 	struct rlib_pcode *italics_code;
@@ -513,6 +529,7 @@ struct rlib_graph {
 	gchar *xml_title;
 	gchar *xml_x_axis_title;
 	gchar *xml_y_axis_title;
+	gchar *xml_y_axis_mod;
 	gchar *xml_y_axis_title_right;
 	struct rlib_pcode *type_code;	
 	struct rlib_pcode *subtype_code;	
@@ -521,6 +538,7 @@ struct rlib_graph {
 	struct rlib_pcode *title_code;
 	struct rlib_pcode *x_axis_title_code;
 	struct rlib_pcode *y_axis_title_code;
+	struct rlib_pcode *y_axis_mod_code;
 	struct rlib_pcode *y_axis_title_right_code;
 	GSList *plots;
 };
@@ -628,7 +646,6 @@ struct rlib_metadata {
 
 struct rlib {
 	gint current_page_number;
-	gint total_pages_allocated;
 	gint current_line_number;
 	gint detail_line_count;
 	gint start_of_new_report;
@@ -693,12 +710,14 @@ struct environment_filter {
 
 struct output_filter {
 	gpointer *private;
-	gint do_align;
-	gint do_break;
-	gint do_grouptext;
+	gboolean do_align;
+	gboolean do_break;
+	gboolean do_grouptext;
+	gboolean trim_links;
 	gint paginate;
 	gfloat (*get_string_width)(rlib *, char *);
 	void (*print_text)(rlib *, float, float, char *, int, int);
+	void (*print_text_delayed)(rlib *, struct rlib_delayed_extra_data *, int);
 	void (*set_fg_color)(rlib *, float, float, float);
 	void (*set_bg_color)(rlib *, float, float, float);
 	void (*hr)(rlib *, int, float, float, float, float, struct rlib_rgb *, float, float);
@@ -930,5 +949,5 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 //void rlib_graph_find_y_range(rlib *r, gdouble a, gdouble b, gdouble *y_min, gdouble *y_max, gint graph_type);
 //gint rlib_graph_num_ticks(rlib *r, gdouble a, gdouble b);
 int adjust_limits(gdouble  dataMin, gdouble dataMax, gint denyMinEqualsAdjMin, gint minTMs, gint maxTMs, 
-	gint* numTms, gdouble* tmi, gdouble* adjMin, gdouble* adjMax);
+	gint* numTms, gdouble* tmi, gdouble* adjMin, gdouble* adjMax, gint *goodIncs, gint numGoodIncs);
 

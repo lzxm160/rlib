@@ -740,6 +740,9 @@ struct rlib_value *this_field_value) {
 		if(type == RLIB_RLIB_VARIABLE_PAGENO) {
 			gint64 pageno = (long long)r->current_page_number*RLIB_DECIMAL_PRECISION;
 			return rlib_value_new_number(rval, pageno);
+		} else if(type == RLIB_RLIB_VARIABLE_TOTPAGES) {
+			gint64 pageno = (long long)(r->current_page_number)*RLIB_DECIMAL_PRECISION;
+			return rlib_value_new_number(rval, pageno);
 		} else if(type == RLIB_RLIB_VARIABLE_VALUE) {
 			return this_field_value;
 		} else if(type == RLIB_RLIB_VARIABLE_LINENO) {

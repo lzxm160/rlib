@@ -1,3 +1,25 @@
+2005-03-18  Bob Doan  <bdoan@sicompos.com>
+	* doc/Makefile: nada
+	* libsrc/graphing.c: Try harder to int axis values, have mod values for left axis "hints"
+	* libsrc/axis.c: likewise
+	* libsrc/breaks.c: Respect OUTPUT pagination paramaters (Fixes multiple page footers in HTML)
+	* libsrc/csv.c: nada
+	* libsrc/free.c: new fields
+	* libsrc/html.c: support delayed output
+	* libsrc/layout.c:  support delayed output & new rtrim feature on html linking
+	* libsrc/parsexml.c: new fields
+	* libsrc/pcode.c: new totpages
+	* libsrc/pcode.h: likewise
+	* libsrc/pdf.c: delayed output
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: new fields
+	* libsrc/txt.c: delayed output
+	* rpdf/rpdf.c: ..
+	* rpdf/rpdf.h: ..
+	* src/examples/php/graph.php: ..
+	* src/examples/php/graph.xml: ..
+
 2005-03-13   Bob Doan  <bdoan@sicompos.com>
 	* configure.in: make it at least COMPILE on win32
 	* doc/Makefile: likewise

@@ -217,7 +217,8 @@ void rlib_break_all_below_in_reverse_order(rlib *r, struct rlib_part *part, stru
 	}
 	if(newpage && OUTPUT(r)->do_break) {
 		if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
-			rlib_layout_end_page(r, part, report);
+			if(OUTPUT(r)->paginate)
+				rlib_layout_end_page(r, part, report);
 			rlib_force_break_headers(r, part, report);
 		}
 	}

@@ -89,28 +89,36 @@ static gfloat pdf_get_string_width(rlib *r, gchar *text) {
 	return rpdf_text_width(OUTPUT_PRIVATE(r)->pdf, text)/(RLIB_PDF_DPI);
 }
 
-void pdf_turn_text_off(rlib *r) {
-}
-
-void pdf_turn_text_on(rlib *r) {
-}
-
 static void pdf_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *text, gfloat orientation) {
 	struct rpdf *pdf = OUTPUT_PRIVATE(r)->pdf;
-
 #if USEPDFLOCALE
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
-
-	pdf_turn_text_on(r);
 
 	rpdf_text(pdf, left_origin, bottom_origin, orientation, text);
 
 #if USEPDFLOCALE
 	setlocale(LC_NUMERIC, tlocale);
 #endif
+}
 
+static void pdf_rpdf_callback(gchar *data, gint len, void *user_data) {
+	struct rlib_delayed_extra_data *delayed_data = user_data;
+	struct rlib_line_extra_data *extra_data = &delayed_data->extra_data;
+	rlib *r = delayed_data->r;
+	char buf[MAXSTRLEN];
+	
+	rlib_execute_pcode(r, &extra_data->rval_code, extra_data->field_code, NULL);	
+	rlib_format_string(r, extra_data->report_field, &extra_data->rval_code, buf);
+	align_text(r, extra_data->formatted_string, MAXSTRLEN, buf, extra_data->report_field->align, extra_data->report_field->width);
+	memcpy(data, buf, len);
+	data[len-1] = 0;
+	g_free(user_data);
+}
 
+static void pdf_print_text_delayed(rlib *r, struct rlib_delayed_extra_data *delayed_data, int backwards) {
+	struct rpdf *pdf = OUTPUT_PRIVATE(r)->pdf;
+	rpdf_text_callback(pdf, delayed_data->left_origin, delayed_data->bottom_orgin, 0, delayed_data->extra_data.width, pdf_rpdf_callback, delayed_data);
 }
 
 static void pdf_print_text_API(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *text, gint backwards, gint col) {
@@ -140,7 +148,6 @@ static void pdf_drawbox(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloa
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
 	if(!(color->r == 1.0 && color->g == 1.0 && color->b == 1.0)) {
-		pdf_turn_text_off(r);
 		//the - PDF_PIXEL seems to get around decimal percision problems.. but should investigate this a bit further	
 		OUTPUT(r)->set_bg_color(r, color->r, color->g, color->b);
 		rpdf_rect(OUTPUT_PRIVATE(r)->pdf, left_origin, bottom_origin, how_long, how_tall-PDF_PIXEL);
@@ -188,7 +195,6 @@ gfloat nheight) {
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
 	gint realtype=RPDF_IMAGE_JPEG;
-	pdf_turn_text_off(r);
 	rpdf_image(OUTPUT_PRIVATE(r)->pdf, left_origin, bottom_origin, nwidth, nheight, realtype, nname);
 
 	OUTPUT(r)->set_bg_color(r, 0, 0, 0);
@@ -218,9 +224,6 @@ static void pdf_set_font_point_actual(rlib *r, gint point) {
 	if(OUTPUT_PRIVATE(r)->is_italics)
 		which_font += ITALICS;
 
-//	if (pdfdir1) 
-//		rpdf_setFontDirectories(OUTPUT_PRIVATE(r)->pdf, pdfdir1, pdfdir2);
-
 	encoding = pdfencoding;
 	fontname = pdffontname ? pdffontname : font_names[which_font];
 	
@@ -245,6 +248,9 @@ static void pdf_start_new_page(rlib *r, struct rlib_part *part) {
 	gint i=0;
 	gint pages_across = part->pages_across;
 	gchar paper_type[40];
+//r_error("NEW PAGE %d\n", );			
+	r->current_page_number++;
+	
 	sprintf(paper_type, "0 0 %ld %ld", part->paper->width, part->paper->height);
 	for(i=0;i<pages_across;i++) {
 		if(part->orientation == RLIB_ORIENTATION_LANDSCAPE) {
@@ -297,8 +303,6 @@ static void pdf_init_end_page(rlib *r) {
 #if USEPDFLOCALE
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
-//TODO: Why is this needed?
-
 	if(r->start_of_new_report == TRUE) {
 		r->start_of_new_report = FALSE;
 	}
@@ -314,7 +318,6 @@ static void pdf_init_output(rlib *r) {
 	struct rpdf *pdf;
 
 	pdf = rpdf_new();
-//	OUTPUT_PRIVATE(r)->text_on[OUTPUT_PRIVATE(r)->current_page] = FALSE;
 	rpdf_set_title(pdf, "RLIB Report");
 	OUTPUT_PRIVATE(r)->pdf = pdf;
 #if USEPDFLOCALE
@@ -327,7 +330,6 @@ static void pdf_finalize_private(rlib *r) {
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
 	int length;
-	pdf_turn_text_off(r);
 	rpdf_finalize(OUTPUT_PRIVATE(r)->pdf);
 	OUTPUT_PRIVATE(r)->buffer = rpdf_get_buffer(OUTPUT_PRIVATE(r)->pdf, &length);
 	OUTPUT_PRIVATE(r)->length = length;
@@ -349,16 +351,13 @@ static void pdf_spool_private(rlib *r) {
 
 static void pdf_end_page(rlib *r, struct rlib_part *part) {
 	int i;
-	for(i=0;i<part->pages_across;i++) {
+	for(i=0;i<part->pages_across;i++)
 		pdf_set_working_page(r, part, i+1);
-		pdf_turn_text_off(r);
-	}
-	r->current_page_number++;
+//	r->current_page_number++;
 	r->current_line_number = 1;
 }
 
 static void pdf_end_page_again(rlib *r, struct rlib_part *part, struct rlib_report *report) {
-	pdf_turn_text_off(r);
 }
 
 static int pdf_free(rlib *r) {
@@ -430,12 +429,9 @@ static void pdf_end_italics(rlib *r) {
 }
 
 static void pdf_end_report(rlib *r, struct rlib_report *report) {
-	pdf_turn_text_off(r);
 }
 
 static void pdf_graph_draw_line(rlib *r, gfloat x, gfloat y, gfloat new_x, gfloat new_y, struct rlib_rgb *color) {
-	pdf_turn_text_off(r);
-
 	if(isnan(x) || isnan(y) || isnan(new_x) || isnan(new_y)) {
 	
 	} else {
@@ -669,7 +665,6 @@ static void pdf_graph_plot_bar(rlib *r, gchar side, gint iteration, gint plot, g
 	gfloat bar_width = graph->x_tick_width *.6;
 	gfloat left = graph->x_start + (graph->x_tick_width * iteration) + (graph->x_tick_width *.2);
 	gfloat start = graph->y_start;
-	pdf_turn_text_off(r);
 
 	if(graph->y_origin != graph->y_min)  {
 		gfloat n = fabs(graph->y_max[(gint)side])+fabs(graph->y_origin[(gint)side]);
@@ -699,7 +694,6 @@ void pdf_graph_plot_line(rlib *r, gchar side, gint iteration, gfloat p1_height, 
 	p1_height += p1_last_height;
 	p2_height += p2_last_height;
 
-	pdf_turn_text_off(r);
 	if(graph->y_origin != graph->y_min)  {
 		gfloat n = fabs(graph->y_max[(gint)side])+fabs(graph->y_origin[(gint)side]);
 		gfloat d = fabs(graph->y_min[(gint)side])+fabs(graph->y_max[(gint)side]);
@@ -743,16 +737,10 @@ static void pdf_graph_plot_pie(rlib *r, gfloat start, gfloat end, gboolean offse
 	y += offset_factor * sinf(rads);
 	radius -= offset_factor;
 
-	pdf_turn_text_off(r);
 	OUTPUT(r)->set_bg_color(r, color->r, color->g, color->b);
-//	rpdf_moveto(OUTPUT_PRIVATE(r)->pdf, x, y);
 	rpdf_arc(OUTPUT_PRIVATE(r)->pdf, x, y, radius, start_angle, end_angle);
 	rpdf_fill(OUTPUT_PRIVATE(r)->pdf);
 	rpdf_stroke(OUTPUT_PRIVATE(r)->pdf); 
-
-//	rpdf_closepath(OUTPUT_PRIVATE(r)->pdf);
-//	rpdf_fillAndStroke(OUTPUT_PRIVATE(r)->pdf);
-
 	OUTPUT(r)->set_bg_color(r, 0, 0, 0);
 }
 
@@ -791,10 +779,8 @@ static void pdf_graph_draw_legend_label(rlib *r, gint iteration, gchar *label, s
 	gfloat line_height = RLIB_GET_LINE(r->current_font_point);
 
 	OUTPUT(r)->set_bg_color(r, color->r, color->g, color->b);
-	pdf_turn_text_off(r);
 	rpdf_rect(OUTPUT_PRIVATE(r)->pdf, graph->legend_left + (w_width/2), graph->legend_top - offset , w_width, line_height*.6);
 	rpdf_fill(OUTPUT_PRIVATE(r)->pdf);
-	pdf_turn_text_on(r);
 	OUTPUT(r)->set_bg_color(r, 0, 0, 0);
 	pdf_print_text(r, graph->legend_left + (w_width*2), graph->legend_top - offset, label, 0);
 }
@@ -820,9 +806,10 @@ void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r)->do_break = TRUE;
 	OUTPUT(r)->do_grouptext = TRUE;	
 	OUTPUT(r)->paginate = TRUE;
-
+	OUTPUT(r)->trim_links = FALSE;
 	OUTPUT(r)->get_string_width = pdf_get_string_width;
 	OUTPUT(r)->print_text = pdf_print_text_API;
+	OUTPUT(r)->print_text_delayed = pdf_print_text_delayed;
 	OUTPUT(r)->set_fg_color = pdf_set_fg_color;
 	OUTPUT(r)->set_bg_color = pdf_set_fg_color;
 	OUTPUT(r)->start_draw_cell_background = pdf_drawbox;

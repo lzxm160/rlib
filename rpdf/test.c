@@ -24,7 +24,7 @@
 #include <stdio.h>
 #include "rpdf.h"
 
-static void callback_test(gchar *data, gint len, gchar *user_data) {
+static void callback_test(gchar *data, gint len, gpointer user_data) {
 	sprintf(data, "IT WORKED!");
 }
 

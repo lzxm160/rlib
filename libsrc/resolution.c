@@ -42,6 +42,8 @@ gint rlib_resolve_rlib_variable(rlib *r, gchar *name) {
 		name += 2;
 		if(!strcmp(name, "pageno"))
 			return RLIB_RLIB_VARIABLE_PAGENO;
+		else if(!strcmp(name, "totpages"))
+			return RLIB_RLIB_VARIABLE_TOTPAGES;
 		else if(!strcmp(name, "value"))
 			return RLIB_RLIB_VARIABLE_VALUE;
 		else if(!strcmp(name, "lineno"))
@@ -107,11 +109,10 @@ gint rlib_resolve_resultset_field(rlib *r, char *name, void **rtn_field, gint *r
 	if(*rtn_field != NULL)
 		found = TRUE;
 	else
-		r_error("The field [%s.%s] does not exist", result_name, name);
+		r_error("The field [%s.%s] does not exist\n", result_name, name);
 	*rtn_resultset = resultset;
 	return found;
 }
-
 
 static void rlib_field_resolve_pcode(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_field *rf) {
 	rf->code = rlib_infix_to_pcode(r, part, report, rf->value, TRUE);
@@ -120,6 +121,7 @@ static void rlib_field_resolve_pcode(rlib *r, struct rlib_part *part, struct rli
 	rf->color_code = rlib_infix_to_pcode(r, part, report, rf->xml_color, TRUE);
 	rf->bgcolor_code = rlib_infix_to_pcode(r, part, report, rf->xml_bgcolor, TRUE);
 	rf->col_code = rlib_infix_to_pcode(r, part, report, rf->xml_col, TRUE);
+	rf->delayed_code = rlib_infix_to_pcode(r, part, report, rf->xml_delayed, TRUE);
 	rf->width_code = rlib_infix_to_pcode(r, part, report, rf->xml_width, TRUE);
 	rf->bold_code = rlib_infix_to_pcode(r, part, report, rf->xml_bold, TRUE);
 	rf->italics_code = rlib_infix_to_pcode(r, part, report, rf->xml_italics, TRUE);
@@ -136,6 +138,7 @@ static void rlib_field_resolve_pcode(rlib *r, struct rlib_part *part, struct rli
 static void rlib_literal_resolve_pcode(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_literal *rt) {
 	rt->color_code = rlib_infix_to_pcode(r, part, report, rt->xml_color, TRUE);
 	rt->bgcolor_code = rlib_infix_to_pcode(r, part, report, rt->xml_bgcolor, TRUE);
+	rt->link_code = rlib_infix_to_pcode(r, part, report, rt->xml_link, TRUE);
 	rt->col_code = rlib_infix_to_pcode(r, part, report, rt->xml_col, TRUE);
 	rt->width_code = rlib_infix_to_pcode(r, part, report, rt->xml_width, TRUE);
 	rt->bold_code = rlib_infix_to_pcode(r, part, report, rt->xml_bold, TRUE);
@@ -272,6 +275,7 @@ void rlib_resolve_graph(rlib *r, struct rlib_part *part, struct rlib_report *rep
 	graph->title_code = rlib_infix_to_pcode(r, part, report, graph->xml_title, TRUE);
 	graph->x_axis_title_code = rlib_infix_to_pcode(r, part, report, graph->xml_x_axis_title, TRUE);
 	graph->y_axis_title_code = rlib_infix_to_pcode(r, part, report, graph->xml_y_axis_title, TRUE);
+	graph->y_axis_mod_code = rlib_infix_to_pcode(r, part, report, graph->xml_y_axis_mod, TRUE);
 	graph->y_axis_title_right_code = rlib_infix_to_pcode(r, part, report, graph->xml_y_axis_title_right, TRUE);
 
 	for(list=graph->plots;list != NULL; list = g_slist_next(list)) {

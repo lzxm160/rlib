@@ -388,12 +388,9 @@ gint tryToZeroizeSaved(gint mn, gint mx, gdouble criticalRatio, gint *adjMn, gin
 }
 
 int adjust_limits(gdouble  dataMin, gdouble dataMax, gint denyMinEqualsAdjMin, gint minTMs, gint maxTMs, 
-	gint* numTms, gdouble* tmi, gdouble* adjMin, gdouble* adjMax) {
+	gint* numTms, gdouble* tmi, gdouble* adjMin, gdouble* adjMax, gint *goodIncs, gint numGoodIncs) {
 
 	int     sd = 2;
-	int     goodIncs[15] = {1, 2, 3, 4, 5, 8, 10, 15, 20, 25, 30, 40, 50, 60, 75};
-	int     numGoodIncs = 15;
-
 	int     maxPossibleGoodInc=MAPMAX(sd);
 	double  zMin,zMax;      /* zeroized limits (after unmapped above) */
 	double  szMin,szMax;    /* shifted zeroized limits */

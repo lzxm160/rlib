@@ -56,7 +56,6 @@
 #define M_COM   0xFE		/* COMment */
 
 #define DEGREE_2_RAD(x) (x*M_PI/180.0)
-#define CALLBACK void (*callback)(gchar *data, gint len, gchar *user_data)
 
 static gchar * obj_printf(gchar *obj, gchar *fmt, ...) {
 	va_list vl;

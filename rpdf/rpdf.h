@@ -19,8 +19,6 @@
  * 
  * $Id$s
  *
- * This module implements the C language API (Application Programming Interface)
- * for the RLIB library functions.
  */
 
 #include <glib.h>
@@ -60,7 +58,7 @@
 #define RPDF_PAPER_FILM35MM  10
 
 #define DEGREE_2_RAD(x) (x*M_PI/180.0)
-#define CALLBACK void (*callback)(gchar *data, gint len, gchar *user_data)
+#define CALLBACK void (*callback)(gchar *data, gint len, gpointer user_data)
 
 
 struct _rpdf_paper {
