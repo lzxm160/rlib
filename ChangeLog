@@ -1,4 +1,8 @@
 2005-03-30  Bob Doan  <bdoan@sicompos.com>
+	* rpdf/rpdf.c: Correct support set current page
+	* rpdf/test.c: and test it
+
+2005-03-30  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/formatstring.c:  faster and less crash prone
 	* libsrc/html.c:  likewise
 	* libsrc/pdf.c:  likewise

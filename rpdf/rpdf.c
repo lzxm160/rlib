@@ -94,7 +94,7 @@ static struct rpdf_stream * rpdf_stream_new(gint type, gpointer data) {
 }
 
 static void rpdf_stream_append(struct rpdf *pdf, struct rpdf_stream *stream) {
-	pdf->page_contents[pdf->page_count-1] = g_slist_append(pdf->page_contents[pdf->page_count-1], stream);
+	pdf->page_contents[pdf->current_page] = g_slist_append(pdf->page_contents[pdf->current_page], stream);
 }
 
 static gboolean rpdf_out_string(struct rpdf *rpdf, gchar *output) {
@@ -635,7 +635,7 @@ gboolean rpdf_new_page(struct rpdf *pdf, gint paper, gint orientation) {
 }
 
 gboolean rpdf_set_page(struct rpdf *pdf, gint page) {
-	page -= 1;
+	page--;
 	if(page < 0 || page > pdf->page_count)
 		return FALSE;
 	pdf->current_page = page;
