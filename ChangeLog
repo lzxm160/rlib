@@ -1,3 +1,59 @@
+2004-04-07  Chet Heilman  <cheilman@sicompos.com>
+	* bindings/php/php.c: (ZEND_FUNCTION):
+		Change name of function.
+	* libsrc/Makefile.am:
+		Add charencoder files to make.
+	* libsrc/api.c: (rlib_init_with_environment),
+	(rlib_get_content_type_as_text), (rlib_add_parameter),
+	(rlib_set_locale), (rlib_set_report_output_encoding),
+	(rlib_set_output_encoding), (rlib_set_pdf_font),
+	(rlib_set_database_encoding), (rlib_set_datasource_encoding),
+	(rlib_set_parameter_encoding), (rlib_set_encodings):
+		Changes for new encoder architecture.
+	* libsrc/datasource.c: (rlib_add_datasource),
+	(rlib_add_datasource_mysql_private), (rlib_add_datasource_postgre),
+	(rlib_add_datasource_odbc):
+		Changes for new encoder architecture. Resolve conflicts.
+	* libsrc/formatstring.c: (format_money):
+		Removed commented out junk.
+	* libsrc/free.c: (rlib_free):
+		Free the char_encoders.
+	* libsrc/html.c: (rlib_html_start_report):
+		Send the correct content type header with charset attribute.
+	* libsrc/parsexml.c: (parse_report_file):
+		Init char_encoders.
+	* libsrc/pcode.c: (rlib_var_get_string), (rlib_var_get_number),
+	(rlib_var_is), (rlib_var_factory_new),
+	(rlib_var_factory_alloc_new), (rlib_var_factory_get_small),
+	(rlib_var_factory_get), (rlib_var_factory_new_string),
+	(rlib_var_factory_new_number), (rlib_var_factory_new_datetime),
+	(rlib_var_factory_new_reference), (rlib_var_factory_new_iif),
+	(rlib_var_factory_free_value), (rlib_var_factory_destroy),
+	(rlib_var_stack_new), (rlib_var_stack_push), (rlib_var_stack_pop),
+	(rlib_var_stack_peek), (rlib_var_stack_destroy):
+		Added new functions to replace rlib_value - these are not yet used.
+	* libsrc/pdf.c: (rlib_pdf_get_string_width), (rlib_pdf_print_text),
+	(rlib_pdf_set_fg_color), (rlib_pdf_drawbox), (rlib_pdf_hr),
+	(rlib_pdf_boxurl_start), (rlib_pdf_drawimage),
+	(rlib_pdf_set_font_point), (rlib_pdf_start_new_page),
+	(rlib_pdf_set_working_page), (rlib_pdf_end_text),
+	(rlib_pdf_init_end_page), (rlib_pdf_init_output),
+	(rlib_pdf_begin_text), (rlib_pdf_finalize_private),
+	(rlib_pdf_spool_private), (rlib_pdf_end_page):
+		Fix locales so PDF is generated using correct locale.
+	* libsrc/reportgen.c: (encode_text), (make_report):
+		Change encoding functions.
+	* libsrc/resolution.c: (rlib_resolve_field_value),
+	(rlib_resolve_memory_variable):
+		Do encodings.
+	* libsrc/rlib.h:
+		for new encoding functions.
+	* libsrc/rlib_input.h:
+		for new encoding functions.
+	* libsrc/util.c: (make_utf8_locale), (make_all_locales_utf8),
+	(itox), (str2hex):
+		Util functions to support locales/charsets.
+
 2004-04-05  Bob Doan  <bdoan@sicompos.com>
 	* bindings/interfaces/Makefile.am: initial add
 

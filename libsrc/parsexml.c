@@ -394,6 +394,7 @@ struct rlib_report * parse_report_file(gchar *filename) {
 
 	doc = xmlReadFile(filename, NULL, XML_PARSE_XINCLUDE);
 	xmlXIncludeProcess(doc);
+	
 
 	if (doc == NULL)  {
 		rlogit("xmlParseError \n");
@@ -415,17 +416,19 @@ struct rlib_report * parse_report_file(gchar *filename) {
 
 	ret = (struct rlib_report *) g_new0(struct rlib_report, 1);
 	if (ret == NULL) {
-		rlogit("Out of Memory :(\n");
+		r_error("Out of Memory :(\n");
 		xmlFreeDoc(doc);
 		return(NULL);
 	}
-	
-	memset(ret, 0, sizeof(struct rlib_report));
 	ret->doc = doc;
 	ret->contents = NULL;
-	
-//	ret->cd = iconv_open("ISO8859-1", "UTF-8"); //Internal code is now all utf8
-
+	if (doc->encoding) g_strlcpy(ret->xml_encoding_name, doc->encoding, sizeof(ret->xml_encoding_name));
+//thought this would be a convenience - it wasn't.
+#if 0
+	ret->output_encoder = rlib_char_encoder_new(doc->encoding, TRUE);
+	ret->db_encoder = rlib_char_encoder_new(doc->encoding, FALSE);
+	ret->param_encoder = rlib_char_encoder_new(doc->encoding, FALSE);
+#endif
 	while ( cur && xmlIsBlankNode ( cur ) ) {
 		cur = cur -> next;
 	}

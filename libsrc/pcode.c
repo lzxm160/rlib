@@ -110,6 +110,308 @@ struct rlib_pcode_operator rlib_pcode_verbs[] = {
       { NULL, 	 	0, 0, FALSE,-1,			TRUE,		NULL}
 };
 
+
+#if USE_RLIB_VAR
+//Can change name to rlib_value after conversion is complete.
+//Currently rlib_var to avoid confusion of new/old
+//==================================================================
+#ifndef RLIB_VAR_H
+#define RLIB_VAR_H
+
+#define RLIB_VAR_NUMBER		1
+#define RLIB_VAR_STRING		2
+#define RLIB_VAR_DATETIME	3
+#define RLIB_VAR_REF		4
+#define RLIB_VAR_IIF		5
+
+#define RV_MED_SIZE	256
+
+#define MAXRLIBVARSTACK 100
+
+union u_rlib_var {
+	struct rlib_datetime dt;
+	gint64 num;
+	const gchar *ref; //A pointer to a CONSTANT string - does not get deallocated
+	const void *iif; //Whatever this is
+	gchar ch[32]; //Actually longer because of tail allocation
+};
+
+
+typedef struct rlib_var rlib_var;
+struct rlib_var {
+	gint type;
+	rlib_var *link;
+	rlib_var *alloclink;
+	gint len;
+	union u_rlib_var value;
+};
+
+
+typedef struct rlib_var_factory rlib_var_factory;
+struct rlib_var_factory {
+	rlib_var *headsm; //rlib vars for pointer, long long and rlib_datetime values
+	rlib_var *headmd; //rlib vars for strings < 256 bytes
+	rlib_var *headlg; //rlib vars for big strings headlg is sorted smest->lgest
+	rlib_var *headalloc; //Holds a reference to all allocated chunks
+};
+
+
+typedef struct rlib_var_stack rlib_var_stack;
+struct rlib_var_stack {
+	rlib_var **base;
+	rlib_var **cur;
+	rlib_var **max;
+	rlib_var *stack[MAXRLIBVARSTACK]; //This could also be allocated and 'grown'
+									//to make it dynamic and not size limited 
+};
+#endif
+
+//==================================================================
+// rlib_var
+
+gchar *rlib_var_get_string(rlib_var *v) {
+	switch (v->type) {
+	case RLIB_VAR_STRING:
+		return v->value.ch;
+		break;
+	case RLIB_VAR_REF:
+		return (gchar *) v->value.ref;
+		break;
+	default:
+		r_error("rlib_var not a string");
+		return "!ERR_STR";
+		break;
+	}
+	return NULL;
+}
+
+
+gint64 rlib_var_get_number(rlib_var *v) {
+	if (v->type != RLIB_VAR_NUMBER) {
+		r_error("rlib_var not a number");
+		return 0LL;
+	}
+	return v->value.num;
+}
+
+
+gboolean rlib_var_is(rlib_var *v, int type) {
+	return v->type == type;
+}
+
+
+//==================================================================
+// rlib_var_factory
+
+//Creates a new factory
+rlib_var_factory *rlib_var_factory_new() {
+	rlib_var_factory *f = g_new0(rlib_var_factory, 1);
+}
+
+
+//ALLOCATES a new rlib_val and catalogs it for later destruction
+rlib_var *rlib_var_factory_alloc_new(rlib_var_factory *f, int size) {
+	rlib_var *v = g_malloc(sizeof(rlib_var) + size);
+	memset(v, 0, sizeof(rlib_var));
+	v->len = size + sizeof(union u_rlib_var); //MAX writeable length of value
+	v->alloclink = f->headalloc; //So it can be freed
+	f->headalloc = v;
+	return v;
+}
+
+
+/**
+ * Get a SMALL value to hold a pointer, long long or datetime or small string
+ */
+rlib_var *rlib_var_factory_get_small(rlib_var_factory *f) {
+	rlib_var *v = f->headsm;
+	if (v) {
+		f->headsm = v->link;
+	} else {
+		v = rlib_var_factory_alloc_new(f, 0);
+	}
+	return v;
+}
+
+
+/**
+ * Get a value to hold something of the specified size.
+ * size must INCLUDE terminating nul for strings
+ */
+static rlib_var *rlib_var_factory_get(rlib_var_factory *f, int size) {
+	rlib_var *v = NULL;
+	if (size <= sizeof(union u_rlib_var)) {
+		v = rlib_var_factory_get_small(f);
+	} else if (size <= RV_MED_SIZE) {
+		v = f->headmd;
+		if (v) {
+			f->headmd = v->link;
+		} else {
+			v = rlib_var_factory_alloc_new(f, RV_MED_SIZE - sizeof(union u_rlib_var));
+		}
+	} else {
+		rlib_var **vlast = &f->headlg;
+		rlib_var *rv = *vlast;
+		while (rv) { //See if we have one that is big enough
+			if (rv->len >= size) {
+				v = rv;
+				*vlast = rv->link; //Remove link from the chain
+				break;
+			} else {
+				vlast = &rv->link;
+				rv = *vlast;
+			}
+		}
+		//Nope, we have to allocate it.
+		if (!v) v = rlib_var_factory_alloc_new(f, size - sizeof(union u_rlib_var));
+	}
+	return v;
+}
+
+
+//Gets an appropriately sized rlib_var and copies the string to it.
+rlib_var *rlib_var_factory_new_string(rlib_var_factory *f, const gchar *str) {
+	int len = strlen(str) + 1;
+	rlib_var *v = rlib_var_factory_get(f, len);
+	g_strlcpy(v->value.ch, str, len); //just strcpy maybe??
+	v->type = RLIB_VAR_STRING;
+	return v;
+}
+
+
+//Gets an rlib_var and sets to this number
+rlib_var *rlib_var_factory_new_number(rlib_var_factory *f, gint64 n) {
+	rlib_var *v = rlib_var_factory_get_small(f);
+	v->value.num = n;
+	v->type = RLIB_VAR_NUMBER;
+	return v;
+}
+
+
+//Gets an rlib_var and sets to this date-time
+rlib_var *rlib_var_factory_new_datetime(rlib_var_factory *f, struct rlib_datetime *dt) {
+	rlib_var *v = rlib_var_factory_get_small(f);
+	v->value.dt = *dt;
+	v->type = RLIB_VAR_DATETIME;
+	return v;
+}
+
+
+//Gets an rlib_var and sets it to a constant string that WILL NOT BE FREED
+//A POINTER is stored. The caller must manage the allocation /deallocation of
+//this. It must persist throughout the lifetime of the rlib_var or else big
+//problems.
+rlib_var *rlib_var_factory_new_reference(rlib_var_factory *f, const gchar *str) {
+	rlib_var *v = rlib_var_factory_get_small(f);
+	v->value.ref = str;
+	v->type = RLIB_VAR_REF;
+	return v;
+}
+
+
+//TODO: fix this. IIFs don't belong here.
+rlib_var *rlib_var_factory_new_iif(rlib_var_factory *f, const void *iif) {
+	rlib_var *v = rlib_var_factory_get_small(f);
+	v->value.iif = iif;
+	v->type = RLIB_VAR_IIF;
+	return v;
+}
+
+
+
+//Add an rlib_val back to the cache for re-use.
+void rlib_var_factory_free_value(rlib_var_factory *f, rlib_var *v) {
+	switch (v->len) {
+	case sizeof(union u_rlib_var):
+		v->link = f->headsm;
+		f->headsm = v;
+		break;
+	case RV_MED_SIZE:
+		v->link = f->headmd;
+		f->headmd = v;
+		break;
+	default:
+		{ //Insert into large value list in size increasing order
+			rlib_var **vlast = &f->headlg;
+			rlib_var *rv = *vlast;
+			gint size = v->len; 
+			while (rv) {
+				if (rv->len >= size) {
+					break;
+				}
+			}
+			v->link = *vlast;
+			*vlast = v;
+		}
+		break;
+	}
+}
+
+
+/**
+ * Frees all memory allocated for this instance and destroys the reference
+ */
+void rlib_var_factory_destroy(rlib_var_factory **fptr) {
+	rlib_var_factory *f = *fptr;
+	*fptr = NULL;
+	if (f) {
+		rlib_var *rv = f->headalloc;
+		rlib_var *rv2;
+		while (rv) { //FREE ALL MEMORY THAT WAS ALLOCATED
+			rv2 = rv->alloclink;
+			g_free(rv);
+			rv = rv2;
+		}
+		g_free(f);
+	}
+}
+
+
+//==================================================================\
+// a Stack implementation for rlib_vars 
+
+rlib_var_stack *rlib_var_stack_new() {
+	rlib_var_stack *s = g_new0(rlib_var_stack, 1);
+	s->base = s->cur = s->stack;
+	s->max = &s->stack[MAXRLIBVARSTACK];
+	return s;
+}
+
+
+void rlib_var_stack_push(rlib_var_stack *s, rlib_var *val) {
+	if (s->cur < s->max) *s->cur++ = val;
+	else r_error("Stack OVERFLOW!!!!!");
+}
+
+
+rlib_var *rlib_var_stack_pop(rlib_var_stack *s) {
+	if (s->cur > s->base) return *(--s->cur); 
+	r_error("Stack UNDERFLOW!!!!");
+	return NULL;
+}
+
+
+//Like _pop, but DOES NOT REMOVE the TOS
+rlib_var *rlib_var_stack_peek(rlib_var_stack *s) {
+	if (s->cur > s->base) return *s->cur; 
+	r_error("Stack UNDERFLOW!!!!");
+	return NULL;
+}
+
+
+void rlib_var_stack_destroy(rlib_var_stack **sptr) {
+	rlib_var_stack *s = *sptr;
+	if (s) {
+		g_free(s);
+	}
+	*sptr = NULL;
+}
+
+
+//==================================================================
+#endif
+
+
 struct rlib_pcode_operator * rlib_find_operator(gchar *ptr) {
 	gint len = strlen(ptr);
 	struct rlib_pcode_operator *op;
@@ -177,6 +479,8 @@ gint64 rlib_str_to_long_long(gchar *str) {
 	return foo;
 }
 
+
+#if !USE_RLIB_VAL
 gint rvalcmp(struct rlib_value *v1, struct rlib_value *v2) {
 	if(RLIB_VALUE_IS_NUMBER(v1) && RLIB_VALUE_IS_NUMBER(v2)) {
 		if(RLIB_VALUE_GET_AS_NUMBER(v1) == RLIB_VALUE_GET_AS_NUMBER(v2))
@@ -192,6 +496,7 @@ gint rvalcmp(struct rlib_value *v1, struct rlib_value *v2) {
 	}
 	return -1;
 }
+#endif
 
 struct rlib_pcode_operand * rlib_new_operand(rlib *r, gchar *str) {
 	gint resultset;
@@ -573,6 +878,8 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, gchar *infix) {
 	return pcodes;	
 }
 
+
+#if !USE_RLIB_VAL
 void rlib_value_stack_init(struct rlib_value_stack *vs) {
 	vs->count = 0;
 }
@@ -648,6 +955,8 @@ struct rlib_value * rlib_value_new_date(struct rlib_value *rval, struct rlib_dat
 struct rlib_value * rlib_value_new_error(struct rlib_value *rval) {
 	return rlib_value_new(rval, RLIB_VALUE_ERROR, FALSE, NULL);
 }
+#endif
+
 
 /*
 	The RLIB SYMBOL TABLE is a bit commplicated because of all the datasources and internal variables

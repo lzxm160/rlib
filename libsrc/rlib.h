@@ -29,10 +29,13 @@
 #include <glib.h>
 
 #include "containers.h"
+#include "charencoder.h"
 
-#define RLIB_WEB_CONTENT_TYPE_HTML "Content-Type: text/html\n"
-#define RLIB_WEB_CONTENT_TYPE_TEXT "Content-Type: text/plain\n"
-#define RLIB_WEB_CONTENT_TYPE_PDF "Content-Type: application/pdf\n"
+#define USE_RLIB_VAR	0
+
+#define RLIB_WEB_CONTENT_TYPE_HTML "Content-Type: text/html; charset=%s\n"
+#define RLIB_WEB_CONTENT_TYPE_TEXT "Content-Type: text/plain; charset=%s\n"
+#define RLIB_WEB_CONTENT_TYPE_PDF "Content-Type: application/pdf; \n"
 #define RLIB_WEB_CONTENT_TYPE_CSV "Content-type: application/octet-stream\nContent-Disposition: attachment; filename=report.csv\n"
 
 #define RLIB_NAVIGATE_FIRST 1
@@ -124,17 +127,19 @@ struct rgb {
 
 struct rlib_datetime {
 	GDate date;
-	long ltime;
+	glong ltime;
 };
+
 
 struct rlib_value {
 	gint type;
 	gint64 number_value;
 	struct rlib_datetime date_value;
 	gchar *string_value;
-	gpointer iif_value;
+	gpointer iif_value;  
 	gint free;
 };
+
 
 struct report_element {
 	gint type;
@@ -354,6 +359,7 @@ struct report_variable {
 	gpointer dude;	
 };
 
+
 struct rlib_report {
 	xmlDocPtr doc;
 	gchar *contents;
@@ -365,6 +371,11 @@ struct rlib_report {
 	xmlChar *xml_paper_type;
 	xmlChar *xml_pages_accross;
 	xmlChar *xml_suppress_page_header_first_page;
+	
+	gchar xml_encoding_name[ENCODING_NAME_SIZE]; //UTF8 if "", else whatever specified in xml
+	rlib_char_encoder *output_encoder;
+//	rlib_char_encoder *db_encoder;
+//	rlib_char_encoder *param_encoder;		
 	
 	gfloat *position_top;
 	gfloat *position_bottom;
@@ -388,7 +399,6 @@ struct rlib_report {
 	struct report_alternate alternate;
 	gint mainloop_query;
 
-	char output_encoding_name[64];
 	struct rlib_paper *paper;
 	struct rlib_pcode *font_size_code;
 	struct rlib_pcode *orientation_code;
@@ -416,6 +426,7 @@ struct rip_reports {
 struct input_filters {
 	gchar *name;
 	gpointer handle;
+//	rlib_char_encoder *encoder;
 	struct input_filter *input;
 };
 
@@ -440,12 +451,15 @@ struct rlib {
 	gchar pdf_fontdir2[256];
 	gchar pdf_encoding[256];
 	gchar pdf_fontname[256];
-	gboolean utf8;
-	gchar original_encoding_name[64];
-	gchar output_encoding_name[64];
-	iconv_t output_encoder; //The default encoder
-	iconv_t current_output_encoder; //The current encoder use to encode
-	gchar current_output_encoding_name[64];
+
+	rlib_char_encoder *output_encoder;		//_destroy all of these
+	rlib_char_encoder *db_encoder;
+	rlib_char_encoder *param_encoder;
+
+	rlib_char_encoder *current_output_encoder; //DO NOT use _destroy these
+	rlib_char_encoder *current_db_encoder;
+	rlib_char_encoder *current_param_encoder;
+	
 	time_t now; //set when rlib starts now will then be a constant over the time of the report
 	
 	struct rlib_queries queries[RLIB_MAXIMUM_QUERIES];
@@ -550,8 +564,6 @@ char * rlib_get_content_type_as_text(rlib *r);
 gint rlib_spool(rlib *r);
 gint rlib_set_output_format(rlib *r, gint format);
 gint rlib_set_output_format_from_text(rlib *r, gchar * name);
-void rlib_set_output_encoding(rlib *r, const gchar *encoding);
-void rlib_set_report_output_encoding(rlib *r, gint reportnum, const gchar *encoding);
 
 gchar *rlib_get_output(rlib *r);
 gint rlib_get_output_length(rlib *r);
@@ -565,6 +577,12 @@ void rlib_init_profiler(void);
 void rlib_dump_profile(gint profilenum, const gchar *filename);
 void rlib_trap(void); //For internals debugging only
 gchar *rlib_version(); // returns the version string.
+
+void rlib_set_encodings(rlib *r, const char *output, const char *database, const char *params);
+void rlib_set_database_encoding(rlib *r, const char *encoding);
+void rlib_set_parameter_encoding(rlib *r, const char *encoding);
+gint rlib_set_datasource_encoding(rlib *r, gchar *input_name, gchar *encoding);
+void rlib_set_report_output_encoding(rlib *r, gint reportnum, const gchar *encoding);
 
 /***** PROTOTYPES: parsexml.c *************************************************/
 struct rlib_report * parse_report_file(gchar *filename);
@@ -612,8 +630,16 @@ void rlib_resolve_fields(rlib *r);
 gchar *strlwrexceptquoted (gchar *s);
 gchar *rmwhitespacesexceptquoted(gchar *s);
 void rlogit(const gchar *fmt, ...);
+#if DISABLERDEBUG
+#define r_debug(...)
+#else
 void r_debug(const gchar *fmt, ...);
+#endif
+#if DISABLERINFO
+#define R_info(...)
+#else
 void r_info(const gchar *fmt, ...);
+#endif
 void r_warning(const gchar *fmt, ...);
 void r_error(const gchar *fmt, ...);
 void rlogit_setmessagewriter(void(*writer)(const gchar *msg));
@@ -631,7 +657,8 @@ gchar *strproper (gchar *s);
 gint daysinmonth(gint year, gint month);
 void init_signals(void);
 void make_more_space_if_necessary(gchar **str, gint *size, gint *total_size, gint len);
-const char *encode(iconv_t cd, const char *txt); //do an iconv conversion
+gchar *str2hex(const gchar *str);
+
 
 /***** PROTOTYPES: navigation.c ***********************************************/
 gint rlib_navigate_next(rlib *r, gint resultset_num);
@@ -668,7 +695,6 @@ gint rlib_add_datasource_mysql(rlib *r, gchar *input_name, gchar *database_host,
 gint rlib_add_datasource_mysql_from_group(rlib *r, gchar *input_name, gchar *group);
 gint rlib_add_datasource_postgre(rlib *r, gchar *input_name, gchar *conn);
 gint rlib_add_datasource_odbc(rlib *r, gchar *input_name, gchar *source, gchar *user, gchar *password);
-gint rlib_datasource_set_decoding(rlib *r, gchar *input_name, gchar *decoding);
 
 /***** PROTOTYPES: postgre.c **************************************************/
 gpointer rlib_postgre_new_input_filter(void);
@@ -681,21 +707,25 @@ gint save_report(struct rlib_report *rep, char *filename);
 struct rlib_report * load_report(gchar *filename);
 
 /* temp/test stuff */
-void rlib_set_pdf_font(rlib *r, const char *encoding, const char *fontname);
-void rlib_set_pdf_font_directories(rlib *r, const char *d1, const char *d2);
-//void rlib_set_pdf_conversion(rlib *r, int rptnum, const char *encoding);
+void rlib_set_pdf_font(rlib *r, const gchar *encoding, const gchar *fontname);
+void rlib_set_pdf_font_directories(rlib *r, const gchar *d1, const gchar *d2);
+//void rlib_set_pdf_conversion(rlib *r, int rptnum, const gchar *encoding);
 
 /* rlib_datetime - should be a separate module (class) */
 void rlib_datetime_clear(struct rlib_datetime *t1);
-void rlib_datetime_set_date(struct rlib_datetime *dt, int y, int m, int d);
-void rlib_datetime_set_time(struct rlib_datetime *dt, int h, int m, int s);
+void rlib_datetime_set_date(struct rlib_datetime *dt, gint y, gint m, gint d);
+void rlib_datetime_set_time(struct rlib_datetime *dt, gint h, gint m, gint s);
 int rlib_datetime_valid_date(struct rlib_datetime *dt);
-int rlib_datetime_valid_time(struct rlib_datetime *dt);
+gint rlib_datetime_valid_time(struct rlib_datetime *dt);
 void rlib_datetime_clear_time(struct rlib_datetime *t);
 void rlib_datetime_clear_date(struct rlib_datetime *t);
 gint rlib_datetime_compare(struct rlib_datetime *t1, struct rlib_datetime *t2);
-void rlib_datetime_format(struct rlib_datetime *dt, char *buf, int max, const char *fmt);
-int rlib_datetime_daysdiff(struct rlib_datetime *dt, struct rlib_datetime *dt2);
+void rlib_datetime_format(struct rlib_datetime *dt, gchar *buf, gint max, const gchar *fmt);
+gint rlib_datetime_daysdiff(struct rlib_datetime *dt, struct rlib_datetime *dt2);
 
 #define charcount(s) g_utf8_strlen(s, -1)
 #define bytelength(s) strlen(s)
+
+void make_all_locales_utf8();
+char *make_utf8_locale(const char *encoding);
+

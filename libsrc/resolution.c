@@ -52,6 +52,12 @@ gint rlib_resolve_rlib_variable(rlib *r, gchar *name) {
 }
 
 gchar * rlib_resolve_field_value(rlib *r, struct rlib_resultset_field *rf) {
+	struct input_filter *rs = INPUT(r, rf->resultset);
+	rlib_char_encoder *enc = (rs->info.encoder)? rs->info.encoder : r->db_encoder;
+	return g_strdup((gchar *) rlib_char_encoder_encode(enc, 
+			rs->get_field_value_as_string(rs, r->results[rf->resultset].result , rf->field)));
+#if 0
+=======
 	gchar *value = INPUT(r, rf->resultset)->get_field_value_as_string(INPUT(r, rf->resultset), r->results[rf->resultset].result , rf->field);
 	if(INPUT(r, rf->resultset)->input_decoder == (iconv_t) -1) 
 		return g_strdup(value);
@@ -59,6 +65,8 @@ gchar * rlib_resolve_field_value(rlib *r, struct rlib_resultset_field *rf) {
 		return g_strdup(encode(INPUT(r, rf->resultset)->input_decoder, value));
 	}
 	return value;
+>>>>>>> 1.34
+#endif
 }
 
 gint rlib_lookup_result(rlib *r, gchar *name) {
@@ -69,6 +77,7 @@ gint rlib_lookup_result(rlib *r, gchar *name) {
 	}
 	return -1;
 }
+
 
 gint rlib_resolve_resultset_field(rlib *r, char *name, void **rtn_field, gint *rtn_resultset) {
 	gint resultset=0;
@@ -307,11 +316,12 @@ void rlib_resolve_fields(rlib *r) {
 	}
 }
 
+
 gchar * rlib_resolve_memory_variable(rlib *r, gchar *name) {
 	if(bytelength(name) >= 3 && name[0] == 'm' && name[1] == '.') {
 		if (r->htParameters) {
 			gchar *result = rlib_hashtable_lookup(r->htParameters, name + 2);
-			if (result) return result;
+			if (result) return g_strdup(result);
 		}
 		return ENVIRONMENT(r)->rlib_resolve_memory_variable(name+2);
 	}

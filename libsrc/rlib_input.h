@@ -18,8 +18,9 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <iconv.h>
- 
+//#include <iconv.h>
+#include <charencoder.h> 
+
 #ifndef TRUE
 #define TRUE	1
 #endif
@@ -28,10 +29,17 @@
 #define FALSE	0
 #endif
 
+
+struct input_info {
+	char charset[64];
+	rlib_char_encoder *encoder;
+};
+
+
+typedef struct input_filter input_filter;
 struct input_filter {
 	gpointer private;
-	iconv_t input_decoder; 
-	
+	struct input_info info;
 	gint (*input_close)(gpointer);
 	gpointer (*new_result_from_query)(gpointer, gchar *);
 	gint (*free)(gpointer);
@@ -45,3 +53,5 @@ struct input_filter {
 	void (*free_result)(gpointer, gpointer);	
 	gint (*set_encoding)(gpointer);
 };
+
+

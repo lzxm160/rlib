@@ -17,11 +17,15 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-
+#include <locale.h>
 #include <string.h>
 #include <cpdflib.h>
 
 #include "rlib.h"
+
+#define PDFLOCALE	"en_US"
+#define USEPDFLOCALE	1
+
 
 struct _private {
 	struct rgb current_color;
@@ -32,11 +36,9 @@ struct _private {
 
 
 static gfloat rlib_pdf_get_string_width(rlib *r, gchar *text) {
-//	struct rlib_report *rr = r->reports[r->current_report]; //Should be a better way
-//	if (rr->output_encoder != (iconv_t) -1) text = (gchar *) encode(rr->output_encoder, text);
-//	else if(r->output_encoder != (iconv_t) -1) text = (gchar *) encode(r->output_encoder, text);
 	return cpdf_stringWidth(OUTPUT_PRIVATE(r)->pdf, text)/(RLIB_PDF_DPI);
 }
+
 
 static void rlib_pdf_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *t, gint backwards, gint col) {
 	CPDFdoc *pdf = OUTPUT_PRIVATE(r)->pdf;
@@ -46,9 +48,10 @@ static void rlib_pdf_print_text(rlib *r, gfloat left_origin, gfloat bottom_origi
 	glong itemswritten;
 	GError *error;
 	gunichar2 *unistr;
-
-	if (r->utf8) {
-//rlib_trap();				output_encoder
+#if USEPDFLOCALE
+	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
+#endif
+	if (!r->current_output_encoder || rlib_char_encoder_isUTF8(r->current_output_encoder)) {
 		cpdf_hexStringMode(pdf, YES);
 		unistr = g_utf8_to_utf16(tmp, -1, &itemsread, &itemswritten, &error);
 		buf = g_malloc(2 * sizeof(gunichar2) * (itemswritten + 2));
@@ -57,15 +60,20 @@ static void rlib_pdf_print_text(rlib *r, gfloat left_origin, gfloat bottom_origi
 		cpdf_text(pdf, left_origin, bottom_origin, 0, buf);
 		g_free(buf);
 		cpdf_hexStringMode(pdf, NO);
+		r_warning("Using UTF8 output to PDF is not fully supported by CLIBPDF"); 
 	} else {
-//		struct rlib_report *rr = r->reports[r->current_report]; //YECH!!
-//		if (rr->output_encoder != (iconv_t) -1) t = (gchar *) encode(rr->output_encoder, t);
-//		else if(r->output_encoder != (iconv_t) -1) t = (gchar *) encode(r->output_encoder, t);
 		cpdf_text(pdf, left_origin, bottom_origin, 0, t);
 	}
+#if USEPDFLOCALE
+	setlocale(LC_NUMERIC, tlocale);
+#endif
 }
 
+
 static void rlib_pdf_set_fg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {
+#if USEPDFLOCALE
+	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
+#endif
 	if(OUTPUT_PRIVATE(r)->current_color.r != red || OUTPUT_PRIVATE(r)->current_color.g != green 
 	|| OUTPUT_PRIVATE(r)->current_color.b != blue) {
 		if(red != -1 && green != -1 && blue != -1 )
@@ -74,9 +82,15 @@ static void rlib_pdf_set_fg_color(rlib *r, gfloat red, gfloat green, gfloat blue
 		OUTPUT_PRIVATE(r)->current_color.g = green;
 		OUTPUT_PRIVATE(r)->current_color.b = blue;	
 	}
+#if USEPDFLOCALE
+	setlocale(LC_NUMERIC, tlocale);
+#endif
 }
 
 static void rlib_pdf_drawbox(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, struct rgb *color) {
+#if USEPDFLOCALE
+	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
+#endif
 	if(!(color->r == 1.0 && color->g == 1.0 && color->b == 1.0)) {
 		cpdf_endText(OUTPUT_PRIVATE(r)->pdf);
 		//the -.002 seems to get around decimal percision problems.. but should investigate this a big further	
@@ -86,18 +100,30 @@ static void rlib_pdf_drawbox(rlib *r, gfloat left_origin, gfloat bottom_origin, 
 		cpdf_beginText(OUTPUT_PRIVATE(r)->pdf, 0);	
 		OUTPUT(r)->rlib_set_bg_color(r, 0, 0, 0);
 	}
+#if USEPDFLOCALE
+	setlocale(LC_NUMERIC, tlocale);
+#endif
 }
 
 static void rlib_pdf_hr(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
 struct rgb *color, gfloat indent, gfloat length) {
+#if USEPDFLOCALE
+	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
+#endif
 	how_tall = how_tall / RLIB_PDF_DPI;
 	rlib_pdf_drawbox(r, left_origin, bottom_origin, how_long, how_tall, color);
+#if USEPDFLOCALE
+	setlocale(LC_NUMERIC, tlocale);
+#endif
 }
 
 /*
 	What was the guy from ClibPDF Smoking....cpdf_SetActionURL origin is bottom right... /me sighs
 */
 static void rlib_pdf_boxurl_start(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url) {
+#if USEPDFLOCALE
+	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
+#endif
 	if(r->landscape) {
 		gfloat new_left = get_page_width(r)-left_origin-how_long;
 		gfloat new_bottom = bottom_origin;
@@ -107,10 +133,16 @@ static void rlib_pdf_boxurl_start(rlib *r, gfloat left_origin, gfloat bottom_ori
 		gfloat new_bottom = bottom_origin;
 		cpdf_setActionURL(OUTPUT_PRIVATE(r)->pdf, new_left, new_bottom, new_left+how_long, new_bottom+how_tall, url, NULL);
 	}
+#if USEPDFLOCALE
+	setlocale(LC_NUMERIC, tlocale);
+#endif
 }
 
 static void rlib_pdf_drawimage(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *nname, gchar *type, gfloat nwidth, 
 gfloat nheight) {
+#if USEPDFLOCALE
+	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
+#endif
 	gchar pathbuf[MAXSTRLEN];
 	gfloat xscale = 1.0, yscale = 1.0;
 	gint realtype=JPEG_IMG;
@@ -121,9 +153,15 @@ gfloat nheight) {
 	cpdf_importImage(OUTPUT_PRIVATE(r)->pdf, pathbuf, realtype, left_origin, bottom_origin, 0.0, &nwidth, &nheight, &xscale, &yscale, 1);
 	cpdf_beginText(OUTPUT_PRIVATE(r)->pdf, 0);	
 	OUTPUT(r)->rlib_set_bg_color(r, 0, 0, 0);
+#if USEPDFLOCALE
+	setlocale(LC_NUMERIC, tlocale);
+#endif
 }
 
 static void rlib_pdf_set_font_point(rlib *r, gint point) {
+#if USEPDFLOCALE
+	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
+#endif
 	char *encoding;
 	char *fontname;
 	int result;
@@ -139,9 +177,15 @@ static void rlib_pdf_set_font_point(rlib *r, gint point) {
 //r_debug("cpdf_setFont returned %d for f:%s, e:%s", result, fontname, encoding);
 		r->current_font_point = point;
 	}
+#if USEPDFLOCALE
+	setlocale(LC_NUMERIC, tlocale);
+#endif
 }
-
+	
 static void rlib_pdf_start_new_page(rlib *r) {
+#if USEPDFLOCALE
+	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
+#endif
 	struct rlib_report *report = r->reports[r->current_report];
 	gint i=0;
 	gint pages_accross = report->pages_accross;
@@ -162,16 +206,29 @@ static void rlib_pdf_start_new_page(rlib *r) {
 		}
 		cpdf_beginText(OUTPUT_PRIVATE(r)->pdf, 0);	
 	}
+#if USEPDFLOCALE
+	setlocale(LC_NUMERIC, tlocale);
+#endif
 }
 
 static void rlib_pdf_set_working_page(rlib *r, gint page) {
+#if USEPDFLOCALE
+	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
+#endif
 	gint pages_accross = r->reports[r->current_report]->pages_accross;
 	gint page_number = r->current_page_number * pages_accross;
 	page--;
 	cpdf_setCurrentPage(OUTPUT_PRIVATE(r)->pdf, page_number + page);
+#if USEPDFLOCALE
+	setlocale(LC_NUMERIC, tlocale);
+#endif
+	setlocale(LC_NUMERIC, tlocale);
 }
 
 static void rlib_pdf_end_text(rlib *r) {
+#if USEPDFLOCALE
+	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
+#endif
 	gint i=0;
 	gint pages_accross = r->reports[r->current_report]->pages_accross;
 	gint page_number = r->current_page_number * pages_accross;
@@ -180,49 +237,89 @@ static void rlib_pdf_end_text(rlib *r) {
 		cpdf_setCurrentPage(OUTPUT_PRIVATE(r)->pdf, page_number+i);
 		cpdf_endText(OUTPUT_PRIVATE(r)->pdf);
 	}
+#if USEPDFLOCALE
+	setlocale(LC_NUMERIC, tlocale);
+#endif
 }
 
+
 static void rlib_pdf_init_end_page(rlib *r) {
+#if USEPDFLOCALE
+	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
+#endif
 //TODO: Why is this needed?
 	if(r->start_of_new_report == TRUE) {
 		r->start_of_new_report = FALSE;
 		cpdf_endText(OUTPUT_PRIVATE(r)->pdf);
 	}
-
+#if USEPDFLOCALE
+	setlocale(LC_NUMERIC, tlocale);
+#endif
 }
 
 static void rlib_pdf_init_output(rlib *r) {
+#if USEPDFLOCALE
+	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
+#endif
 	CPDFdoc *pdf;
 	CPDFdocLimits dL = {500, -1, -1, 10000, 10000};
 
 	r_debug("CPDF version %s", cpdf_version() );
 	pdf = OUTPUT_PRIVATE(r)->pdf = cpdf_open(0, &dL);
-	cpdf_enableCompression(pdf, YES);
+	cpdf_enableCompression(pdf, NO);
+//	cpdf_enableCompression(pdf, YES);
 	cpdf_init(pdf);
 	cpdf_setTitle(pdf, "RLIB Report");
+#if USEPDFLOCALE
+	setlocale(LC_NUMERIC, tlocale);
+#endif
 }
 
 static void rlib_pdf_begin_text(rlib *r) {
+#if USEPDFLOCALE
+	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
+#endif
 	cpdf_beginText(OUTPUT_PRIVATE(r)->pdf, 0);	
+#if USEPDFLOCALE
+	setlocale(LC_NUMERIC, tlocale);
+#endif
 }
 
 static void rlib_pdf_finalize_private(rlib *r) {
+#if USEPDFLOCALE
+	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
+#endif
 	int length;
 	cpdf_finalizeAll(OUTPUT_PRIVATE(r)->pdf);
 	OUTPUT_PRIVATE(r)->buffer = cpdf_getBufferForPDF(OUTPUT_PRIVATE(r)->pdf, &length);
 	OUTPUT_PRIVATE(r)->length = length;
+#if USEPDFLOCALE
+	setlocale(LC_NUMERIC, tlocale);
+#endif
 }
 
 static void rlib_pdf_spool_private(rlib *r) {
+#if USEPDFLOCALE
+	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
+#endif
 	ENVIRONMENT(r)->rlib_write_output(OUTPUT_PRIVATE(r)->buffer, OUTPUT_PRIVATE(r)->length);
 	cpdf_close(OUTPUT_PRIVATE(r)->pdf);
+#if USEPDFLOCALE
+	setlocale(LC_NUMERIC, tlocale);
+#endif
 }
 
 static void rlib_pdf_end_page(rlib *r) {
+#if USEPDFLOCALE
+	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
+#endif
 	OUTPUT(r)->rlib_end_text(r);
 	r->current_page_number++;
 	r->current_line_number = 1;
 	rlib_init_page(r, FALSE);
+#if USEPDFLOCALE
+	setlocale(LC_NUMERIC, tlocale);
+#endif
 }
 
 static int rlib_pdf_is_single_page(rlib *r) {

@@ -27,15 +27,41 @@
 #include <stdarg.h>
 #include <time.h>
 #include <sys/resource.h>
+
+//<<<<<<< util.c
+
+#include <locale.h>
+
+#if 0
+=======
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
- 
+>>>>>>> 1.15
+#endif
 
 #include "rlib.h"
 
 //man 3 llabs says the prototype is in stdlib.. no it aint!
 gint64 llabs(gint64 j);
+
+
+int locale_codes[] = {
+	LC_ALL,
+	LC_COLLATE,
+	LC_CTYPE,
+	LC_MESSAGES,
+	LC_MONETARY,
+	LC_NUMERIC,
+	LC_TIME,
+	LC_PAPER,
+	LC_NAME,
+	LC_ADDRESS,
+	LC_TELEPHONE,
+	LC_MEASUREMENT,
+	LC_IDENTIFICATION,
+	-1
+};
 
 
 #ifdef ENABLE_CRASH
@@ -166,6 +192,7 @@ void r_error(const gchar *fmt, ...) {
 }
 
 
+#if ! DISABLERINFO
 void r_info(const gchar *fmt, ...) {
 	va_list vl;
 	gchar *result = NULL;
@@ -179,8 +206,10 @@ void r_info(const gchar *fmt, ...) {
 	}
 	return;
 }
+#endif
 
 
+#if ! DISABLERDEBUG
 void r_debug(const gchar *fmt, ...) {
 	va_list vl;
 	gchar *result = NULL;
@@ -194,6 +223,7 @@ void r_debug(const gchar *fmt, ...) {
 	}
 	return;
 }
+#endif
 
 
 void r_warning(const gchar *fmt, ...) {
@@ -373,28 +403,71 @@ void make_more_space_if_necessary(gchar **str, gint *size, gint *total_size, gin
 }
 
 
-const char *encode(iconv_t cd, const char *txt) {
-	size_t len = MAXSTRLEN;
-	size_t slen;
-	static char encodebuf[MAXSTRLEN];
-	char *dest = encodebuf;
-	int result = 0;
-	const char *ret = NULL;
+/**
+ * Parses an encoding description such as en_GB.utf8@euro into it's 3 main parts
+ * en_GB, utf8 and euro. Then it recombines the parts using a "utf8" encoding.
+ */
+char *make_utf8_locale(const char *encoding) {
+	static char result[256];
+	gchar *locale, *codeset = NULL, *extra = NULL;
+	gchar buf[256];
+	gchar *t;
+	gint len = strlen(encoding);
 
-	encodebuf[0] = '\0';
-	if ((txt != NULL) && (*txt != '\0')) {
-		if (cd != (iconv_t) -1) {
-			slen = bytelength(txt);
-#if ICONV_CONST_CHAR_PP
-			result = iconv(cd, (const char **) &txt, &slen, &dest, &len);
-#else
-			result = iconv(cd, (char **)&txt, &slen, &dest, &len);
-#endif
-			*dest = '\0';
-			ret = encodebuf;
-		} else {
-			ret = txt;
+	if ((encoding == NULL) || (strlen(encoding) < 2)) {
+		r_warning("encoding is NULL or invalid ... using en_US");
+		return "en_US.utf8";
+	}
+	g_strlcpy(buf, encoding, sizeof(buf));
+	locale = buf;
+	t = g_strstr_len(buf, len, ".");
+	if (t) {
+		*t = '\0';
+		codeset = t + 1;
+		len = strlen(codeset);
+	}
+	if (codeset) {
+		t = g_strstr_len(codeset, len, "@");
+		if (t) {
+			*t = '\0';
+			extra = t + 1;
 		}
 	}
-	return ret;
+	codeset = "utf8";
+	if (extra) {
+		g_snprintf(result, sizeof(buf), "%s.%s@%s", locale, codeset, extra);
+	} else {
+		g_snprintf(result, sizeof(buf), "%s.%s", locale, codeset);
+	}
+	return result;
 }
+
+
+void make_all_locales_utf8() {
+	int *lc = locale_codes;
+	int i;
+	char *t;
+	while ((i = *lc) != -1) {
+		char *t = setlocale(i, NULL);
+		if (t) setlocale(i, make_utf8_locale(t));
+		++lc;
+	}
+}
+
+
+//For debug purposes so I can see a hex dump of certain utf8 strings.
+inline guint itox(guint i) { return (i < 10)?'0'+i:'A'+i-10; } 
+gchar *str2hex(const gchar *str) {
+	guint ch;
+	gchar *result = g_malloc(2 * strlen(str) + 1);
+	gchar *ptr;
+	ptr = result;
+	while ((ch = *str++)) {
+		*ptr++ = itox((ch >> 4) & 0xF);
+		*ptr++ = itox(ch & 0xF);
+	}
+	*ptr = '\0';
+	return result;
+}
+
+

@@ -237,7 +237,7 @@ static void rlib_html_start_report(rlib *r) {
 	struct rlib_report *rr = r->reports[r->current_report];
 	gchar buf[MAXSTRLEN];
 	gint pages_accross = rr->pages_accross;
-	char *output_encoding = r->current_output_encoding_name;
+	const char *output_encoding = rlib_char_encoder_get_name(r->current_output_encoder);
 	gint i;
 
 	OUTPUT_PRIVATE(r)->bottom = g_malloc(sizeof(struct _data) * pages_accross);
@@ -250,8 +250,8 @@ static void rlib_html_start_report(rlib *r) {
 		OUTPUT_PRIVATE(r)->bottom[i].size = 0;
 		OUTPUT_PRIVATE(r)->bottom[i].total_size = 0;
 	}
-r_debug("HTML encoding is: %s", output_encoding);
-	sprintf(buf, "<head><meta http-equiv=\"content-type\" content=\"text/html; charset=%s\"><style type=\"text/css\">", output_encoding);
+//	<meta http-equiv=\"content-type\" content=\"text/html; charset=%s\"><style type=\"text/css\">\n", output_encoding);
+	sprintf(buf, "<head>\n<style type=\"text/css\">\n");
 	print_text(r, buf, FALSE);
 	sprintf(buf, "pre { margin:0; padding:0; margin-top:0; margin-bottom:0; font-size: %dpt;}\n", r->font_point);
 	print_text(r, buf, FALSE);

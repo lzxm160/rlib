@@ -34,6 +34,7 @@
 #include "rlib.h"
 #include "rlib_input.h"
 
+//void rlib_set_encodings(rlib *r, const char *outputencoding, const char *dbencoding, const char *paramencoding);
 
 rlib * rlib_init_with_environment(struct environment_filter *environment) {
 	gchar *lc_encoding;
@@ -47,13 +48,12 @@ rlib * rlib_init_with_environment(struct environment_filter *environment) {
 		rlib_new_c_environment(r);
 	else
 		ENVIRONMENT(r) = environment;
-	r->output_encoder = (iconv_t) -1;	
 	lc_encoding = nl_langinfo(CODESET);
 	if (lc_encoding != NULL) {
-		g_strlcpy(r->output_encoding_name, lc_encoding, sizeof(r->output_encoding_name));
-//r_debug("rlib_init setting encoding to %s", lc_encoding);
+		rlib_set_encodings(r, lc_encoding, lc_encoding, lc_encoding);
 	}
-	strcpy(r->pdf_encoding, "WinAnsiEncoding");
+	make_all_locales_utf8();
+//	strcpy(r->pdf_encoding, "WinAnsiEncoding");
 	return r;
 }
 
@@ -135,15 +135,27 @@ gint rlib_execute(rlib *r) {
 	return 0;
 }
 
+
 gchar * rlib_get_content_type_as_text(rlib *r) {
-	if(r->format == RLIB_CONTENT_TYPE_PDF)
+	static char buf[256];
+	if(r->format == RLIB_CONTENT_TYPE_PDF) {
 		return RLIB_WEB_CONTENT_TYPE_PDF;
-	else if(r->format == RLIB_CONTENT_TYPE_HTML)
-		return RLIB_WEB_CONTENT_TYPE_HTML;
-	else if(r->format == RLIB_CONTENT_TYPE_CSV)
+	} else if(r->format == RLIB_CONTENT_TYPE_CSV) {
 		return RLIB_WEB_CONTENT_TYPE_CSV;
-	else
-		return RLIB_WEB_CONTENT_TYPE_TEXT;
+	} else {
+		const char *charset = (r->current_output_encoder)? 
+					rlib_char_encoder_get_name(r->current_output_encoder)
+					: "UTF-8";
+		if(r->format == RLIB_CONTENT_TYPE_HTML) {
+			g_snprintf(buf, sizeof(buf), RLIB_WEB_CONTENT_TYPE_HTML, charset);
+			return buf;
+		} else {
+			g_snprintf(buf, sizeof(buf), RLIB_WEB_CONTENT_TYPE_TEXT, charset);
+			return buf;
+		}
+	}
+	r_error("Content type code unknown");
+	return "Oops!!!";
 }
 
 gint rlib_spool(rlib *r) {
@@ -218,6 +230,7 @@ gint rlib_get_output_length(rlib *r) {
  *  Saves copies of the name and value, NOT pointers.
  */
 gint rlib_add_parameter(rlib *r, const gchar *name, const gchar *value) {
+	char buf[MAXSTRLEN];
 	gint result = 1;
 	rlib_hashtable_ptr ht = r->htParameters;
 	
@@ -225,8 +238,16 @@ gint rlib_add_parameter(rlib *r, const gchar *name, const gchar *value) {
 		ht = r->htParameters = rlib_hashtable_new_copyboth();
 	}
 	if (ht) {
-		rlib_hashtable_insert(ht, (gpointer) g_strdup(name), (gpointer) g_strdup(value));
-		result = 0;
+//This encodes both the name and value in UTF8 from whatever the source is written in.
+		g_strlcpy(buf, rlib_char_encoder_encode(r->param_encoder, name), sizeof(buf));
+		rlib_hashtable_insert(ht, (gpointer) buf, (gpointer) rlib_char_encoder_encode(r->param_encoder, value));
+#if 0
+//The rlib_hashtable_new_copyboth() hashtable already duplicates the strings (see docs above)
+=======
+rlib_hashtable_insert(ht, (gpointer) g_strdup(name), (gpointer) g_strdup(value));
+>>>>>>> 1.23
+#endif
+result = 0;
 	}
 	return result;
 }
@@ -236,24 +257,29 @@ gint rlib_add_parameter(rlib *r, const gchar *name, const gchar *value) {
 *  Returns TRUE if locale was actually set, otherwise, FALSE
 */
 gint rlib_set_locale(rlib *r, gchar *locale) {
-	gchar *cur = setlocale(LC_ALL, locale);
-	char *lc_encoding;
+	gchar *cur = setlocale(LC_ALL, make_utf8_locale(locale));
+//	char *lc_encoding;
 	
-	if (cur) {
-//		r_debug("Locale changed from %s to %s by rlib_set_locale", cur, locale); 
-	} else {
+	if (!cur) {
 		r_error("Locale could not be changed to %s by rlib_set_locale", locale);
+		return FALSE;
 	}
+#if 0
 	lc_encoding = nl_langinfo(CODESET);
 	if (lc_encoding != NULL) {
-		g_strlcpy(r->output_encoding_name, lc_encoding, sizeof(r->output_encoding_name));
+		rlib_set_encodings(r, lc_encoding, lc_encoding, lc_encoding);
+		r_info("Encoding changed to locale %s lang=%s in rlib_set_locale", cur, lc_encoding);
 	}		
+#endif
+	r_debug("Locale set to: %s", locale);
 	return (cur)? TRUE : FALSE;
 }
+
 
 void rlib_init_profiler() {
 	g_mem_set_vtable(glib_mem_profiler_table);
 }
+
 
 void rlib_dump_profile_stdout(gint profilenum) {
 	printf("\nRLIB memory profile #%d:\n", profilenum);
@@ -292,20 +318,20 @@ void rlib_trap() {
 	return;
 }
 
+
 void rlib_set_report_output_encoding(rlib *r, int rptnum, const char *encoding) {
 	if ((rptnum >= 0) && (rptnum < r->reports_count)) {
 		struct rlib_report *rr = r->reports[rptnum];
-		if (!encoding) encoding = "";
-		g_strlcpy(rr->output_encoding_name, encoding, sizeof(rr->output_encoding_name));
-	} else {
-		r_error("Attempt to set encoding for report #%d which does not exist.", rptnum);
+
+		rlib_char_encoder_destroy(&rr->output_encoder);
+		rr->output_encoder = rlib_char_encoder_new(encoding, TRUE);
 	}
 }
 
+
 void rlib_set_output_encoding(rlib *r, const char *encoding) {
-	if (!encoding) encoding = "";
-//r_debug("Setting encoding in rlib_set_output_encoding to %s", encoding);
-	g_strlcpy(r->output_encoding_name, encoding, sizeof(r->output_encoding_name));
+	rlib_char_encoder_destroy(&r->output_encoder);
+	r->output_encoder = rlib_char_encoder_new(encoding, TRUE);
 }
 
 void rlib_set_pdf_font_directories(rlib *r, const char *d1, const char *d2) {
@@ -318,8 +344,78 @@ void rlib_set_pdf_font_directories(rlib *r, const char *d1, const char *d2) {
 }
 
 void rlib_set_pdf_font(rlib *r, const char *encoding, const char *fontname) {
-	if (encoding) g_strlcpy(r->pdf_encoding, encoding, sizeof(r->pdf_encoding) - 1);
-	if (fontname) g_strlcpy(r->pdf_fontname, fontname, sizeof(r->pdf_fontname) - 1);
+	if (encoding) {
+		g_strlcpy(r->pdf_encoding, encoding, sizeof(r->pdf_encoding));
+		r_debug("PDF font set to %s", fontname);
+	}
+	if (fontname) {
+		g_strlcpy(r->pdf_fontname, fontname, sizeof(r->pdf_fontname));
+		r_debug("PDF encoding set to %s", encoding);
+	}
+}
+
+
+/**
+ * Sets the default encoding that is used by the datasource so RLIB 
+ * knows how to properly handle its data. Use this function 
+ * The default is to assume that input from the database is in the 
+ * same locale as the current system locale.
+ */
+void rlib_set_database_encoding(rlib *r, const char *encoding) {
+	rlib_char_encoder_destroy(&r->db_encoder);
+	r->db_encoder = rlib_char_encoder_new(encoding, FALSE);
+}
+
+
+gint rlib_set_datasource_encoding(rlib *r, gchar *input_name, gchar *encoding) {
+	int i;
+	struct input_filter *tif;
+	
+	for (i=0;i<r->inputs_count;i++) {
+		tif = r->inputs[i].input;
+		if (strcmp(r->inputs[i].name, input_name) == 0) {
+			rlib_char_encoder_destroy(&tif->info.encoder);
+			tif->info.encoder = rlib_char_encoder_new(encoding, FALSE);
+#if 0
+			r->inputs[i].input->input_decoder = iconv_open(RLIB_ENCODING, decoding);
+			if (r->inputs[i].input->input_decoder == (iconv_t) -1)  {
+				rlogit("Error.. invalid decoding [%s]\n", decoding);
+				return -1;			
+			}
+#endif
+			return 0;
+		}
+	}
+	rlogit("Error.. datasource [%s] does not exist\n", input_name);
+	return -1;
+}
+
+
+/**
+ * Sets the encoding that is used by the parameters so RLIB knows how to 
+ * properly handle them. This is used for all reports/inputs, etc.
+ * The default is to assume that input from parameter values is UTF8. 
+ */
+void rlib_set_parameter_encoding(rlib *r, const char *encoding) {
+	rlib_char_encoder_destroy(&r->param_encoder);
+	r->param_encoder = rlib_char_encoder_new(encoding, FALSE);
+}
+
+
+/**
+ * Sets the DEFAULT encodings for multiple data sources in one function.
+ */
+void rlib_set_encodings(rlib *r, const char *outputencoding, const char *dbencoding, const char *paramencoding) {
+	if (outputencoding && *outputencoding) {
+		r_debug("Setting output encoding to %s", outputencoding);
+		rlib_set_output_encoding(r, outputencoding);
+	}
+	if (dbencoding && *dbencoding) {
+		rlib_set_database_encoding(r, dbencoding);
+	}
+	if (paramencoding && *paramencoding) {
+		rlib_set_parameter_encoding(r, paramencoding);
+	}
 }
 
 
@@ -332,6 +428,7 @@ gchar *rlib_version() {
 	return "Unknown";
 }
 #endif
+
 
 #if HAVE_MYSQL
 gint rlib_mysql_report(gchar *hostname, gchar *username, gchar *password, gchar *database, gchar *xmlfilename, gchar *sqlquery, 

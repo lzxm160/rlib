@@ -280,10 +280,13 @@ void free_results(rlib *r) {
 
 gint rlib_free(rlib *r) {
 	int i;
+
+	rlib_char_encoder_destroy(&r->db_encoder);
+	rlib_char_encoder_destroy(&r->param_encoder);
+	rlib_char_encoder_destroy(&r->output_encoder);
 	rlib_free_tree(r);
 	xmlCleanupParser();
 	free_results(r);
-
 	for(i=0;i<r->inputs_count;i++) {
 		r->inputs[i].input->input_close(r->inputs[i].input);
 		r->inputs[i].input->free(r->inputs[i].input);	

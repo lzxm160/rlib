@@ -40,6 +40,12 @@ gint format_money(gchar *dest, gint max, const gchar *moneyformat, gint64 x) {
 	gint result;
 
 	result = strfmon(dest, max - 1, moneyformat, d);
+#if 0
+//	if (result < 0) {
+		r_error("Format Money [%s], max=%d, amount=%f, result=[%s] charset=%s", 
+			moneyformat, max, d, dest, nl_langinfo(CODESET));
+	//}
+#endif
 	return (result >= 0)? strlen(dest) : 0;
 }
 

@@ -268,8 +268,8 @@ static const gchar *encode_text(rlib *r, const gchar *text) {
 	if (text == NULL) {
 		r_error("encode_text called with NULL text");
 		result = "!ERR_ENC1";
-	} else if ((*text != '\0') && (r->current_output_encoder != (iconv_t) -1)) {
-		result = (gchar *) encode(r->current_output_encoder, text);
+	} else {
+		result = (gchar *) rlib_char_encoder_encode(r->current_output_encoder, text);
 		if (result == NULL) {
 			r_error("encode returned NULL result input was[%s], len=%d", text, strlen(text));
 			result = "!ERR_ENC2";
@@ -1155,18 +1155,6 @@ static void rlib_evaluate_break_attributes(rlib *r) {
 	}
 }
 
-static iconv_t get_encoder(rlib *r, const char *encoding) {
-	iconv_t result = (iconv_t) -1;
-	if (!g_strcasecmp(encoding, "UTF-8") || !g_strcasecmp(encoding, "UTF8")) {
-		*r->output_encoding_name = '\0';	//No conversion leave as UTF8
-		r->utf8 = TRUE;
-	} else {
-		result = iconv_open(encoding, RLIB_ENCODING);
-		r->utf8 = FALSE;
-	}
-	return result;
-}
-
 
 gint make_report(rlib *r) {
 	gint i = 0;
@@ -1196,7 +1184,6 @@ gint make_report(rlib *r) {
 	for(report=0;report<r->reports_count;report++) {
 		struct rlib_report *rr;
 		gchar *tmp;
-		iconv_t encoder = (iconv_t) -1;
 				
 		processed_variables = FALSE;
 		r->current_report = report;
@@ -1205,30 +1192,10 @@ gint make_report(rlib *r) {
 			if(rr->mainloop_query != -1)
 				r->current_result = rr->mainloop_query;
 		}
-		if (*(tmp = rr->output_encoding_name)) {
-			encoder = get_encoder(r, tmp);
-			if ((encoder == (iconv_t) -1) && !r->utf8) 
-				r_error("Could not open encoder for %s", tmp);
-		}
-		if (!r->utf8 && (encoder == (iconv_t) -1)) {
-			if (r->output_encoder != (iconv_t) -1) { // already a default encoder, just use it
-				encoder = r->output_encoder;
-				tmp = r->output_encoding_name; //For log
-			} else if (*(tmp = r->output_encoding_name)) {
-				encoder = r->output_encoder = get_encoder(r, tmp);
-				if (!r->utf8 && (encoder == (iconv_t) -1)) 
-					r_error("Could not open encoder for %s", tmp);
-			}
-		}
-		r->current_output_encoder = encoder;
-		strcpy(r->current_output_encoding_name, tmp);
-		if (encoder == (iconv_t) -1) {
-//			r->utf8 = TRUE;
-			r_debug("Using UTF-8 for output");
-		} else {
-			r->utf8 = FALSE;
-			r_debug("Using encoding %s", tmp);
-		}
+// If this report has a specific output converter, use it otherwise use the reports encoder.
+		r->current_output_encoder = (rr->output_encoder)? rr->output_encoder : r->output_encoder;
+//		r->current_db_encoder = (rr->db_encoder)? rr->db_encoder : r->db_encoder;
+//		r->current_param_encoder = (rr->param_encoder)? rr->param_encoder : r->param_encoder;
 		rlib_resolve_fields(r);
 		rlib_init_variables(r);
 		rlib_process_variables(r);
@@ -1292,17 +1259,11 @@ gint make_report(rlib *r) {
 			r->detail_line_count = 0;
 			r->font_point = FONTPOINT;
 		}
-		if ((r->current_output_encoder != (iconv_t) -1) && (r->current_output_encoder != r->output_encoder)) {
-			iconv_close(r->current_output_encoder);
-		}
-		r->current_output_encoder = (iconv_t) -1;
-		*r->current_output_encoding_name = '\0';
+		rlib_char_encoder_destroy(&rr->output_encoder); //Destroy if was one.
+//		rlib_char_encoder_destroy(&rr->db_encoder); //Destroy if was one.
+//		rlib_char_encoder_destroy(&rr->param_encoder); //Destroy if was one.
 	}	
 	OUTPUT(r)->rlib_end_text(r);
-	if (r->output_encoder != (iconv_t) -1) {
-		iconv_close(r->output_encoder);
-		r->output_encoder = (iconv_t) -1;
-	}
 	return 0;
 }
 
@@ -1310,3 +1271,4 @@ gint rlib_finalize(rlib *r) {
 	OUTPUT(r)->rlib_finalize_private(r);
 	return 0;
 }
+
