@@ -1,4 +1,8 @@
 2004-03-01  Chet Heilman  <cheilman@sicompos.com>
+	* Makefile.am:
+	Add a tgz of the interfaces to the dist because I can't get the below to work.
+
+2004-03-01  Chet Heilman  <cheilman@sicompos.com>
 	* .cvsignore:
 		Add more of the generated files to be ignored by CVS.
 		
