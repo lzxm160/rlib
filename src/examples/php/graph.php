@@ -230,7 +230,7 @@
 	rlib_add_query_as($rlib, "local_array", "pie_data", "pie_data");
 	rlib_add_query_as($rlib, "local_array", "pie_data2", "pie_data2");
 	rlib_add_report($rlib, "graph.xml");
-	rlib_set_output_format_from_text($rlib, "pdf");
+	rlib_set_output_format_from_text($rlib, "html");
 	rlib_execute($rlib);
 	header(rlib_get_content_type($rlib));
 	rlib_spool($rlib);

@@ -776,6 +776,7 @@ static void pdf_graph_draw_legend_label(rlib *r, gint iteration, gchar *label, s
 	pdf_print_text(r, graph->legend_left + (w_width*2), graph->legend_top - offset, label, 0);
 }
 
+static void pdf_graph_finalize(rlib *r) {};
 static void pdf_end_td(rlib *r) {}
 static void pdf_stub_line(rlib *r, int backwards) {}
 static void pdf_end_output_section(rlib *r) {}
@@ -857,5 +858,7 @@ void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r)->graph_hint_legend = pdf_graph_hint_legend;
 	OUTPUT(r)->graph_draw_legend = pdf_graph_draw_legend;
 	OUTPUT(r)->graph_draw_legend_label = pdf_graph_draw_legend_label;
+	OUTPUT(r)->graph_finalize = pdf_graph_finalize;
+	
 	OUTPUT(r)->free = pdf_free;
 }

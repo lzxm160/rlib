@@ -448,4 +448,5 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 	g_free(row_sum);
 	g_free(last_row_values);
 	g_free(last_row_height);
+	OUTPUT(r)->graph_finalize(r);
 }

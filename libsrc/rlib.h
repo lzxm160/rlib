@@ -735,6 +735,7 @@ struct output_filter {
 	void (*graph_hint_legend)(rlib *r, gchar *string);
 	void (*graph_draw_legend)(rlib *r);
 	void (*graph_draw_legend_label)(rlib *r, gint iteration, gchar *string, struct rlib_rgb *);
+	void (*graph_finalize)(rlib *r);
 	int (*free)(rlib *r);
 };
 
@@ -905,3 +906,4 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 /***** PROTOTYPES: axis.c ******************************************************/
 void rlib_graph_find_y_range(rlib *r, gdouble a, gdouble b, gdouble *y_min, gdouble *y_max, gint graph_type);
 gint rlib_graph_num_ticks(rlib *r, gdouble a, gdouble b);
+

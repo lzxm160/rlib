@@ -96,7 +96,6 @@ gpointer rlib_odbc_connect(gpointer input_ptr, gchar *source, gchar *user, gchar
 	if ((V_OD_erg != SQL_SUCCESS) && (V_OD_erg != SQL_SUCCESS_WITH_INFO)) {
 		fprintf(stderr, "Error SQLConnect %d\n",V_OD_erg);
 		SQLGetDiagRec(SQL_HANDLE_DBC, INPUT_PRIVATE(input)->V_OD_hdbc,1, V_OD_stat, &V_OD_err,V_OD_msg,100,&V_OD_mlen);
-		fprintf(stderr, "%s (%d)\n", V_OD_msg, V_OD_err);
 		SQLFreeHandle(SQL_HANDLE_DBC, INPUT_PRIVATE(input)->V_OD_hdbc);
 		SQLFreeHandle(SQL_HANDLE_ENV, INPUT_PRIVATE(input)->V_OD_Env);
 		return NULL;
@@ -126,7 +125,6 @@ static SQLHSTMT * rlib_odbc_query(gpointer input_ptr, gchar *query) {
 	if ((V_OD_erg != SQL_SUCCESS) && (V_OD_erg != SQL_SUCCESS_WITH_INFO)) {
 		fprintf(stderr, "Failed to allocate a connection handle %d\n",V_OD_erg);
 		SQLGetDiagRec(SQL_HANDLE_DBC, INPUT_PRIVATE(input)->V_OD_hdbc,1, V_OD_stat,&V_OD_err,V_OD_msg,100,&V_OD_mlen);
-		fprintf(stderr, "%s (%d)\n",V_OD_msg,V_OD_err);
 		SQLDisconnect(INPUT_PRIVATE(input)->V_OD_hdbc);
 		SQLFreeHandle(SQL_HANDLE_DBC,INPUT_PRIVATE(input)->V_OD_hdbc);
 		SQLFreeHandle(SQL_HANDLE_ENV, INPUT_PRIVATE(input)->V_OD_Env);
@@ -137,7 +135,6 @@ static SQLHSTMT * rlib_odbc_query(gpointer input_ptr, gchar *query) {
 	if ((V_OD_erg != SQL_SUCCESS) && (V_OD_erg != SQL_SUCCESS_WITH_INFO)) {
 		fprintf(stderr, "Error Select %d\n",V_OD_erg);
 		SQLGetDiagRec(SQL_HANDLE_DBC, INPUT_PRIVATE(input)->V_OD_hdbc,1, V_OD_stat, &V_OD_err, V_OD_msg,100,&V_OD_mlen);
-		fprintf(stderr, "%s (%d)\n",V_OD_msg,V_OD_err);
 		SQLFreeHandle(SQL_HANDLE_STMT,V_OD_hstmt);
 		SQLDisconnect(INPUT_PRIVATE(input)->V_OD_hdbc);
 		SQLFreeHandle(SQL_HANDLE_DBC,INPUT_PRIVATE(input)->V_OD_hdbc);

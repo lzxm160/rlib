@@ -465,7 +465,6 @@ void rlib_set_parameter_encoding(rlib *r, const char *encoding) {
  */
 void rlib_set_encodings(rlib *r, const char *outputencoding, const char *dbencoding, const char *paramencoding) {
 	if (outputencoding && *outputencoding) {
-		r_debug("Setting output encoding to %s\n", outputencoding);
 		rlib_set_output_encoding(r, outputencoding);
 	}
 	if (dbencoding && *dbencoding) {
