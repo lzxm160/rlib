@@ -912,7 +912,7 @@ gfloat rlib_layout_get_next_line(rlib *r, struct rlib_part *part, gfloat positio
 gint rlib_layout_end_page(rlib *r, struct rlib_part *part, struct rlib_report *report);
 
 /***** PROTOTYPES: graphing.c **************************************************/
-void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat left_margin_offset, gfloat top_margin_offset);
+gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat left_margin_offset, gfloat *top_margin_offset);
 
 /***** PROTOTYPES: axis.c ******************************************************/
 //void rlib_graph_find_y_range(rlib *r, gdouble a, gdouble b, gdouble *y_min, gdouble *y_max, gint graph_type);

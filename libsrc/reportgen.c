@@ -538,7 +538,11 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 		if(r->queries_count <= 0 || INPUT(r,r->current_result)->first(INPUT(r,r->current_result), r->results[r->current_result].result) == FALSE) {
 			rlib_layout_report_output(r, part, report, report->alternate.nodata, FALSE);	
 		} else if(report->graph.type_code != NULL) {
-			rlib_graph(r, part, report, left_margin_offset, top_margin_offset);
+			gfloat top;
+			top_margin_offset += rlib_graph(r, part, report, left_margin_offset, &top_margin_offset);
+			top = report->position_top[0];
+			rlib_layout_report_footer(r, part, report);	
+			top_margin_offset += report->position_top[0] - top;
 		} else {
 			rlib_fetch_first_rows(r);
 
@@ -759,6 +763,7 @@ gint rlib_make_report(rlib *r) {
 	r->current_output_encoder = NULL;
 	for(i=0;i<r->parts_count;i++) {
 		struct rlib_part *part = r->parts[i];
+		rlib_fetch_first_rows(r);
 		if(part->has_only_one_report) 
 			rlib_evaulate_single_report_variables(r, part);
 

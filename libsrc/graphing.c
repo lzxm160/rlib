@@ -154,7 +154,7 @@ static void rlib_graph_label_y_axis(rlib *r, gint side, gboolean for_real, gint 
 #define POSITIVE_AND_NEGATIVE 2
 #define NEGATIVE 3
 
-void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat left_margin_offset, gfloat top_margin_offset) {
+gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat left_margin_offset, gfloat *top_margin_offset) {
 	struct rlib_graph_plot *plot;
 	struct rlib_graph *graph = &report->graph;
 	GSList *list;
@@ -210,7 +210,7 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 		y_axis_title_right[0] = 0;
 
 	if(!rlib_will_this_fit(r, part, report, graph_height / RLIB_PDF_DPI, 1)) {
-		top_margin_offset = 0;
+		*top_margin_offset = 0;
 		rlib_layout_end_page(r, part, report);
 		if(report->font_size != -1) {
 			r->font_point = report->font_size;
@@ -226,7 +226,7 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 	if(graph_type == RLIB_GRAPH_TYPE_ROW_STACKED || graph_type == RLIB_GRAPH_TYPE_ROW_PERCENT) 
 		divide_iterations = FALSE;
 			
-	OUTPUT(r)->graph_start(r, left_margin_offset, rlib_layout_get_next_line(r, part, part->position_top[0]+top_margin_offset, 0), graph_width, graph_height, should_label_under_tick);
+	OUTPUT(r)->graph_start(r, left_margin_offset, rlib_layout_get_next_line(r, part, part->position_top[0]+(*top_margin_offset), 0), graph_width, graph_height, should_label_under_tick);
 	
 	rlib_fetch_first_rows(r);
 	if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
@@ -492,4 +492,5 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 	g_free(last_row_values);
 	g_free(last_row_height);
 	OUTPUT(r)->graph_finalize(r);
+	return graph_height / RLIB_PDF_DPI;
 }

@@ -29,7 +29,7 @@
 
 #include "config.h"
 
-#ifdef HAVE_MONETARY_H 
+#ifdef RLIB_HAVE_MONETARY_H 
 #include <monetary.h>
 #endif
 

@@ -610,7 +610,7 @@ static void html_graph_label_y(rlib *r, gchar side, gint iteration, gchar *label
 	if(side == RLIB_SIDE_LEFT)
 		rlib_gd_text(OUTPUT_PRIVATE(r)->rgd, label,  1+graph->y_axis_title_left, top, FALSE);
 	else
-		rlib_gd_text(OUTPUT_PRIVATE(r)->rgd, label,  1+graph->y_axis_title_left+graph->width+(graph->intersection*2)+graph->y_label_width_right, top, FALSE);
+		rlib_gd_text(OUTPUT_PRIVATE(r)->rgd, label,  1+graph->y_axis_title_left+graph->width+(graph->intersection*2)+graph->y_label_width_left, top, FALSE);
 }
 
 static void html_graph_hint_label_y(rlib *r, gchar side, gchar *label) {
