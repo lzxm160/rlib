@@ -1,7 +1,3 @@
-*.o
-libr.so
-chopblock
-*.cache 
-*.in
-.deps
-.libs *.1 *.lo *.la *.log *.m4 *.status Makefile Makefile.in configure
+*.o libr.so chopblock *.cache *.in .deps .libs *.1 *.2 *.junk *.old *.save 
+*.lo *.la *.log *.m4 *.status Makefile Makefile.in 
+configure libtool ltmain.sh rlib.pc rlibc
