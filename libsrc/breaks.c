@@ -138,7 +138,7 @@ void rlib_handle_break_headers(rlib *r, struct rlib_part *part, struct rlib_repo
 	if(icache && OUTPUT(r)->do_break) {	
 		gint allfit = TRUE;
 		for(page=0;page<report->pages_across;page++) {
-			if(!will_this_fit(r, part, report, total[page], page+1))
+			if(!rlib_will_this_fit(r, part, report, total[page], page+1))
 				allfit = FALSE;
 		}
 		if(!allfit) {

@@ -43,6 +43,36 @@ gchar *color_pool[MAX_COLOR_POOL] = {"0x9999ff", "0x993366", "0xffffcc", "0xccff
 	"0xff00ff", "0xffff00", "0x00ffff", "0x800080", "0x800000", "0x008080", "0x0000ff", "0x00ccff", "0xccffff", "0xccffcc", "0xffff99", "0x99ccff", 
 	"0xff99cc", "0xcc99ff", "0xffcc99", "0x3366ff", "0x33cccc", "0x99cc00", "0xffcc00", "0xff9900", "0xff6600", "0x666699", "0x969696"};
 
+static gboolean is_row_graph(gint graph_type) {
+	if(graph_type == RLIB_GRAPH_TYPE_ROW_NORMAL || graph_type == RLIB_GRAPH_TYPE_ROW_PERCENT || graph_type == RLIB_GRAPH_TYPE_ROW_STACKED)
+		return TRUE;
+	return FALSE;
+}
+
+static gboolean is_line_graph(gint graph_type) {
+	if(graph_type == RLIB_GRAPH_TYPE_LINE_NORMAL || graph_type == RLIB_GRAPH_TYPE_LINE_PERCENT || graph_type == RLIB_GRAPH_TYPE_LINE_STACKED)
+		return TRUE;
+	return FALSE;
+}
+
+static gboolean is_pie_graph(gint graph_type) {
+	if(graph_type == RLIB_GRAPH_TYPE_PIE_NORMAL || graph_type == RLIB_GRAPH_TYPE_PIE_RING || graph_type == RLIB_GRAPH_TYPE_PIE_OFFSET)
+		return TRUE;
+	return FALSE;
+}
+
+static gboolean is_percent_graph(gint graph_type) {
+	if(graph_type == RLIB_GRAPH_TYPE_ROW_PERCENT || graph_type == RLIB_GRAPH_TYPE_LINE_PERCENT)
+		return TRUE;
+	return FALSE;
+}
+
+static gboolean is_stacked_graph(gint graph_type) {
+	if(graph_type == RLIB_GRAPH_TYPE_ROW_STACKED || graph_type == RLIB_GRAPH_TYPE_LINE_STACKED)
+		return TRUE;
+	return FALSE;
+}
+
 gint determine_graph_type(gchar *type, gchar *subtype) {
 	if(strcmp(type, "line") == 0) {
 		if(strcmp(subtype, "stacked") == 0)
@@ -134,13 +164,16 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 	gfloat stacked_y_value_min=0;
 	gfloat y_value_try_max;
 	gfloat y_value_try_min;
+	gfloat col_sum = 0;
+	gfloat running_col_sum = 0;
 	gdouble y_min = 999999999;
 	gdouble y_max = -999999999;
+	gfloat *row_sum = NULL, *last_row_values=NULL, *last_row_height=NULL;
 	gint data_plot_count = 0;
 	gint plot_count = 0;
 	gint row_count = 0;
 	gint y_ticks = 10;
-	gint i;
+	gint i = 0;
 	gfloat tmp;
 	gfloat graph_width=300, graph_height=300;
 	gfloat last_height,last_height_neg,last_height_pos;
@@ -149,6 +182,11 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 	struct rlib_rgb color[MAX_COLOR_POOL];
 	gchar type[MAXSTRLEN], subtype[MAXSTRLEN], title[MAXSTRLEN], x_axis_title[MAXSTRLEN], y_axis_title[MAXSTRLEN];
 	gint graph_type;
+	gboolean divide_iterations = TRUE;
+	gboolean should_label_under_tick = FALSE;
+
+	left_margin_offset += part->left_margin;
+
 		
 	if(rlib_execute_as_float(r, graph->width_code, &tmp))
 		graph_width = tmp;
@@ -156,7 +194,6 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 		graph_height = tmp;
 	if(!rlib_execute_as_string(r, graph->type_code, type, MAXSTRLEN))
 		type[0] = 0;
-//MROTH
 	if(!rlib_execute_as_string(r, graph->subtype_code, subtype, MAXSTRLEN))
 		subtype[0] = 0;
 	if(!rlib_execute_as_string(r, graph->title_code, title, MAXSTRLEN))
@@ -166,15 +203,20 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 	if(!rlib_execute_as_string(r, graph->y_axis_title_code, y_axis_title, MAXSTRLEN))
 		y_axis_title[0] = 0;
 
+	if(!rlib_will_this_fit(r, part, report, graph_height / RLIB_PDF_DPI, 1)) {
+		top_margin_offset = 0;
+		rlib_layout_end_page(r, part, report);
+	}
+	
 	graph_type = determine_graph_type(type, subtype);	
 
-	//if( graph_type == RLIB_GRAPH_TYPE_ROW_STACKED ) 
-	//	rlogit("----------------------> STACKED GRAPH TYPE\n");
-	//else
-		//rlogit("-----------------------------------------\n");
+	if(is_line_graph(graph_type))
+		should_label_under_tick = TRUE;
 
+	if(graph_type == RLIB_GRAPH_TYPE_ROW_STACKED || graph_type == RLIB_GRAPH_TYPE_ROW_PERCENT) 
+		divide_iterations = FALSE;
 			
-	OUTPUT(r)->graph_start(r, left_margin_offset, rlib_layout_get_next_line(r, part, part->position_top[0]+top_margin_offset, 0), graph_width, graph_height);
+	OUTPUT(r)->graph_start(r, left_margin_offset, rlib_layout_get_next_line(r, part, part->position_top[0]+top_margin_offset, 0), graph_width, graph_height, should_label_under_tick);
 	
 	rlib_fetch_first_rows(r);
 	if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
@@ -183,6 +225,8 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 			stacked_y_value_max = 0;
 			stacked_y_value_min = 0;
 			rlib_process_input_metadata(r);
+			row_sum = g_realloc(row_sum, (row_count+1) * sizeof(gfloat));
+			row_sum[row_count] = 0;
 			for(list=graph->plots;list != NULL; list = g_slist_next(list)) {
 				plot = list->data;
 				if(rlib_execute_as_string(r, plot->axis_code, axis, MAXSTRLEN)) {
@@ -198,7 +242,13 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 									OUTPUT(r)->graph_hint_legend(r, legend_label);
 								}
 							}
-							if( graph_type == RLIB_GRAPH_TYPE_ROW_STACKED ) { 
+							
+							if(is_percent_graph(graph_type) || is_pie_graph(graph_type)) {
+								y_value = fabs(y_value);
+								row_sum[row_count] += y_value;
+							}
+							
+							if(is_stacked_graph(graph_type)) { 
 								if( y_value >= 0 ) {
 									if( stacked_y_value_max < 0 ) 
 										stacked_y_value_max = y_value;
@@ -220,60 +270,76 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 							}
 							rlib_parsecolor(&color[data_plot_count%MAX_COLOR_POOL], color_pool[data_plot_count%MAX_COLOR_POOL]);
 							data_plot_count++;
-		//rlogit("DATAPLOT = %d YVALUE=%f YTRY_MAX=%f YTRY_MIN=%f\n",data_plot_count,y_value,y_value_try_max,y_value_try_min);
-/*****
-							if(row_count == 0 ) {
+
+							if(y_value_try_min < y_min)
 								y_min = y_value_try_min;
+							if(y_value_try_max > y_max)
 								y_max = y_value_try_max;
-							} else {
-****/
-								if(y_value_try_min < y_min)
-									y_min = y_value_try_min;
-								if(y_value_try_max > y_max)
-									y_max = y_value_try_max;
-	//rlogit("CURRMAX=%f CURRMIN=%f\n",y_max,y_min);
-/**
-							}
-**/
 						}
-					} // IF AXIS=Y				
+						if(is_pie_graph(graph_type)) {
+							col_sum += fabs(y_value);
+							rlib_parsecolor(&color[row_count%MAX_COLOR_POOL], color_pool[row_count%MAX_COLOR_POOL]);			
+							if(rlib_execute_as_string(r, plot->label_code, legend_label, MAXSTRLEN)) {
+								OUTPUT(r)->graph_hint_legend(r, legend_label);
+							}				
+						}
+					
+					}
 				}
-			} // END FOREACH DATA_PLOT
+			}
 			row_count++;
 
 			if(rlib_navigate_next(r, r->current_result) == FALSE) 
 				break;
 		}
 	}
-	//rlogit("Me have %d rows AND THE MIN IS %f and the MAX IS %f\n", row_count, y_min, y_max);
-	rlib_graph_find_y_range(r, y_min, y_max, &y_min, &y_max, graph_type);
-	y_ticks = rlib_graph_num_ticks(r, y_min, y_max);
-	//rlogit("Mike.. We have %d rows AND THE MIN IS %f and the MAX IS %f and ticks is %d\n", row_count, y_min, y_max, y_ticks);
+
+	if(is_percent_graph(graph_type) || is_pie_graph(graph_type)) {
+		y_min = 0;
+		y_max = 100;
+		y_ticks = 10;
+	} else {
+		rlib_graph_find_y_range(r, y_min, y_max, &y_min, &y_max, graph_type);
+		y_ticks = rlib_graph_num_ticks(r, y_min, y_max);
+	}
 
 	rlib_graph_label_y_axis(r, FALSE, y_ticks, y_min, y_max, y_origin);
 
-	OUTPUT(r)->graph_set_data_plot_count(r, data_plot_count);
-	OUTPUT(r)->graph_draw_legend(r);
-	i=0;
-	for(list=graph->plots;list != NULL; list = g_slist_next(list)) {
-		plot = list->data;
-		if(rlib_execute_as_string(r, plot->axis_code, axis, MAXSTRLEN)) {
-			if(strcmp(axis, "y") == 0) {
-				if(rlib_execute_as_string(r, plot->label_code, legend_label, MAXSTRLEN)) {
-					OUTPUT(r)->graph_draw_legend_label(r, i, legend_label, &color[i]);
+	if(is_pie_graph(graph_type)) {
+		OUTPUT(r)->graph_set_data_plot_count(r, row_count);
+		OUTPUT(r)->graph_draw_legend(r);
+		i = 1;
+	} else {	
+		OUTPUT(r)->graph_set_data_plot_count(r, data_plot_count);
+		OUTPUT(r)->graph_draw_legend(r);
+		i=0;
+		for(list=graph->plots;list != NULL; list = g_slist_next(list)) {
+			plot = list->data;
+			if(rlib_execute_as_string(r, plot->axis_code, axis, MAXSTRLEN)) {
+				if(strcmp(axis, "y") == 0) {
+					if(rlib_execute_as_string(r, plot->label_code, legend_label, MAXSTRLEN)) {
+						OUTPUT(r)->graph_draw_legend_label(r, i, legend_label, &color[i]);
+					}
+					i++;
 				}
-				i++;
 			}
 		}
 	}
-	OUTPUT(r)->graph_title(r, title);
-	OUTPUT(r)->graph_x_axis_title(r, x_axis_title);
-	OUTPUT(r)->graph_y_axis_title(r, y_axis_title);
+	
+	last_row_values = g_malloc(i * sizeof(gfloat));
+	last_row_height = g_malloc(i * sizeof(gfloat));
 
-	OUTPUT(r)->graph_set_x_iterations(r, row_count);
-	OUTPUT(r)->graph_do_grid(r);
-	OUTPUT(r)->graph_tick_x(r);
-	OUTPUT(r)->graph_tick_y(r, y_ticks);
+	OUTPUT(r)->graph_title(r, title);
+	if(!is_pie_graph(graph_type)) {
+		OUTPUT(r)->graph_x_axis_title(r, x_axis_title);
+		OUTPUT(r)->graph_y_axis_title(r, y_axis_title);
+		OUTPUT(r)->graph_set_x_iterations(r, row_count);
+		OUTPUT(r)->graph_do_grid(r, FALSE);
+		OUTPUT(r)->graph_tick_x(r);
+		OUTPUT(r)->graph_tick_y(r, y_ticks);
+	} else {
+		OUTPUT(r)->graph_do_grid(r, TRUE);
+	}
 	
 	if(y_max >= 0 && y_min >= 0) {
 		y_origin = y_min;
@@ -285,9 +351,11 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 		y_origin = y_max;
 		data_type = NEGATIVE;
 	}
-	OUTPUT(r)->graph_set_limits(r, y_min, y_max, y_origin);
 	
-	rlib_graph_label_y_axis(r, TRUE, y_ticks, y_min, y_max, y_origin);
+	if(!is_pie_graph(graph_type)) {
+		OUTPUT(r)->graph_set_limits(r, y_min, y_max, y_origin);
+		rlib_graph_label_y_axis(r, TRUE, y_ticks, y_min, y_max, y_origin);
+	}
 
 	row_count = 0;
 
@@ -299,6 +367,7 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 			last_height_pos=0;
 			last_height_neg=0;
 			last_height=0;
+			i=0;
 			for(list=graph->plots;list != NULL; list = g_slist_next(list)) {
 				plot = list->data;
 				if(rlib_execute_as_string(r, plot->axis_code, axis, MAXSTRLEN)) {
@@ -308,37 +377,63 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 						}																
 					} else if(strcmp(axis, "y") == 0) {
 						if(rlib_execute_as_float(r, plot->field_code, &y_value)) {
-							gfloat value = 0;
-							if(data_type == POSITIVE_AND_NEGATIVE) {
-								if(value >= 0)
-									value = (y_value / y_max) * (fabs(y_max)/(fabs(y_min)+fabs(y_max)));
+							if(is_percent_graph(graph_type) || is_pie_graph(graph_type)) {
+								y_value = fabs(y_value);
+								if(is_pie_graph(graph_type))
+									y_max = col_sum;
 								else
-									value = (y_value / y_min) * (fabs(y_min)/(fabs(y_min)+fabs(y_max)));
+									y_max = row_sum[row_count];
+								y_min = 0;
+							}
+
+							gfloat value_a = 0;
+						
+							if(data_type == POSITIVE_AND_NEGATIVE) {
+								if(value_a >= 0)
+									value_a = (y_value / y_max) * (fabs(y_max)/(fabs(y_min)+fabs(y_max)));
+								else
+									value_a = (y_value / y_min) * (fabs(y_min)/(fabs(y_min)+fabs(y_max)));
 							} else if(data_type == NEGATIVE) {
-								value = -((y_value - y_origin) / (y_min - y_origin));
+								value_a = -((y_value - y_origin) / (y_min - y_origin));
 							} else {
-								value = (y_value - y_origin) / (y_max - y_origin);
+								value_a = (y_value - y_origin) / (y_max - y_origin);
 							}
 							plot_count = data_plot_count;
-							if( graph_type == RLIB_GRAPH_TYPE_ROW_STACKED ) { 
+							if(is_percent_graph(graph_type) || is_stacked_graph(graph_type) || is_pie_graph(graph_type)) { 
 								plot_count = 0;
-								if( value >= 0 ) 
+								if( value_a >= 0 ) 
 									last_height = last_height_pos;
 								else
 									last_height = last_height_neg;
 							} 
-							OUTPUT(r)->graph_draw_bar(r, row_count, plot_count, value, &color[data_plot_count],last_height);
-							if( graph_type == RLIB_GRAPH_TYPE_ROW_STACKED ) { 
-								if(value >= 0 ) 
-									last_height_pos += value;
-								else
-									last_height_neg += value;
+							if(is_row_graph(graph_type)) {
+								OUTPUT(r)->graph_plot_bar(r, row_count, plot_count, value_a, &color[data_plot_count],last_height, divide_iterations);
+							} else if(is_line_graph(graph_type)) {
+								if(row_count > 0)
+									OUTPUT(r)->graph_plot_line(r, row_count, last_row_values[i], last_row_height[i], value_a, last_height, &color[data_plot_count]);
+							} else if(is_pie_graph(graph_type)) {
+								OUTPUT(r)->graph_plot_pie(r, running_col_sum, value_a+running_col_sum, &color[row_count]);
+								running_col_sum += value_a;
+								if(rlib_execute_as_string(r, plot->label_code, legend_label, MAXSTRLEN))
+									OUTPUT(r)->graph_draw_legend_label(r, row_count, legend_label, &color[row_count]);
+					
 							}
+								
+							if(is_percent_graph(graph_type) || is_stacked_graph(graph_type) || is_pie_graph(graph_type)) { 
+								if(value_a >= 0 ) 
+									last_height_pos += value_a;
+								else
+									last_height_neg += value_a;
+							}
+							
+							last_row_values[i] = value_a;
+							last_row_height[i] = last_height;
+							i++;
 						}
 						data_plot_count++;
-					} // END IF Y AXIS				
+					} 			
 				}
-			} // FOREACH DATA PLOT
+			} 
 			row_count++;
 
 			if(rlib_navigate_next(r, r->current_result) == FALSE)
@@ -346,4 +441,7 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 		}
 	}
 	report->position_top[0] += graph_height / RLIB_PDF_DPI;
+	g_free(row_sum);
+	g_free(last_row_values);
+	g_free(last_row_height);
 }

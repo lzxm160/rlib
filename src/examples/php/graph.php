@@ -41,9 +41,194 @@
 	$data[5][4] = "8";
 	$data[5][5] = "-10";
 
+	$line_data[0][0] = "doy";
+	$line_data[0][1] = "rest1";
+	$line_data[0][2] = "rest2";
+	$line_data[0][3] = "rest3";
+	$line_data[0][4] = "rest4";
+	$line_data[0][5] = "rest5";
+	$line_data[0][6] = "rest6";
+	$line_data[0][7] = "os1";
+	$line_data[0][8] = "os2";
+	$line_data[0][9] = "os3";
+	$line_data[0][10] = "os4";
+	$line_data[0][11] = "os5";
+	$line_data[0][12] = "os6";
+
+	$line_data[1][0] = "Sun";
+	$line_data[1][1] = "100";
+	$line_data[1][2] = "120";
+	$line_data[1][3] = "130";
+	$line_data[1][4] = "110";
+	$line_data[1][5] = "120";
+	$line_data[1][6] = "130";
+	$line_data[1][7] = "5";
+	$line_data[1][8] = "10";
+	$line_data[1][9] = "-2";
+	$line_data[1][10] = "-4";
+	$line_data[1][11] = "4";
+	$line_data[1][12] = "-1";
+
+	$line_data[2][0] = "Mon";
+	$line_data[2][1] = "120";
+	$line_data[2][2] = "110";
+	$line_data[2][3] = "120";
+	$line_data[2][4] = "140";
+	$line_data[2][5] = "150";
+	$line_data[2][6] = "160";
+	$line_data[2][7] = "-2";
+	$line_data[2][8] = "4";
+	$line_data[2][9] = "3";
+	$line_data[2][10] = "-2";
+	$line_data[2][11] = "2";
+	$line_data[2][12] = "-2";
+
+	$line_data[3][0] = "Tue";
+	$line_data[3][1] = "110";
+	$line_data[3][2] = "130";
+	$line_data[3][3] = "110";
+	$line_data[3][4] = "120";
+	$line_data[3][5] = "130";
+	$line_data[3][6] = "120";
+	$line_data[3][7] = "12";
+	$line_data[3][8] = "12";
+	$line_data[3][9] = "-5";
+	$line_data[3][10] = "2";
+	$line_data[3][11] = "-4";
+	$line_data[3][12] = "5";
+
+	$line_data[4][0] = "Wed";
+	$line_data[4][1] = "30";
+	$line_data[4][2] = "50";
+	$line_data[4][3] = "40";
+	$line_data[4][4] = "90";
+	$line_data[4][5] = "30";
+	$line_data[4][6] = "40";
+	$line_data[4][7] = "-5";
+	$line_data[4][8] = "-2";
+	$line_data[4][9] = "10";
+	$line_data[4][10] = "12";
+	$line_data[4][11] = "13";
+	$line_data[4][12] = "-4";
+
+	$line_data[5][0] = "Thu";
+	$line_data[5][1] = "60";
+	$line_data[5][2] = "100";
+	$line_data[5][3] = "90";
+	$line_data[5][4] = "80";
+	$line_data[5][5] = "70";
+	$line_data[5][6] = "85";
+	$line_data[5][7] = "5";
+	$line_data[5][8] = "4";
+	$line_data[5][9] = "3";
+	$line_data[5][10] = "2";
+	$line_data[5][11] = "1";
+	$line_data[5][12] = "0";
+
+	$line_data[6][0] = "Fri";
+	$line_data[6][1] = "100";
+	$line_data[6][2] = "120";
+	$line_data[6][3] = "130";
+	$line_data[6][4] = "110";
+	$line_data[6][5] = "120";
+	$line_data[6][6] = "130";
+	$line_data[6][7] = "-2";
+	$line_data[6][8] = "-3";
+	$line_data[6][9] = "-4";
+	$line_data[6][10] = "-5";
+	$line_data[6][11] = "-6";
+	$line_data[6][12] = "-7";
+
+	$line_data[7][0] = "Sat";
+	$line_data[7][1] = "120";
+	$line_data[7][2] = "110";
+	$line_data[7][3] = "120";
+	$line_data[7][4] = "140";
+	$line_data[7][5] = "150";
+	$line_data[7][6] = "160";
+	$line_data[7][7] = "-2";
+	$line_data[7][8] = "2";
+	$line_data[7][9] = "-2";
+	$line_data[7][10] = "2";
+	$line_data[7][11] = "-2";
+	$line_data[7][12] = "2";
+
+	$pie_data[0][0] = "emotion";
+	$pie_data[0][1] = "value";
+
+	$pie_data[1][0] = "Happy";
+	$pie_data[1][1] = "50";
+
+	$pie_data[2][0] = "Sad";
+	$pie_data[2][1] = "30";
+
+	$pie_data[3][0] = "Grumpy";
+	$pie_data[3][1] = "80";
+
+	$pie_data[4][0] = "Sleepy";
+	$pie_data[4][1] = "40";
+
+	$pie_data2[0][0] = "food";
+	$pie_data2[0][1] = "value";
+
+	$pie_data2[1][0] = "Pizza";
+	$pie_data2[1][1] = "20";
+
+	$pie_data2[2][0] = "Chicken";
+	$pie_data2[2][1] = "30";
+
+	$pie_data2[3][0] = "Meat";
+	$pie_data2[3][1] = "20";
+
+	$pie_data2[4][0] = "Potatos";
+	$pie_data2[4][1] = "10";
+
+	$pie_data2[5][0] = "Vegies";
+	$pie_data2[5][1] = "10";
+
+	$pie_data2[6][0] = "Fruit";
+	$pie_data2[6][1] = "15";
+
+	$pie_data2[7][0] = "Fish";
+	$pie_data2[7][1] = "5";
+
+	$pie_data2[8][0] = "Pasta";
+	$pie_data2[8][1] = "20";
+
+	$pie_data2[9][0] = "Ice Cream";
+	$pie_data2[9][1] = "10";
+
+	$pie_data2[10][0] = "Fresca";
+	$pie_data2[10][1] = "50";
+
+	$pie_data2[11][0] = "Water";
+	$pie_data2[11][1] = "20";
+
+	$pie_data2[12][0] = "Soda";
+	$pie_data2[12][1] = "20";
+
+	$pie_data2[13][0] = "Milk";
+	$pie_data2[13][1] = "5";
+
+	$pie_data2[13][0] = "Oj";
+	$pie_data2[13][1] = "5";
+
+	$pie_data2[13][0] = "Cake";
+	$pie_data2[13][1] = "20";
+
+	$pie_data2[13][0] = "Pie";
+	$pie_data2[13][1] = "10";
+
+	$pie_data2[13][0] = "Pudding";
+	$pie_data2[13][1] = "5";
+
+
 	$rlib =	rlib_init();
 	rlib_add_datasource_array($rlib, "local_array");
 	rlib_add_query_as($rlib, "local_array", "data", "data");
+	rlib_add_query_as($rlib, "local_array", "line_data", "line_data");
+	rlib_add_query_as($rlib, "local_array", "pie_data", "pie_data");
+	rlib_add_query_as($rlib, "local_array", "pie_data2", "pie_data2");
 	rlib_add_report($rlib, "graph.xml");
 	rlib_set_output_format_from_text($rlib, "pdf");
 	rlib_execute($rlib);

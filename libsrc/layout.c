@@ -692,7 +692,6 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 							&extra_data[start_count], buf);
 					}
 				} else {
-					gint counter;
 					for(e = rl->e; e != NULL; e=e->next) {
 						if(e->type == RLIB_ELEMENT_FIELD) {
 							struct rlib_report_field *rf = ((struct rlib_report_field *)e->data);

@@ -714,12 +714,12 @@ struct output_filter {
 	void (*start_td)(rlib *, struct rlib_part *part, gfloat left_margin, gfloat bottom_margin, int width, int height, gint border_width, struct rlib_rgb *color);
 	void (*end_td)(rlib *);
 	
-	void (*graph_start)(rlib *r, float, float, float, float);
+	void (*graph_start)(rlib *r, float, float, float, float, gboolean x_axis_labels_are_under_tick);
 	void (*graph_title)(rlib *r, gchar *title);
 	void (*graph_x_axis_title)(rlib *r, gchar *title);
 	void (*graph_y_axis_title)(rlib *r, gchar *title);
 	void (*graph_set_limits)(rlib *r, gdouble min, gdouble max, gdouble origin);
-	void (*graph_do_grid)(rlib *r);
+	void (*graph_do_grid)(rlib *r, gboolean just_a_box);
 	void (*graph_draw_line)(rlib *, float, float, float, float, struct rlib_rgb *);
 	void (*graph_set_x_iterations)(rlib *, int iterations);
 	void (*graph_tick_x)(rlib *);
@@ -728,7 +728,9 @@ struct output_filter {
 	void (*graph_hint_label_x)(rlib *r, gchar *label);
 	void (*graph_label_x)(rlib *r, int iteration, gchar *label);
 	void (*graph_label_y)(rlib *r, int iteration, gchar *label, gboolean false_x);
-	void (*graph_draw_bar)(rlib *r, int iteration, int plot, gfloat height, struct rlib_rgb *,gfloat last_height);
+	void (*graph_plot_bar)(rlib *r, int iteration, int plot, gfloat height, struct rlib_rgb * color,gfloat last_height, gboolean divide_iterations);
+	void (*graph_plot_pie)(rlib *r, gfloat start, gfloat end, struct rlib_rgb *color);
+	void (*graph_plot_line)(rlib *r, int iteration, gfloat p1_height, gfloat p1_last_height, gfloat p2_height, gfloat p2_last_height, struct rlib_rgb * color);
 	void (*graph_hint_label_y)(rlib *r, gchar *string);
 	void (*graph_hint_legend)(rlib *r, gchar *string);
 	void (*graph_draw_legend)(rlib *r);
@@ -812,7 +814,7 @@ void rlib_pcode_free(struct rlib_pcode *code);
 void rlib_set_report_from_part(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat top_margin_offset);
 gchar *align_text(rlib *r, char *rtn, gint len, gchar *src, gint align, gint width);
 gint will_outputs_fit(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_element *e, gint page);
-gint will_this_fit(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat total, gint page);
+gint rlib_will_this_fit(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat total, gint page);
 gfloat get_output_size(rlib *r, struct rlib_report_output_array *roa);
 gint rlib_fetch_first_rows(rlib *r);
 gint rlib_end_page_if_line_wont_fit(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_element *e) ;

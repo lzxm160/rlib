@@ -259,7 +259,7 @@ gfloat get_outputs_size(rlib *r, struct rlib_element *e, gint page) {
 }
 
 
-gint will_this_fit(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat total, gint page) {
+gint rlib_will_this_fit(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat total, gint page) {
 	if(OUTPUT(r)->paginate == FALSE)
 		return TRUE;
 	if(report->position_top[page-1]+total > report->position_bottom[page-1])
@@ -281,7 +281,7 @@ gint will_outputs_fit(rlib *r, struct rlib_part *part, struct rlib_report *repor
 		if(page == -1 || page == roa->page || roa->page == -1)
 			size += get_output_size(r, roa);
 	}			
-	return will_this_fit(r, part, report, size, page);
+	return rlib_will_this_fit(r, part, report, size, page);
 }
 
 void rlib_set_report_from_part(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat top_margin_offset) {
@@ -505,8 +505,6 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 	rlib_resolve_report_fields(r, report);
 
 	for(iterations=0;iterations<report->iterations;iterations++) {
-
-
 		rlib_init_variables(r, report);
 		rlib_process_variables(r, report);
 		rlib_process_input_metadata(r);

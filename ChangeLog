@@ -1,3 +1,13 @@
+2004-12-31  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/breaks.c: line graphs, pie graphs, and make sure the graph will fit, more minor cleanups
+	* libsrc/graphing.c: likewise
+	* libsrc/layout.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/rlib.h: likewise
+	* src/examples/php/graph.php: likewise
+	* src/examples/php/graph.xml: likewise
+
 2004-12-30  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/free.c: legends, x axis labels try to fit better, minor cleanups
 	* libsrc/graphing.c: likewise
