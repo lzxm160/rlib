@@ -206,14 +206,14 @@ struct report_horizontal_line {
 	xmlChar *indent;
 	xmlChar *length;
 	xmlChar *font_size;
-	xmlChar *surpress;
+	xmlChar *suppress;
 
 	int font_point;
 	float realsize;
 	int realindent;
 	int reallength;
 	struct rlib_pcode *bgcolor_code;
-	struct rlib_pcode *surpress_code;
+	struct rlib_pcode *suppress_code;
 };
 
 struct report_image {
@@ -233,11 +233,11 @@ struct report_lines {
 	xmlChar *bgcolor;
 	xmlChar *color;
 	xmlChar *font_size;
-	xmlChar *surpress;
+	xmlChar *suppress;
 	int font_point;
 	struct rlib_pcode *bgcolor_code;
 	struct rlib_pcode *color_code;
-	struct rlib_pcode *surpress_code;
+	struct rlib_pcode *suppress_code;
 	struct report_element *e;
 };
 
@@ -252,11 +252,11 @@ struct report_break {
 	xmlChar *name;
 	xmlChar *xml_newpage;
 	xmlChar *xml_headernewpage;
-	xmlChar *xml_surpressblank;
+	xmlChar *xml_suppressblank;
 	int didheader;
 	int newpage;
 	int headernewpage;
-	int surpressblank;
+	int suppressblank;
 	struct report_element *header;
 	struct report_element *fields;
 	struct report_element *footer;
@@ -301,7 +301,7 @@ struct rlib_report {
 	xmlChar *xml_left_margin;
 	xmlChar *xml_bottom_margin;
 	xmlChar *xml_pages_accross;
-	xmlChar *xml_surpress_page_header_first_page;
+	xmlChar *xml_suppress_page_header_first_page;
 
 	float *position_top;
 	float *position_bottom;
@@ -313,7 +313,7 @@ struct rlib_report {
 	float bottom_margin;
 	float left_margin;
 	long pages_accross;
-	long surpress_page_header_first_page;
+	long suppress_page_header_first_page;
 	
 	struct report_element *report_header;
 	struct report_element *page_header;

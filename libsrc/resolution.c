@@ -172,7 +172,7 @@ static void rlib_hr_resolve_pcode(rlib *r, struct report_horizontal_line * rhl) 
 	else
 		rhl->reallength = atof(rhl->length);
 	rhl->bgcolor_code = rlib_infix_to_pcode(r, rhl->bgcolor);
-	rhl->surpress_code = rlib_infix_to_pcode(r, rhl->surpress);
+	rhl->suppress_code = rlib_infix_to_pcode(r, rhl->suppress);
 }
 
 static void rlib_image_resolve_pcode(rlib *r, struct report_image * ri) {
@@ -202,7 +202,7 @@ static void rlib_resolve_fields2(rlib *r, struct report_output_array *roa) {
 			e = rl->e;
 			rl->bgcolor_code = rlib_infix_to_pcode(r, rl->bgcolor);
 			rl->color_code = rlib_infix_to_pcode(r, rl->color);
-			rl->surpress_code = rlib_infix_to_pcode(r, rl->surpress);
+			rl->suppress_code = rlib_infix_to_pcode(r, rl->suppress);
 
 			for(; e != NULL; e=e->next) {
 				if(e->type == REPORT_ELEMENT_FIELD) {
@@ -286,10 +286,10 @@ void rlib_resolve_fields(rlib *r) {
 	else
 		r->reports[r->current_report]->pages_accross = atol(r->reports[r->current_report]->xml_pages_accross);
 
-	r->reports[r->current_report]->surpress_page_header_first_page = FALSE;
-	if(r->reports[r->current_report]->xml_surpress_page_header_first_page != NULL &&
-		!strcmp(r->reports[r->current_report]->xml_surpress_page_header_first_page, "yes"))
-		r->reports[r->current_report]->surpress_page_header_first_page = TRUE;
+	r->reports[r->current_report]->suppress_page_header_first_page = FALSE;
+	if(r->reports[r->current_report]->xml_suppress_page_header_first_page != NULL &&
+		!strcmp(r->reports[r->current_report]->xml_suppress_page_header_first_page, "yes"))
+		r->reports[r->current_report]->suppress_page_header_first_page = TRUE;
 		
 	r->reports[r->current_report]->position_top = rmalloc(r->reports[r->current_report]->pages_accross * sizeof(float));
 	r->reports[r->current_report]->position_bottom = rmalloc(r->reports[r->current_report]->pages_accross * sizeof(float));
@@ -311,13 +311,13 @@ void rlib_resolve_fields(rlib *r) {
 			rlib_resolve_outputs(r, rb->footer);
 			rb->newpage = FALSE;
 			rb->headernewpage = FALSE;
-			rb->surpressblank = FALSE;
+			rb->suppressblank = FALSE;
 			if(rb->xml_newpage != NULL && rb->xml_newpage[0] != '\0' && !strcmp(rb->xml_newpage, "yes"))
 				rb->newpage = TRUE;
 			if(rb->xml_headernewpage != NULL && rb->xml_headernewpage[0] != '\0' && !strcmp(rb->xml_headernewpage, "yes"))
 				rb->headernewpage = TRUE;
-			if(rb->xml_surpressblank != NULL && rb->xml_surpressblank[0] != '\0' && !strcmp(rb->xml_surpressblank, "yes"))
-				rb->surpressblank = TRUE;
+			if(rb->xml_suppressblank != NULL && rb->xml_suppressblank[0] != '\0' && !strcmp(rb->xml_suppressblank, "yes"))
+				rb->suppressblank = TRUE;
 			for(be = rb->fields; be != NULL; be=be->next) {
 				struct break_fields *bf = be->data;
 				rlib_break_resolve_pcode(r, bf);

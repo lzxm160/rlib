@@ -27,14 +27,14 @@
 
 static void rlib_print_break_header_output(rlib *r, struct report_break *rb, struct report_element *e, int backwards) {
 	int blank = TRUE;
-	int surpress = FALSE;
+	int suppress = FALSE;
 
 	if(!OUTPUT(r)->do_break)
 		return;
 		
-	if(rb->surpressblank) {
+	if(rb->suppressblank) {
 		struct report_element *be;
-		surpress = TRUE;
+		suppress = TRUE;
 		for(be = rb->fields; be != NULL; be=be->next) {
 			struct break_fields *bf = be->data;
 			if((bf->rval == NULL || (RLIB_VALUE_IS_STRING(bf->rval) && !strcmp(RLIB_VALUE_GET_AS_STRING(bf->rval), ""))) && blank == TRUE)
@@ -44,7 +44,7 @@ static void rlib_print_break_header_output(rlib *r, struct report_break *rb, str
 		}		
 		
 	}
-	if(!surpress || (surpress && !blank)) {
+	if(!suppress || (suppress && !blank)) {
 		rb->didheader = TRUE;
 		if(e != NULL)
 			print_report_output(r, e, backwards);

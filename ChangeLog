@@ -1,3 +1,17 @@
+2003-12-18  Chet Heilman <cheilman@sicompos.com>
+
+	* libsrc/breaks.c: (rlib_print_break_header_output): Change all 'surpress'
+	to 'suppress'.
+	* libsrc/parsexml.c: (parse_report_output), (parse_report_break),
+	(parse_report_file):ditto
+	* libsrc/reportgen.c: (rlib_check_is_not_suppressed),
+	(wrap_memo_lines), (free_memo_lines), (calc_memo_lines),
+	(print_report_output_private), (rlib_init_page): ditto, plus some coding
+	stype fixups.
+	* libsrc/resolution.c: (rlib_hr_resolve_pcode),
+	(rlib_resolve_fields2), (rlib_resolve_fields): 'surpress' to 'suppress'
+	* libsrc/rlib.h: 'surpress' to 'suppress'
+
 2003-12-15  Bob Doan  <bdoan@sicompos.com>
 	* configure.in: bump
 	* inputs/postgre/postgre.c: crash fix

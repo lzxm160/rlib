@@ -126,7 +126,7 @@ static struct report_element * parse_report_output(struct rlib_report *rep, xmlD
 			rl->bgcolor = xmlGetProp(cur, (const xmlChar *) "bgcolor");
 			rl->color = xmlGetProp(cur, (const xmlChar *) "color");
 			rl->font_size = xmlGetProp(cur, (const xmlChar *) "fontSize");
-			rl->surpress = xmlGetProp(cur, (const xmlChar *) "surpress");
+			rl->suppress = xmlGetProp(cur, (const xmlChar *) "suppress");
 			if(rl->font_size == NULL)
 				rl->font_point = -1;
 			else
@@ -142,7 +142,7 @@ static struct report_element * parse_report_output(struct rlib_report *rep, xmlD
 			rhl->indent = xmlGetProp(cur, (const xmlChar *) "indent");
 			rhl->length = xmlGetProp(cur, (const xmlChar *) "length");
 			rhl->font_size = xmlGetProp(cur, (const xmlChar *) "fontSize");
-			rhl->surpress = xmlGetProp(cur, (const xmlChar *) "surpress");
+			rhl->suppress = xmlGetProp(cur, (const xmlChar *) "suppress");
 			if(rhl->font_size == NULL)
 				rhl->font_point = -1;
 			else
@@ -219,7 +219,7 @@ static struct report_element * parse_report_break(struct rlib_report *rep, xmlDo
 	rb->name = xmlGetProp(cur, (const xmlChar *) "name");
 	rb->xml_newpage = xmlGetProp(cur, (const xmlChar *) "newpage");
 	rb->xml_headernewpage = xmlGetProp(cur, (const xmlChar *) "headernewpage");
-	rb->xml_surpressblank = xmlGetProp(cur, (const xmlChar *) "surpressblank");
+	rb->xml_suppressblank = xmlGetProp(cur, (const xmlChar *) "suppressblank");
 	cur = cur->xmlChildrenNode;
 	rb->fields = NULL;
 	rb->header = NULL;
@@ -403,7 +403,7 @@ struct rlib_report * parse_report_file(char *filename) {
 	ret->xml_left_margin = xmlGetProp(cur, (const xmlChar *) "leftMargin");
 	ret->xml_bottom_margin = xmlGetProp(cur, (const xmlChar *) "bottomMargin");
 	ret->xml_pages_accross = xmlGetProp(cur, (const xmlChar *) "pagesAccross");
-	ret->xml_surpress_page_header_first_page = xmlGetProp(cur, (const xmlChar *) "surpressPageHeaderFirstPage");
+	ret->xml_suppress_page_header_first_page = xmlGetProp(cur, (const xmlChar *) "suppressPageHeaderFirstPage");
 	
 	cur = cur->xmlChildrenNode;
 	ret->breaks = NULL;

@@ -406,24 +406,24 @@ void find_stuff_in_common(rlib *r, struct rlib_line_extra_data *extra_data, int 
 	}
 }
 
-static int rlib_check_is_not_surpressed(rlib *r, struct rlib_pcode *code) {
-	struct rlib_value surpress;
+static int rlib_check_is_not_suppressed(rlib *r, struct rlib_pcode *code) {
+	struct rlib_value suppress;
 
 	if(code != NULL) {
-		rlib_execute_pcode(r, &surpress, code, NULL);
+		rlib_execute_pcode(r, &suppress, code, NULL);
 
-		if(!RLIB_VALUE_IS_NONE((&surpress))) {
-			if(!RLIB_VALUE_IS_STRING((&surpress))) {
+		if(!RLIB_VALUE_IS_NONE((&suppress))) {
+			if(!RLIB_VALUE_IS_STRING((&suppress))) {
 				rlogit("RLIB ENCOUNTERED AN ERROR PROCESSING SURPRESS... VALUE WAS NOT OF TYPE STRING\n");
 			} else {
-				char *value = RLIB_VALUE_GET_AS_STRING((&surpress));
+				char *value = RLIB_VALUE_GET_AS_STRING((&suppress));
 				if(value != NULL) {
 					if(strcasecmp(value, "yes") == 0) {
-						rlib_value_free(&surpress);
+						rlib_value_free(&suppress);
 						return FALSE;
 					}
 				}
-				rlib_value_free(&surpress);
+				rlib_value_free(&suppress);
 			}	
 		}
 	}
@@ -436,7 +436,7 @@ static int rlib_check_is_not_surpressed(rlib *r, struct rlib_pcode *code) {
  * break the string txt into a RVector of individual strings that will fit
  * the width. Use RVector_size to count the # of lines returned.
  */
-RVector *wrapMemoLines(char *txt, int width, const char *wrapchars) {
+RVector *wrap_memo_lines(char *txt, int width, const char *wrapchars) {
 	int len;
 	char *tptr, *endptr, *ptr;
 	RVector *v = RVector_new();
@@ -468,7 +468,7 @@ RVector *wrapMemoLines(char *txt, int width, const char *wrapchars) {
 /**
  * Frees all memory allocated for a memo lines vector
  */
-void freeMemoLines(RVector *v) {
+void free_memo_lines(RVector *v) {
 	int i, lim = RVector_size(v);
 
 	for (i = 0; i < lim; ++i) {
@@ -478,7 +478,7 @@ void freeMemoLines(RVector *v) {
 }
 
 
-int calcMemoLines(struct report_lines *rl) {
+int calc_memo_lines(struct report_lines *rl) {
 	struct report_element *e;
 //	int hasmemo;
 	int nlines = 0;
@@ -525,7 +525,7 @@ static int print_report_output_private(rlib *r, struct report_output_array *roa,
 			int count=0;
 			
 			
-			if(rlib_check_is_not_surpressed(r, rl->surpress_code)) {
+			if(rlib_check_is_not_suppressed(r, rl->suppress_code)) {
 				output_count++;
 				OUTPUT(r)->rlib_start_line(r, backwards);
 
@@ -633,7 +633,7 @@ static int print_report_output_private(rlib *r, struct report_output_array *roa,
 			struct rlib_value rval2, *rval=&rval2;
 			char *colorstring;
 			struct report_horizontal_line *rhl = ro->data;
-			if(rlib_check_is_not_surpressed(r, rhl->surpress_code)) {
+			if(rlib_check_is_not_suppressed(r, rhl->suppress_code)) {
 				rlib_execute_pcode(r, &rval2, rhl->bgcolor_code, NULL);
 				if(!RLIB_VALUE_IS_STRING(rval)) {
 					rlogit("RLIB ENCOUNTERED AN ERROR PROCESSING THE BGCOLOR FOR A HR.. COLOR VALUE WAS NOT OF TYPE STRING\n");
@@ -762,7 +762,7 @@ void rlib_init_page(rlib *r, char report_header) {
 	if(report_header)
 		print_report_output(r, r->reports[r->current_report]->report_header, FALSE);	
 	
-	if(!(r->current_page_number == 1 && r->reports[r->current_report]->surpress_page_header_first_page == TRUE))
+	if(!(r->current_page_number == 1 && r->reports[r->current_report]->suppress_page_header_first_page == TRUE))
 		print_report_output(r, r->reports[r->current_report]->page_header, FALSE);
 	print_report_output(r, r->reports[r->current_report]->detail.textlines, FALSE);		
 	rlib_handle_page_footer(r);
