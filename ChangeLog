@@ -1,3 +1,10 @@
+2004-01-13  Bob Doan  <bdoan@sicompos.com>
+	* bindings/php/php.c: pho bug work around
+	* bindings/python/python.c: ability to use MySql groups (steuer@unixsystems.de)
+	* inputs/mysql/mysql.c: likewise
+	* libsrc/datasource.c: likewise
+	* libsrc/rlib.h: likewise
+
 2004-01-13  Chet Heilman <cheilman@sicompos.com>
 	* libsrc/pcode.c: (rlib_operand_get_value): Fix memory allocation/
 	deallocation error.

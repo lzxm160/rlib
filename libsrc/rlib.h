@@ -598,12 +598,13 @@ void rlib_csv_new_output_filter(rlib *r);
 
 /***** PROTOTYPES: mysql.c ****************************************************/
 gpointer rlib_mysql_new_input_filter(void);
-gpointer rlib_mysql_real_connect(gpointer input_ptr, gchar *host, gchar *user, gchar *password, gchar *database);
+gpointer rlib_mysql_real_connect(gpointer input_ptr, gchar *group, gchar *host, gchar *user, gchar *password, gchar *database);
 
 /***** PROTOTYPES: datasource.c ***********************************************/
 gint rlib_add_datasource(rlib *r, gchar *input_name, struct input_filter *input);
 gint rlib_add_datasource_mysql(rlib *r, gchar *input_name, gchar *database_host, gchar *database_user, gchar *database_password, 
 	gchar *database_database);
+gint rlib_add_datasource_mysql_from_group(rlib *r, gchar *input_name, gchar *group);
 gint rlib_add_datasource_postgre(rlib *r, gchar *input_name, gchar *conn);
 gint rlib_add_datasource_odbc(rlib *r, gchar *input_name, gchar *source, gchar *user, gchar *password);
 

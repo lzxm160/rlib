@@ -33,11 +33,11 @@ gint rlib_add_datasource(rlib *r, gchar *input_name, struct input_filter *input)
 }
 
 #if HAVE_MYSQL
-gint rlib_add_datasource_mysql(rlib *r, gchar *input_name, gchar *database_host, gchar *database_user, gchar *database_password, 
-gchar *database_database) {
+static gint rlib_add_datasource_mysql_private(rlib *r, gchar *input_name, gchar *database_group, gchar *database_host, 
+gchar *database_user, gchar *database_password, gchar *database_database) {
 	GModule* handle;
 	gpointer (*rlib_mysql_new_input_filter)();
-	gpointer (*rlib_mysql_real_connect)(void *, char *, char *, char*, char *);
+	gpointer (*rlib_mysql_real_connect)(gpointer, gchar *, gchar *, gchar *, gchar*, gchar *);
 	gpointer mysql;
 	
 	handle = g_module_open("libr-mysql", 0);
@@ -50,17 +50,31 @@ gchar *database_database) {
 	g_module_symbol(handle, "rlib_mysql_real_connect", (gpointer *)&rlib_mysql_real_connect);
 															                                                                                                  
 	r->inputs[r->inputs_count].input = rlib_mysql_new_input_filter();
-	mysql = rlib_mysql_real_connect(r->inputs[r->inputs_count].input, database_host, database_user, database_password, database_database);
-	r->inputs[r->inputs_count].name = input_name;
+	
+	mysql = rlib_mysql_real_connect(r->inputs[r->inputs_count].input, database_group, database_host, database_user, 
+		database_password, database_database);
+
 	if(mysql == NULL) {
 		rlogit("ERROR: Could not connect to MYSQL\n");
 		return -1;
 	}
 	
-	r->inputs_count++;
+	r->inputs[r->inputs_count].name = input_name;
 	r->inputs[r->inputs_count].handle = handle;
+	r->inputs_count++;
 
-	return 0;
+	return 0;	
+	
+	
+}
+
+gint rlib_add_datasource_mysql(rlib *r, gchar *input_name, gchar *database_host, gchar *database_user, gchar *database_password, 
+gchar *database_database) {
+	return rlib_add_datasource_mysql_private(r, input_name, NULL, database_host, database_user, database_password, database_database);
+}
+
+gint rlib_add_datasource_mysql_from_group(rlib *r, gchar *input_name, gchar *group) {
+	return rlib_add_datasource_mysql_private(r, input_name, group, NULL, NULL, NULL, NULL);
 }
 #endif
 
@@ -68,7 +82,7 @@ gchar *database_database) {
 gint rlib_add_datasource_postgre(rlib *r, gchar *input_name, gchar *conn) {
 	GModule* handle;
 	gpointer (*rlib_postgre_new_input_filter)();
-	gpointer (*rlib_postgre_connect)(void *, char *);
+	gpointer (*rlib_postgre_connect)(gpointer, gchar *);
 	gpointer postgre;
 
 	handle = g_module_open("libr-postgre", 0);
@@ -98,7 +112,7 @@ gint rlib_add_datasource_postgre(rlib *r, gchar *input_name, gchar *conn) {
 gint rlib_add_datasource_odbc(rlib *r, gchar *input_name, gchar *source, gchar *user, gchar *password) {
 	GModule* handle;
 	gpointer (*rlib_odbc_new_input_filter)();
-	gpointer (*rlib_odbc_connect)(void *, char *, char *, char *);
+	gpointer (*rlib_odbc_connect)(gpointer, gchar *, gchar *, gchar *);
 	gpointer odbc;
 
 	handle = g_module_open("libr-odbc", 0);

@@ -33,6 +33,7 @@
 ZEND_FUNCTION(rlib_init);
 #if HAVE_MYSQL
 ZEND_FUNCTION(rlib_add_datasource_mysql);
+ZEND_FUNCTION(rlib_add_datasource_mysql_from_group);
 #endif
 #if HAVE_POSTGRE
 ZEND_FUNCTION(rlib_add_datasource_postgre);
@@ -61,6 +62,7 @@ zend_function_entry rlib_functions[] =
 	 ZEND_FE(rlib_init, NULL)
 #if HAVE_MYSQL
 	 ZEND_FE(rlib_add_datasource_mysql, NULL)
+	 ZEND_FE(rlib_add_datasource_mysql_from_group, NULL)
 #endif
 #if HAVE_POSTGRE
 	 ZEND_FE(rlib_add_datasource_postgre, NULL)
@@ -148,6 +150,25 @@ ZEND_FUNCTION(rlib_add_datasource_mysql) {
 	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);
 	
 	result = rlib_add_datasource_mysql(rip->r, datasource_name, database_host, database_user, database_password, database_database);
+	RETURN_LONG(result);
+}
+
+ZEND_FUNCTION(rlib_add_datasource_mysql_from_group) {
+	zval *z_rip = NULL;
+	gint datasource_length, sql_group_length;
+	gchar *datasource_name, *database_group;
+	rlib_inout_pass *rip;
+	gint id = -1;
+	gint result = 0;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss", &z_rip,
+		&datasource_name, &datasource_length,
+		&database_group, &sql_group_length) == FAILURE) {
+		return;
+	}
+	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);
+	
+	result = rlib_add_datasource_mysql_from_group(rip->r, datasource_name, database_group);
 	RETURN_LONG(result);
 }
 #endif
@@ -243,7 +264,7 @@ ZEND_FUNCTION(rlib_add_report) {
 	
 	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
 
-	if(mainloop_count > 0)
+	if(ZEND_NUM_ARGS() > 2)
 		rlib_add_report(rip->r, estrdup(name), estrdup(mainloop));
 	else
 		rlib_add_report(rip->r, estrdup(name), NULL);

@@ -44,19 +44,31 @@ struct _private {
 	MYSQL *mysql;
 };
 
-gpointer rlib_mysql_real_connect(gpointer input_ptr, gchar *host, gchar *user, gchar *password, gchar *database) {
+gpointer rlib_mysql_real_connect(gpointer input_ptr, gchar *group, gchar *host, gchar *user, gchar *password, gchar *database) {
 	struct input_filter *input = input_ptr;
 	MYSQL *mysql;
 
 	mysql = mysql_init(NULL);
 
-	if (mysql_real_connect(mysql,host,user,password, database, 0, NULL, 0) == NULL) {
+	if(mysql == NULL)
 		return NULL;
-	}
+
+	if(group != NULL) {
+		if (mysql_options(mysql,MYSQL_READ_DEFAULT_GROUP,group))
+			return NULL;
+		else {
+			host = mysql->options.host;
+			user = mysql->options.user;
+			password = mysql->options.password;
+			database = mysql->options.db;
+		}
+	}		
+
+	if (mysql_real_connect(mysql,host,user,password, database, 0, NULL, 0) == NULL)
+		return NULL;
 		
-	if (mysql_select_db(mysql,database)) {
+	if (mysql_select_db(mysql,database))
 		return NULL;
-	}
 
 	INPUT_PRIVATE(input)->mysql = mysql;	
 	return mysql;
