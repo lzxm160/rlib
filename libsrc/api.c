@@ -47,6 +47,7 @@ rlib * rlib_init_with_environment(struct environment_filter *environment) {
 		g_strlcpy(r->output_encoding_name, lc_encoding, sizeof(r->output_encoding_name));
 //r_debug("rlib_init setting encoding to %s", lc_encoding);
 	}
+	strcpy(r->pdf_encoding, "WinAnsiEncoding");
 	return r;
 }
 

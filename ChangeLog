@@ -1,3 +1,20 @@
+2004-03-10  Chet Heilman  <cheilman@sicompos.com>
+	* libsrc/api.c: (rlib_init_with_environment):
+		Make the default pdf encoding be WinAnsiEncoding unless another is set
+		by the set_pdf_font function. to set NULL as the encoding (to use
+		the default encoding of the font, use "" as the encoding. Setting 
+		the encoding to NULL will cause NO CHANGE in the encoding.
+	* libsrc/html.c: (rlib_html_start_report):
+		Changed how the current output encoding is handled.
+	* libsrc/pdf.c: (rlib_pdf_set_font_point):
+		Changed the rules for setting the encoding as above.
+	* libsrc/reportgen.c: (encode_text), (rlib_output_text),
+	(rlib_output_text_text), (align_text), (make_report):
+		Fixed output conversions and align_text to properly differentiate
+		character length vs. byte length of utf8 strings.
+	* libsrc/rlib.h:
+		Made charcount refer to the proper utf8 function.
+
 2004-03-08  Chet Heilman  <cheilman@sicompos.com>
 	* bindings/php/php.c:
 		fix some bindings that were not correctly configured.

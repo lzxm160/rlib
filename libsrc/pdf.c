@@ -133,12 +133,11 @@ static void rlib_pdf_set_font_point(rlib *r, gint point) {
 			cpdf_setFontDirectories(OUTPUT_PRIVATE(r)->pdf, r->pdf_fontdir1, r->pdf_fontdir2);
 //r_debug("Using font directories %s, %s", r->pdf_fontdir1, r->pdf_fontdir1);
 		}
-//		encoding = (*r->pdf_encoding)? r->pdf_encoding : "WinAnsiEncoding";
-		encoding = NULL;
+		encoding = (*r->pdf_encoding)? r->pdf_encoding : NULL;
 		fontname = (*r->pdf_fontname)? r->pdf_fontname : "Courier";
 //r_debug("Fontname %s, encoding %s", fontname, encoding);
 		result = cpdf_setFont(OUTPUT_PRIVATE(r)->pdf, fontname, encoding, point);
-r_debug("cpdf_setFont returned %d for f:%s, e:%s", result, fontname, encoding);
+//r_debug("cpdf_setFont returned %d for f:%s, e:%s", result, fontname, encoding);
 		r->current_font_point = point;
 	}
 }

@@ -413,11 +413,11 @@ struct rlib {
 	gchar pdf_encoding[256];
 	gchar pdf_fontname[256];
 	gboolean utf8;
-	char original_encoding_name[64];
-	char output_encoding_name[64];
+	gchar original_encoding_name[64];
+	gchar output_encoding_name[64];
 	iconv_t output_encoder; //The default encoder
 	iconv_t current_output_encoder; //The current encoder use to encode
-
+	gchar current_output_encoding_name[64];
 	time_t now; //set when rlib starts now will then be a constant over the time of the report
 	
 	struct rlib_queries queries[RLIB_MAXIMUM_QUERIES];
@@ -669,6 +669,7 @@ gint rlib_datetime_compare(struct rlib_datetime *t1, struct rlib_datetime *t2);
 void rlib_datetime_format(struct rlib_datetime *dt, char *buf, int max, const char *fmt);
 int rlib_datetime_daysdiff(struct rlib_datetime *dt, struct rlib_datetime *dt2);
 
-//#define charcount(s) g_utf8_strlen(s, -1)
-#define charcount(s) strlen(s)
+//#define charcount(s) strlen(s)
+#define charcount(s) g_utf8_strlen(s, -1)
 #define bytelength(s) strlen(s)
+

@@ -18,6 +18,12 @@
  * Boston, MA 02111-1307, USA.
  *
  * $Id$
+ * 
+ * This module generates a report from the information stored in the current
+ * report object.
+ * The main entry point is called once at report generation time for each
+ * report defined in the rlib object.
+ *
  */
  
 #include <stdlib.h>
@@ -199,9 +205,20 @@ struct rlib_line_extra_data *extra_data) {
 }
 	
 
+/*
+ * Convert UTF8 to the desired character encoding, IF specified in rlib object.
+ */
+static const gchar *encode_text(rlib *r, const gchar *text) {
+	if (r->current_output_encoder != (iconv_t) -1) {
+		text = (gchar *) encode(r->current_output_encoder, text);
+	}
+	return text;
+}
+
+
 static gfloat rlib_output_text(rlib *r, gint backwards, 
 						gfloat left_origin, gfloat bottom_orgin, 
-						struct rlib_line_extra_data *extra_data) {
+							struct rlib_line_extra_data *extra_data) {
 	gfloat rtn_width;
 	gchar *text;
 	text = extra_data->formatted_string;
@@ -209,45 +226,36 @@ static gfloat rlib_output_text(rlib *r, gint backwards,
 	if(extra_data->found_color) {
 		OUTPUT(r)->rlib_set_fg_color(r, extra_data->color.r, extra_data->color.g, extra_data->color.b);
 	}
-//Convert UTF8 to the desired character encoding, IF specified.
-rlib_trap();
-	if (r->current_output_encoder != (iconv_t) -1) {
-		text = (gchar *) encode(r->current_output_encoder, text);
-	}
-	OUTPUT(r)->rlib_print_text(r, left_origin, bottom_orgin+(extra_data->font_point/300.0), text, backwards, extra_data->col);
-
+	OUTPUT(r)->rlib_print_text(r, left_origin, bottom_orgin+(extra_data->font_point/300.0), (gchar *) encode_text(r, text), backwards, extra_data->col);
 	rtn_width = extra_data->output_width;
-
 	if(extra_data->found_color)
 		OUTPUT(r)->rlib_set_fg_color(r, 0, 0, 0);
-
 	OUTPUT(r)->rlib_set_font_point(r, r->font_point);
-
 	return rtn_width;
 }
 
-static gfloat rlib_output_text_text(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_orgin, 
-struct rlib_line_extra_data *extra_data, gchar *text) {
+
+static gfloat rlib_output_text_text(rlib *r, gint backwards, 
+								gfloat left_origin, gfloat bottom_orgin, 
+									struct rlib_line_extra_data *extra_data, gchar *text) {
 	gfloat rtn_width;
 	OUTPUT(r)->rlib_set_font_point(r, extra_data->font_point);
-	
 	if(extra_data->found_color)
 		OUTPUT(r)->rlib_set_fg_color(r, extra_data->color.r, extra_data->color.g, extra_data->color.b);
-
-	OUTPUT(r)->rlib_print_text(r, left_origin, bottom_orgin+(extra_data->font_point/300.0), text, backwards, extra_data->col);
-
+//TODO: The cast is because it's too much trouble to change the prototype for the rlib_print_text
+// but rlib_print_text should have param 4 'const gchar *'.
+	OUTPUT(r)->rlib_print_text(r, left_origin, bottom_orgin+(extra_data->font_point/300.0), (gchar *) encode_text(r, text), backwards, extra_data->col);
 	rtn_width = extra_data->output_width;
-
 	if(extra_data->found_color)
 		OUTPUT(r)->rlib_set_fg_color(r, 0, 0, 0);
-
 	OUTPUT(r)->rlib_set_font_point(r, r->font_point);
-
 	return rtn_width;
 }
 
+
+
 gchar *align_text(rlib *r, gchar *rtn, gint len, gchar *src, gint align, gint width) {
-	strcpy(rtn, src);
+	g_strlcpy(rtn, src, len);
 
 	if(!OUTPUT(r)->do_align)
 		return rtn;
@@ -256,18 +264,31 @@ gchar *align_text(rlib *r, gchar *rtn, gint len, gchar *src, gint align, gint wi
 	} else {
 		if(align == RLIB_ALIGN_RIGHT) {
 			gint x = width - charcount(src);
+			if (x > (len - 1)) x = len - 1;
 			if(x > 0) {
 				memset(rtn, ' ', x);
-				strcpy(rtn+x, src);
+				g_strlcpy(rtn+x, src, len - x);
 			}
 		}
+#if 0
 		if(align == RLIB_ALIGN_CENTER) {
 			gint x = (width - charcount(src))/2;
+r_debug("TEST width=%d, x=%d, src is:[%s]", width, x, src);
 			if(x > 0) {
 				memset(rtn, ' ', x);
 				strcpy(rtn+x, src);
 			}
 		}
+#else
+		if(align == RLIB_ALIGN_CENTER) {
+			gint x = (width - charcount(src))/2;
+			if (x > (len - 1)) x = len -1;
+			if(x > 0) {
+				memset(rtn, ' ', x);
+				g_strlcpy(rtn+x, src, len - x);
+			}
+		}
+#endif
 	}
 	return rtn;
 }
@@ -1147,6 +1168,7 @@ gint make_report(rlib *r) {
 			}
 		}
 		r->current_output_encoder = encoder;
+		strcpy(r->current_output_encoding_name, tmp);
 		if (encoder == (iconv_t) -1) {
 //			r->utf8 = TRUE;
 			r_debug("Using UTF-8 for output");
@@ -1221,6 +1243,7 @@ gint make_report(rlib *r) {
 			iconv_close(r->current_output_encoder);
 		}
 		r->current_output_encoder = (iconv_t) -1;
+		*r->current_output_encoding_name = '\0';
 	}	
 	OUTPUT(r)->rlib_end_text(r);
 	if (r->output_encoder != (iconv_t) -1) {
