@@ -118,6 +118,8 @@ static void rlib_field_resolve_pcode(rlib *r, struct report_field *rf) {
 	rf->color_code = rlib_infix_to_pcode(r, rf->color);
 	rf->bgcolor_code = rlib_infix_to_pcode(r, rf->bgcolor);
 	rf->col_code = rlib_infix_to_pcode(r, rf->col);
+	rf->wrapchars_code = rlib_infix_to_pcode(r, rf->xml_wrapchars);
+	rf->maxlines_code = rlib_infix_to_pcode(r, rf->xml_maxlines);
 	
 	rf->width = -1;
 	if(rf->xml_width != NULL)

@@ -65,6 +65,8 @@ struct report_element * parse_line_array(struct rlib_report *rep, xmlDocPtr doc,
 			f->format = xmlGetProp(cur, (const xmlChar *) "format");
 			f->link = xmlGetProp(cur, (const xmlChar *) "link");
 			f->col = xmlGetProp(cur, (const xmlChar *) "col");
+			f->xml_wrapchars = xmlGetProp(cur, (const xmlChar *) "wrapchars");
+			f->xml_maxlines = xmlGetProp(cur, (const xmlChar *) "maxlines");
 			current->data = f;
 			current->type = REPORT_ELEMENT_FIELD;
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "text"))) {

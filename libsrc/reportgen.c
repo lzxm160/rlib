@@ -91,6 +91,7 @@ static float rlib_output_extras(rlib *r, int backwards, float left_origin, float
 	return extra_data->output_width;
 }
 	
+
 static float rlib_output_text(rlib *r, int backwards, float left_origin, float bottom_orgin, struct rlib_line_extra_data *extra_data) {
 	float rtn_width;
 	char *text;
@@ -114,6 +115,7 @@ static float rlib_output_text(rlib *r, int backwards, float left_origin, float b
 	return rtn_width;
 }
 
+
 static float rlib_output_text_text(rlib *r, int backwards, float left_origin, float bottom_orgin, struct rlib_line_extra_data *extra_data, char *text) {
 	float rtn_width;
 	OUTPUT(r)->rlib_set_font_point(r, extra_data->font_point);
@@ -132,6 +134,7 @@ static float rlib_output_text_text(rlib *r, int backwards, float left_origin, fl
 
 	return rtn_width;
 }
+
 
 char *align_text(rlib *r, char *rtn, int len, char *src, long align, long width) {
 	strcpy(rtn, src);
@@ -413,6 +416,73 @@ static int rlib_check_is_not_surpressed(rlib *r, struct rlib_pcode *code) {
 	return TRUE;
 }
 
+
+/**
+ * break the string txt into a RVector of individual strings that will fit
+ * the width. Use RVector_size to count the # of lines returned.
+ */
+RVector *wrapMemoLines(char *txt, int width, const char *wrapchars) {
+	int len;
+	char *tptr, *endptr, *ptr;
+	RVector *v = RVector_new();
+	
+	do {
+		if (strlen(txt) < width) {
+			RVector_add(v, rstrdup(txt));
+			break;
+		} else {
+			endptr = ptr = txt + width;
+			while (ptr > txt) {
+				if ((tptr = strchr(wrapchars, *ptr))) {
+					len = ptr - txt;
+					tptr = rmalloc(len + 1);
+					strncpy(tptr, txt, len);
+					tptr[len] = '\0';
+					RVector_add(v, tptr);
+					endptr = ptr;
+				}
+				--ptr;
+			}
+			txt = endptr;
+		}
+	} while (TRUE);
+	return v;
+}
+
+
+/**
+ * Frees all memory allocated for a memo lines vector
+ */
+void freeMemoLines(RVector *v) {
+	int i, lim = RVector_size(v);
+
+	for (i = 0; i < lim; ++i) {
+		rfree(RVector_get(v, i));
+	}
+	RVector_free(v);
+}
+
+
+int calcMemoLines(struct report_lines *rl) {
+	struct report_element *e;
+//	int hasmemo;
+	int nlines = 0;
+//	RVector *v;
+	
+	for (e = rl->e; e != NULL; e = e->next) {
+		if (e->type == REPORT_ELEMENT_FIELD) {
+			//
+//			if (e->xml_maxlines)
+//			v = wrapMemoLines(
+//			if (e->maxlines != 1) {
+//				hasmemo = TRUE;
+//			}
+		}
+	}
+	return nlines;
+}
+
+
 static int print_report_output_private(rlib *r, struct report_output_array *roa, int backwards, int page) {
 	struct report_element *e=NULL;
 	int j=0;
@@ -689,6 +759,8 @@ float get_output_size(rlib *r, struct report_output_array *roa) {
 		if(rd->type == REPORT_PRESENTATION_DATA_LINE) {
 			struct report_lines *rl = rd->data;
 			total += RLIB_GET_LINE(get_font_point(r, rl));
+			
+//Here to adjust size of memo field output.			
 		} else if(rd->type == REPORT_PRESENTATION_DATA_HR) {
 			struct report_horizontal_line *rhl = rd->data;
 			total += RLIB_GET_LINE(rhl->realsize);		
@@ -709,6 +781,8 @@ float get_outputs_size(rlib *r, struct report_element *e, int page) {
 
 	return total;
 }
+
+
 int will_this_fit(rlib *r, float total, int page) {
 	if(OUTPUT(r)->rlib_is_single_page(r))
 		return TRUE;

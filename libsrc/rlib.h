@@ -166,16 +166,21 @@ struct report_field {
 	xmlChar *format;
 	xmlChar *link;
 	xmlChar *col;
+	xmlChar *xml_wrapchars;
+	xmlChar *xml_maxlines;
 
 	long width;
 	long align;
-
+	
 	struct rlib_pcode *code;
 	struct rlib_pcode *format_code;
 	struct rlib_pcode *link_code;
 	struct rlib_pcode *color_code;
 	struct rlib_pcode *bgcolor_code;
 	struct rlib_pcode *col_code;
+	struct rlib_pcode *wrapchars_code;
+	struct rlib_pcode *maxlines_code;
+	
 	struct rlib_value *rval;
 };
 

@@ -79,6 +79,8 @@ static void rlib_field_free_pcode(rlib *r, struct report_field *rf) {
 	free_pcode(rf->color_code);
 	free_pcode(rf->bgcolor_code);
 	free_pcode(rf->col_code);
+	free_pcode(rf->maxlines_code);
+	free_pcode(rf->wrapchars_code);
 	rfree(rf);
 }
 

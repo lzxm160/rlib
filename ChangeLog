@@ -1,3 +1,14 @@
+2003-12-10  Chet Heilman <cheilman@sicompos.com>
+
+	reviewed by: <delete if not using a buddy>
+
+	* libsrc/free.c: (rlib_field_free_pcode): start changes for memo fields
+	* libsrc/parsexml.c: (parse_line_array): likewise
+	* libsrc/reportgen.c: (wrapMemoLines), (freeMemoLines),
+	(calcMemoLines), (get_output_size): likewise
+	* libsrc/resolution.c: (rlib_field_resolve_pcode): likewise
+	* libsrc/rlib.h: likewise
+
 2003-12-04  Bob Doan  <bdoan@sicompos.com>
 	* configure.in: 1.1.6
 	* libsrc/fxp.c: gcc 3.3.2 compile fixes
