@@ -12,19 +12,9 @@
 	</PageHeader>		
 
 	<pr>
-		<pd width="48">
+		<pd width="98">
 			<Report fontSize="12" orientation="landscape" query="'sales_data'">
-				<Graph type="'line'" subtype="'normal'" width="370" height="250" title="'Normal Line Charts!'" x_axis_title="'Day Of Week'" y_axis_title="'Sales $$$'">
-					<Plot axis="'x'" field="doy"/>
-					<Plot axis="'y'" field="val(net)" label="'Net Sales'" side="'left'"/>
-					<Plot axis="'y'" field="val(check)" label="'Avg Check'" side="'right'"/>
-				</Graph>
-			</Report>
-		</pd>
-		<pd width="2"/>
-		<pd width="48">
-			<Report fontSize="12" orientation="landscape" query="'sales_data'">
-				<Graph type="'line'" subtype="'stacked'" width="370" height="250" title="'Stacked Line Charts!'" x_axis_title="'Day Of Week'" y_axis_title="'Sales $$$'">
+				<Graph type="'line'" subtype="'normal'" width="740" height="250" title="'Double Y Axix!'" x_axis_title="'Day Of Week'" y_axis_title="'Sales $$$'" y_axis_title_right="'Avg Check'">
 					<Plot axis="'x'" field="doy"/>
 					<Plot axis="'y'" field="val(net)" label="'Net Sales'" side="'left'"/>
 					<Plot axis="'y'" field="val(check)" label="'Avg Check'" side="'right'"/>
@@ -33,17 +23,7 @@
 		</pd>
 	</pr>
 	<pr>
-		<pd width="48">
-			<Report fontSize="12" orientation="landscape" query="'sales_data'">
-				<Graph type="'line'" subtype="'percent'" width="370" height="250" title="'Percent Line Charts!'" x_axis_title="'Day Of Week'" y_axis_title="'Sales $$$'">
-					<Plot axis="'x'" field="doy"/>
-					<Plot axis="'y'" field="val(net)" label="'Net Sales'" side="'left'"/>
-					<Plot axis="'y'" field="val(check)" label="'Avg Check'" side="'right'"/>
-				</Graph>
-			</Report>
-		</pd>
-		<pd width="2"/>
-		<pd width="48">
+		<pd width="98">
 			<Report fontSize="12" orientation="landscape" query="'sales_data'">
 				<Detail>
 					<FieldHeaders>

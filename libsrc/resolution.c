@@ -270,6 +270,7 @@ void rlib_resolve_graph(rlib *r, struct rlib_part *part, struct rlib_report *rep
 	graph->title_code = rlib_infix_to_pcode(r, part, report, graph->xml_title, TRUE);
 	graph->x_axis_title_code = rlib_infix_to_pcode(r, part, report, graph->xml_x_axis_title, TRUE);
 	graph->y_axis_title_code = rlib_infix_to_pcode(r, part, report, graph->xml_y_axis_title, TRUE);
+	graph->y_axis_title_right_code = rlib_infix_to_pcode(r, part, report, graph->xml_y_axis_title_right, TRUE);
 
 	for(list=graph->plots;list != NULL; list = g_slist_next(list)) {
 		plot = list->data;

@@ -130,6 +130,10 @@ double trunc(double x);
 
 #define RLIB_SIGNALS 4
 
+#define RLIB_SIDE_LEFT  0
+#define RLIB_SIDE_RIGHT 1
+
+
 struct rlib_paper {
 	char type;
 	long width;
@@ -500,6 +504,7 @@ struct rlib_graph {
 	gchar *xml_title;
 	gchar *xml_x_axis_title;
 	gchar *xml_y_axis_title;
+	gchar *xml_y_axis_title_right;
 	struct rlib_pcode *type_code;	
 	struct rlib_pcode *subtype_code;	
 	struct rlib_pcode *width_code;
@@ -507,6 +512,7 @@ struct rlib_graph {
 	struct rlib_pcode *title_code;
 	struct rlib_pcode *x_axis_title_code;
 	struct rlib_pcode *y_axis_title_code;
+	struct rlib_pcode *y_axis_title_right_code;
 	GSList *plots;
 };
 
@@ -722,8 +728,8 @@ struct output_filter {
 	void (*graph_start)(rlib *r, float, float, float, float, gboolean x_axis_labels_are_under_tick);
 	void (*graph_title)(rlib *r, gchar *title);
 	void (*graph_x_axis_title)(rlib *r, gchar *title);
-	void (*graph_y_axis_title)(rlib *r, gchar *title);
-	void (*graph_set_limits)(rlib *r, gdouble min, gdouble max, gdouble origin);
+	void (*graph_y_axis_title)(rlib *r, gchar side, gchar *title);
+	void (*graph_set_limits)(rlib *r, gchar side, gdouble min, gdouble max, gdouble origin);
 	void (*graph_do_grid)(rlib *r, gboolean just_a_box);
 	void (*graph_draw_line)(rlib *, float, float, float, float, struct rlib_rgb *);
 	void (*graph_set_x_iterations)(rlib *, int iterations);
@@ -732,11 +738,11 @@ struct output_filter {
 	void (*graph_set_data_plot_count)(rlib *r, int count);
 	void (*graph_hint_label_x)(rlib *r, gchar *label);
 	void (*graph_label_x)(rlib *r, int iteration, gchar *label);
-	void (*graph_label_y)(rlib *r, int iteration, gchar *label, gboolean false_x);
-	void (*graph_plot_bar)(rlib *r, int iteration, int plot, gfloat height, struct rlib_rgb * color,gfloat last_height, gboolean divide_iterations);
+	void (*graph_label_y)(rlib *r, gchar side, int iteration, gchar *label, gboolean false_x);
+	void (*graph_plot_bar)(rlib *r, gchar side, gint iteration, int plot, gfloat height, struct rlib_rgb * color,gfloat last_height, gboolean divide_iterations);
 	void (*graph_plot_pie)(rlib *r, gfloat start, gfloat end, gboolean offset, struct rlib_rgb *color);
-	void (*graph_plot_line)(rlib *r, int iteration, gfloat p1_height, gfloat p1_last_height, gfloat p2_height, gfloat p2_last_height, struct rlib_rgb * color);
-	void (*graph_hint_label_y)(rlib *r, gchar *string);
+	void (*graph_plot_line)(rlib *r, gchar side, gint iteration, gfloat p1_height, gfloat p1_last_height, gfloat p2_height, gfloat p2_last_height, struct rlib_rgb * color);
+	void (*graph_hint_label_y)(rlib *r, gchar side, gchar *string);
 	void (*graph_hint_legend)(rlib *r, gchar *string);
 	void (*graph_draw_legend)(rlib *r);
 	void (*graph_draw_legend_label)(rlib *r, gint iteration, gchar *string, struct rlib_rgb *);

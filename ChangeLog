@@ -1,3 +1,14 @@
+2005-01-12  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/free.c: add support for double Y axis
+	* libsrc/graphing.c: likewise
+	* libsrc/html.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+	* src/examples/php/graph.php: likewise
+	* src/examples/php/graph.xml: likewise
+
 2005-01-11  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/parsexml.c: Be able to use variable in single report page headers and report headers again
 	* libsrc/pcode.c: likewise
