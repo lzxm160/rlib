@@ -1,3 +1,6 @@
+2005-02-18  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/Makefile.am: BSD doesn't like the -ldl
+
 2005-02-17  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/navigation.c: don't loop forever
 	* libsrc/pcode_op_functions.c: Don't Crash on null string cat AND Carol Fouse teachs Mike and I elementy rounding math
