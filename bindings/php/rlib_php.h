@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003 SICOM Systems, INC.
+ *  Copyright (C) 2003-2004 SICOM Systems, INC.
  *
  *  Authors: Bob Doan <bdoan@sicompos.com>
  *
@@ -28,3 +28,4 @@ struct rlib_inout_pass {
 
 typedef struct rlib_inout_pass rlib_inout_pass;
 struct environment_filter * rlib_php_new_environment();
+gint rlib_add_datasource_php_array(void *r, gchar *input_name);

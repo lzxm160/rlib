@@ -23,7 +23,7 @@
 lib_LTLIBRARIES = libr-mysql.la
 libr_mysql_la_SOURCES = mysql.c
 
-libr_mysql_la_LIBADD = $(RLIB_LIBS) -L${top_builddir}/libsrc/ -lr
+libr_mysql_la_LIBADD = $(RLIB_LIBS) -L${top_builddir}/libsrc/ 
 
 INCLUDES = $(RLIB_CFLAGS) -I${top_srcdir}/libsrc/
 

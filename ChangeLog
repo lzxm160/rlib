@@ -1,4 +1,14 @@
 2004-07-21  Bob Doan  <bdoan@sicompos.com>
+	* bindings/php/Makefile.am: new array data source in PHP
+	* bindings/php/array_data_source.c: likewise
+	* bindings/php/environment.c: likewise
+	* bindings/php/php.c: likewise
+	* bindings/php/rlib_php.h: likewise
+	* inputs/mysql/Makefile.am: likewise
+	* src/examples/php/array_test.php: and an example to go along
+	* src/examples/php/array_test.xml: likewise
+
+2004-07-21  Bob Doan  <bdoan@sicompos.com>
 	* configure.in: bump version to unstable.. here we go
 	* libsrc/breaks.c: rlib_ functions so that they won't clash when it's linked w/ other stuff
 	                   and add structs for parts
