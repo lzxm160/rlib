@@ -1,4 +1,7 @@
 2004-10-06  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/layout.c: initital add
+
+2004-10-06  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/array_data_source.c: initial work @ getting parts working
 	* libsrc/Makefile.am: likewise
 	* libsrc/api.c: likewise 
