@@ -1,3 +1,6 @@
+2004-07-30  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/pcode_op_functions.c: fixed ceil and floor functions to actually work
+
 2004-07-29  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/pcode.c: fix semi MAJOR expression compile problem
 	   round(1.0*100/60) did not work!!

@@ -703,7 +703,9 @@ gint rlib_pcode_operator_ceil(rlib *r, struct rlib_value_stack *vs, struct rlib_
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1)) {
 		gint64 dec = RLIB_VALUE_GET_AS_NUMBER(v1) % RLIB_DECIMAL_PRECISION;
-		gint64 result = RLIB_VALUE_GET_AS_NUMBER(v1) - dec + RLIB_DECIMAL_PRECISION;
+		gint64 result = RLIB_VALUE_GET_AS_NUMBER(v1) - dec ;
+		if(dec != 0)
+			result += RLIB_DECIMAL_PRECISION;
 		rlib_value_free(v1);
 		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, result));
 		return TRUE;
@@ -719,7 +721,7 @@ gint rlib_pcode_operator_floor(rlib *r, struct rlib_value_stack *vs, struct rlib
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1)) {
 		gint64 dec = RLIB_VALUE_GET_AS_NUMBER(v1) % RLIB_DECIMAL_PRECISION;
-		gint64 result = RLIB_VALUE_GET_AS_NUMBER(v1) - dec - RLIB_DECIMAL_PRECISION;
+		gint64 result = RLIB_VALUE_GET_AS_NUMBER(v1) - dec;
 		rlib_value_free(v1);
 		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, result));
 		return TRUE;
