@@ -149,7 +149,7 @@ void rlib_txt_new_output_filter(rlib *r) {
 	
 	OUTPUT(r)->do_align = TRUE;
 	OUTPUT(r)->do_break = TRUE;
-	OUTPUT(r)->do_grouptext = TRUE;	
+	OUTPUT(r)->do_grouptext = FALSE;	
 
 	OUTPUT(r)->rlib_get_string_width = rlib_txt_get_string_width;
 	OUTPUT(r)->rlib_print_text = rlib_txt_print_text;

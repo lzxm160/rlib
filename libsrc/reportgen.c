@@ -436,6 +436,7 @@ static void print_detail_line_private(rlib *r, struct report_output_array *roa, 
 				count=0;
 				margin = GET_MARGIN(r)->left_margin;				
 				buf[0] = 0;
+				width = 0;
 				for(e = rl->e; e != NULL; e=e->next) {
 					if(!extra_data[count].found_color) {
 						if(start_count == -1)
@@ -444,7 +445,6 @@ static void print_detail_line_private(rlib *r, struct report_output_array *roa, 
 						fun_width += extra_data->output_width;
 					} else {
 						if(start_count != -1) {
-							width += fun_width;
 							rlib_output_text_text(r, backwards, margin, rlib_get_next_line(r, backwards ? r->position_bottom : r->position_top, 
 								get_font_point(r, rl)),  &extra_data[start_count], buf);
 							start_count = -1;

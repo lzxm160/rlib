@@ -1,4 +1,10 @@
 2003-10-24  Bob Doan  <bdoan@sicompos.com>
+	* NEWS: 1.1.2
+	* libsrc/reportgen.c: fix bug w/ output when caching
+	* libsrc/html.c: likewise
+	* libsrc/txt.c: likewise
+
+2003-10-24  Bob Doan  <bdoan@sicompos.com>
 	* configure.in: Bump version to 1.1.2
 	* inputs/postgre/postgre.c: don't hardcode the query
 	* libsrc/reportgen.c: cash line output so only calling write_text only when necessary.. makes pdf reports 2-3x faster
