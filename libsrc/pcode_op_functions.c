@@ -861,7 +861,7 @@ static gint rlib_pcode_operator_stod_common(rlib *r, struct rlib_value_stack *vs
 			}
 		}
 		if (!err) {
-			bzero(&tm_date, sizeof(struct tm));
+			memset(&tm_date, 0, sizeof(struct tm));
 			tm_date.tm_year = year-1900;
 			tm_date.tm_mon = month-1;
 			tm_date.tm_mday = day;
@@ -1218,7 +1218,7 @@ gint rlib_pcode_operator_stods(rlib *r, struct rlib_value_stack *vs, struct rlib
 		struct tm tm_date;
 		time_t tmp_time;
 		sscanf(RLIB_VALUE_GET_AS_STRING(v1), "%4d%2d%2d%2d%2d%2d", &year, &month, &day, &hour, &min, &sec);
-		bzero(&tm_date, sizeof(struct tm));
+		memset(&tm_date, 0, sizeof(struct tm));
 		tm_date.tm_year = year-1900;
 		tm_date.tm_mon = month-1;
 		tm_date.tm_mday = day;

@@ -80,7 +80,7 @@ static gint rlib_postgre_first(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_postgre_results *result = result_ptr;
 	result->row = 0;
 	result->isdone = FALSE;
-	return TRUE;
+	return result != NULL ? TRUE : FALSE;
 }
 
 static gint rlib_postgre_next(gpointer input_ptr, gpointer result_ptr) {
@@ -178,7 +178,7 @@ gpointer rlib_postgre_new_input_filter() {
 	
 	input = g_malloc(sizeof(struct input_filter));
 	input->private = g_malloc(sizeof(struct _private));
-	bzero(input->private, sizeof(struct _private));
+	memset(input->private, 0, sizeof(struct _private));
 	input->input_close = rlib_postgre_input_close;
 	input->first = rlib_postgre_first;
 	input->next = rlib_postgre_next;

@@ -83,7 +83,7 @@ gint rlib_resolve_resultset_field(rlib *r, char *name, void **rtn_field, gint *r
 			found = TRUE;
 			resultset = t;
 		} else {
-			if(!isdigit(*result_name))
+			if(!isdigit((int)*result_name))
 				rlogit("rlib_resolve_namevalue: INVALID RESULT SET %s, name was [%s]\n", result_name, name);
 		}
 		g_free(result_name);
@@ -267,9 +267,9 @@ void rlib_resolve_fields(rlib *r) {
 	rlib_resolve_outputs(r, thisreport->page_header);
 	rlib_resolve_outputs(r, thisreport->page_footer);
 	rlib_resolve_outputs(r, thisreport->report_footer);
-
 	rlib_resolve_outputs(r, thisreport->detail.fields);
 	rlib_resolve_outputs(r, thisreport->detail.textlines);
+	rlib_resolve_outputs(r, thisreport->alternate.nodata);
 
 	if(thisreport->breaks != NULL) {
 		for(e = thisreport->breaks; e != NULL; e=e->next) {

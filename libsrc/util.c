@@ -54,7 +54,7 @@ void init_signals() {
 #ifdef ENABLE_CRASH
 	struct sigaction sa;
 	if (useMyHandler) {
-		bzero(&sa, sizeof(struct sigaction));
+		memset(&sa, 0, sizeof(struct sigaction));
 		sa.sa_handler = (void(*)(int))myFaultHandler;
 		sigaction (SIGILL, &sa, NULL);
 		sigaction (SIGBUS, &sa, NULL);
@@ -67,13 +67,11 @@ void init_signals() {
 #endif
 }
 
-
 gint rutil_enableSignalHandler(gint trueorfalse) {
 	gint whatitwas = useMyHandler;
 	useMyHandler = trueorfalse;
 	return whatitwas;
 }
-
 
 gint vasprintf(gchar **, const gchar *, va_list);
 
@@ -95,7 +93,6 @@ gchar *strlwrexceptquoted (char *s) {
 	}
 	return ptr;
 }
-
 
 gchar *rmwhitespacesexceptquoted(gchar *s) {
 	gchar *backptr = s;
@@ -123,13 +120,10 @@ gchar *rmwhitespacesexceptquoted(gchar *s) {
 	return orig;
 }
 
-
-
 static void local_rlogit(const gchar *message) {
 	fputs(message, stderr);
 	return;
 }
-
 
 static void (*logMessage)(const gchar *msg) = local_rlogit;
 
@@ -138,18 +132,16 @@ void rlogit_setmessagewriter(void (*msgwriter)(const gchar *msg)) {
 	logMessage = msgwriter;
 }
 
-
-//TODO: NOTE: uses non-glib free
 void rlogit(const gchar *fmt, ...) {
 	va_list vl;
 	gchar *result = NULL;
 
 	va_start(vl, fmt);
-	vasprintf(&result, fmt, vl);
+	result = g_strdup_vprintf(fmt, vl);
 	va_end(vl);
 	if (result != NULL) {
 		logMessage(result);
-		free(result);
+		g_free(result);
 	}
 	return;
 }
@@ -161,7 +153,7 @@ gint64 tentothe(gint n) {
 
 gchar hextochar(gchar c) {
 	c = toupper(c);
-	if(isalpha(c))
+	if(isalpha((int)c))
 		return c-'A'+10;
 	else
 		return c-'0';
@@ -169,7 +161,7 @@ gchar hextochar(gchar c) {
 }
 
 gchar *colornames(char *str) {
-	if(!isalpha(*str))
+	if(!isalpha((int)*str))
 		return str;
 	if(!strcasecmp(str, "black"))
 		return "0x000000";
@@ -231,7 +223,7 @@ void parsecolor(struct rgb *color, gchar *strx) {
 struct tm * stod(struct tm *tm_date, gchar *str) {
 	gint year, month, day;
 	sscanf(str, "%4d-%2d-%2d", &year, &month, &day);
-	bzero(tm_date, sizeof(struct tm));
+	memset(tm_date, 0, sizeof(struct tm));
 	tm_date->tm_year = year-1900;
 	tm_date->tm_mon = month-1;
 	tm_date->tm_mday = day;
@@ -307,11 +299,11 @@ gchar *strproper (gchar *s) {
 }
 
 
-//TODO: Change this to use a g_string instead of this
+//TODO: Change this to use a g_string instead of this.. Bob agree's
 void make_more_space_if_necessary(gchar **str, gint *size, gint *total_size, gint len) {
 	if(*total_size == 0) {
 		*str = g_malloc(MAXSTRLEN);
-		bzero(*str, MAXSTRLEN);
+		memset(*str, 0, MAXSTRLEN);
 		*total_size = MAXSTRLEN;
 	} else if((*size) + len > (*total_size)) {
 		*str = g_realloc(*str, (*total_size)*2);

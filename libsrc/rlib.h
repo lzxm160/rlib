@@ -291,6 +291,10 @@ struct report_detail {
 	struct report_element *fields;
 };
 
+struct report_alternate {
+	struct report_element *nodata;
+};
+
 struct count_amount {
 	struct rlib_value count;
 	struct rlib_value amount;
@@ -347,6 +351,7 @@ struct rlib_report {
 	struct report_element *report_footer;
 	struct report_element *variables;
 	struct report_element *breaks;
+	struct report_alternate alternate;
 	gint mainloop_query;
 	iconv_t cd;
 

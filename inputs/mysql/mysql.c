@@ -100,7 +100,7 @@ static gint rlib_mysql_first(gpointer input_ptr, gpointer result_ptr) {
 	result->last_row = NULL;
 	result->didprevious = FALSE;
 	result->isdone = FALSE;
-	return TRUE;
+	return result->this_row != NULL ? TRUE : FALSE;
 }
 
 static gint rlib_mysql_next(gpointer input_ptr, gpointer result_ptr) {
@@ -151,7 +151,11 @@ static gint rlib_mysql_last(gpointer input_ptr, gpointer result_ptr) {
 static gchar * rlib_mysql_get_field_value_as_string(gpointer input_ptr, gpointer result_ptr, gpointer field_ptr) {
 	struct rlib_mysql_results *result = result_ptr;
 	gint field = (gint)field_ptr;
+	if(result_ptr == NULL)
+		return "";
 	field -= 1;
+	if(result->this_row == NULL)
+		return "";
 	return result->this_row[field];
 }
 
@@ -208,7 +212,7 @@ gpointer rlib_mysql_new_input_filter() {
 	
 	input = g_malloc(sizeof(struct input_filter));
 	input->private = g_malloc(sizeof(struct _private));
-	bzero(input->private, sizeof(struct _private));
+	memset(input->private, 0, sizeof(struct _private));
 	input->input_close = rlib_mysql_input_close;
 	input->first = rlib_mysql_first;
 	input->next = rlib_mysql_next;

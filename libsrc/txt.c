@@ -167,7 +167,7 @@ static void rlib_txt_end_output_section(rlib *r) {}
 void rlib_txt_new_output_filter(rlib *r) {
 	OUTPUT(r) = g_malloc(sizeof(struct output_filter));
 	OUTPUT_PRIVATE(r) = g_malloc(sizeof(struct _private));
-	bzero(OUTPUT_PRIVATE(r), sizeof(struct _private));
+	memset(OUTPUT_PRIVATE(r), 0, sizeof(struct _private));
 	
 	OUTPUT(r)->do_align = TRUE;
 	OUTPUT(r)->do_break = TRUE;

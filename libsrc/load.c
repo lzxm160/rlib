@@ -354,7 +354,7 @@ struct rlib_report * load_report(gchar *filename) {
 	}
 
 	rep = g_malloc(sizeof(struct rlib_report));
-	bzero(rep, sizeof(struct rlib_report));
+	memset(rep, 0, sizeof(struct rlib_report));
 
 	ptr = contents+20;
 	rep->xml_font_size = read_xml_str(&ptr);

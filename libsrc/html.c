@@ -317,7 +317,6 @@ static void rlib_html_set_working_page(rlib *r, gint page) {
 	OUTPUT_PRIVATE(r)->page_number = page-1;
 }
 
-
 static gint rlib_html_free(rlib *r) {
 	g_free(OUTPUT_PRIVATE(r)->both);
 	g_free(OUTPUT_PRIVATE(r));
@@ -328,7 +327,7 @@ static gint rlib_html_free(rlib *r) {
 void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT(r) = g_malloc(sizeof(struct output_filter));
 	OUTPUT_PRIVATE(r) = g_malloc(sizeof(struct _private));
-	bzero(OUTPUT_PRIVATE(r), sizeof(struct _private));
+	memset(OUTPUT_PRIVATE(r), 0, sizeof(struct _private));
 
 	OUTPUT_PRIVATE(r)->do_bg = FALSE;
 	OUTPUT_PRIVATE(r)->page_number = 0;

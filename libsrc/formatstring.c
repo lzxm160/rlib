@@ -211,10 +211,10 @@ gint rlib_format_string(rlib *r, struct report_field *rf, struct rlib_value *rva
 				gint special_format=0;
 				gchar *idx;
 				gint len_formatstring;
-				idx = index(formatstring, ':');
+				idx = strchr(formatstring, ':');
 				if(idx != NULL && RLIB_VALUE_IS_NUMBER(rval)) {
 					formatstring = g_strdup(formatstring);
-					idx = index(formatstring, ':');
+					idx = strchr(formatstring, ':');
 					special_format=1;
 					if(RLIB_VALUE_GET_AS_NUMBER(rval) >= 0)
 						idx[0] = '\0';

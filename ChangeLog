@@ -1,3 +1,24 @@
+2004-02-17  Bob Doan  <bdoan@sicompos.com>
+	* autogen.sh: removed some commented out stuff
+	* configure.in: bumped version, added "warningfun", hack around java check problem
+	* bindings/php/php.c: added alternate sections, and no data. fixed some crashes w/ no data
+	* inputs/mysql/mysql.c: likewise
+	* inputs/odbc/odbc.c: likewise
+	* inputs/postgre/postgre.c: likewise
+	* libsrc/csv.c: likewise
+	* libsrc/formatstring.c: likewise
+	* libsrc/free.c: likewise
+	* libsrc/html.c: likewise
+	* libsrc/load.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/pcode_op_functions.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/txt.c: likewise
+	* libsrc/util.c: likewise
+
 2004-02-13  Chet Heilman  <cheilman@sicompos.com>
 	Add some changes for L10n. More to come.
 	* libsrc/api.c: (rlib_init_with_environment), (rlib_set_locale),

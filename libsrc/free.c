@@ -167,6 +167,7 @@ void rlib_free_report(rlib *r, gint which) {
 	rlib_free_output(r, r->reports[which]->report_footer);
 	rlib_free_output(r, r->reports[which]->detail.fields);
 	rlib_free_output(r, r->reports[which]->detail.textlines);
+	rlib_free_output(r, r->reports[which]->alternate.nodata);
 
 	g_free(r->reports[r->current_report]->position_top);
 	g_free(r->reports[r->current_report]->position_bottom);

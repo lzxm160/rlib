@@ -18,9 +18,9 @@
  * Boston, MA 02111-1307, USA.
  */
  
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
 
 #include <libxml/xmlversion.h>
 #include <libxml/xmlmemory.h>
@@ -35,7 +35,7 @@ void utf8_to_8813(struct rlib_report *rep, gchar *dest, gchar *str) {
 	if(str != NULL && str[0] != 0) {
 		if(rep->cd != NULL) {
 			slen = strlen(str);
-			bzero(dest, MAXSTRLEN);
+			memset(dest, 0, MAXSTRLEN);
 #if ICONV_CONST_CHAR_PP
 			iconv(rep->cd, (const char **) &str, &slen, &olddest, &len);
 #else
@@ -304,6 +304,21 @@ static void parse_detail(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xm
 
 }
 
+static void parse_alternate(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur, struct report_alternate *ra) {
+	cur = cur->xmlChildrenNode;
+	while (cur != NULL) {
+		if ((!xmlStrcmp(cur->name, (const xmlChar *) "NoData"))) {
+			ra->nodata = parse_report_outputs(rep, doc, ns, cur);
+		} else if (ignoreElement(cur->name)) {
+			/* ignore comments, etc */
+		} else {
+			rlogit("Unknown element [%s] in <Alternate>. Expected NoData\n", cur->name);
+		}
+		cur = cur->next;
+	}
+
+}
+
 static struct report_element * parse_report_variable(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
 	struct report_element *e = g_malloc(sizeof(struct report_element));
 	struct report_variable *rv = g_new0(struct report_variable, 1);
@@ -391,7 +406,7 @@ struct rlib_report * parse_report_file(gchar *filename) {
 		return(NULL);
 	}
 	
-	bzero(ret, sizeof(struct rlib_report));
+	memset(ret, 0, sizeof(struct rlib_report));
 	ret->doc = doc;
 	ret->contents = NULL;
 	ret->cd = iconv_open("ISO8859-1", "UTF-8");
@@ -432,6 +447,8 @@ struct rlib_report * parse_report_file(gchar *filename) {
 			ret->report_footer = parse_report_outputs(ret, doc, ns, cur);
 		else if ((!xmlStrcmp(cur->name, (const xmlChar *) "Detail"))) 
 			parse_detail(ret, doc, ns, cur, &ret->detail);
+		else if ((!xmlStrcmp(cur->name, (const xmlChar *) "Alternate"))) 
+			parse_alternate(ret, doc, ns, cur, &ret->alternate);
 		else if ((!xmlStrcmp(cur->name, (const xmlChar *) "Breaks"))) 
 			ret->breaks = parse_report_breaks(ret, doc, ns, cur);
 		else if ((!xmlStrcmp(cur->name, (const xmlChar *) "Variables"))) 

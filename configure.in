@@ -22,10 +22,10 @@ dnl Process this file with autoconf to produce a configure script.
 
 
 AC_INIT(libsrc/rlib.h)
-AM_INIT_AUTOMAKE(rlib, 1.1.7)
+AM_INIT_AUTOMAKE(rlib, 1.1.8)
 AM_MAINTAINER_MODE
 AC_DISABLE_STATIC
-RLIB_VERSION=1.1.7
+RLIB_VERSION=1.1.8
 AC_SUBST(RLIB_VERSION)
 
 dnl Checks for programs.
@@ -187,7 +187,7 @@ AC_SUBST(PYTHON_CFLAGS)
 AC_SUBST(PYTHON_EXTENSION_DIR)
 AM_CONDITIONAL(HAVE_PYTHON, test x$enable_python = xyes)
 
-enable_java=yes
+enable_java=no
 JAVA_CFLAGS=""
 AC_ARG_WITH(java,
 [  --with-java=<directory>	use JAVA in <directory>],[
@@ -343,8 +343,15 @@ AC_RUN_IFELSE(
         AC_DEFINE(ICONV_ISO,[ISO8859-1])
 )
 
+RLIB_WARNINGS=""
+AC_ARG_ENABLE(warningfun,              [  --enable-warningfun       enable more gcc warning flags],enable_warningfun="$enableval",enable_warningfun=no)
+if test x$enable_warningfun = xyes; then
+	AC_DEFINE(DEBUG_RLIB_MEMORY,1,[Debug RLIB memory usage])
+	RLIB_WARNINGS="-Wall -Werror -Wchar-subscripts"
+fi
+AC_SUBST(RLIB_WARNINGS)
 
-RLIB_CFLAGS="$LIBXML_CFLAGS $LIBGLIB_CFLAGS $LIBGMODULE_CFLAGS $MYSQL_CFLAGS $POSTGRE_CFLAGS $ODBC_CFLAGS $PHP_CFLAGS $PYTHON_CFLAGS $JAVA_CFLAGS $PERL_CFLAGS -Wall -Werror"
+RLIB_CFLAGS="$LIBXML_CFLAGS $LIBGLIB_CFLAGS $LIBGMODULE_CFLAGS $MYSQL_CFLAGS $POSTGRE_CFLAGS $ODBC_CFLAGS $PHP_CFLAGS $PYTHON_CFLAGS $JAVA_CFLAGS $PERL_CFLAGS $RLIB_WARNINGS"
 RLIB_LIBS="$LIBXML_LIBS $LIBGLIB_LIBS $LIBGMODULE_LIBS $MYSQL_LIBS $POSTGRE_LIBS $ODBC_LIBS $ICONVLIBS -lcpdf"
 AC_SUBST(RLIB_CFLAGS)
 AC_SUBST(RLIB_LIBS)
@@ -394,6 +401,7 @@ rlib-$VERSION:
 	prefix:                   ${prefix}
 	compiler:                 ${CC}
 	Memory debugging:         ${enable_memdebug}
+	Warning Fun:              ${enable_warningfun}
 	Crash detection:          ${enable_crash}
 
 	INPUTS:
@@ -411,5 +419,8 @@ rlib-$VERSION:
 	 PERL:                    ${enable_perl}
 	  PERL entension dir:     ${PERL_EXTENSION_DIR}
 
-	Music:                    Coldplay
+	Music:                    Incubus
+
+	Having Problems:          rlib-users@lists.sf.net 	
+	Want to contribute:       rlib-devel@lists.sf.net	
 "

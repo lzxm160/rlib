@@ -108,7 +108,6 @@ static gint rlib_execute_as_int_inlist(rlib *r, struct rlib_pcode *pcode, gint *
 	return isok;
 }
 
-
 gfloat get_page_width(rlib *r) {
 	if(!r->landscape)
 		return (8.5);
@@ -418,9 +417,9 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 			} else {
 				gchar *idx;
 				ocolor = colorstring = g_strdup(RLIB_VALUE_GET_AS_STRING((&extra_data[i].rval_bgcolor)));
-				if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_code)) && RLIB_VALUE_IS_NUMBER((&extra_data[i].rval_code)) && index(colorstring, ':')) {
+				if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_code)) && RLIB_VALUE_IS_NUMBER((&extra_data[i].rval_code)) && strchr(colorstring, ':')) {
 					colorstring = g_strdup(colorstring);
-					idx = index(colorstring, ':');
+					idx = strchr(colorstring, ':');
 					if(RLIB_VALUE_GET_AS_NUMBER((&extra_data[i].rval_code)) >= 0)
 						idx[0] = '\0';
 					else
@@ -441,8 +440,8 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 			} else {
 				gchar *idx;
 				ocolor = colorstring = g_strdup(RLIB_VALUE_GET_AS_STRING((&extra_data[i].rval_color)));
-				if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_code)) && RLIB_VALUE_IS_NUMBER((&extra_data[i].rval_code)) && index(colorstring, ':')) {
-					idx = index(colorstring, ':');
+				if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_code)) && RLIB_VALUE_IS_NUMBER((&extra_data[i].rval_code)) && strchr(colorstring, ':')) {
+					idx = strchr(colorstring, ':');
 					if(RLIB_VALUE_GET_AS_NUMBER((&extra_data[i].rval_code)) >= 0)
 						idx[0] = '\0';
 					else
@@ -949,9 +948,11 @@ void rlib_print_report_footer(rlib *r) {
 
 gint rlib_fetch_first_rows(rlib *r) {
 	gint i;
+	gint result = TRUE;
 	for(i=0;i<r->queries_count;i++)
-		INPUT(r,i)->first(INPUT(r,i), r->results[i].result);
-	return 0;
+		if(INPUT(r,i)->first(INPUT(r,i), r->results[i].result) == FALSE)
+			result = FALSE;
+	return result;
 }
 
 void rlib_init_variables(rlib *r) {
@@ -981,7 +982,6 @@ void rlib_init_variables(rlib *r) {
 	}
 	
 }
-
 
 void rlib_process_variables(rlib *r) {
 	struct report_element *e;
@@ -1076,6 +1076,8 @@ gint make_report(rlib *r) {
 	gint i = 0;
 	gint report = 0;
 	gint processed_variables = FALSE;
+	gint first_result;
+	
 	if(r->format == RLIB_FORMAT_HTML)
 		rlib_html_new_output_filter(r);
 	else if(r->format == RLIB_FORMAT_TXT)
@@ -1096,7 +1098,7 @@ gint make_report(rlib *r) {
 
 
 	OUTPUT(r)->rlib_init_output(r);
-	rlib_fetch_first_rows(r);
+	first_result = rlib_fetch_first_rows(r);
 
 	for(report=0;report<r->reports_count;report++) {
 		processed_variables = FALSE;
@@ -1105,7 +1107,6 @@ gint make_report(rlib *r) {
 			if(r->reports[r->current_report]->mainloop_query != -1)
 				r->current_result = r->reports[r->current_report]->mainloop_query;
 		}
-
 		rlib_resolve_fields(r);
 		rlib_init_variables(r);
 		rlib_process_variables(r);
@@ -1116,45 +1117,49 @@ gint make_report(rlib *r) {
 		OUTPUT(r)->rlib_start_report(r);
 		rlib_init_page(r, TRUE);		
 		OUTPUT(r)->rlib_begin_text(r);
-		if(INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result) != TRUE) {
-			while (1) {
-				gint page;
-				gint output_count = 0;
-				if(processed_variables == FALSE) {
-					rlib_process_variables(r);
-					processed_variables = TRUE;
-				}
-				rlib_evaluate_break_attributes(r);
-				rlib_handle_break_headers(r);
-			
-				if(rlib_end_page_if_line_wont_fit(r, r->reports[r->current_report]->detail.fields))
-					for(page=0;page<r->reports[r->current_report]->pages_accross;page++)
-						rlib_force_break_headers(r);
+		if(first_result == FALSE) {
+			print_report_output(r, r->reports[r->current_report]->alternate.nodata, FALSE);
+		} else {
+			if(INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result) != TRUE) {
+				while (1) {
+					gint page;
+					gint output_count = 0;
+					if(processed_variables == FALSE) {
+						rlib_process_variables(r);
+						processed_variables = TRUE;
+					}
+					rlib_evaluate_break_attributes(r);
+					rlib_handle_break_headers(r);
 
-				if(OUTPUT(r)->do_break)
-					output_count = print_report_output(r, r->reports[r->current_report]->detail.fields, FALSE);
-				else
-					output_count = hack_print_report_outputs(r);
+					if(rlib_end_page_if_line_wont_fit(r, r->reports[r->current_report]->detail.fields))
+						for(page=0;page<r->reports[r->current_report]->pages_accross;page++)
+							rlib_force_break_headers(r);
 
-				if(output_count > 0)
-					r->detail_line_count++;
-				i++;
+					if(OUTPUT(r)->do_break)
+						output_count = print_report_output(r, r->reports[r->current_report]->detail.fields, FALSE);
+					else
+						output_count = hack_print_report_outputs(r);
 
-				if(rlib_navigate_next(r, r->current_result) == FALSE) {
-					rlib_navigate_last(r, r->current_result);
+					if(output_count > 0)
+						r->detail_line_count++;
+					i++;
+
+					if(rlib_navigate_next(r, r->current_result) == FALSE) {
+						rlib_navigate_last(r, r->current_result);
+						rlib_handle_break_footers(r);
+						break;
+					} 
+
+					rlib_evaluate_break_attributes(r);
 					rlib_handle_break_footers(r);
-					break;
-				} 
-
-				rlib_evaluate_break_attributes(r);
-				rlib_handle_break_footers(r);
-				processed_variables = FALSE;
+					processed_variables = FALSE;
+				}
 			}
+
+			rlib_navigate_last(r, r->current_result);
+
+			rlib_print_report_footer(r);
 		}
-
-		rlib_navigate_last(r, r->current_result);
-
-		rlib_print_report_footer(r);
 		OUTPUT(r)->rlib_end_report(r);
 
 		if(report+1 < r->reports_count) {

@@ -169,7 +169,7 @@ static int rlib_csv_free(rlib *r) {
 void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT(r) = g_malloc(sizeof(struct output_filter));
 	OUTPUT_PRIVATE(r) = g_malloc(sizeof(struct _private));
-	bzero(OUTPUT_PRIVATE(r), sizeof(struct _private));
+	memset(OUTPUT_PRIVATE(r), 0, sizeof(struct _private));
 	OUTPUT_PRIVATE(r)->top = NULL;
 	OUTPUT_PRIVATE(r)->top_size = 0;
 	OUTPUT_PRIVATE(r)->top_total_size = 0;

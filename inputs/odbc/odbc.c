@@ -163,7 +163,7 @@ static gint rlib_odbc_first(gpointer input_ptr, gpointer result_ptr) {
 	result->isdone = FALSE;
 	result->state_previous = FALSE;
 	return odbc_read_next(result_ptr);
-	return TRUE;
+	return result != NULL ? TRUE : FALSE;
 }
 
 static void copy_to_from(struct rlib_odbc_results *results, struct odbc_field_values *to, struct odbc_field_values *from) {
@@ -315,7 +315,7 @@ gpointer rlib_odbc_new_input_filter() {
 	struct input_filter *input;
 	input = g_malloc(sizeof(struct input_filter));
 	input->private = g_malloc(sizeof(struct _private));
-	bzero(input->private, sizeof(struct _private));
+	memset(input->private, 0, sizeof(struct _private));
 	input->input_close = rlib_odbc_input_close;
 	input->first = rlib_odbc_first;
 	input->next = rlib_odbc_next;

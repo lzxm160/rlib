@@ -120,7 +120,7 @@ ZEND_FUNCTION(rlib_init) {
 	gint resource_id;
 	
 	rip = emalloc(sizeof(rlib_inout_pass));
-	bzero(rip, sizeof(rlib_inout_pass));
+	memset(rip, 0, sizeof(rlib_inout_pass));
 	
 	rip->content_type = RLIB_CONTENT_TYPE_ERROR;
 
