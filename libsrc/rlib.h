@@ -117,7 +117,7 @@ double trunc(double x);
 #define RLIB_PAPER_MONARCH    9
 #define RLIB_PAPER_FILM35MM   10
 
-#define RLIB_PDF_DPI 72.0
+#define RLIB_PDF_DPI 72.0f
 
 #define RLIB_LAYOUT_FIXED 1
 #define RLIB_LAYOUT_FLOW  2
@@ -488,14 +488,17 @@ struct rlib_graph_plot {
 	gchar *xml_field;
 	gchar *xml_label;
 	gchar *xml_side;	
+	gchar *xml_disabled;	
 	struct rlib_value rval_axis;
 	struct rlib_value rval_field;
 	struct rlib_value rval_label;
 	struct rlib_value rval_side;
+	struct rlib_value rval_disabled;
 	struct rlib_pcode *axis_code;
 	struct rlib_pcode *field_code;	
 	struct rlib_pcode *label_code;	
 	struct rlib_pcode *side_code;
+	struct rlib_pcode *disabled_code;
 };
 
 #define RLIB_GRAPH_TYPE_LINE_NORMAL                   1

@@ -337,10 +337,6 @@ static void rlib_advance_vertical_position(rlib *r, gfloat *rlib_position, struc
 	*rlib_position += rl->max_line_height;
 }
 
-static void rlib_advance_vertical_position_from_font_point(rlib *r, gfloat *rlib_position, gint font_point) {
-	*rlib_position += RLIB_GET_LINE(font_point);
-}
-
 static void rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_lines *rl, struct rlib_line_extra_data *extra_data, gint *delayed) {
 	gint i=0;
 	gchar *text;
@@ -589,8 +585,9 @@ static void rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 			if(!RLIB_VALUE_IS_NUMBER((&extra_data[i].rval_bold))) {
 				r_error("RLIB ENCOUNTERED AN ERROR PROCESSING BOLD FOR THIS VALUE [%s].. BOLD VALUE WAS NOT OF TYPE NUMBER TYPE=%d\n", text, RLIB_VALUE_GET_TYPE((&extra_data[i].rval_bold)));
 			} else {
-				if(RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER((&extra_data[i].rval_bold))))
+				if(RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER((&extra_data[i].rval_bold)))) {
 					extra_data[i].is_bold = TRUE;
+				}
 			}
 		}
 		extra_data[i].is_italics = FALSE;
@@ -673,7 +670,7 @@ static void rlib_layout_find_common_properties_in_a_line(rlib *r, struct rlib_li
 	save_ptr = NULL;
 	previous_ptr = NULL;
 	state = STATE_NONE;
-	
+//HERE	
 	previous_ptr = &extra_data[i];
 	for(i=0;i<count;i++) {
 		e_ptr = &extra_data[i];
@@ -837,6 +834,7 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 						count++;
 					}
 				}
+
 				rlib_advance_vertical_position(r, rlib_position, rl);
 
 				OUTPUT(r)->end_line(r, backwards);	
@@ -874,6 +872,7 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 					gfloat font_point;
 					gfloat indent;
 					gfloat length;
+					gfloat mike;					
 					struct rlib_rgb bgcolor;
 					output_count++;
 					colorstring = RLIB_VALUE_GET_AS_STRING(rval);
@@ -894,7 +893,8 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 						OUTPUT(r)->hr(r, backwards, my_left_margin+indent, rlib_layout_get_next_line_by_font_point(r, part, *rlib_position, rhl->size),
 							length, rhl->size, &bgcolor, indent, length);
 
-					rlib_advance_vertical_position_from_font_point(r, rlib_position, rhl->size);
+					mike = (rhl->size/RLIB_PDF_DPI);
+					*rlib_position += mike;
 					rlib_value_free(rval);
 				}
 			}

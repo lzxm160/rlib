@@ -240,6 +240,7 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	gint numGoodIncs = numGoodIncs_normal;
 	gint left_axis_decimal_hint=-1, right_axis_decimal_hint=-1;
 	left_margin_offset += part->left_margin;
+	gboolean disabled, tmp_disabled;
 
 		
 	if(rlib_execute_as_float(r, graph->width_code, &tmp))
@@ -316,7 +317,11 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 						}																
 				
 					} else if(strcmp(axis, "y") == 0) {
-						if(rlib_execute_as_float(r, plot->field_code, &y_value)) {
+						disabled = FALSE;
+						if(rlib_execute_as_boolean(r, plot->disabled_code, &tmp_disabled));
+							disabled = tmp_disabled;
+						if(!disabled && rlib_execute_as_float(r, plot->field_code, &y_value)) {
+							
 							side = RLIB_SIDE_LEFT;
 							if(rlib_execute_as_string(r, plot->side_code, side_str, MAXSTRLEN)) {
 								if(strcmp(side_str, "right") == 0) {
@@ -447,10 +452,15 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 			plot = list->data;
 			if(rlib_execute_as_string(r, plot->axis_code, axis, MAXSTRLEN)) {
 				if(strcmp(axis, "y") == 0) {
-					if(rlib_execute_as_string(r, plot->label_code, legend_label, MAXSTRLEN)) {
-						OUTPUT(r)->graph_draw_legend_label(r, i, legend_label, &color[i]);
+					disabled = FALSE;
+					if(rlib_execute_as_boolean(r, plot->disabled_code, &tmp_disabled));
+						disabled = tmp_disabled;
+					if(!disabled) {
+						if(rlib_execute_as_string(r, plot->label_code, legend_label, MAXSTRLEN)) {
+							OUTPUT(r)->graph_draw_legend_label(r, i, legend_label, &color[i]);
+						}
+						i++;
 					}
-					i++;
 				}
 			}
 		}
@@ -522,7 +532,10 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 							OUTPUT(r)->graph_label_x(r, row_count, x_axis_label);
 						}																
 					} else if(strcmp(axis, "y") == 0) {
-						if(rlib_execute_as_float(r, plot->field_code, &y_value)) {
+						disabled = FALSE;
+						if(rlib_execute_as_boolean(r, plot->disabled_code, &tmp_disabled))
+							disabled = tmp_disabled;
+						if(!disabled && rlib_execute_as_float(r, plot->field_code, &y_value)) {
 							side = RLIB_SIDE_LEFT;
 							if(rlib_execute_as_string(r, plot->side_code, side_str, MAXSTRLEN)) {
 								if(strcmp(side_str, "right") == 0) {

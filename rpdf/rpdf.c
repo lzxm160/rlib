@@ -406,7 +406,6 @@ gboolean rpdf_finalize(struct rpdf *pdf) {
 	gchar *obj = NULL;
 	gchar buf[128];
 	rpdf_out_string(pdf, pdf->header);
-	
 	g_hash_table_foreach(pdf->fonts, rpdf_number_fonts, pdf);
 	
 	obj = obj_printf(NULL, "/Type /Catalog\n");
@@ -584,7 +583,6 @@ gboolean rpdf_finalize(struct rpdf *pdf) {
 	sprintf(buf, "startxref\n%d\n", save_size);
 	rpdf_out_string(pdf, buf);
 	rpdf_out_string(pdf, "%%EOF\n\n");
-
 	return TRUE;
 }
 
@@ -686,7 +684,7 @@ gboolean rpdf_set_font(struct rpdf *pdf, gchar *font, gchar *encoding, gdouble s
 	stream->size = size;
 	real_stream = rpdf_stream_new(RPDF_TYPE_FONT, stream);
 	rpdf_stream_append(pdf, real_stream);
-	pdf->stream_font_destroyer = g_slist_append(pdf->stream_font_destroyer, stream);
+	pdf->stream_font_destroyer = g_slist_prepend(pdf->stream_font_destroyer, stream);
 	
 	return TRUE;
 }

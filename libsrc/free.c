@@ -156,6 +156,7 @@ static void rlib_free_graph(rlib *r, struct rlib_graph *graph) {
 		rlib_pcode_free(plot->field_code);
 		rlib_pcode_free(plot->label_code);
 		rlib_pcode_free(plot->side_code);
+		rlib_pcode_free(plot->disabled_code);	
 	}
 }
 

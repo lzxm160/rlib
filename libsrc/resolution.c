@@ -286,6 +286,7 @@ void rlib_resolve_graph(rlib *r, struct rlib_part *part, struct rlib_report *rep
 		plot->field_code = rlib_infix_to_pcode(r, part, report, plot->xml_field, TRUE);
 		plot->label_code = rlib_infix_to_pcode(r, part, report, plot->xml_label, TRUE);
 		plot->side_code = rlib_infix_to_pcode(r, part, report, plot->xml_side, TRUE);
+		plot->disabled_code = rlib_infix_to_pcode(r, part, report, plot->xml_disabled, TRUE);
 	}
 }
 
@@ -314,7 +315,7 @@ void rlib_resolve_report_fields(rlib *r, struct rlib_part *part, struct rlib_rep
 		report->pages_across = f;
 	if (rlib_execute_as_float(r, report->iterations_code, &f))
 		report->iterations = f;
-		
+	
 	report->position_top = g_malloc(report->pages_across * sizeof(float));
 	report->position_bottom = g_malloc(report->pages_across * sizeof(float));
 	report->bottom_size = g_malloc(report->pages_across * sizeof(float));
