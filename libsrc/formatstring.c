@@ -25,7 +25,6 @@
 #include <ctype.h>
 #include <math.h>
 #include <time.h>
-#include <mysql.h>
 
 #include "ralloc.h"
 #include "rlib.h"

@@ -27,7 +27,6 @@
 #include <stdarg.h>
 #include <time.h>
 #include <sys/resource.h>
-#include <mysql.h>
 
 #include "rlib.h"
 

@@ -24,7 +24,6 @@
 
 #include <libxml/xmlversion.h>
 #include <libxml/xmlmemory.h>
-#include <mysql.h>
 
 #include "ralloc.h"
 #include "rlib.h"

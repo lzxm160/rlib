@@ -20,7 +20,6 @@
  
 #include <stdlib.h>
 #include <string.h>
-#include <mysql.h>
 
 #include "ralloc.h"
 #include "rlib.h"
@@ -549,7 +548,6 @@ int rlib_fetch_first_rows(rlib *r) {
 	int i;
 	for(i=0;i<r->results_count;i++)
 		INPUT(r)->rlib_fetch_row_from_result(INPUT(r), i);
-//WRD		r->results[i].row = mysql_fetch_row(r->results[i].result);
 	return 0;
 }
 
@@ -628,7 +626,7 @@ void rlib_process_variables(rlib *r) {
 int make_report(rlib *r) {
 	int i = 0;
 	int report = 0;
-	MYSQL_ROW last;
+	void * last;
 	
 	if(r->format == RLIB_FORMAT_HTML)
 		rlib_html_new_output_filter(r);
@@ -675,7 +673,7 @@ int make_report(rlib *r) {
 		rlib_init_page(r, TRUE);		
 		OUTPUT(r)->rlib_begin_text(r);
 		while (INPUT(r)->get_row_pointer(INPUT(r), r->current_result)) {
-			MYSQL_ROW temp=NULL;
+			void * temp=NULL;
 			rlib_handle_break_headers(r);
 			
 			if(!will_line_fit(r, r->reports[r->current_report]->detail.fields)) {

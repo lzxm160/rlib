@@ -20,7 +20,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <mysql.h>
 
 #include "ralloc.h"
 #include "rlib.h"

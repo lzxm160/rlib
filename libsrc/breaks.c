@@ -20,7 +20,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <mysql.h>
 
 #include "rlib.h"
 #include "pcode.h"
@@ -163,7 +162,7 @@ void rlib_break_all_below_in_reverse_order(rlib *r, struct report_element *e) {
 	int count=0,i=0,j=0;
 	struct break_fields *bf;
 	int do_endpage = FALSE;
-	MYSQL_ROW temp;
+	void * temp;
 
 	if(!OUTPUT(r)->do_break)
 		return;

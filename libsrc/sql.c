@@ -155,6 +155,12 @@ static void * xxmysql_fetch_field(void *woot, int i) {
 	return mysql_fetch_field(INPUT_PRIVATE(input)->results[i].result);
 }
 
+static void * xxmysql_fetch_field_name(void *woot, void *xfield) {
+	struct input_filter *input = woot;
+	MYSQL_FIELD *field = xfield;
+	return field->name;
+}
+
 void * rlib_mysql_new_input_filter() {
 	struct input_filter *input;
 	
@@ -176,5 +182,6 @@ void * rlib_mysql_new_input_filter() {
 	input->get_resultset_name = mysql_get_resultset_name;
 	input->seek_field = mysql_seek_field;
 	input->fetch_field = xxmysql_fetch_field;
+	input->fetch_field_name = xxmysql_fetch_field_name;
 	return input;
 }

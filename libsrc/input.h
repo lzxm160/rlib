@@ -37,4 +37,5 @@ struct input_filter {
 	char * (*get_resultset_name)(void *, int);	
 	void (*seek_field)(void *, int, int);
 	void * (*fetch_field)(void *, int);
+	void * (*fetch_field_name)(void *, void *);
 };

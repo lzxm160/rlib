@@ -20,7 +20,6 @@
  
 #include <string.h>
 #include <ctype.h>
-#include <mysql.h>
 
 #include "ralloc.h"
 #include "rlib.h"
@@ -85,7 +84,7 @@ int rlib_resolve_resultset_field(rlib *r, char *name, int *value, int *xxresults
 	int x = 0, resultset=0;
 	int found = FALSE;
 	char *right_side = NULL, *result_name = NULL;
-	MYSQL_FIELD *field;
+	void *field;
 	resultset = r->current_result;
 	right_side = memchr(name, '.', strlen(name));
 	if(right_side != NULL) {
@@ -107,7 +106,7 @@ int rlib_resolve_resultset_field(rlib *r, char *name, int *value, int *xxresults
 	}
 	INPUT(r)->seek_field(INPUT(r), resultset, 0);
 	while((field = INPUT(r)->fetch_field(INPUT(r), resultset))) {
-		if(!strcmp(field->name, name)) {
+		if(!strcmp(INPUT(r)->fetch_field_name(INPUT(r), field), name)) {
 			found = TRUE;
 			break;
 		}

@@ -20,7 +20,10 @@
  
 #include <php.h>
 
+
 void *rmalloc(size_t size) {
+	static int count=0;
+	count++;
 	return emalloc(size); 
 }
 

@@ -20,7 +20,6 @@
 
 #include <string.h>
 #include <cpdflib.h>
-#include <mysql.h>
 
 #include "ralloc.h"
 #include "rlib.h"
