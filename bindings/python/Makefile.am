@@ -1,12 +1,12 @@
-## Makefile.am for RLIB
+## bindings/python/Makefile.am for RLIB
 
 ## Copyright (c) 2003 SICOM Systems Inc (bdoan@sicompos.com)
-## RLIB is free software; you can redistribute it and/or modify
+## rlib is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 2, or (at your option)
 ## any later version.
 
-## RLIB is distributed in the hope that it will be useful,
+## rlib is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
@@ -19,15 +19,9 @@
 ## Report bugs to rlib-devel@lists.sourceforge.net
 ##
 ## Process this file with automake to produce Makefile.in
-
-if HAVE_PHP
-PHP_BINDINGS=php
-endif
-
-if HAVE_PYTHON
-PYTHON_BINDINGS=python
-endif
-
-SUBDIRS = \
-	$(PHP_BINDINGS) \
-	$(PYTHON_BINDINGS)
+lib_LTLIBRARIES = librpython.la
+librpython_la_SOURCES = environment.c python.c rlib_python.h
+librpython_la_LIBADD = -L${top_srcdir}/libsrc/ -lr $(MYSQL_LIBS) $(LIBXML_LIBS) 
+INCLUDES = -I${top_srcdir}/libsrc/ $(MYSQL_CFLAGS) $(PYTHON_CFLAGS) $(LIBXML_CFLAGS)
+librpython_la_LDFLAGS = -release $(RLIB_VERSION)
+libdir = $(PYTHON_EXTENSION_DIR)

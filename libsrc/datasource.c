@@ -43,7 +43,7 @@ int rlib_add_datasource_mysql(rlib *r, char *input_name, char *database_host, ch
 	handle = dlopen ("libr-mysql.so", RTLD_LAZY);
 	if (!handle) {
 		rlogit("DLOPEN SAYS [%s]\n", dlerror());
-		return FALSE;
+		return -1;
 	}
                                                                                                   
 	rlib_mysql_new_input_filter = dlsym(handle, "rlib_mysql_new_input_filter");
@@ -73,7 +73,7 @@ int rlib_add_datasource_postgre(rlib *r, char *input_name, char *conn) {
 
 	handle = dlopen ("libr-postgre.so", RTLD_LAZY);
 	if (!handle)
-		return FALSE;
+		return -1;
 
 	rlib_postgre_new_input_filter = dlsym(handle, "rlib_postgre_new_input_filter");
 	rlib_postgre_connect = dlsym(handle, "rlib_postgre_connect");

@@ -149,7 +149,6 @@ static void * rlib_mysql_resolve_field_pointer(void *input_ptr, void *result_ptr
 	int x=0;
 	MYSQL_FIELD *field;
 	mysql_field_seek(results->result, 0);
-	
 	while((field = mysql_fetch_field(results->result))) {
 		if(!strcmp(field->name, name)) {
 			return (void *)results->fields[x];

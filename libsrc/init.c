@@ -37,7 +37,6 @@ rlib * rlib_init(struct environment_filter *environment) {
 		rlib_new_c_environment(r);
 	else
 		ENVIRONMENT(r) = environment;
-
 	return r;
 }
 
@@ -72,6 +71,7 @@ int rlib_add_report(rlib *r, char *name, char *mainloop) {
 
 int rlib_execute(rlib *r) {
 	int i,j;
+
 	for(i=0;i<r->queries_count;i++) {
 		r->results[i].input = r->queries[i].input;
 		r->results[i].result = INPUT(r,i)->new_result_from_query(INPUT(r,i), r->queries[i].sql);

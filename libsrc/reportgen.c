@@ -188,34 +188,35 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 	struct report_element *e = rl->e;
 	struct rlib_pcode *tmp=NULL;
 	char *text;
-	
+	struct rlib_value line_rval_color;
+	struct rlib_value line_rval_bgcolor;
+
+	if(rl->color_code != NULL)
+		rlib_execute_pcode(r, &line_rval_color, rl->color_code, NULL);
+	if(rl->bgcolor_code != NULL)
+		rlib_execute_pcode(r, &line_rval_bgcolor, rl->bgcolor_code, NULL);
+
 	for(; e != NULL; e=e->next) {
+
 		if(e->type == REPORT_ELEMENT_FIELD) {
 			char buf[MAXSTRLEN];
 
 			rf = e->data;
+
 			rlib_execute_pcode(r, &extra_data[i].rval_code, rf->code, NULL);	
 
 			if(rf->link_code != NULL)	
 				rlib_execute_pcode(r, &extra_data[i].rval_link, rf->link_code, NULL);
 
-			tmp = NULL;
-
 			if(rf->color_code != NULL)	
-				tmp = rf->color_code;
+				rlib_execute_pcode(r, &extra_data[i].rval_color, rf->color_code, NULL);
 			else if(rl->color_code != NULL)
-				tmp = rl->color_code;
-			if(tmp != NULL)
-				rlib_execute_pcode(r, &extra_data[i].rval_color, tmp, NULL);
-
-			tmp = NULL;
+				extra_data[i].rval_color = line_rval_color;
 
 			if(rf->bgcolor_code != NULL)
-				tmp = rf->bgcolor_code;
+				rlib_execute_pcode(r, &extra_data[i].rval_bgcolor, rf->bgcolor_code, NULL);
 			else if(rl->bgcolor_code != NULL)
-				tmp = rl->bgcolor_code;
-			if(tmp != NULL)	
-				rlib_execute_pcode(r, &extra_data[i].rval_bgcolor, tmp, NULL);
+				extra_data[i].rval_bgcolor = line_rval_bgcolor;
 
 			rlib_format_string(r, rf, &extra_data[i].rval_code, buf);
 			align_text(r, extra_data[i].formatted_string, MAXSTRLEN, buf, rf->align, rf->width);
@@ -224,19 +225,20 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 			
 			rlib_execute_pcode(r, &extra_data[i].rval_col, rf->col_code, NULL);
 		}
-		
 		if(e->type == REPORT_ELEMENT_TEXT) {
 			char buf[MAXSTRLEN];
 			rt = e->data;
-			if(rt->bgcolor_code != NULL)
-				tmp = rt->bgcolor_code;
-			else if(rl->bgcolor_code != NULL)
-				tmp = rl->bgcolor_code;
-			if(tmp != NULL)	
-				rlib_execute_pcode(r, &extra_data[i].rval_bgcolor, tmp, NULL);	
-				
+
 			if(rt->color_code != NULL)	
 				rlib_execute_pcode(r, &extra_data[i].rval_color, rt->color_code, NULL);
+			else if(rl->color_code != NULL)
+				extra_data[i].rval_color = line_rval_color;
+
+			if(rt->bgcolor_code != NULL)
+				rlib_execute_pcode(r, &extra_data[i].rval_bgcolor, rt->bgcolor_code, NULL);
+			else if(rl->bgcolor_code != NULL)
+				extra_data[i].rval_bgcolor = line_rval_bgcolor;
+
 
 			if(rt->value == NULL)
 				extra_data[i].formatted_string[0] = '\0';
@@ -249,7 +251,7 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 			extra_data[i].width = rt->width;
 			rlib_execute_pcode(r, &extra_data[i].rval_col, rt->col_code, NULL);	
 		}
-		
+
 		if(rl->font_point == -1)
 			extra_data[i].font_point = r->font_point;
 		else
@@ -411,9 +413,6 @@ static void print_detail_line_private(rlib *r, struct report_output_array *roa, 
 			find_stuff_in_common(r, extra_data, count);
 			count = 0;
 
-			/*CPDF IS SLOW AS ALL HELL WITH cpdf_text do we smartly work around it*
-				Important to note ouutputs like CSV, can't do this cause of the col stuff
-			*/
 			if(OUTPUT(r)->do_grouptext) {
 				char buf[MAXSTRLEN];
 				float fun_width=0;
@@ -485,15 +484,14 @@ static void print_detail_line_private(rlib *r, struct report_output_array *roa, 
 					count++;
 				}
 			}
-
 			rfree(extra_data);
-
 			if(backwards)
 				rlib_subtract_line(r,get_font_point(r, rl));
 			else
 				rlib_advance_line(r, get_font_point(r, rl));
 				
 			OUTPUT(r)->rlib_end_line(r, backwards);	
+
 		} else if(ro->type == REPORT_PRESENTATION_DATA_HR) {
 			struct rlib_value rval2, *rval=&rval2;
 			char *colorstring;

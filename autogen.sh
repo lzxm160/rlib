@@ -12,8 +12,10 @@ FILE=libsrc/reportgen.c
 
 DIE=0
 
-AUTOMAKE=automake-1.4
-ACLOCAL=aclocal-1.4
+#AUTOMAKE=automake-1.4
+AUTOMAKE=automake-1.5
+#ACLOCAL=aclocal-1.4
+ACLOCAL=aclocal-1.5
 
 ($AUTOMAKE --version) < /dev/null > /dev/null 2>&1 || {
         AUTOMAKE=automake
@@ -73,7 +75,8 @@ do
     echo skipping $dr -- flagged as no auto-gen
   else
     echo processing $dr
-    macrodirs=`sed -n -e 's,AM_ACLOCAL_INCLUDE(\(.*\)),\1,gp' < $coin`
+    #macrodirs=`sed -n -e 's,AM_ACLOCAL_INCLUDE(\(.*\)),\1,gp' < $coin`
+	 macrodirs="$ORIGDIR/m4"
     ( cd $dr
       aclocalinclude="$ACLOCAL_FLAGS"
       for k in $macrodirs; do

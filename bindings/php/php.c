@@ -124,6 +124,7 @@ ZEND_FUNCTION(rlib_add_datasource_mysql) {
 	char *datasource_name, *database_host, *database_user, *database_password, *database_database;
 	rlib_inout_pass *rip;
 	int id = -1;
+	int result = 0;
 	
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsssss", &z_rip,
 		&datasource_name, &datasource_length,
@@ -135,7 +136,8 @@ ZEND_FUNCTION(rlib_add_datasource_mysql) {
 	}
 	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);
 	
-	rlib_add_datasource_mysql(rip->r, datasource_name, database_host, database_user, database_password, database_database);
+	result = rlib_add_datasource_mysql(rip->r, datasource_name, database_host, database_user, database_password, database_database);
+	RETURN_LONG(result);
 }
 #endif
 
@@ -146,6 +148,7 @@ ZEND_FUNCTION(rlib_add_datasource_postgre) {
 	char *datasource_name, *conn;
 	rlib_inout_pass *rip;
 	int id = -1;
+	int result = 0;
 	
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss", &z_rip,
 		&datasource_name, &datasource_length,
@@ -154,7 +157,8 @@ ZEND_FUNCTION(rlib_add_datasource_postgre) {
 	}
 	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);
 	
-	rlib_add_datasource_postgre(rip->r, datasource_name, conn);
+	result = rlib_add_datasource_postgre(rip->r, datasource_name, conn);
+	RETURN_LONG(result);
 }
 #endif
 
@@ -229,13 +233,14 @@ ZEND_FUNCTION(rlib_execute) {
 	zval *z_rip = NULL;
 	rlib_inout_pass *rip;
 	int id = -1;
-	
+	int result = 0;	
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_rip) == FAILURE) {
 		return;
 	}
 	
 	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
-	rlib_execute(rip->r);
+	result = rlib_execute(rip->r);
+	RETURN_LONG(result);
 }
 
 ZEND_FUNCTION(rlib_spool) {

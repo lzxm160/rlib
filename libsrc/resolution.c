@@ -70,6 +70,7 @@ int rlib_resolve_resultset_field(rlib *r, char *name, void **rtn_field, int *rtn
 	int resultset=0;
 	int found = FALSE;
 	char *right_side = NULL, *result_name = NULL;
+
 	resultset = r->current_result;
 	right_side = memchr(name, '.', strlen(name));
 	if(right_side != NULL) {

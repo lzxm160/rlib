@@ -136,7 +136,7 @@ static void rlib_pdf_init_output(rlib *r) {
 	OUTPUT_PRIVATE(r)->pdf = cpdf_open(0, &dL);
 	cpdf_enableCompression(OUTPUT_PRIVATE(r)->pdf, YES);
 	cpdf_init(OUTPUT_PRIVATE(r)->pdf);
-	cpdf_setTitle(OUTPUT_PRIVATE(r)->pdf, "SICOM Systems Report");
+	cpdf_setTitle(OUTPUT_PRIVATE(r)->pdf, "RLIB Report");
 }
 
 static void rlib_pdf_begin_text(rlib *r) {

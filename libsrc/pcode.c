@@ -161,7 +161,6 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, char *str) {
 	struct report_variable *rv;
 	long rvar;
 	o = rmalloc(sizeof(struct rlib_pcode_operand));
-	 
 	if(str[0] == '\'') {
 		char *newstr = rmalloc(strlen(str)-1);
 		memcpy(newstr, str+1, strlen(str)-1);
@@ -354,7 +353,7 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, char *infix) {
 	pcodes = rmalloc(sizeof(struct rlib_pcode));
 	rlib_pcode_init(pcodes);
 	operator_stack_init(&os);
-	strlwrexceptquoted(infix);
+//	strlwrexceptquoted(infix);
 	rmwhitespacesexceptquoted(infix);
 
 	while(*moving_ptr) {
@@ -499,10 +498,10 @@ struct rlib_value * rlib_value_stack_pop(struct rlib_value_stack *vs) {
 struct rlib_value * rlib_value_new(struct rlib_value *rval, int type, int free, void * value) {
 	rval->type = type;
 	rval->free = free;
-	rval->number_value = 0;
+/*	rval->number_value = 0;
 	bzero(&rval->date_value, sizeof(struct tm));
 	rval->string_value = NULL;
-	rval->iif_value = NULL;
+	rval->iif_value = NULL;*/
 
 	if(type == RLIB_VALUE_NUMBER)
 		rval->number_value = *(long long *)value;
@@ -583,7 +582,7 @@ struct rlib_value *rlib_operand_get_value(rlib *r, struct rlib_value *rval, stru
 }
 
 int execute_pcode(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
-	int i=0;
+	int i;
 	for(i=0;i<code->count;i++) {
 		if(code->instructions[i].instruction == PCODE_PUSH) {
 			struct rlib_pcode_operand *o = code->instructions[i].value;

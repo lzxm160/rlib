@@ -1,3 +1,21 @@
+2003-11-04  Bob Doan  <bdoan@sicompos.com>
+	* autogen.sh: Add stuff for python bindings, speed up the engine a tad, better error checking
+	* bindings/Makefile.am: likewise
+	* bindings/php/php.c: likewise
+	* bindings/python/Makefile.am: likewise
+	* bindings/python/environment.c: likewise
+	* bindings/python/python.c: likewise
+	* bindings/python/rlib_python.h: likewise
+	* configure.in: likewise
+	* inputs/mysql/mysql.c: likewise
+	* libsrc/Makefile.am: likewise
+	* libsrc/datasource.c: likewise
+	* libsrc/init.c: likewise
+	* libsrc/pcode.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+
 2003-10-24  Bob Doan  <bdoan@sicompos.com>
 	* NEWS: 1.1.2
 	* libsrc/reportgen.c: fix bug w/ output when caching
