@@ -274,10 +274,10 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 								}
 							}
 							
+							if(rlib_execute_as_string(r, plot->label_code, legend_label, MAXSTRLEN)) {
+								OUTPUT(r)->graph_hint_legend(r, legend_label);
+							}
 							if(row_count == 0 && did_set == FALSE) {
-								if(rlib_execute_as_string(r, plot->label_code, legend_label, MAXSTRLEN)) {
-									OUTPUT(r)->graph_hint_legend(r, legend_label);
-								}
 								y_min[side] = y_max[side] = y_value;
 								did_set = TRUE;
 							}

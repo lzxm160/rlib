@@ -1,3 +1,8 @@
+2005-02-24  Bob Doan  <bdoan@sicom.com>
+	* Makefile.am: include doc
+	* libsrc/graphing.c: always hint legend
+	* libsrc/pdf.c: fix comment typo
+
 2005-02-18  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/Makefile.am: BSD doesn't like the -ldl
 

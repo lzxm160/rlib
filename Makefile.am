@@ -20,7 +20,7 @@
 ##
 ## Process this file with automake to produce Makefile.in
 
-EXTRA_DIST = AUTHORS CVS HACKING install-sh README rlib.pc.in
+EXTRA_DIST = AUTHORS CVS HACKING install-sh README rlib.pc.in doc
 SUBDIRS = libsrc inputs bindings src tests 
 
 pkgconfigdir = $(libdir)/pkgconfig

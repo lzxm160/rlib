@@ -149,7 +149,7 @@ static void pdf_drawbox(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloa
 #endif
 	if(!(color->r == 1.0 && color->g == 1.0 && color->b == 1.0)) {
 		pdf_turn_text_off(r);
-		//the - PDF_PIXEL seems to get around decimal percision problems.. but should investigate this a big further	
+		//the - PDF_PIXEL seems to get around decimal percision problems.. but should investigate this a bit further	
 		OUTPUT(r)->set_bg_color(r, color->r, color->g, color->b);
 		cpdf_rect(OUTPUT_PRIVATE(r)->pdf, left_origin, bottom_origin, how_long, how_tall-PDF_PIXEL);
 		cpdf_fill(OUTPUT_PRIVATE(r)->pdf);
