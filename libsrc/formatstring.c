@@ -52,7 +52,7 @@ gint format_money(gchar *dest, gint max, const gchar *moneyformat, gint64 x) {
 
 
 gint format_number(gchar *dest, gint max, const gchar *fmt, gint64 x) {
-	double d = (((double) x) / RLIB_DECIMAL_PRECISION);
+	double d = (((double) x) / (double)RLIB_DECIMAL_PRECISION);
 	return snprintf(dest, max - 1, fmt, d);
 }
 

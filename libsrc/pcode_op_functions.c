@@ -1212,9 +1212,11 @@ gboolean rlib_pcode_operator_format(rlib *r, struct rlib_value_stack *vs, struct
 				if (*fmt == '#') {
 					++fmt;
 					format_number(buf, sizeof(buf) - 1, fmt, num);
+					result = buf;
 				} else if(*fmt == '$') {
 					++fmt;
 					format_money(buf, sizeof(buf) - 1, fmt, num);
+					result = buf;
 				} else r_error("Format type does not match variable type in 'format' function");
 			} else if(RLIB_VALUE_IS_DATE(v1)) {
 				if (*fmt == '@') {

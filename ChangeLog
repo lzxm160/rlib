@@ -1,4 +1,8 @@
 2004-07-30  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/formatstring.c: cast
+	* libsrc/pcode_op_functions.c: set the pointer in the NUMBER condition so it actually works
+
+2004-07-30  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/pcode_op_functions.c: fixed ceil and floor functions to actually work
 
 2004-07-29  Bob Doan  <bdoan@sicompos.com>
