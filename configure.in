@@ -131,6 +131,13 @@ dnl Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS(fcntl.h unistd.h)
 
+AC_CHECK_HEADER([cpdflib.h],
+	[AC_DEFINE([HAVE_CPDFLIB_H])],
+	[AC_MSG_ERROR([You must have cpdflib properly installed in order for rlib to work.. missing cpdflib.h])])
+
+
+AC_CHECK_LIB(cpdf, cpdf_init, [], [AC_MSG_ERROR([You must have cpdflib properly installed in order for rlib to work.. missing libcpdf.so])])
+
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 

@@ -1,5 +1,9 @@
 2003-11-05  Bob Doan  <bdoan@sicompos.com>
 
+	* configure.in: better checks for cpdflib
+
+2003-11-05  Bob Doan  <bdoan@sicompos.com>
+
 	* autogen.sh: Fixed bug with pdf field caching, have pything bindings now, removed init.c, renamed to api.c
 		New functions from John Buckman <john@magnatune.com> to make rlib easier for scripting rlib_mysql_report
 		I also made new functions so that you can write the output buffer instead of spooling it.. and I updated some
