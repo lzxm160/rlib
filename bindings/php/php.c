@@ -387,3 +387,76 @@ ZEND_FUNCTION(rlib_set_locale) {
 
 	rlib_set_locale(rip->r, locale);
 }
+
+
+ZEND_FUNCTION(rlib_version) {
+	gint id = -1;
+	zval *z_rip = NULL;
+	rlib_inout_pass *rip;
+	char *ver = rlib_version();
+	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
+	RETURN_STRING(ver, TRUE);
+}
+
+
+ZEND_FUNCTION(rlib_set_output_encoding) {
+	zval *z_rip = NULL;
+	gint whatever;
+	gchar *encoding;
+	rlib_inout_pass *rip;
+	gint id = -1;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &z_rip, &encoding, &whatever) == FAILURE) {
+		return;
+	}
+	
+	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
+
+	rlib_set_output_encoding(rip->r, encoding);
+}
+
+
+ZEND_FUNCTION(rlib_set_report_output_encoding) {
+	gint id = -1;
+	gint whatever;
+	gchar *encoding, *rptnum;
+	zval *z_rip = NULL;
+	rlib_inout_pass *rip;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss", &z_rip, &rptnum, &whatever, &encoding, &whatever) == FAILURE) {
+		return;
+	}
+	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
+	rlib_set_report_output_encoding(rip->r, atol(rptnum), encoding);
+}
+
+
+ZEND_FUNCTION(rlib_set_pdf_font_directories) {
+	gint id = -1;
+	gint whatever;
+	gchar *d1, *d2;
+	zval *z_rip = NULL;
+	rlib_inout_pass *rip;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss", &z_rip, &d1, &whatever, &d2, &whatever) == FAILURE) {
+		return;
+	}
+	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
+	rlib_set_pdf_font_directories(rip->r, d1, d2);
+}
+
+
+ZEND_FUNCTION(rlib_set_pdf_font) {
+	gint id = -1;
+	gint whatever;
+	gchar *encoding, *fontname;
+	zval *z_rip = NULL;
+	rlib_inout_pass *rip;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss", &z_rip, &encoding, &whatever, &fontname, &whatever) == FAILURE) {
+		return;
+	}
+	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
+	rlib_set_pdf_font(rip->r, encoding, fontname);
+}
+

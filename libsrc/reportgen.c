@@ -198,22 +198,21 @@ struct rlib_line_extra_data *extra_data) {
 	return extra_data->output_width;
 }
 	
-static gfloat rlib_output_text(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_orgin, 
-struct rlib_line_extra_data *extra_data) {
+
+static gfloat rlib_output_text(rlib *r, gint backwards, 
+						gfloat left_origin, gfloat bottom_orgin, 
+						struct rlib_line_extra_data *extra_data) {
 	gfloat rtn_width;
 	gchar *text;
-	
 	text = extra_data->formatted_string;
-
 	OUTPUT(r)->rlib_set_font_point(r, extra_data->font_point);
-	
-	if(extra_data->found_color)
+	if(extra_data->found_color) {
 		OUTPUT(r)->rlib_set_fg_color(r, extra_data->color.r, extra_data->color.g, extra_data->color.b);
-
-//Convert UTF8 to the desired character encoding, if specified.
-	if (r->output_encoder != (iconv_t) -1) {
-		text = (gchar *) encode(r->output_encoder, text);
-		
+	}
+//Convert UTF8 to the desired character encoding, IF specified.
+rlib_trap();
+	if (r->current_output_encoder != (iconv_t) -1) {
+		text = (gchar *) encode(r->current_output_encoder, text);
 	}
 	OUTPUT(r)->rlib_print_text(r, left_origin, bottom_orgin+(extra_data->font_point/300.0), text, backwards, extra_data->col);
 
@@ -1082,23 +1081,26 @@ static void rlib_evaluate_break_attributes(rlib *r) {
 }
 
 
+#define ENCODING "UTF-8"
+
+static iconv_t get_encoder(rlib *r, const char *encoding) {
+	iconv_t result = (iconv_t) -1;
+	if (!g_strcasecmp(encoding, "UTF-8") || !g_strcasecmp(encoding, "UTF8")) {
+		*r->output_encoding_name = '\0';	//No conversion leave as UTF8
+		r->utf8 = TRUE;
+	} else {
+		result = iconv_open(encoding, ENCODING);
+		r->utf8 = FALSE;
+	}
+	return result;
+}
+
+
 gint make_report(rlib *r) {
 	gint i = 0;
 	gint report = 0;
 	gint processed_variables = FALSE;
 	gint first_result;
-	gchar *lc_encoding;
-	
-	lc_encoding = nl_langinfo(CODESET);
-	if (lc_encoding == NULL) lc_encoding = "ISO8859-1";
-	r->output_encoder = iconv_open(lc_encoding, "UTF-8");
-	if (r->output_encoder == (iconv_t) -1) {
-		g_strlcpy(r->output_encoding_name, "UTF-8", sizeof(r->output_encoding_name));
-		r_error("Cannot convert UTF-8 to %s. Using UTF-8 for output", lc_encoding);
-	} else {
-		g_strlcpy(r->output_encoding_name, lc_encoding, sizeof(r->output_encoding_name));
-		r_debug("Using encoding %s", lc_encoding);
-	}
 	if(r->format == RLIB_FORMAT_HTML)
 		rlib_html_new_output_filter(r);
 	else if(r->format == RLIB_FORMAT_TXT)
@@ -1120,24 +1122,50 @@ gint make_report(rlib *r) {
 	OUTPUT(r)->rlib_init_output(r);
 	first_result = rlib_fetch_first_rows(r);
 	for(report=0;report<r->reports_count;report++) {
+		struct rlib_report *rr;
+		gchar *tmp;
+		iconv_t encoder = (iconv_t) -1;
+				
 		processed_variables = FALSE;
 		r->current_report = report;
+		rr = r->reports[report];
 		if(report > 0) {
-			if(r->reports[r->current_report]->mainloop_query != -1)
-				r->current_result = r->reports[r->current_report]->mainloop_query;
+			if(rr->mainloop_query != -1)
+				r->current_result = rr->mainloop_query;
+		}
+		if (*(tmp = rr->output_encoding_name)) {
+			encoder = get_encoder(r, tmp);
+			if ((encoder == (iconv_t) -1) && !r->utf8) r_error("Could not open encoder for %s", tmp);
+		}
+		if (!r->utf8 && (encoder == (iconv_t) -1)) {
+			if (r->output_encoder != (iconv_t) -1) { // already a default encoder, just use it
+				encoder = r->output_encoder;
+				tmp = r->output_encoding_name; //For log
+			} else if (*(tmp = r->output_encoding_name)) {
+				encoder = r->output_encoder = get_encoder(r, tmp);
+				if (!r->utf8 && (encoder == (iconv_t) -1)) r_error("Could not open encoder for %s", tmp);
+			}
+		}
+		r->current_output_encoder = encoder;
+		if (encoder == (iconv_t) -1) {
+//			r->utf8 = TRUE;
+			r_debug("Using UTF-8 for output");
+		} else {
+			r->utf8 = FALSE;
+			r_debug("Using encoding %s", tmp);
 		}
 		rlib_resolve_fields(r);
 		rlib_init_variables(r);
 		rlib_process_variables(r);
 		processed_variables = TRUE;
 		rlib_evaluate_report_attributes(r);
-		if(r->reports[r->current_report]->font_size != -1)
-			r->font_point = r->reports[r->current_report]->font_size;
+		if(rr->font_size != -1)
+			r->font_point = rr->font_size;
 		OUTPUT(r)->rlib_start_report(r);
 		rlib_init_page(r, TRUE);		
 		OUTPUT(r)->rlib_begin_text(r);
 		if (!first_result) {
-			print_report_output(r, r->reports[r->current_report]->alternate.nodata, FALSE);
+			print_report_output(r, rr->alternate.nodata, FALSE);
 		} else {
 			if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
 				while (1) {
@@ -1150,12 +1178,12 @@ gint make_report(rlib *r) {
 					rlib_evaluate_break_attributes(r);
 					rlib_handle_break_headers(r);
 
-					if(rlib_end_page_if_line_wont_fit(r, r->reports[r->current_report]->detail.fields))
-						for(page=0;page<r->reports[r->current_report]->pages_accross;page++)
+					if(rlib_end_page_if_line_wont_fit(r, rr->detail.fields))
+						for (page = 0; page < rr->pages_accross; page++)
 							rlib_force_break_headers(r);
 
 					if(OUTPUT(r)->do_break)
-						output_count = print_report_output(r, r->reports[r->current_report]->detail.fields, FALSE);
+						output_count = print_report_output(r, rr->detail.fields, FALSE);
 					else
 						output_count = hack_print_report_outputs(r);
 
@@ -1189,8 +1217,16 @@ gint make_report(rlib *r) {
 			r->detail_line_count = 0;
 			r->font_point = FONTPOINT;
 		}
+		if ((r->current_output_encoder != (iconv_t) -1) && (r->current_output_encoder != r->output_encoder)) {
+			iconv_close(r->current_output_encoder);
+		}
+		r->current_output_encoder = (iconv_t) -1;
 	}	
 	OUTPUT(r)->rlib_end_text(r);
+	if (r->output_encoder != (iconv_t) -1) {
+		iconv_close(r->output_encoder);
+		r->output_encoder = (iconv_t) -1;
+	}
 	return 0;
 }
 

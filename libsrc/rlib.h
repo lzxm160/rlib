@@ -361,7 +361,6 @@ struct rlib_report {
 	struct report_alternate alternate;
 	gint mainloop_query;
 
-	iconv_t output_encoder;
 	char output_encoding_name[64];
 	
 	struct rlib_pcode *font_size_code;
@@ -414,8 +413,11 @@ struct rlib {
 	gchar pdf_encoding[256];
 	gchar pdf_fontname[256];
 	gboolean utf8;
-	iconv_t output_encoder;
+	char original_encoding_name[64];
 	char output_encoding_name[64];
+	iconv_t output_encoder; //The default encoder
+	iconv_t current_output_encoder; //The current encoder use to encode
+
 	time_t now; //set when rlib starts now will then be a constant over the time of the report
 	
 	struct rlib_queries queries[RLIB_MAXIMUM_QUERIES];
@@ -522,6 +524,9 @@ char * rlib_get_content_type_as_text(rlib *r);
 gint rlib_spool(rlib *r);
 gint rlib_set_output_format(rlib *r, gint format);
 gint rlib_set_output_format_from_text(rlib *r, gchar * name);
+void rlib_set_output_encoding(rlib *r, const gchar *encoding);
+void rlib_set_report_output_encoding(rlib *r, gint reportnum, const gchar *encoding);
+
 gchar *rlib_get_output(rlib *r);
 gint rlib_get_output_length(rlib *r);
 gint rlib_mysql_report(gchar *hostname, gchar *username, gchar *password, gchar *database, gchar *xmlfilename, gchar *sqlquery, 

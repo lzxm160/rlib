@@ -23,12 +23,14 @@
 #include <unistd.h>
 #include <string.h>
 #include <locale.h>
+#include <langinfo.h>
 
 #include "rlib.h"
 #include "rlib_input.h"
 
 
 rlib * rlib_init_with_environment(struct environment_filter *environment) {
+	gchar *lc_encoding;
 	rlib *r;
 	
 	init_signals();
@@ -39,6 +41,12 @@ rlib * rlib_init_with_environment(struct environment_filter *environment) {
 		rlib_new_c_environment(r);
 	else
 		ENVIRONMENT(r) = environment;
+	r->output_encoder = (iconv_t) -1;	
+	lc_encoding = nl_langinfo(CODESET);
+	if (lc_encoding != NULL) {
+		g_strlcpy(r->output_encoding_name, lc_encoding, sizeof(r->output_encoding_name));
+//r_debug("rlib_init setting encoding to %s", lc_encoding);
+	}
 	return r;
 }
 
@@ -222,8 +230,19 @@ gint rlib_add_parameter(rlib *r, const gchar *name, const gchar *value) {
 *  Returns TRUE if locale was actually set, otherwise, FALSE
 */
 gint rlib_set_locale(rlib *r, gchar *locale) {
-	if (strstr(locale, ".utf8")) r->utf8 = TRUE;
-	return (setlocale(LC_ALL, locale) == NULL)? FALSE : TRUE;
+	gchar *cur = setlocale(LC_ALL, locale);
+	char *lc_encoding;
+	
+	if (cur) {
+//		r_debug("Locale changed from %s to %s by rlib_set_locale", cur, locale); 
+	} else {
+		r_error("Locale could not be changed to %s by rlib_set_locale", locale);
+	}
+	lc_encoding = nl_langinfo(CODESET);
+	if (lc_encoding != NULL) {
+		g_strlcpy(r->output_encoding_name, lc_encoding, sizeof(r->output_encoding_name));
+	}		
+	return (cur)? TRUE : FALSE;
 }
 
 
@@ -271,50 +290,37 @@ void rlib_trap() {
 	return;
 }
 
-//These functions are currently a hack so I can test L10n stuff - Chet
+void rlib_set_report_output_encoding(rlib *r, int rptnum, const char *encoding) {
+	if ((rptnum >= 0) && (rptnum < r->reports_count)) {
+		struct rlib_report *rr = r->reports[rptnum];
+		if (!encoding) encoding = "";
+		g_strlcpy(rr->output_encoding_name, encoding, sizeof(rr->output_encoding_name));
+	} else {
+		r_error("Attempt to set encoding for report #%d which does not exist.", rptnum);
+	}
+}
+
+
+void rlib_set_output_encoding(rlib *r, const char *encoding) {
+	if (!encoding) encoding = "";
+//r_debug("Setting encoding in rlib_set_output_encoding to %s", encoding);
+	g_strlcpy(r->output_encoding_name, encoding, sizeof(r->output_encoding_name));
+}
+
+
 void rlib_set_pdf_font_directories(rlib *r, const char *d1, const char *d2) {
-	if (d1) strncpy(r->pdf_fontdir1, d1, sizeof(r->pdf_fontdir1) - 1);
+	if (d1) g_strlcpy(r->pdf_fontdir1, d1, sizeof(r->pdf_fontdir1) - 1);
 	else *r->pdf_fontdir1 = '\0';
-	if (d2) strncpy(r->pdf_fontdir2, d2, sizeof(r->pdf_fontdir2) - 1);
+	if (d2) g_strlcpy(r->pdf_fontdir2, d2, sizeof(r->pdf_fontdir2) - 1);
 	else *r->pdf_fontdir2 = '\0';
 	if (d1 && !d2) strcpy(r->pdf_fontdir2, d1);
 	if (d2 && !d1) strcpy(r->pdf_fontdir1, d2);
 }
 
 
-gboolean rlib_set_pdf_conversion(rlib *r, int rptnum, const char *encoding) {
-	gint result = FALSE;
-	if ((rptnum >= 0) && (rptnum < r->reports_count)) {
-		struct rlib_report *rr = r->reports[rptnum];
-		if (rr->output_encoder != (iconv_t) -1) iconv_close(rr->output_encoder);
-		rr->output_encoder = (iconv_t) -1;
-		if (encoding) {
-			rr->output_encoder = iconv_open(encoding, "UTF-8");
-			if (rr->output_encoder != (iconv_t) -1) result = TRUE;
-		}
-	}
-	return result;	
-}
-
-
-gboolean rlib_set_output_encoder(rlib *r, const char *encoding) {
-	gint result = FALSE;
-	if (r->output_encoder != (iconv_t) -1) iconv_close(r->output_encoder);
-	r->output_encoder = (iconv_t) -1;
-	if (encoding) {
-		if (g_strcasecmp(encoding, "UTF-8")
-				&& g_strcasecmp(encoding, "UTF8")) {
-			r->output_encoder = iconv_open(encoding, "UTF-8");
-			if (r->output_encoder != (iconv_t) -1) result = TRUE;
-		} else result = TRUE; //don't need to set it, it is already utf8
-	}
-	return result;	
-}
-
-
 void rlib_set_pdf_font(rlib *r, const char *encoding, const char *fontname) {
-	if (encoding) strncpy(r->pdf_encoding, encoding, sizeof(r->pdf_encoding) - 1);
-	if (fontname) strncpy(r->pdf_fontname, fontname, sizeof(r->pdf_fontname) - 1);
+	if (encoding) g_strlcpy(r->pdf_encoding, encoding, sizeof(r->pdf_encoding) - 1);
+	if (fontname) g_strlcpy(r->pdf_fontname, fontname, sizeof(r->pdf_fontname) - 1);
 }
 
 
@@ -327,6 +333,7 @@ gchar *rlib_version() {
 	return "Unknown";
 }
 #endif
+
 
 
 #if HAVE_MYSQL

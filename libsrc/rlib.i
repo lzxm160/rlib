@@ -39,3 +39,9 @@ int rlib_postgre_report(char *connstr, char *xmlfilename, char *sqlquery, char *
 int rlib_add_datasource_odbc(rlib *r, char *input_name, char *source, char *user, char *password);
 int rlib_add_resultset_follower(rlib *r, char *leader, char *follower);
 int rlib_add_parameter(rlib *r, const char *name, const char *value);
+
+char *rlib_version();
+void rlib_set_output_encoding(rlib *r, const char *encoding);
+void rlib_set_report_output_encoding(rlib *r, int reportnum, const char *encoding);
+void rlib_set_pdf_font(rlib *r, const char *encoding, const char *fontname);
+void rlib_set_pdf_font_directories(rlib *r, const char *d1, const char *d2);
