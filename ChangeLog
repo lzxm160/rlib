@@ -1,3 +1,10 @@
+2004-02-17  H. Steuer <steuer@unixsystems.de>
+	reviewed by: <bdoan@sicompos.com>
+	* inputs/mysql/mysql.c: mysql_options() command does not always initialize the options struct by call, 
+		but attaches the group to the mysql struct. therefore the values in the options struct is available 
+		AFTER the mysql_real_connect().The version below looks somewhat more unclean but works as intended 
+		with 3.x and 4.x versions of mysql.
+
 2004-02-17  Bob Doan  <bdoan@sicompos.com>
 	* autogen.sh: removed some commented out stuff
 	* configure.in: bumped version, added "warningfun", hack around java check problem

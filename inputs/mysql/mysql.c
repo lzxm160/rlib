@@ -52,22 +52,21 @@ gpointer rlib_mysql_real_connect(gpointer input_ptr, gchar *group, gchar *host, 
 
 	if(mysql == NULL)
 		return NULL;
-
+		
 	if(group != NULL) {
 		if (mysql_options(mysql,MYSQL_READ_DEFAULT_GROUP,group))
 			return NULL;
-		else {
-			host = mysql->options.host;
-			user = mysql->options.user;
-			password = mysql->options.password;
-			database = mysql->options.db;
-		}
 	}		
-
-	if (mysql_real_connect(mysql,host,user,password, database, 0, NULL, 0) == NULL)
-		return NULL;
-		
-	if (mysql_select_db(mysql,database))
+	
+	if (mysql_real_connect(mysql,
+		group == NULL ? host : mysql->options.host,
+		group == NULL ? user : mysql->options.user,
+		group == NULL ? password : mysql->options.password, 
+		group == NULL ? database : mysql->options.db,
+		group == NULL ? 0 : mysql->options.port, 
+		group == NULL ? NULL : mysql->options.unix_socket, 
+		0
+	   ) == NULL)
 		return NULL;
 
 	INPUT_PRIVATE(input)->mysql = mysql;	
