@@ -411,7 +411,7 @@ char *make_utf8_locale(const char *encoding) {
 	gint len = strlen(encoding);
 
 	if ((encoding == NULL) || (strlen(encoding) < 2)) {
-		r_warning("encoding is NULL or invalid ... using en_US");
+		r_warning("encoding is NULL or invalid [%s]... using en_US", encoding);
 		return "en_US.utf8";
 	}
 	g_strlcpy(buf, encoding, sizeof(buf));
@@ -444,7 +444,11 @@ void make_all_locales_utf8() {
 	int i;
 	while ((i = *lc) != -1) {
 		char *t = setlocale(i, NULL);
-		if (t) setlocale(i, make_utf8_locale(t));
+		if (t) {
+			if (!setlocale(i, make_utf8_locale(t))) {
+				r_error("Setting locale to [%s] FAILED", t);
+			}
+		}
 		++lc;
 	}
 }

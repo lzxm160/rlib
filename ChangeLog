@@ -1,3 +1,7 @@
+2004-04-13  Chet Heilman  <cheilman@sicompos.com>
+	* libsrc/util.c: (make_utf8_locale), (make_all_locales_utf8):
+		Beefed up diagnostic messages when there is a locale problem.
+		
 2004-04-12  Chet Heilman  <cheilman@sicompos.com>
 	* bindings/java/Makefile.am:
 		add -fno-strict-aliasing
