@@ -16,6 +16,12 @@
  * License along with this program; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
+ * 
+ * $Id$s
+ *
+ * This module defines constants and structures used by most of the C code
+ * modules in the library.
+ *
  */
 #include <libxml/parser.h>
 #include <iconv.h>
@@ -669,7 +675,6 @@ gint rlib_datetime_compare(struct rlib_datetime *t1, struct rlib_datetime *t2);
 void rlib_datetime_format(struct rlib_datetime *dt, char *buf, int max, const char *fmt);
 int rlib_datetime_daysdiff(struct rlib_datetime *dt, struct rlib_datetime *dt2);
 
-//#define charcount(s) strlen(s)
 #define charcount(s) g_utf8_strlen(s, -1)
 #define bytelength(s) strlen(s)
 

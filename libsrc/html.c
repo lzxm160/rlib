@@ -1,7 +1,7 @@
 /*
  *  Copyright (C) 2003 SICOM Systems, INC.
  *
- *  Authors: Bob Doan <bdoan@sicompos.com>
+ *  Authors:	Bob Doan <bdoan@sicompos.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -16,6 +16,12 @@
  * License along with this program; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
+ * 
+ * $Id$
+ *
+ * This module implements the HTML output renderer for generating an HTML
+ * formatted report from the rlib object.
+ *
  */
 
 #include <stdlib.h>

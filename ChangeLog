@@ -1,4 +1,12 @@
 2004-03-10  Chet Heilman  <cheilman@sicompos.com>
+	* libsrc/api.c:
+		Add / modify apis.
+	* libsrc/html.c:
+		Change charset in content type.
+	* libsrc/rlib.h:
+		Add prototypes.
+
+2004-03-10  Chet Heilman  <cheilman@sicompos.com>
 	* libsrc/api.c: (rlib_init_with_environment):
 		Make the default pdf encoding be WinAnsiEncoding unless another is set
 		by the set_pdf_font function. to set NULL as the encoding (to use
