@@ -4,7 +4,7 @@
 	$data[0][2] = "color";
 	$data[0][3] = "group";
 
-	$data[1][0] = "Bob";
+/*	$data[1][0] = "Bob";
 	$data[1][1] = "Doan";
 	$data[1][2] = "blue";
 	$data[1][3] = "1";
@@ -27,7 +27,7 @@
 	$data[5][0] = "Steve";
 	$data[5][1] = "Tilden";
 	$data[5][2] = "purple";
-	$data[5][3] = "2";
+	$data[5][3] = "2";*/
 
 	$rlib =	rlib_init();
 	rlib_add_datasource_array($rlib, "local_array");

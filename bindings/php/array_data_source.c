@@ -51,6 +51,10 @@ static gint rlib_php_array_input_close(gpointer input_ptr) {
 static gint rlib_php_array_first(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_php_array_results *result = result_ptr;
 	result->current_row = 1;
+	if(result->rows <= 1) {
+		result->isdone = TRUE;
+		return FALSE;
+	}	
 	return TRUE;
 }
 
