@@ -570,7 +570,11 @@ static void html_graph_label_x(rlib *r, gint iteration, gchar *label) {
 	}
 
 	if(graph->x_axis_labels_are_under_tick) {
-		left -= (graph->x_tick_width / 2);
+		if(graph->x_labels_are_up) {
+			left -= rlib_gd_get_string_height(OUTPUT_PRIVATE(r)->rgd) / 2;
+		} else {
+			left -= (graph->x_tick_width / 2);
+		}
 		y_start += graph->intersection;
 	}
 
@@ -596,9 +600,10 @@ static void html_graph_tick_y(rlib *r, gint iterations) {
 	graph->height = (graph->height/iterations)*iterations;
 	rlib_gd_line(OUTPUT_PRIVATE(r)->rgd, graph->x_start, graph->y_start, graph->x_start, graph->y_start - graph->height, NULL);
 
-	if(graph->y_label_width_right > 0)
-		rlib_gd_line(OUTPUT_PRIVATE(r)->rgd, graph->x_start+graph->width, graph->y_start, graph->x_start+graph->width, graph->y_start - graph->height, NULL);
-	
+	if(graph->y_label_width_right > 0) {
+		gint xstart = graph->x_start + ((graph->x_tick_width)*(graph->x_iterations-1));		
+		rlib_gd_line(OUTPUT_PRIVATE(r)->rgd, xstart, graph->y_start,xstart, graph->y_start - graph->height, NULL);
+	}	
 
 }
 

@@ -1,8 +1,8 @@
+2005-01-14  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/html.c: vertical text on x axis w/ line graphs now is in the right spot.
+
 2005-01-13  Bob Doan  <bdoan@sicompos.com>
-
-	reviewed by: <delete if not using a buddy>
-
-	* libsrc/api.c: (rlib_query_refresh):
+	* libsrc/api.c: go to the first record of everything when refressing data sources
 
 2005-01-13  Bob Doan  <bdoan@sicompos.com>
 	* configure.in: don't conflict w/ PHP
@@ -15,7 +15,6 @@
 	* src/examples/php/graph.php: likewise
 
 2005-01-13  Michael Roth  <mroth@sicompos.com>
-
 	* libsrc/formatstring.c:
 	* libsrc/pcode.c: (rlib_infix_to_pcode): Change iif
 
