@@ -350,7 +350,6 @@ struct report_variable {
 	gpointer data;	
 };
 
-
 struct rlib_report {
 	xmlDocPtr doc;
 	gchar *contents;
