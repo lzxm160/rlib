@@ -35,6 +35,8 @@ struct rlib_gd {
 #else
 	void *im;
 #endif
+	gint color_pool[gdMaxColors];
+	struct rlib_rgb rlib_color[gdMaxColors];
 	gchar *file_name;
 	int white;
 	int black;

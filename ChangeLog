@@ -1,3 +1,11 @@
+2005-02-07  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/axis.c: always have a max and a min
+	* libsrc/gd.c: color pool
+	* libsrc/graphing.c: nada
+	* libsrc/html.c: better x axis labeling
+	* libsrc/pdf.c: don't have div 0 in pdf
+	* libsrc/rlib_gd.h: color pool
+
 2005-02-07  Michael Roth  <mroth@sicompos.com>
 
 	* src/examples/php/graph.php: Debug Example

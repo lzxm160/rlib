@@ -486,8 +486,12 @@ else
 mapData(szMin,szMax,sd,&mszMin,&mszMax,&raise);
 
 /* adjust limits */
-adjustPosAndNegLimits(mszMin,mszMax,minTMs,adjMaxTMs,sd,goodIncs,numGoodIncs,numTms,
-    &mTmi,&amszMin,&amszMax);
+	if(adjustPosAndNegLimits(mszMin,mszMax,minTMs,adjMaxTMs,sd,goodIncs,numGoodIncs,numTms, &mTmi,&amszMin,&amszMax) == -1) {
+		*adjMin = dataMin;
+		*adjMax = dataMax;
+		*numTms = 10;
+		return -1;
+	}
 
 /* unmap the data */
 aszMin=((double)amszMin)*POWER10(-raise);

@@ -529,6 +529,7 @@ static void html_graph_do_grid(rlib *r, gboolean just_a_box) {
 		graph->x_labels_are_up = TRUE;
 		graph->y_start -= graph->x_label_width;	
 		graph->height -= graph->x_label_width;
+		graph->y_start -= rlib_gd_get_string_width(OUTPUT_PRIVATE(r)->rgd, "w");
 	} else {
 		graph->x_labels_are_up = FALSE;
 		if(graph->x_label_width != 0) {
@@ -543,7 +544,6 @@ static void html_graph_do_grid(rlib *r, gboolean just_a_box) {
 		rlib_gd_line(OUTPUT_PRIVATE(r)->rgd, graph->x_start, graph->y_start, graph->x_start + graph->width, graph->y_start, NULL);
 	}
 	
-
 }
 
 static void html_graph_tick_x(rlib *r) {
@@ -566,6 +566,7 @@ static void html_graph_set_x_iterations(rlib *r, gint iterations) {
 static void html_graph_hint_label_x(rlib *r, gchar *label) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
 	gint string_width = rlib_gd_get_string_width(OUTPUT_PRIVATE(r)->rgd, label);
+
 	if(string_width > graph->x_label_width) {
 		graph->x_label_width = string_width;
 	}
@@ -575,6 +576,8 @@ static void html_graph_label_x(rlib *r, gint iteration, gchar *label) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
 	gint left = graph->x_start + (graph->x_tick_width * iteration);
 	gint y_start = graph->y_start;
+
+
 
 	if(graph->x_labels_are_up) {
 		y_start += graph->x_label_width;
@@ -590,7 +593,6 @@ static void html_graph_label_x(rlib *r, gint iteration, gchar *label) {
 		}
 		y_start += graph->intersection;
 	}
-
 
 	rlib_gd_text(OUTPUT_PRIVATE(r)->rgd, label, left, y_start, graph->x_labels_are_up);
 }

@@ -53,12 +53,36 @@ static char *unique_file_name(gchar *buf, gchar *image_directory) {
 	return buf;
 }
 
+int get_color_pool(struct rlib_gd *rgd, struct rlib_rgb *rgb) {
+	int i;
+	for(i=0;i<gdMaxColors;i++) {
+		if(rgd->color_pool[i] != -1) {
+			if(memcmp(rgb, &rgd->rlib_color[i], sizeof(struct rlib_rgb)) == 0)
+				return rgd->color_pool[i];		
+		} else {
+			rgd->color_pool[i] = gdImageColorAllocate(rgd->im, rgb->r*255, rgb->g*255, rgb->b*255);
+			memcpy(&rgd->rlib_color[i], rgb, sizeof(struct rlib_rgb));
+			return rgd->color_pool[i];
+		}
+	}
+
+	return -1;
+}
+
 
 #ifdef HAVE_GD
 struct rlib_gd * rlib_gd_new(gint width, gint height, gchar *image_directory) {
 	struct rlib_gd *rgd = g_malloc(sizeof(struct rlib_gd));
 	char file_name[MAXSTRLEN];
 	int fd;
+	int i;
+	
+	bzero(rgd, sizeof(struct rlib_gd));
+	
+	for(i=0;i<gdMaxColors;i++)
+		rgd->color_pool[i] = -1;
+	
+	
 	rgd->im =  gdImageCreate(width, height);
 	
 	while(1) {
@@ -116,7 +140,7 @@ int rlib_gd_line(struct rlib_gd *rgd, gint x1, gint y1, gint x2, gint y2, struct
 	gint gd_color;
 	
 	if(color != NULL)
-		gd_color = gdImageColorAllocate(rgd->im, color->r*255, color->g*255, color->b*255);	
+		gd_color = get_color_pool(rgd, color);	
 	else
 		gd_color = rgd->black;
 
@@ -135,7 +159,7 @@ int rlib_gd_rectangle(struct rlib_gd *rgd, gint x, gint y, gint width, gint heig
 	
 	
 	if(color != NULL)
-		gd_color = gdImageColorAllocate(rgd->im, color->r*255, color->g*255, color->b*255);	
+		gd_color = get_color_pool(rgd, color);	
 	else
 		gd_color = rgd->black;
 
@@ -149,7 +173,7 @@ int rlib_gd_arc(struct rlib_gd *rgd, gint x, gint y, gint radius, gint start_ang
 	radius *= 2;
 	
 	if(color != NULL)
-		gd_color = gdImageColorAllocate(rgd->im, color->r*255, color->g*255, color->b*255);	
+		gd_color = get_color_pool(rgd, color);	
 	else
 		gd_color = rgd->black;
 

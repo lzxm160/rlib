@@ -734,6 +734,9 @@ static void pdf_graph_plot_pie(rlib *r, gfloat start, gfloat end, gboolean offse
 	gfloat offset_factor = 0;
 	gfloat rads;
 	
+	if(start == end)
+		return;
+	
 	if(graph->x_width < graph->y_height)
 		radius = graph->x_width / 2;
 	else
