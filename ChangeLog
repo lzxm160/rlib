@@ -1,3 +1,16 @@
+2004-01-07  Chet Heilman <cheilman@sicompos.com>
+	* libsrc/api.c: (rlib_dump_profile_stdout), (rlib_dump_profile): 
+	Incorporate changes from Heri Steuer. dropped the_fp variation and
+	added a _stdout one. Made some other changes and cleanup in the
+	rlib_dump_profile function.
+	* libsrc/parsexml.c: (utf8_to_8813), (ignoreElement),
+	(parse_line_array), (parse_report_output), (parse_report_outputs),
+	(parse_break_field), (parse_report_break), (parse_report_breaks),
+	(parse_detail), (parse_report_variables), (parse_report_file):
+	Added code to ignore "text" and "include" elements in addition to
+	"comment" elements. Kluged a change re: iconv param 2 until I find
+	the proper way to do it (Heri Steuer patch).
+
 2004-01-07  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/reportgen.c: process variables before report header/ 1st page header
 

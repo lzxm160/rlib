@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
 #include <locale.h>
 
@@ -227,31 +228,35 @@ void rlib_init_profiler() {
 }
 
 
-void rlib_dump_profile_fp(gint profilenum, FILE *fp) {
-	FILE *temp;
-	fflush(stdout);
-	temp = stdout;
-	if (fp) stdout = fp;
+void rlib_dump_profile_stdout(gint profilenum) {
 	printf("\nRLIB memory profile #%d:\n", profilenum);
 	g_mem_profile();
 	fflush(stdout);
-	stdout = temp;
 }
 
 
 void rlib_dump_profile(gint profilenum, const gchar *filename) {
 	FILE *newout = NULL;
+	int fd;
 	
-	if (filename) {
-		newout = fopen(filename, "a");
+	fflush(stdout);
+	fd = dup(STDOUT_FILENO); /* get a dup of current stdout */
+	if (fd < 0) {
+		rlogit("Unable to dup stdout");
+		return;
 	}
+	if (filename) {
+		newout = freopen(filename, "ab", stdout);
+	}
+	if (!newout) dup2(STDERR_FILENO, STDOUT_FILENO); /* Use stderr */
+	rlib_dump_profile_stdout(profilenum);
 	if (newout) {
-		rlib_dump_profile_fp(profilenum, newout);
 		fclose(newout);
 	} else {
-		rlib_dump_profile_fp(profilenum, stdout);
-		rlogit("Could not open memory profile file: %s\n", filename);
+		rlogit("Could not open memory profile file: %s. Used stderr instead", filename);
 	}
+	dup2(fd, STDOUT_FILENO); /* restore original stdout and close the dup fd */
+	close(fd);
 }
 
 
