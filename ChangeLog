@@ -1,3 +1,8 @@
+2005-01-13  Michael Roth  <mroth@sicompos.com>
+
+	* libsrc/formatstring.c:
+	* libsrc/pcode.c: (rlib_infix_to_pcode): Change iif
+
 2005-01-12  Bob Doan  <bdoan@sicompos.com>
 	* configure.in: make it compile in cygwin
 	* libsrc/formatstring.c: likewise

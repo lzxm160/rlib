@@ -537,6 +537,7 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, struct rlib_part *part, struct 
 					gchar *evaulation, *true=NULL, *false=NULL;
 					struct rlib_pcode_if *rpif;
 					struct rlib_pcode_operand *o;
+					gchar in_a_string_in_a_iif = FALSE;
 					moving_ptr +=  op->taglen;
 					save_ptr = moving_ptr;
 					while(*moving_ptr) {
@@ -560,7 +561,10 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, struct rlib_part *part, struct 
 							*iif = '\0';
 							break;
 						}
-						if (*iif == ',') {
+						if (*iif == '\'') {
+							in_a_string_in_a_iif = !in_a_string_in_a_iif;						
+						}
+						if (*iif == ',' && !in_a_string_in_a_iif) {
 							*iif='\0';
 							if(ccount == 0)
 								true = iif + 1;

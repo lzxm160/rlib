@@ -27,8 +27,10 @@
 #include <time.h>
 #include <langinfo.h>
 
-#ifdef HAVE_MONETARY_H
-	#include <monetary.h>
+#include "config.h"
+
+#ifdef HAVE_MONETARY_H 
+#include <monetary.h>
 #endif
 
 #include "config.h"
