@@ -1,3 +1,15 @@
+1.1.1
+===
+
+- Make RLIB a C Library, capable of language bindings (PHP)
+- Split MYSQL out of core.. now have Mysql, and Postgre support
+- Free Memory after usage
+
+1.0.2
+
+- Concatinated Reports
+- Use MYSQL Real connect
+
 1.0.0
 ===
 
