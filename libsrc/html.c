@@ -247,14 +247,14 @@ static void rlib_html_end_draw_cell_background(rlib *r) {
 }
 
 
-static void rlib_html_start_boxurl(rlib *r, struct rlib_part *part, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url) {
+static void rlib_html_start_boxurl(rlib *r, struct rlib_part *part, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url, gint backwards) {
 	gchar buf[MAXSTRLEN];
 	sprintf(buf, "<a href=\"%s\">", url);
-	print_text(r, buf, FALSE);
+	print_text(r, buf, backwards);
 }
 
-static void rlib_html_end_boxurl(rlib *r) {
-	print_text(r, "</a>", FALSE);
+static void rlib_html_end_boxurl(rlib *r, gint backwards) {
+	print_text(r, "</a>", backwards);
 }
 
 static void rlib_html_background_image(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *nname, gchar *type, gfloat nwidth, 
@@ -310,7 +310,7 @@ static void rlib_html_start_report(rlib *r, struct rlib_part *part) {
 	print_text(r, "TABLE { border: 0; cellspacing: 0; cellpadding: 0; width: 100%; }\n", FALSE);
 	print_text(r, "</style>\n", FALSE);
 	
-	meta = g_hash_table_lookup(r->output_paramaters, "meta");
+	meta = g_hash_table_lookup(r->output_parameters, "meta");
 	if(meta != NULL)
 		print_text(r, meta, FALSE);
 		
@@ -446,7 +446,7 @@ static void html_graph_start(rlib *r, gfloat left, gfloat top, gfloat width, gfl
 	
 	bzero(graph, sizeof(struct _graph));
 	
-	OUTPUT_PRIVATE(r)->rgd = rlib_gd_new(width, height,  g_hash_table_lookup(r->output_paramaters, "html_image_directory"));
+	OUTPUT_PRIVATE(r)->rgd = rlib_gd_new(width, height,  g_hash_table_lookup(r->output_parameters, "html_image_directory"));
 
 	sprintf(buf, "<img src=\"%s\" width=\"%f\" height=\"%f\">", OUTPUT_PRIVATE(r)->rgd->file_name, width, height);
 	print_text(r, buf, FALSE);

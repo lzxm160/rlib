@@ -66,7 +66,7 @@ rlib * rlib_init_with_environment(struct environment_filter *environment) {
 		rlib_set_encodings(r, lc_encoding, lc_encoding, lc_encoding);
 	}
 	
-	r->output_paramaters = g_hash_table_new_full (g_str_hash, g_str_equal, string_destroyer, string_destroyer);
+	r->output_parameters = g_hash_table_new_full (g_str_hash, g_str_equal, string_destroyer, string_destroyer);
 	r->input_metadata = g_hash_table_new_full (g_str_hash, g_str_equal, string_destroyer, metadata_destroyer);
 	
 #if !DISABLE_UTF8
@@ -406,8 +406,8 @@ void rlib_trap() {
 }
 
 
-void rlib_set_output_paramater(rlib *r, gchar *paramater, gchar *value) {
-	g_hash_table_insert(r->output_paramaters, g_strdup(paramater), g_strdup(value));
+void rlib_set_output_parameter(rlib *r, gchar *parameter, gchar *value) {
+	g_hash_table_insert(r->output_parameters, g_strdup(parameter), g_strdup(value));
 }
 
 

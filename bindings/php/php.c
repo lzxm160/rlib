@@ -58,7 +58,7 @@ ZEND_FUNCTION(rlib_get_content_type);
 ZEND_FUNCTION(rlib_add_parameter);
 ZEND_FUNCTION(rlib_set_locale);
 ZEND_FUNCTION(rlib_version);
-ZEND_FUNCTION(rlib_set_output_paramater);
+ZEND_FUNCTION(rlib_set_output_parameter);
 ZEND_FUNCTION(rlib_set_encodings);
 ZEND_FUNCTION(rlib_set_datasource_encoding);
 
@@ -97,7 +97,7 @@ zend_function_entry rlib_functions[] =
 	ZEND_FE(rlib_add_parameter, NULL)
 	ZEND_FE(rlib_set_locale, NULL)
 	ZEND_FE(rlib_version, NULL)
-	ZEND_FE(rlib_set_output_paramater, NULL)
+	ZEND_FE(rlib_set_output_parameter, NULL)
 	ZEND_FE(rlib_set_datasource_encoding, NULL)
 	ZEND_FE(rlib_set_encodings, NULL)
 	{NULL, NULL, NULL}
@@ -540,7 +540,7 @@ ZEND_FUNCTION(rlib_set_encodings) {
 }
 
 
-ZEND_FUNCTION(rlib_set_output_paramater) {
+ZEND_FUNCTION(rlib_set_output_parameter) {
 	gint id = -1;
 	gint whatever;
 	gchar *d1, *d2;
@@ -551,6 +551,6 @@ ZEND_FUNCTION(rlib_set_output_paramater) {
 		return;
 	}
 	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
-	rlib_set_output_paramater(rip->r, d1, d2);
+	rlib_set_output_parameter(rip->r, d1, d2);
 }
 

@@ -637,7 +637,7 @@ struct rlib {
 
 	gint current_font_point;
 
-	GHashTable * output_paramaters;
+	GHashTable * output_parameters;
 	GHashTable * input_metadata;
 	
 	rlib_char_encoder *output_encoder;		//_destroy all of these
@@ -703,8 +703,8 @@ struct output_filter {
 	void (*hr)(rlib *, int, float, float, float, float, struct rlib_rgb *, float, float);
 	void (*start_draw_cell_background)(rlib *, float, float, float, float, struct rlib_rgb *);
 	void (*end_draw_cell_background)(rlib *);
-	void (*start_boxurl)(rlib *, struct rlib_part *part, float, float, float, float, char *);
-	void (*end_boxurl)(rlib *);
+	void (*start_boxurl)(rlib *, struct rlib_part *part, float, float, float, float, char *, int);
+	void (*end_boxurl)(rlib *, int);
 	void (*start_bold)(rlib *);
 	void (*end_bold)(rlib *);
 	void (*start_italics)(rlib *);
@@ -809,7 +809,7 @@ void rlib_set_database_encoding(rlib *r, const char *encoding);
 void rlib_set_parameter_encoding(rlib *r, const char *encoding);
 gint rlib_set_datasource_encoding(rlib *r, gchar *input_name, gchar *encoding);
 void rlib_set_output_encoding(rlib *r, const char *encoding);
-void rlib_set_output_paramater(rlib *r, gchar *paramater, gchar *value);
+void rlib_set_output_parameter(rlib *r, gchar *parameter, gchar *value);
 
 
 /***** PROTOTYPES: parsexml.c *************************************************/

@@ -172,7 +172,7 @@ struct rlib_rgb *color, gfloat indent, gfloat length) {
 #endif
 }
 
-static void pdf_start_boxurl(rlib *r, struct rlib_part *part, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url) {
+static void pdf_start_boxurl(rlib *r, struct rlib_part *part, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url, gint backwards) {
 #if USEPDFLOCALE
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
@@ -216,10 +216,10 @@ static void pdf_set_font_point_actual(rlib *r, gint point) {
 	int result;
 	gchar *pdfdir1, *pdfdir2, *pdfencoding, *pdffontname;
 	
-	pdfdir1 = g_hash_table_lookup(r->output_paramaters, "pdf_fontdir1");
-	pdfdir2 = g_hash_table_lookup(r->output_paramaters, "pdf_fontdir2");
-	pdfencoding = g_hash_table_lookup(r->output_paramaters, "pdf_encoding");
-	pdffontname = g_hash_table_lookup(r->output_paramaters, "pdf_fontname");
+	pdfdir1 = g_hash_table_lookup(r->output_parameters, "pdf_fontdir1");
+	pdfdir2 = g_hash_table_lookup(r->output_parameters, "pdf_fontdir2");
+	pdfencoding = g_hash_table_lookup(r->output_parameters, "pdf_encoding");
+	pdffontname = g_hash_table_lookup(r->output_parameters, "pdf_fontname");
 
 	if(pdfdir2 == NULL)
 		pdfdir2 = pdfdir1;
@@ -805,7 +805,7 @@ static void pdf_end_td(rlib *r) {}
 static void pdf_stub_line(rlib *r, int backwards) {}
 static void pdf_end_output_section(rlib *r) {}
 static void pdf_start_output_section(rlib *r) {}
-static void pdf_end_boxurl(rlib *r) {}
+static void pdf_end_boxurl(rlib *r, gint backwards) {}
 static void pdf_end_draw_cell_background(rlib *r) {}
 static void pdf_start_report(rlib *r, struct rlib_part *part) {}
 static void pdf_end_part(rlib *r, struct rlib_part *part) {}

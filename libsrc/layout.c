@@ -171,7 +171,7 @@ struct rlib_line_extra_data *extra_data) {
 
 	if(extra_data->running_link_status & STATUS_START)
 		OUTPUT(r)->start_boxurl(r, part, left_origin, bottom_orgin, extra_data->running_link_total, 
-			RLIB_GET_LINE(extra_data->font_point), extra_data->link);
+			RLIB_GET_LINE(extra_data->font_point), extra_data->link, backwards);
 
 	if(extra_data->running_bgcolor_status & STATUS_START) 
 		OUTPUT(r)->start_draw_cell_background(r, left_origin, bottom_orgin, extra_data->running_bg_total, 
@@ -188,7 +188,7 @@ struct rlib_line_extra_data *extra_data) {
 		OUTPUT(r)->end_draw_cell_background(r);	
 
 	if(extra_data->running_link_status & STATUS_STOP)
-		OUTPUT(r)->end_boxurl(r);
+		OUTPUT(r)->end_boxurl(r, backwards);
 
 	if(extra_data->is_italics)
 		OUTPUT(r)->end_italics(r);
@@ -202,7 +202,7 @@ static gfloat rlib_layout_output_extras(rlib *r, struct rlib_part *part, gint ba
 struct rlib_line_extra_data *extra_data) {
 	if(extra_data->running_link_status & STATUS_START)
 		OUTPUT(r)->start_boxurl(r, part, left_origin, bottom_orgin, extra_data->running_link_total, 
-			RLIB_GET_LINE(extra_data->font_point), extra_data->link);
+			RLIB_GET_LINE(extra_data->font_point), extra_data->link, backwards);
 
 	if(extra_data->running_bgcolor_status & STATUS_START) 
 		OUTPUT(r)->start_draw_cell_background(r, left_origin, bottom_orgin, extra_data->running_bg_total, 
@@ -212,7 +212,7 @@ struct rlib_line_extra_data *extra_data) {
 		OUTPUT(r)->end_draw_cell_background(r);	
 
 	if(extra_data->running_link_status & STATUS_STOP)
-		OUTPUT(r)->end_boxurl(r);
+		OUTPUT(r)->end_boxurl(r, backwards);
 		
 	return extra_data->output_width;
 }

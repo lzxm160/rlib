@@ -249,7 +249,7 @@
 	rlib_add_query_as($rlib, "local_array", "pie_data", "pie_data");
 	rlib_add_query_as($rlib, "local_array", "pie_data2", "pie_data2");
 	rlib_add_query_as($rlib, "local_array", "sales_data", "sales_data");
-	rlib_set_output_paramater($rlib, "html_image_directory", "/tmp");
+	rlib_set_output_parameter($rlib, "html_image_directory", "/tmp");
 	rlib_add_report($rlib, "graph.xml");
 	rlib_set_output_format_from_text($rlib, "pdf");
 	rlib_execute($rlib);

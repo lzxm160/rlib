@@ -1,3 +1,19 @@
+2005-02-03  Michael Roth  <mroth@sicompos.com>
+
+	* bindings/php/php.c: (ZEND_FUNCTION): Spelling paramater -> parameter
+	* libsrc/api.c: (rlib_init_with_environment),
+	(rlib_set_output_parameter): Spelling paramater -> parameter
+	* libsrc/csv.c: (rlib_csv_start_boxurl), (rlib_csv_end_boxurl): Links printable in pagefooter
+	* libsrc/html.c: (rlib_html_start_boxurl), (rlib_html_end_boxurl),
+	(rlib_html_start_report), (html_graph_start): Links printable in pagefooter
+	* libsrc/layout.c: (rlib_layout_output_extras_start),
+	(rlib_layout_output_extras_end), (rlib_layout_output_extras): Links printable in pagefooter
+	* libsrc/pdf.c: (pdf_start_boxurl), (pdf_set_font_point_actual),
+	(pdf_end_boxurl): Links printable in pagefooter
+	* libsrc/rlib.h: Links printable in pagefooter
+	* libsrc/txt.c: (rlib_txt_start_boxurl), (rlib_txt_end_boxurl):
+	* src/examples/php/graph.php: Links printable in pagefooter
+
 2005-02-02  Bob Doan  <bdoan@sicompos.com>
 	* AUTHORS: Updates
 	* libsrc/html.c: support meta data, don't have html code before head

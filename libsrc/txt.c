@@ -153,8 +153,9 @@ struct rlib_rgb *color, gfloat indent, gfloat length) {}
 static void rlib_txt_start_draw_cell_background(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
 struct rlib_rgb *color) {}
 static void rlib_txt_end_draw_cell_background(rlib *r) {}
-static void rlib_txt_start_boxurl(rlib *r, struct rlib_part * part, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url) {}
-static void rlib_txt_end_boxurl(rlib *r) {}
+static void rlib_txt_start_boxurl(rlib *r, struct rlib_part * part, gfloat
+left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url, gint backwards) {}
+static void rlib_txt_end_boxurl(rlib *r, gint backwards) {}
 static void rlib_txt_background_image(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *nname, gchar *type, gfloat nwidth, gfloat nheight) {}
 static void rlib_txt_set_font_point(rlib *r, gint point) {}
 static void rlib_txt_start_line(rlib *r, gint backwards) {}
