@@ -1,4 +1,7 @@
 2004-07-26  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/api.c: The actual content length would be nice.. not the pointer to the function.. doh!
+
+2004-07-26  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/api.c: Put a content length out w/ PDF to make SOME versions of IE happier 
 
 2004-07-26  Bob Doan  <bdoan@sicompos.com>
