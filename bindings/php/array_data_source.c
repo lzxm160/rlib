@@ -25,6 +25,7 @@
 #include <config.h>
 #include <php.h>
  
+#include "rlib.h"
 #include "rlib_input.h"
 
 #define INPUT_PRIVATE(input) (((struct _private *)input->private))
@@ -104,7 +105,6 @@ static gpointer rlib_php_array_resolve_field_pointer(gpointer input_ptr, gpointe
 }
 
 void * php_array_new_result_from_query(gpointer input_ptr, gchar *query) {
-	struct input_filter *input = input_ptr;
 	struct rlib_php_array_results *result = emalloc(sizeof(struct rlib_php_array_results));
 	long size;
 	void *data, *lookup_data;

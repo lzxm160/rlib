@@ -1,4 +1,8 @@
 2004-07-21  Bob Doan  <bdoan@sicompos.com>
+	* bindings/php/array_data_source.c: make it compile clean w/ -Wall
+	* src/examples/php/Makefile.am: added files for dist
+
+2004-07-21  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/Makefile.am: new array data source in PHP
 	* bindings/php/array_data_source.c: likewise
 	* bindings/php/environment.c: likewise
