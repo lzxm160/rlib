@@ -1,3 +1,6 @@
+2004-11-07  Bob Doan  <bdoan@sicompos.com>
+	* bindings/php/array_data_source.c: roll back incorrect return FALSE on first if source has no data
+
 2004-11-04  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/array_data_source.c: return FALSE on first if source has no data
 	* libsrc/layout.c: hr->size is now a pcode
