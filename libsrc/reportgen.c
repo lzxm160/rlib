@@ -1117,7 +1117,7 @@ void rlib_process_expression_variables(rlib *r) {
 	struct report_element *e;
 	for(e = r->reports[r->current_report]->variables; e != NULL; e=e->next) {
 		struct report_variable *rv = e->data;
-		struct rlib_value *count = &RLIB_VARIABLE_CA(rv)->count;
+//		struct rlib_value *count = &RLIB_VARIABLE_CA(rv)->count;
 		struct rlib_value *amount = &RLIB_VARIABLE_CA(rv)->amount;
 		struct rlib_value execute_result, *er = &execute_result;
 		if(rv->code != NULL)

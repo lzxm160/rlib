@@ -1,4 +1,8 @@
 2004-07-16  Chet Heilman <cheilman@sicompos.com>
+	* libsrc/reportgen.c: (rlib_process_expression_variables):
+		fix unused variable.
+
+2004-07-16  Chet Heilman <cheilman@sicompos.com>
 	* libsrc/breaks.c: (rlib_break_all_below_in_reverse_order):
 		The 'Steve Tilden' fix (not tested).
 	* libsrc/reportgen.c: (rlib_process_expression_variables):
