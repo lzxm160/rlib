@@ -913,6 +913,12 @@ gboolean rpdf_link(struct rpdf *pdf, gdouble start_x, gdouble start_y, gdouble e
 gboolean rpdf_moveto(struct rpdf *pdf, gdouble x, gdouble y) {
 	struct rpdf_stream_point *stream;
 	stream = g_new0(struct rpdf_stream_point, 1);
+	
+	if(isnan(x))
+		x = 0;
+	if(isnan(y))
+		y = 0;
+	
 	stream->x = x;
 	stream->y = y;
 	rpdf_stream_append(pdf, rpdf_stream_new(RPDF_TYPE_MOVE, stream));
@@ -929,6 +935,12 @@ gboolean rpdf_set_line_width(struct rpdf *pdf, gdouble width) {
 gboolean rpdf_lineto(struct rpdf *pdf, gdouble x, gdouble y) {
 	struct rpdf_stream_point *stream;
 	stream = g_new0(struct rpdf_stream_point, 1);
+
+	if(isnan(x))
+		x = 0;
+	if(isnan(y))
+		y = 0;
+
 	stream->x = x;
 	stream->y = y;
 	rpdf_stream_append(pdf, rpdf_stream_new(RPDF_TYPE_LINE, stream));

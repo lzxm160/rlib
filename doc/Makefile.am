@@ -20,8 +20,17 @@
 ##
 ## Process this file with automake to produce Makefile.in
 
-EXTRA_DIST = AUTHORS CVS HACKING install-sh README rlib.pc.in 
-SUBDIRS = rpdf libsrc inputs bindings src tests doc
+sgml_files = basictraining.sgm examples.sgm graphing.sgm swiglicense.sgm book.sgm formating.sgm intro.sgm \
+	symboltable.sgm capi.sgm gnulicense.sgm phpapi.sgm docbook-utils.dsl jadetex.cfg 
+	
+all: book.pdf
 
-pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = rlib.pc
+book.pdf: $(sgml_files)
+	docbook2pdf -d docbook-utils.dsl book.sgm
+
+clean:
+	rm -f book.pdf
+
+SUBDIRS = IMAGES
+
+EXTRA_DIST = $(sgml_files)

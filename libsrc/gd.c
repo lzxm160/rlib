@@ -108,8 +108,12 @@ struct rlib_gd * rlib_gd_new(gint width, gint height, gchar *image_directory) {
 int rlib_gd_spool(struct rlib_gd *rgd) {
 	FILE *out;
 	out = fopen(rgd->file_name, "wb");
-	gdImagePng(rgd->im, out);
-	fclose(out);
+	if(out != NULL) {
+		gdImagePng(rgd->im, out);
+		fclose(out);
+	} else {
+		r_error("GD PROBLEM: Could not write %s\n", rgd->file_name);
+	}
 	return TRUE;
 }
 

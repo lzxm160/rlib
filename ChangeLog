@@ -1,3 +1,16 @@
+2005-03-06  Bob Doan  <bdoan@sicompos.com>
+	* Makefile.am: Added docs
+	* README: spelling
+	* README-JPEG: added JPEG READ ME STUFF
+	* configure.in: added doc building abilitities
+	* doc/IMAGES/Makefile.am: new
+	* doc/Makefile: -- this needs to be removed from CVS NOW
+	* doc/Makefile.am: new
+	* libsrc/free.c: don't call dlclose.. call g_module_close
+	* libsrc/gd.c: not pass a null pointer to GD
+	* libsrc/pdf.c: don't attempt to put NaN in PDF's
+	* rpdf/rpdf.c:  likewise
+
 2005-03-04  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/api.c: Fix/ Prevent crashes in a bunch of different places
 	* libsrc/free.c: likewise

@@ -437,11 +437,15 @@ static void pdf_end_report(rlib *r, struct rlib_report *report) {
 
 static void pdf_graph_draw_line(rlib *r, gfloat x, gfloat y, gfloat new_x, gfloat new_y, struct rlib_rgb *color) {
 	pdf_turn_text_off(r);
-	rpdf_moveto(OUTPUT_PRIVATE(r)->pdf, x, y);
-	rpdf_lineto(OUTPUT_PRIVATE(r)->pdf, new_x, new_y);
 
-	rpdf_closepath(OUTPUT_PRIVATE(r)->pdf); 
-	rpdf_stroke(OUTPUT_PRIVATE(r)->pdf); 
+	if(isnan(x) || isnan(y) || isnan(new_x) || isnan(new_y)) {
+	
+	} else {
+		rpdf_moveto(OUTPUT_PRIVATE(r)->pdf, x, y);
+		rpdf_lineto(OUTPUT_PRIVATE(r)->pdf, new_x, new_y);
+		rpdf_closepath(OUTPUT_PRIVATE(r)->pdf); 
+		rpdf_stroke(OUTPUT_PRIVATE(r)->pdf); 
+	}
 }
 
 static void pdf_graph_start(rlib *r, gfloat left, gfloat top, gfloat width, gfloat height, gboolean x_axis_labels_are_under_tick) {
@@ -769,6 +773,7 @@ static void pdf_graph_draw_legend(rlib *r) {
 	gfloat height = (RLIB_GET_LINE(r->current_font_point) * graph->data_plot_count) + (RLIB_GET_LINE(r->current_font_point) / 2);
 	gfloat top = graph->top;
 	gfloat bottom = graph->top - height;
+
 
 	pdf_graph_draw_line(r, left, bottom, left, top, NULL);
 	pdf_graph_draw_line(r, left+width, bottom, left+width, top, NULL);

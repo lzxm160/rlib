@@ -367,7 +367,7 @@ gint rlib_free(rlib *r) {
 		r->inputs[i].input->input_close(r->inputs[i].input);
 		r->inputs[i].input->free(r->inputs[i].input);	
 		if(r->inputs[i].handle != NULL)
-			dlclose(r->inputs[i].handle);
+			g_module_close(r->inputs[i].handle);
 	}
 
 	if (r->htParameters) {
