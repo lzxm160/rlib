@@ -41,7 +41,7 @@ rlib * rlib_init(rlib_inout_pass *rip) {
 	
 	setlocale (LC_NUMERIC, "en_US");
 	
-	mysql = rlib_mysql_connect(rip->database_host, rip->database_user, rip->database_password, rip->database_database);
+	mysql = rlib_mysql_real_connect(rip->database_host, rip->database_user, rip->database_password, rip->database_database);
 
 	if(mysql == NULL) {
 		debugf("Could not connect to MYSQL\n");

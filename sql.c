@@ -22,38 +22,22 @@
 #include <php.h>
 #include "rlib.h"
 
-#define MYSQL_HOST   "localhost"       // database server name
-#define MYSQL_DB     "shop"        // database name
-#define MYSQL_USERID "sicom"          // database user id
-#define MYSQL_PASSWD "twinkletoes"        // userid password
-
-MYSQL_RES * process_sql(char *query, MYSQL *mysql) {
-	MYSQL_RES *result;
-	if (!mysql_connect(mysql,MYSQL_HOST,MYSQL_USERID,MYSQL_PASSWD)) {
-		return NULL;
-	}
-		
-	if (mysql_select_db(mysql,MYSQL_DB)) {
-		return NULL;
-	}
-	
-	mysql_query(mysql, query);
-	result = mysql_use_result(mysql);
-   return result;
-}
-
-
 /*
 	In case we have multiple servers later and we need to figure out which is the most avaialble one to hit up for a query
 */
-MYSQL * rlib_mysql_connect(char *host, char *user, char *password, char *database) {
+MYSQL * rlib_mysql_real_connect(char *host, char *user, char *password, char *database) {
 	MYSQL *mysql;
 	mysql = emalloc(sizeof(MYSQL));
-	if (!mysql_connect(mysql,host,user,password)) {
+
+	mysql_init(mysql);
+
+	if (mysql_real_connect(mysql,host,user,password, database, 0, NULL, 0) == NULL) {
+		debugf("Could Not Real Connect To MySQL\n");
 		return NULL;
 	}
 		
 	if (mysql_select_db(mysql,database)) {
+		debugf("Could Not Select Database\n");
 		return NULL;
 	}
 	return mysql;

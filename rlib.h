@@ -17,7 +17,6 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-
 #include <mysql.h>
 #include <parser.h>
 
@@ -433,7 +432,7 @@ void rlib_resolve_fields(rlib *r);
 
 /***** PROTOTYPES: sql.c ******************************************************/
 MYSQL_RES * process_sql(char *query, MYSQL *mysql);
-MYSQL * rlib_mysql_connect(char *host, char *user, char *password, char *database);
+MYSQL * rlib_mysql_real_connect(char *host, char *user, char *password, char *database);
 int rlib_mysql_close(MYSQL *mysql);
 MYSQL_RES * rlib_mysql_query(MYSQL *mysql, char *query);
 
