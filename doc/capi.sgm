@@ -143,6 +143,18 @@
 		</para>
 	</sect1>
 	<sect1>
+		<title>rlib_add_parameter</title>
+		<para>
+			int rlib_add_parameter(<emphasis>rlib *rlib_ptr</emphasis>, const char *name, const char *value)
+		</para>
+		<para>
+			Adds the name/value pair to the memory parameters. Values added in this manner
+			supercede values passed in the environment. The names are searched in a 
+			case sensitive manner. Both name and value are stored by value, so
+			the passed arguments do not need to persist after the call.
+		</para>
+	</sect1>
+	<sect1>
 		<title>rlib_free</title>
 		<para>
 			rlib_free(<emphasis>rlib *rlib_ptr</emphasis>)

@@ -20,7 +20,72 @@
  
 #include <stdlib.h>
 #include <string.h>
- 
+
+#include "ralloc.h"
+
+
+#define DEBUGMODE	1
+#if DEBUGMODE
+static RVector *mem;
+static int nBadFrees;
+
+RVector *ralloc_getVector() {
+	return mem;
+}
+
+
+int ralloc_getBadFrees() {
+	return nBadFrees;
+}
+
+
+void ralloc_init() {
+	if (mem) RVector_free(mem);
+	mem = RVector_newSpecial();
+	nBadFrees = 0;
+}
+
+
+void *rmalloc(size_t size) {
+	void *p = malloc(size);
+	if (mem && p) RVector_add(mem, p);
+	return p; 
+}
+
+char *rstrdup(const char *s) {
+	void *p = strdup(s);
+	if (mem && p) RVector_add(mem, p);
+	return p; 
+}
+
+void *rcalloc(size_t nmemb, size_t size) {
+	void *p = calloc(nmemb, size);
+	if (mem && p) RVector_add(mem, p);
+	return p; 
+}
+
+void rfree(void *ptr) {
+	if (mem) {
+		int idx;
+		idx = RVector_find(mem, ptr);
+		if (idx >= 0) RVector_deleteAt(mem, idx);
+		else ++nBadFrees;
+	}
+	free(ptr);
+}
+
+void *rrealloc(void *ptr, size_t size) {
+	void *p = realloc(ptr, size);
+	if (mem) {
+		int idx;
+		idx = RVector_find(mem, ptr);
+		if (idx >= 0) RVector_deleteAt(mem, idx);
+		else ++nBadFrees;
+		if (p) RVector_add(mem, p);
+	}
+	return p;
+}
+#else
 void *rmalloc(size_t size) {
 	return malloc(size); 
 }
@@ -40,3 +105,16 @@ void rfree(void *ptr) {
 void *rrealloc(void *ptr, size_t size) {
 	return realloc(ptr, size);
 }
+
+Vector *ralloc_getVector() {
+	return NULL;
+}
+
+void ralloc_init() {
+}
+
+int ralloc_getBadFrees() {
+	return 0;
+}
+
+#endif

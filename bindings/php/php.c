@@ -48,6 +48,7 @@ ZEND_FUNCTION(rlib_execute);
 ZEND_FUNCTION(rlib_spool);
 ZEND_FUNCTION(rlib_free);
 ZEND_FUNCTION(rlib_get_content_type);
+ZEND_FUNCTION(rlib_add_parameter);
 ZEND_MODULE_STARTUP_D(rlib);
 
 /*WRD: It appears we are thread safe here.. not sure yet*/
@@ -74,6 +75,7 @@ zend_function_entry rlib_functions[] =
 	 ZEND_FE(rlib_spool, NULL)
 	 ZEND_FE(rlib_free, NULL)
 	 ZEND_FE(rlib_get_content_type, NULL)
+	 ZEND_FE(rlib_add_parameter, NULL)
     {NULL, NULL, NULL}
 };
 
@@ -331,3 +333,21 @@ ZEND_FUNCTION(rlib_get_content_type) {
 
 	RETURN_STRING(buf, TRUE);
 }
+
+
+ZEND_FUNCTION(rlib_add_parameter) {
+	zval *z_rip = NULL;
+	long whatever;
+	char *name, *value;
+	rlib_inout_pass *rip;
+	int id = -1;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss", &z_rip, &name, &whatever, &value, &whatever) == FAILURE) {
+		return;
+	}
+	
+	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
+
+	rlib_add_parameter(rip->r, name, value);
+}
+

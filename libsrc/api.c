@@ -24,6 +24,8 @@
 #include "ralloc.h"
 #include "rlib.h"
 #include "rlib_input.h"
+#include "rhashtable.h"
+
 
 rlib * rlib_init_with_environment(struct environment_filter *environment) {
 	rlib *r;
@@ -192,6 +194,27 @@ char *rlib_get_output(rlib *r) {
 long rlib_get_output_length(rlib *r) {
 	return OUTPUT(r)->rlib_get_output_length(r);
 }
+
+
+/**
+ *	Add name/value pair to the memory constants.
+ */
+int rlib_add_parameter(rlib *r, const char *name, const char *value) {
+	int result = 1;
+	RHashtable *ht = r->htParameters;
+	
+	if (!ht) { //If no hashtable - add one
+		ht = r->htParameters = RHashtable_new();
+ 		//put a copy of value in the table instead of the pointer
+ 		if (ht) RHashtable_setStoreValues(ht, TRUE); //put a copy of value in the table
+	}
+	if (ht) {
+		RHashtable_put(ht, name, value);
+		result = 0;
+	}
+	return result;
+}
+
 
 #if HAVE_MYSQL
 int rlib_mysql_report(char *hostname, char *username, char *password, char *database, char *xmlfilename, char *sqlquery, char *outputformat) {

@@ -24,13 +24,13 @@ lib_LTLIBRARIES = libr.la
 libr_la_SOURCES = parsexml.c reportgen.c api.c resolution.c util.c pcode.c \
 	pcode_op_functions.c formatstring.c fxp.c breaks.c pdf.c html.c txt.c \
 	datasource.c csv.c ralloc.c environment.c free.c navigation.c rlib_input.h \
-	pcode.h ralloc.h rlib.h 
+	pcode.h ralloc.h rlib.h rvector.c rvector.h rhashtable.c rhashtable.h
 
 libr_la_LIBADD = $(LIBXML_LIBS) -lcpdf -ldl 
 
 INCLUDES = $(LIBXML_CFLAGS)
 
-include_HEADERS = rlib.h rlib_input.h
+include_HEADERS = rlib.h rlib_input.h rvector.h rhashtable.h
 
 libr_la_LDFLAGS = -release $(RLIB_VERSION)
 

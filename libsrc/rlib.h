@@ -21,6 +21,8 @@
 #include <iconv.h>
 #include <time.h>
 
+#include "rhashtable.h"
+
 #define RLIB_WEB_CONTENT_TYPE_HTML "Content-Type: text/html\n"
 #define RLIB_WEB_CONTENT_TYPE_TEXT "Content-Type: text/plain\n"
 #define RLIB_WEB_CONTENT_TYPE_PDF "Content-Type: application/pdf\n"
@@ -366,6 +368,7 @@ struct rlib {
 	struct output_filter *o;
 	struct input_filters inputs[MAX_INPUT_FILTERS];
 	struct environment_filter *environment;
+	RHashtable *htParameters;
 };
 typedef struct rlib rlib;
 
@@ -451,6 +454,8 @@ long rlib_get_output_length(rlib *r);
 int rlib_mysql_report(char *hostname, char *username, char *password, char *database, char *xmlfilename, char *sqlquery, char *outputformat);
 int rlib_postgre_report(char *connstr, char *xmlfilename, char *sqlquery, char *outputformat);
 int rlib_add_resultset_follower(rlib *r, char *leader, char *follower);
+int rlib_add_parameter(rlib *r, const char *name, const char *value);
+
 /***** PROTOTYPES: parsexml.c *************************************************/
 struct rlib_report * parse_report_file(char *filename);
 

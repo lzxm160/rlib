@@ -1,3 +1,33 @@
+2003-11-18  Chet Heilman <cheilman@sicompos.com>
+	* bindings/php/php.c: (ZEND_FUNCTION): add binding for rlib_add_parameter
+	* libsrc/Makefile.am: Added files for RVector and RHashtable
+	* libsrc/api.c: (rlib_add_parameter): Adds memory parameters to the report.
+	* libsrc/phpapi.c: (rlib_add_parameter): Adds memory parameters to the report.
+	* libsrc/free.c: (rlib_free): Added allocation checking option
+	* libsrc/ralloc.c: (ralloc_getVector), (ralloc_getBadFrees),
+	(ralloc_init), (rmalloc), (rstrdup), (rcalloc), (rfree),
+	(rrealloc): Added option to trace memory allocation/free.
+	* libsrc/ralloc.h: 
+	* libsrc/resolution.c: (rlib_resolve_memory_variable):
+	* libsrc/rhashtable.c: (keycasecompare), (keycompare),
+	(RHashtable_free), (RHashtable_new), (RHashtable_put),
+	(RHashtable_get), (RHashtable_setCaseInsensitive),
+	(RHashtable_setStoreValues), (RHashtable_getDataRVector): A new module
+	to manage name/value pairs.
+	* libsrc/rhashtable.h: 
+	* libsrc/rlib.h: add rlib_add_parameter
+	* libsrc/rlib.i: add binding for rlib_add_parameter
+	* libsrc/rvector.c: (error), (comp), (RVector_newOpt),
+	(RVector_newSpecial), (RVector_new), (RVector_add), (RVector_free),
+	(isValidIdx), (RVector_get), (RVector_size),
+	(RVector_setCompareFunc), (RVector_sort), (RVector_bsearch),
+	(RVector_find), (RVector_isSorted), (RVector_deleteAt),
+	(RVector_getArray), (RVectorIterator_new),
+	(RVectorIterator_hasNext), (RVectorIterator_next),
+	(RVectorIterator_free): A new module to manage vectors (variable length
+	arrays). Used internally by RHashtable and to trace memory allocation/deallocation.
+	* libsrc/rvector.h:
+
 2003-11-17  Bob Doan  <bdoan@sicompos.com>
 	* NEWS: new news (1.1.4 released)
 	* bindings/python/python.c: new bindings

@@ -294,8 +294,13 @@ void rlib_resolve_fields(rlib *r) {
 	}
 }
 
+
 char * rlib_resolve_memory_variable(rlib *r, char *name) {
 	if(strlen(name) >= 3 && name[0] == 'm' && name[1] == '.') {
+		if (r->htParameters) {
+			char *result = RHashtable_get(r->htParameters, name + 2);
+			if (result) return result;
+		}
 		return ENVIRONMENT(r)->rlib_resolve_memory_variable(name+2);
 	}
 	return NULL;

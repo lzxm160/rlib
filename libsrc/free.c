@@ -241,6 +241,8 @@ int rlib_free(rlib *r) {
 			dlclose(r->inputs[i].handle);
 	}
 
+	if (r->htParameters) Hashtable_free(r->htParameters);
+	
 	OUTPUT(r)->rlib_free(r);
 	
 	ENVIRONMENT(r)->free(r);
