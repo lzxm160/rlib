@@ -144,12 +144,12 @@ ZEND_FUNCTION(rlib_add_query_as) {
 */
 ZEND_FUNCTION(rlib_add_report) {
 	zval *z_rip = NULL;
-	long whatever;
-	char *name;
+	long whatever, mainloop_count;
+	char *name, *mainloop;
 	rlib_inout_pass *rip;
 	int id = -1;
 	
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &z_rip, &name, &whatever) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|s", &z_rip, &name, &whatever, &mainloop, &mainloop_count) == FAILURE) {
 		return;
 	}
 	
@@ -160,7 +160,11 @@ ZEND_FUNCTION(rlib_add_report) {
 		return;
 	}
 
-	rip->reports[rip->reports_count] = estrdup(name);
+	rip->reports[rip->reports_count].name = estrdup(name);
+	if(mainloop_count > 0)
+		rip->reports[rip->reports_count].query = estrdup(mainloop);
+	else
+		rip->reports[rip->reports_count].query = NULL;
 	rip->reports_count++;
 }
 

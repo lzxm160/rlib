@@ -277,6 +277,7 @@ struct report {
 	struct report_output_array *report_footer;
 	struct report_element *variables;
 	struct report_element *breaks;
+	int mainloop_query;
 };
 
 struct rlib_results {
@@ -352,6 +353,11 @@ struct rlib_queries {
 	char *name;
 };
 
+struct rip_reports {
+	char *name;
+	char *query;
+};
+
 struct rlib_inout_pass {
 	char *database_host;
 	char *database_user;
@@ -360,7 +366,8 @@ struct rlib_inout_pass {
 	MYSQL *mysql;
 	struct rlib_queries queries[RLIB_MAXIMUM_QUERIES];
 	int queries_count;
-	char *reports[RLIB_MAXIMUM_REPORTS];
+	int mainloop_queries_count;
+	struct rip_reports reports[RLIB_MAXIMUM_REPORTS];
 	int reports_count;
 	int content_type;
 	int format;

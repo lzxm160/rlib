@@ -35,7 +35,7 @@
 	if things work out.......  All this is done before the main loop
 */
 rlib * rlib_init(rlib_inout_pass *rip) {
-	int i;
+	int i,j;
 	MYSQL *mysql;
 	rlib *r;
 	
@@ -83,7 +83,16 @@ rlib * rlib_init(rlib_inout_pass *rip) {
 	LIBXML_TEST_VERSION
 	xmlKeepBlanksDefault(0);
 	for(i=0;i<rip->reports_count;i++) {
-		r->reports[i] = parse_report_file(rip->reports[i]);
+		r->reports[i] = parse_report_file(rip->reports[i].name);
+		r->reports[i]->mainloop_query = -1;
+		if(rip->reports[i].query != NULL) {
+			for(j=0;j<rip->queries_count;j++) {
+				if(!strcmp(rip->queries[j].name, rip->reports[i].query)) {
+					r->reports[i]->mainloop_query = j;
+					break;
+				}					
+			}
+		}
 		xmlCleanupParser();		
 		if(r->reports[i] == NULL) {
 			//TODO:FREE REPORT AND ALL ABOVE REPORTS

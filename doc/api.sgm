@@ -13,15 +13,6 @@
 		</para>
 	</sect1>
 	<sect1>
-		<title>rlib_add_report</title>
-		<para>
-			rlib_add_report(<emphasis>rlib</emphasis>, rlib_xml_file)
-		</para>
-		<para>
-			A report is added to the report execution queue but not compiled at this time.
-		</para>
-	</sect1>
-	<sect1>
 		<title>rlib_add_query_as</title>
 		<para>
 			rlib_add_query_as(<emphasis>rlib</emphasis>, query, rlib_query_name)
@@ -30,6 +21,18 @@
 			The query is added to an execution queue, but it is not executed at this time.  The name is important
 			because you can reference result sets directly in your rlib xml files.  The first query added is assumed
 			to be the main loop query.
+		</para>
+	</sect1>
+	<sect1>
+		<title>rlib_add_report</title>
+		<para>
+			rlib_add_report(<emphasis>rlib</emphasis>, rlib_xml_file, [rlib_query_name])
+		</para>
+		<para>
+			A report is added to the report execution queue but not compiled at this time.
+		</para>
+		<para>
+			rlib_query_name [OPTIONAL] - The name of the rlib_query to use in the main loop of the report
 		</para>
 	</sect1>
 	<sect1>

@@ -661,9 +661,15 @@ int make_report(rlib *r) {
 
 	for(report=0;report<r->reports_count;report++) {
 		r->current_report = report;
+		if(report > 0) {
+			if(r->reports[r->current_report]->mainloop_query != -1)
+				r->current_result = r->reports[r->current_report]->mainloop_query;
+		}
+
 		rlib_resolve_fields(r);
 		if(r->reports[r->current_report]->fontsize != -1)
 			r->font_point = r->reports[r->current_report]->fontsize;
+			
 		rlib_init_variables(r);
 		rlib_init_page(r, TRUE);		
 		OUTPUT(r)->rlib_begin_text(r);
@@ -710,7 +716,7 @@ int make_report(rlib *r) {
 			r->current_page_number++;
 			r->start_of_new_report = TRUE;
 			r->current_line_number = 1;
-			r->detail_line_count = 1;
+			r->detail_line_count = 0;
 			r->font_point = FONTPOINT;
 		}
 
