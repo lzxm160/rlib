@@ -499,10 +499,6 @@ struct rlib_value * rlib_value_stack_pop(struct rlib_value_stack *vs) {
 struct rlib_value * rlib_value_new(struct rlib_value *rval, int type, int free, void * value) {
 	rval->type = type;
 	rval->free = free;
-/*	rval->number_value = 0;
-	bzero(&rval->date_value, sizeof(struct tm));
-	rval->string_value = NULL;
-	rval->iif_value = NULL;*/
 
 	if(type == RLIB_VALUE_NUMBER)
 		rval->number_value = *(long long *)value;
@@ -514,6 +510,36 @@ struct rlib_value * rlib_value_new(struct rlib_value *rval, int type, int free, 
 		rval->iif_value = value;
 
 	return rval;
+}
+
+struct rlib_value * rlib_value_dup(struct rlib_value *orig) {
+	struct rlib_value *new;
+	new = rmalloc(sizeof(struct rlib_value));
+	memcpy(new, orig, sizeof(struct rlib_value));
+	if(orig->type == RLIB_VALUE_STRING)
+		new->string_value = rstrdup(orig->string_value);
+	return new;
+}
+
+struct rlib_value * rlib_value_dup_contents(struct rlib_value *rval) {
+	if(rval->type == RLIB_VALUE_STRING)
+		rval->string_value = rstrdup(rval->string_value);
+	return rval;
+}
+
+
+int rlib_value_free(struct rlib_value *rval) {
+	if(rval == NULL)
+		return FALSE;
+	if(rval->free == FALSE)
+		return FALSE;
+	if(rval->type == RLIB_VALUE_STRING) {
+		rfree(rval->string_value);
+		rval->free = FALSE;
+		RLIB_VALUE_TYPE_NONE(rval);
+		return TRUE;
+	}
+	return FALSE;
 }
 
 struct rlib_value * rlib_value_new_number(struct rlib_value *rval, long long value) {
@@ -528,6 +554,10 @@ struct rlib_value * rlib_value_new_date(struct rlib_value *rval, struct tm *date
 	return rlib_value_new(rval, RLIB_VALUE_DATE, FALSE, date);
 }
 
+struct rlib_value * rlib_value_new_error(struct rlib_value *rval) {
+	return rlib_value_new(rval, RLIB_VALUE_ERROR, FALSE, NULL);
+}
+
 /*
 	The RLIB SYMBOL TABLE is a bit commplicated because of all the datasources and internal variables
 */
@@ -539,7 +569,7 @@ struct rlib_value *rlib_operand_get_value(rlib *r, struct rlib_value *rval, stru
 	} else if(o->type == OPERAND_DATE) {
 		return rlib_value_new(rval, RLIB_VALUE_DATE, FALSE, o->value);
 	} else if(o->type == OPERAND_FIELD) {
-		return rlib_value_new(rval, RLIB_VALUE_STRING, TRUE, rstrdup(rlib_resolve_field_value(r, o->value)));
+		return rlib_value_new_string(rval, rlib_resolve_field_value(r, o->value));
 	} else if(o->type == OPERAND_MEMORY_VARIABLE) {
 		return rlib_value_new(rval, RLIB_VALUE_STRING, FALSE, o->value);		
 	} else if(o->type == OPERAND_RLIB_VARIABLE) {

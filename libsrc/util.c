@@ -35,6 +35,7 @@
 long long int llabs(long long int j);
 
 
+#ifdef ENABLE_CRASH
 static void myFaultHandler (int signum, siginfo_t *si, void *aptr) {
 	struct rlimit rlim;
 	rlogit("** NUTS.. WE CRASHED\n");
@@ -45,11 +46,13 @@ static void myFaultHandler (int signum, siginfo_t *si, void *aptr) {
 	kill (getpid(), SIGQUIT); //IMPORTANT
 	exit (5); //THEORETICALLY IN THEORY THIS WILL NEVER GET CALLED... but lets play it safe
 }
+#endif
 
 
 static int useMyHandler = TRUE;
 
 void init_signals() {
+#ifdef ENABLE_CRASH
 	struct sigaction sa;
 	if (useMyHandler) {
 		bzero(&sa, sizeof(struct sigaction));
@@ -62,6 +65,7 @@ void init_signals() {
 		sigaction (SIGTRAP, &sa, NULL);
 		signal (SIGQUIT, SIG_DFL);
 	}
+#endif
 }
 
 

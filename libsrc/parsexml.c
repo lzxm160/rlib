@@ -369,7 +369,7 @@ struct rlib_report * parse_report_file(char *filename) {
 	ret->xml_left_margin = xmlGetProp(cur, (const xmlChar *) "leftMargin");
 	ret->xml_bottom_margin = xmlGetProp(cur, (const xmlChar *) "bottomMargin");
 	ret->xml_pages_accross = xmlGetProp(cur, (const xmlChar *) "pagesAccross");
-
+	ret->xml_surpress_page_header_first_page = xmlGetProp(cur, (const xmlChar *) "surpressPageHeaderFirstPage");
 	
 	cur = cur->xmlChildrenNode;
 	ret->breaks = NULL;

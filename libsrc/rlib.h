@@ -292,6 +292,7 @@ struct rlib_report {
 	xmlChar *xml_left_margin;
 	xmlChar *xml_bottom_margin;
 	xmlChar *xml_pages_accross;
+	xmlChar *xml_surpress_page_header_first_page;
 
 	float *position_top;
 	float *position_bottom;
@@ -302,6 +303,7 @@ struct rlib_report {
 	float bottom_margin;
 	float left_margin;
 	long pages_accross;
+	long surpress_page_header_first_page;
 	
 	struct report_element *report_header;
 	struct report_element *page_header;
@@ -469,6 +471,10 @@ struct rlib_value * rlib_execute_pcode(rlib *r, struct rlib_value *rval, struct 
 long long rlib_str_to_long_long(char *str);
 struct rlib_pcode * rlib_infix_to_pcode(rlib *r, char *infix);
 int rvalcmp(struct rlib_value *v1, struct rlib_value *v2);
+int rlib_value_free(struct rlib_value *rval);
+struct rlib_value * rlib_value_dup(struct rlib_value *orig);
+struct rlib_value * rlib_value_dup_contents(struct rlib_value *rval);
+struct rlib_value * rlib_value_new_error(struct rlib_value *rval);
 
 /***** PROTOTYPES: reportgen.c ************************************************/
 char *align_text(rlib *r, char *rtn, int len, char *src, long align, long width);

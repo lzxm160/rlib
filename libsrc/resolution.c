@@ -189,7 +189,7 @@ static void rlib_resolve_fields2(rlib *r, struct report_output_array *roa) {
 	if(roa->xml_page != NULL)
 		roa->page = atol(roa->xml_page);
 	else
-		roa->page = -1;
+		roa->page = 1;
 	
 	for(j=0;j<roa->count;j++) {
 		struct report_output *ro = roa->data[j];
@@ -243,6 +243,10 @@ struct report_variable *rlib_resolve_variable(rlib *r, char *name) {
 
 void rlib_resolve_fields(rlib *r) {
 	struct report_element *e;
+	if(r->reports[r->current_report]->xml_top_margin == NULL)
+		r->reports[r->current_report]->top_margin = DEFAULT_TOP_MARGIN;
+	else
+		r->reports[r->current_report]->top_margin = atof(r->reports[r->current_report]->xml_top_margin);
 
 	if(r->reports[r->current_report]->xml_orientation == NULL)
 		r->reports[r->current_report]->orientation = RLIB_ORIENTATION_PORTRAIT;
@@ -276,6 +280,11 @@ void rlib_resolve_fields(rlib *r) {
 		r->reports[r->current_report]->pages_accross = 1;
 	else
 		r->reports[r->current_report]->pages_accross = atol(r->reports[r->current_report]->xml_pages_accross);
+
+	r->reports[r->current_report]->surpress_page_header_first_page = FALSE;
+	if(r->reports[r->current_report]->xml_surpress_page_header_first_page != NULL &&
+		!strcmp(r->reports[r->current_report]->xml_surpress_page_header_first_page, "yes"))
+		r->reports[r->current_report]->surpress_page_header_first_page = TRUE;
 		
 	r->reports[r->current_report]->position_top = rmalloc(r->reports[r->current_report]->pages_accross * sizeof(float));
 	r->reports[r->current_report]->position_bottom = rmalloc(r->reports[r->current_report]->pages_accross * sizeof(float));
