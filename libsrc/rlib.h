@@ -201,12 +201,14 @@ struct report_horizontal_line {
 	xmlChar *indent;
 	xmlChar *length;
 	xmlChar *font_size;
+	xmlChar *surpress;
 
 	int font_point;
 	float realsize;
 	int realindent;
 	int reallength;
 	struct rlib_pcode *bgcolor_code;
+	struct rlib_pcode *surpress_code;
 };
 
 struct report_image {
@@ -485,7 +487,7 @@ struct rlib_value * rlib_value_new_error(struct rlib_value *rval);
 /***** PROTOTYPES: reportgen.c ************************************************/
 char *align_text(rlib *r, char *rtn, int len, char *src, long align, long width);
 float get_page_width(rlib *r);
-void print_report_output(rlib *r, struct report_element *e, int backwards);
+int print_report_output(rlib *r, struct report_element *e, int backwards);
 int will_outputs_fit(rlib *r, struct report_element *e, int page);
 int will_this_fit(rlib *r, float total, int page);
 float get_output_size(rlib *r, struct report_output_array *roa);

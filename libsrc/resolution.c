@@ -170,6 +170,7 @@ static void rlib_hr_resolve_pcode(rlib *r, struct report_horizontal_line * rhl) 
 	else
 		rhl->reallength = atof(rhl->length);
 	rhl->bgcolor_code = rlib_infix_to_pcode(r, rhl->bgcolor);
+	rhl->surpress_code = rlib_infix_to_pcode(r, rhl->surpress);
 }
 
 static void rlib_image_resolve_pcode(rlib *r, struct report_image * ri) {

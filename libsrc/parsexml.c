@@ -140,6 +140,7 @@ static struct report_element * parse_report_output(struct rlib_report *rep, xmlD
 			rhl->indent = xmlGetProp(cur, (const xmlChar *) "indent");
 			rhl->length = xmlGetProp(cur, (const xmlChar *) "length");
 			rhl->font_size = xmlGetProp(cur, (const xmlChar *) "fontSize");
+			rhl->surpress = xmlGetProp(cur, (const xmlChar *) "surpress");
 			if(rhl->font_size == NULL)
 				rhl->font_point = -1;
 			else

@@ -1,3 +1,15 @@
+1.1.5
+===
+- rlib_add_parameter (chet)
+- optional memory checking (chet)
+- reports can span multiple pages (bob)
+- fix problems w/ postgre and odbc driver (bob)
+- ability to disable signal handling (chet)
+- page footer formats correctly now (bob)
+- pcode compilation fixes (chet, bob)
+- better xml parsing and error checking (chet)
+- surpress lines and hr's (bob)
+
 1.1.4
 ===
 

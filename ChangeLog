@@ -1,5 +1,12 @@
-2003-12-03  Chet Heilman <cheilman@sicompos.com>
+2003-12-03  Bob Doan  <bdoan@sicompos.com>
+	* NEWS: new news (1.1.5 released)
+	* libsrc/parsexml.c: surpress Hr's
+	* libsrc/pcode.h: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise 
+	* libsrc/rlib.h: likewise
 
+2003-12-03  Chet Heilman <cheilman@sicompos.com>
 	* libsrc/parsexml.c: (parse_line_array), (parse_report_output),
 	(parse_report_outputs), (parse_break_field), (parse_report_break),
 	(parse_report_breaks), (parse_detail), (parse_report_variable),
@@ -45,8 +52,7 @@
 	* libsrc/rlib.h: likewise
 	* libsrc/util.c: likewise
 
-2003-11-26  rlib  Chet Heilman <cheilman@sicompos.com>
-
+2003-11-26  Chet Heilman <cheilman@sicompos.com>
 	* libsrc/rlib.h: Added function to disable rlib signal handling and a
 		function to redirect rlogit logging messages.
 	* libsrc/util.c: (init_signals), (rutil_enableSignalHandler),
