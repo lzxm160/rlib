@@ -290,21 +290,17 @@ ZEND_FUNCTION(rlib_add_resultset_follower) {
 
 ZEND_FUNCTION(rlib_add_report) {
 	zval *z_rip = NULL;
-	gint whatever, mainloop_count;
-	gchar *name, *mainloop;
+	gint whatever;
+	gchar *name;
 	rlib_inout_pass *rip;
 	gint id = -1;
 	
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|s", &z_rip, &name, &whatever, &mainloop, &mainloop_count) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &z_rip, &name, &whatever) == FAILURE)
 		return;
-	}
 	
 	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
 
-	if(ZEND_NUM_ARGS() > 2)
-		rlib_add_report(rip->r, estrdup(name), estrdup(mainloop));
-	else
-		rlib_add_report(rip->r, estrdup(name), NULL);
+	rlib_add_report(rip->r, estrdup(name));
 		
 }
 

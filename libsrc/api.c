@@ -103,12 +103,11 @@ gint rlib_add_query_as(rlib *r, gchar *input_source, gchar *sql, gchar *name) {
 	return r->queries_count;
 }
 
-gint rlib_add_report(rlib *r, gchar *name, gchar *mainloop) {
+gint rlib_add_report(rlib *r, gchar *name) {
 	if(r->parts_count > (RLIB_MAXIMUM_REPORTS-1)) {
 		return - 1;
 	}
 	r->reportstorun[r->parts_count].name = g_strdup(name);
-	r->reportstorun[r->parts_count].query = g_strdup(mainloop);
 	r->parts_count++;
 	return r->parts_count;
 }
@@ -469,7 +468,7 @@ gchar *outputformat) {
 	if(rlib_add_datasource_mysql(r, "mysql", hostname, username, password, database) == -1)
 		return -1;
 	rlib_add_query_as(r, "mysql", sqlquery, "example");
-	rlib_add_report(r, xmlfilename, "example");
+	rlib_add_report(r, xmlfilename);
 	rlib_set_output_format_from_text(r, outputformat);
 	if(rlib_execute(r) == -1)
 		return -1;
@@ -486,7 +485,7 @@ gint rlib_postgre_report(gchar *connstr, gchar *xmlfilename, gchar *sqlquery, gc
 	if(rlib_add_datasource_postgre(r, "postgre", connstr) == -1)
 		return -1;
 	rlib_add_query_as(r, "postgre", sqlquery, "example");
-	rlib_add_report(r, xmlfilename, "example");
+	rlib_add_report(r, xmlfilename);
 	rlib_set_output_format_from_text(r, outputformat);
 	if(rlib_execute(r) == -1)
 		return -1;

@@ -152,7 +152,12 @@ static void rlib_free_output(rlib *r, struct rlib_element *e) {
 void rlib_free_report(rlib *r, struct rlib_report *report) {
 	struct rlib_element *e, *prev;
 
-//rlogit("address being freed is: %08lx", (long) report->font_size_code);
+	if(report->doc != NULL) {
+//		xmlFreeDoc(report->doc);
+	} else {
+		g_free(report->contents);
+	}
+	
 	free_pcode(report->font_size_code);
 	free_pcode(report->orientation_code);
 	free_pcode(report->top_margin_code);
@@ -248,24 +253,62 @@ void rlib_free_report(rlib *r, struct rlib_report *report) {
 				break;
 		}
 	}
+}
 
+void rlib_free_part_td(rlib *r, struct rlib_part *part, struct rlib_element *e_td) {
+	struct rlib_element *e, *td_contents;
+	for(e=e_td;e != NULL;e=e->next) {
+		struct rlib_part_td *td = e->data;
+		free_pcode(td->width_code);
+
+		for(td_contents=td->e;td_contents != NULL;td_contents=td_contents->next) {
+			if(td_contents->type == RLIB_ELEMENT_REPORT) {
+				struct rlib_report *report = td_contents->data;
+				rlib_free_report(r, report);
+			}
+		}
+
+	}
+}
+
+void rlib_free_part_tr(rlib *r, struct rlib_part *part, struct rlib_element *e_tr) {
+	struct rlib_element *e;
 	
+	for(e=e_tr;e != NULL;e=e->next) {
+		struct rlib_part_tr *tr = e->data;
+		free_pcode(tr->layout_code);
+		free_pcode(tr->newpage_code);
+		rlib_free_part_td(r, part, tr->e);
+	}	
+}
+
+void rlib_free_part(rlib *r, struct rlib_part *part) {
+	free_pcode(part->orientation_code);
+	free_pcode(part->font_size_code);
+	free_pcode(part->top_margin_code);
+	free_pcode(part->left_margin_code);
+	free_pcode(part->bottom_margin_code);
+	free_pcode(part->paper_type_code);
+	free_pcode(part->pages_across_code);
+	
+	g_free(part->position_top);
+	g_free(part->position_bottom);
+	g_free(part->bottom_size);
+
+	rlib_free_output(r, part->page_header);
+	rlib_free_output(r, part->page_footer);
+
+	rlib_free_part_tr(r, part, part->tr_elements);
 }
 
 void rlib_free_tree(rlib *r) {
-/*	int i;
-	for(i=0;i<r->reports_count;i++) {
-		rlib_free_report(r, i);
+	int i;
+	for(i=0;i<r->parts_count;i++) {
+		struct rlib_part *part = r->parts[i];
+		rlib_free_part(r, part);
 		g_free(r->reportstorun[i].name);
-		g_free(r->reportstorun[i].query);
-		if(r->reports[i]->doc != NULL)
-			xmlFreeDoc(r->reports[i]->doc);
-		else
-			g_free(r->reports[i]->contents);
-		g_free(r->reports[i]);
-		r->reports[i] = NULL;
+		r->parts[i] = NULL;
 	}
-*/
 }
 
 void free_results(rlib *r) {

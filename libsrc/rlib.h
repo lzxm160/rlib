@@ -130,7 +130,6 @@ struct rlib_paper {
 	char name[30];
 };
 
-
 struct rlib_value {
 	gint type;
 	gint64 number_value;
@@ -139,7 +138,6 @@ struct rlib_value {
 	gpointer iif_value;  
 	gint free;
 };
-
 
 struct rlib_element {
 	gint type;
@@ -479,7 +477,6 @@ struct rlib_queries {
 
 struct rlib_rip_reports {
 	gchar *name;
-	gchar *query;
 };
 
 #define MAX_INPUT_FILTERS	10
@@ -626,7 +623,7 @@ rlib * rlib_init(void);
 rlib * rlib_init_with_environment(struct environment_filter *environment);
 gint rlib_add_query_as(rlib *r, gchar *input_name, gchar *sql, gchar *name);
 gint rlib_add_query_pointer_as(rlib *r, gchar *input_source, gchar *sql, gchar *name);
-gint rlib_add_report(rlib *r, gchar *name, gchar *mainloop);
+gint rlib_add_report(rlib *r, gchar *name);
 gint rlib_execute(rlib *r);
 char * rlib_get_content_type_as_text(rlib *r);
 gint rlib_spool(rlib *r);

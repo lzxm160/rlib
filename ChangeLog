@@ -1,3 +1,22 @@
+2004-10-12  Bob Doan  <bdoan@sicompos.com>
+	* bindings/php/php.c: free things, txt output, csv output, cleanup
+	* bindings/python/python.c: likewise
+	* libsrc/api.c: likewise
+	* libsrc/csv.c: likewise
+	* libsrc/free.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/rlib.i: likewise
+	* libsrc/txt.c: likewise
+	* src/examples/c/example.c: likewise
+	* src/examples/php/array_test.php: likewise
+	* src/examples/php/array_test.xml: likewise
+	* src/examples/php/fixed_part_test.php: likewise
+	* src/examples/php/flow_part_test.php: likewise
+	* tests/test1.c: likewise
+	* tests/test2.c: likewise
+	* tests/test3.c: likewise
+
 2004-10-11  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/breaks.c: make pages across work again and HTML output work again
 	* libsrc/csv.c: likewise

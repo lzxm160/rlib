@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
 	r = rlib_init();
 	rlib_add_datasource_postgre(r, "local_postgre", conn);
 	rlib_add_query_as(r, "local_postgre", "select * from example", "example");
-	rlib_add_report(r, "report.xml", NULL);
+	rlib_add_report(r, "report.xml");
 	rlib_set_output_format(r, RLIB_FORMAT_PDF);
 	rlib_execute(r);
 	rlib_spool(r);

@@ -143,7 +143,7 @@
 	rlib_add_query_as($rlib, "local_array", "inv_transfer", "inv_transfer");
 	rlib_add_query_as($rlib, "local_array", "inventory", "inventory");
 	rlib_add_report($rlib, "fixed_part_test.xml");
-	rlib_set_output_format_from_text($rlib, "html");
+	rlib_set_output_format_from_text($rlib, "pdf");
 	rlib_execute($rlib);
 	header(rlib_get_content_type($rlib));
 	rlib_spool($rlib);

@@ -164,6 +164,13 @@ static void rlib_txt_set_font_point(rlib *r, gint point) {}
 static void rlib_txt_start_line(rlib *r, gint backwards) {}
 static void rlib_txt_start_output_section(rlib *r) {}
 static void rlib_txt_end_output_section(rlib *r) {}
+static void rlib_txt_start_table(rlib *r) {}
+static void rlib_txt_end_table(rlib *r) {}
+static void rlib_txt_start_tr(rlib *r) {}
+static void rlib_txt_end_tr(rlib *r) {}
+static void rlib_txt_start_td(rlib *r, int width) {}
+static void rlib_txt_end_td(rlib *r) {}
+static void rlib_txt_set_raw_page(rlib *r, struct rlib_part *part, gint page) {}
 
 void rlib_txt_new_output_filter(rlib *r) {
 	OUTPUT(r) = g_malloc(sizeof(struct output_filter));
@@ -202,5 +209,13 @@ void rlib_txt_new_output_filter(rlib *r) {
 	OUTPUT(r)->get_output = rlib_txt_get_output;
 	OUTPUT(r)->get_output_length = rlib_txt_get_output_length;
 	OUTPUT(r)->set_working_page = rlib_txt_set_working_page;  
+	OUTPUT(r)->set_raw_page = rlib_txt_set_raw_page; 
+	OUTPUT(r)->start_table = rlib_txt_start_table; 
+	OUTPUT(r)->end_table = rlib_txt_end_table; 
+	OUTPUT(r)->start_tr = rlib_txt_start_tr; 
+	OUTPUT(r)->end_tr = rlib_txt_end_tr; 
+	OUTPUT(r)->start_td = rlib_txt_start_td; 
+	OUTPUT(r)->end_td = rlib_txt_end_td; 
+
 	OUTPUT(r)->free = rlib_txt_free;  
 }

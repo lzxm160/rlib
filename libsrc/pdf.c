@@ -259,7 +259,6 @@ static void rlib_pdf_set_raw_page(rlib *r, struct rlib_part *part, gint page) {
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
 	OUTPUT_PRIVATE(r)->page_diff = r->current_page_number - page;
-//	cpdf_setCurrentPage(OUTPUT_PRIVATE(r)->pdf, page);
 #if USEPDFLOCALE
 	setlocale(LC_NUMERIC, tlocale);
 #endif

@@ -60,7 +60,7 @@ int main(int argc, char **argv) {
 	rlib_add_datasource_mysql(r, "local_mysql", hostname, username, password, database);
 	rlib_add_query_as(r, "local_mysql", query, "topline");
 	rlib_add_query_as(r, "local_mysql", "select company.*, menu_items.name as report_name from company, menu_items where menu_items.id = 28", "header");
-	rlib_add_report(r, "report_financial_summary.xml", NULL);
+	rlib_add_report(r, "report_financial_summary.xml");
 	rlib_set_output_format(r, RLIB_FORMAT_PDF);
 	rlib_execute(r);
 	rlib_spool(r);

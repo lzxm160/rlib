@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 	rlib_add_query_as(r, "local_mysql", "select * FROM products", "products");
-	rlib_add_report(r, "products.xml", NULL);
+	rlib_add_report(r, "products.xml");
 	rlib_set_output_format(r, RLIB_FORMAT_PDF);
 	rlib_execute(r);
 	rlib_spool(r);

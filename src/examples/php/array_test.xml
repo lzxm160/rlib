@@ -13,9 +13,6 @@
 	<ReportHeader>
 		<Output>
 			<Line/>
-			<Line fontSize="12">
-				<literal>Test Report</literal>
-			</Line>
 			<Line fontsize="4"/>
 			<HorizontalLine size="4" bgcolor="'white'"/>
 			<HorizontalLine size="2" bgcolor="'black'"/>

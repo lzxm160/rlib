@@ -695,13 +695,12 @@ static PyObject *_wrap_rlib_add_report(PyObject *self, PyObject *args) {
     PyObject *resultobj;
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;
-    char *arg3 ;
     int result;
     PyObject * obj0 = 0 ;
     
-    if(!PyArg_ParseTuple(args,(char *)"Oss:rlib_add_report",&obj0,&arg2,&arg3)) goto fail;
+    if(!PyArg_ParseTuple(args,(char *)"Os:rlib_add_report",&obj0,&arg2)) goto fail;
     if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
-    result = (int)rlib_add_report(arg1,arg2,arg3);
+    result = (int)rlib_add_report(arg1,arg2);
     
     resultobj = PyInt_FromLong((long)result);
     return resultobj;
