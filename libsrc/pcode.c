@@ -78,6 +78,9 @@ struct rlib_pcode_operator rlib_pcode_verbs[] = {
       {"day(", 	4, 0,	TRUE,	OP_DAY,  	TRUE, 	rlib_pcode_operator_day},
       {"upper(", 	6, 0,	TRUE,	OP_UPPER,  	TRUE, 	rlib_pcode_operator_upper},
       {"lower(", 	6, 0,	TRUE,	OP_LOWER,  	TRUE, 	rlib_pcode_operator_lower},
+		{"left(", 	5, 0, 	TRUE, 	OP_LEFT, 	TRUE, 	rlib_pcode_operator_left},
+		{"right(", 	6, 0, 	TRUE, 	OP_LEFT, 	TRUE, 	rlib_pcode_operator_right},
+		{"substring(", 	10, 0, 	TRUE, 	OP_LEFT, 	TRUE, 	rlib_pcode_operator_substring},
       {"proper(", 7, 0,	TRUE,	OP_PROPER, 	TRUE,		rlib_pcode_operator_proper},
       {"stodt(", 	6, 0,	TRUE,	OP_STODS,  	TRUE, 	rlib_pcode_operator_stods},
       {"isnull(",	7, 0,	TRUE,	OP_ISNULL, 	TRUE, 	rlib_pcode_operator_isnull},
@@ -161,7 +164,7 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, gchar *str) {
 	struct rlib_pcode_operand *o;
 	struct report_variable *rv;
 	gint rvar;
-	o = g_malloc(sizeof(struct rlib_pcode_operand));
+	o = g_new0(struct rlib_pcode_operand, 1);
 	if(str[0] == '\'') {
 		gchar *newstr = g_malloc(strlen(str)-1);
 		memcpy(newstr, str+1, strlen(str)-1);
@@ -176,12 +179,12 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, gchar *str) {
 	} else if (!strcasecmp(str, "yes") || !strcasecmp(str, "true")) {
 		gint64 *newnum = g_malloc(sizeof(long long));
 		o->type = OPERAND_NUMBER;
-		*newnum = !0;
+		*newnum = TRUE * RLIB_DECIMAL_PRECISION;
 		o->value = newnum;
 	} else if (!strcasecmp(str, "no") || !strcasecmp(str, "false")) {
 		gint64 *newnum = g_malloc(sizeof(long long));
 		o->type = OPERAND_NUMBER;
-		*newnum = 0;
+		*newnum = FALSE  * RLIB_DECIMAL_PRECISION;
 		o->value = newnum;
 	} else if((rv = rlib_resolve_variable(r, str))) {
 		o->type = OPERAND_VARIABLE;
@@ -192,12 +195,37 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, gchar *str) {
 	} else if((rvar = rlib_resolve_rlib_variable(r, str))) {
 		o->type = OPERAND_RLIB_VARIABLE;
 		o->value = (void *)rvar;
-	} 	else if(rlib_resolve_resultset_field(r, str, &field, &resultset)) {
+	} else if(rlib_resolve_resultset_field(r, str, &field, &resultset)) {
 		struct rlib_resultset_field *rf = g_malloc(sizeof(struct rlib_resultset_field));
 		rf->resultset = resultset;
 		rf->field = field;
 		o->type = OPERAND_FIELD;
-		o->value = rf;		
+		o->value = rf;
+	} else if (!g_strcasecmp(str, "left")) {
+		gint64 *newnum = g_malloc(sizeof(long long));
+		o->type = OPERAND_NUMBER;
+		*newnum = RLIB_ALIGN_LEFT * RLIB_DECIMAL_PRECISION;
+		o->value = newnum;
+	} else if (!g_strcasecmp(str, "right")) {
+		gint64 *newnum = g_malloc(sizeof(long long));
+		o->type = OPERAND_NUMBER;
+		*newnum = RLIB_ALIGN_RIGHT * RLIB_DECIMAL_PRECISION;
+		o->value = newnum;
+	} else if (!g_strcasecmp(str, "center")) {
+		gint64 *newnum = g_malloc(sizeof(long long));
+		o->type = OPERAND_NUMBER;
+		*newnum = RLIB_ALIGN_CENTER * RLIB_DECIMAL_PRECISION;
+		o->value = newnum;
+	} else if (!g_strcasecmp(str, "landscape")) {
+		gint64 *newnum = g_malloc(sizeof(long long));
+		o->type = OPERAND_NUMBER;
+		*newnum = RLIB_ORIENTATION_LANDSCAPE * RLIB_DECIMAL_PRECISION;
+		o->value = newnum;
+	} else if (!g_strcasecmp(str, "portrait")) {
+		gint64 *newnum = g_malloc(sizeof(long long));
+		o->type = OPERAND_NUMBER;
+		*newnum = RLIB_ORIENTATION_PORTRAIT * RLIB_DECIMAL_PRECISION;
+		o->value = newnum;
 	} else if (isdigit(*str) || (*str == '-') || (*str == '+')) {
 		gint64 *newnum = g_malloc(sizeof(long long));
 		o->type = OPERAND_NUMBER;
@@ -410,7 +438,9 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, gchar *infix) {
 				if(operand[0] != ')') {
 					rlib_pcode_add(pcodes, rlib_new_pcode_instruction(&rpi, PCODE_PUSH, rlib_new_operand(r, operand)));
 				}
-				op_pointer += moving_ptr - op_pointer;
+//				op_pointer += moving_ptr - op_pointer;
+// How about just:
+				op_pointer = moving_ptr;
 				found_op_last = FALSE;
 				last_op_was_function = FALSE;
 			}

@@ -96,7 +96,10 @@ gint rlib_resolve_resultset_field(rlib *r, char *name, void **rtn_field, gint *r
 	return found;
 }
 
-static gint getalign(char *align) {
+#if 0
+static gint getspecial(rlib_variable *var) {
+
+
 	if(align == NULL)
 		return RLIB_ALIGN_LEFT;
 
@@ -108,6 +111,7 @@ static gint getalign(char *align) {
 		return RLIB_ALIGN_LEFT;
 
 }
+#endif
 
 static void rlib_field_resolve_pcode(rlib *r, struct report_field *rf) {
 	rf->code = rlib_infix_to_pcode(r, rf->value);
@@ -116,14 +120,18 @@ static void rlib_field_resolve_pcode(rlib *r, struct report_field *rf) {
 	rf->color_code = rlib_infix_to_pcode(r, rf->color);
 	rf->bgcolor_code = rlib_infix_to_pcode(r, rf->bgcolor);
 	rf->col_code = rlib_infix_to_pcode(r, rf->col);
+	rf->width_code = rlib_infix_to_pcode(r, rf->xml_width);
+	rf->align_code = rlib_infix_to_pcode(r, rf->xml_align);
 	rf->wrapchars_code = rlib_infix_to_pcode(r, rf->xml_wrapchars);
 	rf->maxlines_code = rlib_infix_to_pcode(r, rf->xml_maxlines);
-	
 	rf->width = -1;
+	
+#if 0
 	if(rf->xml_width != NULL)
 		rf->width = atol(rf->xml_width);
 
 	rf->align = getalign(rf->xml_align);
+#endif
 
 /*rlogit("DUMPING PCODE FOR [%s]\n", rf->value);
 rlib_pcode_dump(rf->code,0);	
@@ -134,13 +142,16 @@ static void rlib_text_resolve_pcode(rlib *r, struct report_literal *rt) {
 	rt->color_code = rlib_infix_to_pcode(r, rt->color);
 	rt->bgcolor_code = rlib_infix_to_pcode(r, rt->bgcolor);
 	rt->col_code = rlib_infix_to_pcode(r, rt->col);
-
+	rt->width_code = rlib_infix_to_pcode(r, rt->xml_width);
+	rt->align_code = rlib_infix_to_pcode(r, rt->xml_align);
 	rt->width = -1;
+
+#if 0
 	if(rt->xml_width != NULL)
 		rt->width = atol(rt->xml_width);
 
 	rt->align = getalign(rt->xml_align);
-
+#endif
 }
 
 static void rlib_break_resolve_pcode(rlib *r, struct break_fields *bf) {
@@ -251,51 +262,33 @@ int is_true_str(const gchar *str) {
 }
 
 
-
 void rlib_resolve_fields(rlib *r) {
 	struct report_element *e;
 	struct rlib_report *thisreport = r->reports[r->current_report];
 
-	if(thisreport->xml_top_margin == NULL)
-		thisreport->top_margin = DEFAULT_TOP_MARGIN;
-	else
-		thisreport->top_margin = atof(thisreport->xml_top_margin);
-
+#if 0
 	if(thisreport->xml_orientation == NULL)
 		thisreport->orientation = RLIB_ORIENTATION_PORTRAIT;
 	else if(!strcmp(thisreport->xml_orientation, "landscape"))
 		thisreport->orientation = RLIB_ORIENTATION_LANDSCAPE;
 	else
 		thisreport->orientation = RLIB_ORIENTATION_PORTRAIT;
+#endif
 	
-	
-	if(thisreport->xml_font_size == NULL)
-		thisreport->font_size = -1;
-	else
-		thisreport->font_size = atol(thisreport->xml_font_size);
-
-	if(thisreport->xml_top_margin == NULL)
-		thisreport->top_margin = DEFAULT_TOP_MARGIN;
-	else
-		thisreport->top_margin = atof(thisreport->xml_top_margin);
-
-	if(thisreport->xml_left_margin == NULL)
-		thisreport->left_margin = DEFAULT_LEFT_MARGIN;
-	else
-		thisreport->left_margin = atof(thisreport->xml_left_margin);
-
-	if(thisreport->xml_bottom_margin == NULL)
-		thisreport->bottom_margin = DEFAULT_BOTTOM_MARGIN;
-	else
-		thisreport->bottom_margin = atof(thisreport->xml_bottom_margin);
-
-	if(thisreport->xml_pages_accross == NULL)
-		thisreport->pages_accross = 1;
-	else
-		thisreport->pages_accross = atol(thisreport->xml_pages_accross);
-
-	thisreport->suppress_page_header_first_page = 
-				is_true_str(thisreport->xml_suppress_page_header_first_page);
+	thisreport->orientation = RLIB_ORIENTATION_PORTRAIT;
+	thisreport->orientation_code = rlib_infix_to_pcode(r, thisreport->xml_orientation);
+	thisreport->font_size = -1;
+	thisreport->font_size_code = rlib_infix_to_pcode(r, thisreport->xml_font_size);
+	thisreport->top_margin = DEFAULT_TOP_MARGIN;
+	thisreport->top_margin_code = rlib_infix_to_pcode(r, thisreport->xml_top_margin);
+	thisreport->left_margin = DEFAULT_LEFT_MARGIN;
+	thisreport->left_margin_code = rlib_infix_to_pcode(r, thisreport->xml_left_margin);
+	thisreport->bottom_margin = DEFAULT_BOTTOM_MARGIN;
+	thisreport->bottom_margin_code = rlib_infix_to_pcode(r, thisreport->xml_bottom_margin);
+	thisreport->pages_accross = 1;
+	thisreport->pages_across_code = rlib_infix_to_pcode(r, thisreport->xml_pages_accross);
+	thisreport->suppress_page_header_first_page = FALSE;
+	thisreport->suppress_page_header_first_page_code = rlib_infix_to_pcode(r, thisreport->xml_suppress_page_header_first_page);
 		
 	thisreport->position_top = g_malloc(thisreport->pages_accross * sizeof(float));
 	thisreport->position_bottom = g_malloc(thisreport->pages_accross * sizeof(float));
@@ -313,14 +306,12 @@ void rlib_resolve_fields(rlib *r) {
 		for(e = thisreport->breaks; e != NULL; e=e->next) {
 			struct report_break *rb = e->data;
 			struct report_element *be;
+			
 			rlib_resolve_outputs(r, rb->header);
 			rlib_resolve_outputs(r, rb->footer);
-			rb->newpage = FALSE;
-			rb->headernewpage = FALSE;
-			rb->suppressblank = FALSE;
-			rb->newpage = is_true_str(rb->xml_newpage);
-			rb->headernewpage = is_true_str(rb->xml_headernewpage);
-			rb->suppressblank = is_true_str(rb->xml_suppressblank);
+			rb->newpage_code = rlib_infix_to_pcode(r, rb->xml_newpage);
+			rb->headernewpage_code = rlib_infix_to_pcode(r, rb->xml_headernewpage);
+			rb->suppressblank_code = rlib_infix_to_pcode(r, rb->xml_suppressblank);
 			for(be = rb->fields; be != NULL; be=be->next) {
 				struct break_fields *bf = be->data;
 				rlib_break_resolve_pcode(r, bf);

@@ -29,7 +29,76 @@
 #define RLIB_GET_LINE(a) ((float)(a/72.0))
 #define LENGTH_OF_LINE_ACCROSS_PAGE (r->landscape ? (11-(GET_MARGIN(r)->left_margin*2)) : (8.5-(GET_MARGIN(r)->left_margin*2)))
 
-struct rgb COLOR_BLACK = {0, 0, 0};
+//Not used: static struct rgb COLOR_BLACK = {0, 0, 0};
+
+static gchar *orientations[] = {
+	"",
+	"portrait",
+	"landscape",
+	NULL
+};
+
+
+static gchar *aligns[] = {
+	"left",
+	"right",
+	"center",
+	NULL
+};
+
+
+static gint rlib_execute_as_int(rlib *r, struct rlib_pcode *pcode, gint *result) {
+	struct rlib_value val;
+	gint isok = FALSE;
+
+	*result = 0;
+	if (pcode) {
+		rlib_execute_pcode(r, &val, pcode, NULL);
+		if (RLIB_VALUE_IS_NUMBER((&val))) {
+			*result = RLIB_VALUE_GET_AS_NUMBER((&val)) / RLIB_DECIMAL_PRECISION;
+			isok = TRUE;
+		} else {
+			rlogit("Expecting numeric value from pcode");
+		}
+		rlib_value_free(&val);
+	}
+	return isok;
+}
+
+
+static gint rlib_execute_as_boolean(rlib *r, struct rlib_pcode *pcode, gint *result) {
+	return rlib_execute_as_int(r, pcode, result)? TRUE : FALSE;
+}
+
+
+static gint rlib_execute_as_int_inlist(rlib *r, struct rlib_pcode *pcode, gint *result, gchar *list[]) {
+	struct rlib_value val;
+	gint isok = FALSE;
+
+	*result = 0;
+	if (pcode) {
+		rlib_execute_pcode(r, &val, pcode, NULL);
+		if (RLIB_VALUE_IS_NUMBER((&val))) {
+			*result = RLIB_VALUE_GET_AS_NUMBER((&val)) / RLIB_DECIMAL_PRECISION;
+			isok = TRUE;
+		} else if (RLIB_VALUE_IS_STRING((&val))) {
+			gint i;
+			gchar * str = RLIB_VALUE_GET_AS_STRING((&val));
+			for (i = 0; list[i]; ++i) {
+				if (g_strcasecmp(str, list[i])) {
+					*result = i;
+					isok = TRUE;
+					break;
+				}
+			}
+		} else {
+			rlogit("Expecting number or specific string from pcode");
+		}
+		rlib_value_free(&val);
+	}
+	return isok;
+}
+
 
 gfloat get_page_width(rlib *r) {
 	if(!r->landscape)
@@ -202,6 +271,7 @@ gfloat estimate_string_width_from_extra_data(rlib *r, struct rlib_line_extra_dat
 	return rtn_width;
 }
 	
+
 void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_extra_data *extra_data) {
 	gint i=0;
 	gchar *text;
@@ -244,7 +314,19 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 				extra_data[i].rval_bgcolor = line_rval_bgcolor;
 				rlib_value_dup_contents(&extra_data[i].rval_bgcolor);
 			}
-			
+
+			if (rf->align_code) {
+				gint t;
+				if (rlib_execute_as_int_inlist(r, rf->align_code, &t, aligns)) {
+					if (t < 3) rf->align = t;
+				}
+			}
+			if (rf->width_code) {
+				gint t;
+				if (rlib_execute_as_int(r, rf->width_code, &t)) {
+					rf->width = t;
+				}
+			}
 			rlib_format_string(r, rf, &extra_data[i].rval_code, buf);
 			align_text(r, extra_data[i].formatted_string, MAXSTRLEN, buf, rf->align, rf->width);
 			
@@ -274,6 +356,18 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 			else
 				strcpy(extra_data[i].formatted_string, rt->value);
 				
+			if (rt->align_code) {
+				gint t;
+				if (rlib_execute_as_int_inlist(r, rt->align_code, &t, aligns)) {
+					if (t < 3) rt->align = t;
+				}
+			}
+			if (rt->width_code) {
+				gint t;
+				if (rlib_execute_as_int(r, rt->width_code, &t)) {
+					rt->width = t;
+				}
+			}
 			strcpy(buf, extra_data[i].formatted_string);
 			align_text(r, extra_data[i].formatted_string, MAXSTRLEN, buf, rt->align, rt->width);
 				
@@ -892,6 +986,7 @@ void rlib_init_variables(rlib *r) {
 	
 }
 
+
 void rlib_process_variables(rlib *r) {
 	struct report_element *e;
 	for(e = r->reports[r->current_report]->variables; e != NULL; e=e->next) {
@@ -939,6 +1034,47 @@ void rlib_process_variables(rlib *r) {
 	
 }
 
+
+static void rlib_evaluate_report_attributes(rlib *r) {
+	struct rlib_report *thisreport = r->reports[r->current_report];
+	gint t;
+	
+	if (rlib_execute_as_int_inlist(r, thisreport->orientation_code, &t, orientations))
+		if ((t == RLIB_ORIENTATION_PORTRAIT) || (t == RLIB_ORIENTATION_LANDSCAPE))
+			thisreport->orientation = t;
+	if (rlib_execute_as_int(r, thisreport->font_size_code, &t))
+		thisreport->font_size = t;
+	if (rlib_execute_as_int(r, thisreport->top_margin_code, &t))
+		thisreport->top_margin = t;
+	if (rlib_execute_as_int(r, thisreport->left_margin_code, &t))
+		thisreport->left_margin = t;
+	if (rlib_execute_as_int(r, thisreport->bottom_margin_code, &t))
+		thisreport->bottom_margin = t;
+	if (rlib_execute_as_int(r, thisreport->pages_across_code, &t))
+		thisreport->pages_accross = t;
+	if (rlib_execute_as_int(r, thisreport->suppress_page_header_first_page_code, &t))
+		thisreport->suppress_page_header_first_page = t;
+}
+
+
+static void rlib_evaluate_break_attributes(rlib *r) {
+	struct report_break *rb;
+	struct report_element *e;
+	struct rlib_report *thisreport = r->reports[r->current_report];
+	gint t;
+	
+	for(e = thisreport->breaks; e != NULL; e = e->next) {
+		rb = e->data;
+		if (rlib_execute_as_boolean(r, rb->newpage_code, &t))
+			rb->newpage = t;
+		if (rlib_execute_as_boolean(r, rb->headernewpage_code, &t))
+			rb->headernewpage = t;
+		if (rlib_execute_as_boolean(r, rb->suppressblank_code, &t))
+			rb->suppressblank = t;
+	}
+}
+
+
 gint make_report(rlib *r) {
 	gint i = 0;
 	gint report = 0;
@@ -961,6 +1097,7 @@ gint make_report(rlib *r) {
 	r->current_result = 0;
 	r->start_of_new_report = TRUE;
 
+
 	OUTPUT(r)->rlib_init_output(r);
 	rlib_fetch_first_rows(r);
 
@@ -973,12 +1110,13 @@ gint make_report(rlib *r) {
 		}
 
 		rlib_resolve_fields(r);
-		if(r->reports[r->current_report]->font_size != -1)
-			r->font_point = r->reports[r->current_report]->font_size;
-		OUTPUT(r)->rlib_start_report(r);
 		rlib_init_variables(r);
 		rlib_process_variables(r);
 		processed_variables = TRUE;
+		rlib_evaluate_report_attributes(r);
+		if(r->reports[r->current_report]->font_size != -1)
+			r->font_point = r->reports[r->current_report]->font_size;
+		OUTPUT(r)->rlib_start_report(r);
 		rlib_init_page(r, TRUE);		
 		OUTPUT(r)->rlib_begin_text(r);
 		if(INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result) != TRUE) {
@@ -989,6 +1127,7 @@ gint make_report(rlib *r) {
 					rlib_process_variables(r);
 					processed_variables = TRUE;
 				}
+				rlib_evaluate_break_attributes(r);
 				rlib_handle_break_headers(r);
 			
 				if(rlib_end_page_if_line_wont_fit(r, r->reports[r->current_report]->detail.fields))
@@ -1010,6 +1149,7 @@ gint make_report(rlib *r) {
 					break;
 				} 
 
+				rlib_evaluate_break_attributes(r);
 				rlib_handle_break_footers(r);
 				processed_variables = FALSE;
 			}

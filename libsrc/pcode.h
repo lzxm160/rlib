@@ -90,6 +90,8 @@
 #define OP_WIY 	43
 #define OP_WIYO 	44
 #define OP_DATE 	45
+#define OP_LEFT		46
+
 
 struct rlib_value_stack {
 	int count;
@@ -199,4 +201,7 @@ int rlib_pcode_operator_dim(rlib *r, struct rlib_value_stack *vs, struct rlib_va
 int rlib_pcode_operator_wiy(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
 int rlib_pcode_operator_wiyo(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
 int rlib_pcode_operator_date(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
+int rlib_pcode_operator_left(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
+int rlib_pcode_operator_right(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
+int rlib_pcode_operator_substring(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
 

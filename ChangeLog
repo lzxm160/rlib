@@ -1,4 +1,40 @@
 2004-01-13  Chet Heilman <cheilman@sicompos.com>
+	* libsrc/pcode.c: (rlib_new_operand), (rlib_infix_to_pcode): Made
+	all attributes into pcode functions.
+	* libsrc/pcode.h: same
+	* libsrc/pcode_op_functions.c: (rlib_pcode_operator_add),
+	(rlib_pcode_operator_subtract), (rlib_pcode_operator_multiply),
+	(rlib_pcode_operator_divide), (rlib_pcode_operator_mod),
+	(rlib_pcode_operator_pow), (rlib_pcode_operator_lte),
+	(rlib_pcode_operator_lt), (rlib_pcode_operator_gte),
+	(rlib_pcode_operator_gt), (rlib_pcode_operator_eql),
+	(rlib_pcode_operator_noteql), (rlib_pcode_operator_and),
+	(rlib_pcode_operator_or), (rlib_pcode_operator_abs),
+	(rlib_pcode_operator_ceil), (rlib_pcode_operator_floor),
+	(rlib_pcode_operator_round), (rlib_pcode_operator_sin),
+	(rlib_pcode_operator_cos), (rlib_pcode_operator_ln),
+	(rlib_pcode_operator_exp), (rlib_pcode_operator_atan),
+	(rlib_pcode_operator_sqrt), (rlib_pcode_operator_fxpval),
+	(rlib_pcode_operator_val), (rlib_pcode_operator_str),
+	(rlib_pcode_operator_stod), (rlib_pcode_operator_iif),
+	(rlib_pcode_operator_dtos), (rlib_pcode_operator_year),
+	(rlib_pcode_operator_month), (rlib_pcode_operator_day),
+	(rlib_pcode_operator_upper), (rlib_pcode_operator_lower),
+	(rlib_pcode_operator_left), (rlib_pcode_operator_right),
+	(rlib_pcode_operator_substring), (rlib_pcode_operator_proper),
+	(rlib_pcode_operator_stods), (rlib_pcode_operator_isnull),
+	(rlib_pcode_operator_dim), (rlib_pcode_operator_wiy),
+	(rlib_pcode_operator_wiyo): same, plus added rlib_value_free
+	calls to cover existing or potential memory leaks, mostly when
+	invalid values are encountered.
+	* libsrc/reportgen.c: (rlib_execute_as_int),
+	(rlib_execute_as_boolean), (rlib_execute_as_int_inlist),
+	(execute_pcodes_for_line), (rlib_evaluate_report_attributes),
+	(rlib_evaluate_break_attributes), (make_report): pcode functions
+	* libsrc/resolution.c: (getspecial), (rlib_field_resolve_pcode),
+	(rlib_text_resolve_pcode), (rlib_resolve_fields): pcode functions.
+
+2004-01-13  Chet Heilman <cheilman@sicompos.com>
 	* libsrc/containers.h:change all f() to f(void)
 	* libsrc/rlib.h:change all f() to f(void)
 
