@@ -656,7 +656,7 @@ struct rlib_value *this_field_value) {
 			val = RLIB_VALUE_GET_AS_NUMBER(count);
 		} else if(rv->type == REPORT_VARIABLE_EXPRESSION) {
 			if (RLIB_VALUE_IS_STRING(amount)) {
-				gchar *strval = RLIB_VALUE_GET_AS_STRING(amount);
+				gchar *strval = g_strdup(RLIB_VALUE_GET_AS_STRING(amount));
 				return rlib_value_new(rval, RLIB_VALUE_STRING, TRUE, strval);
 			} else {
 				val = RLIB_VALUE_GET_AS_NUMBER(amount);

@@ -96,22 +96,6 @@ gint rlib_resolve_resultset_field(rlib *r, char *name, void **rtn_field, gint *r
 	return found;
 }
 
-#if 0
-static gint getspecial(rlib_variable *var) {
-
-
-	if(align == NULL)
-		return RLIB_ALIGN_LEFT;
-
-	if(!strcmp(align, "right"))
-		return RLIB_ALIGN_RIGHT;
-	else if(!strcmp(align, "center"))
-		return RLIB_ALIGN_CENTER;
-	else
-		return RLIB_ALIGN_LEFT;
-
-}
-#endif
 
 static void rlib_field_resolve_pcode(rlib *r, struct report_field *rf) {
 	rf->code = rlib_infix_to_pcode(r, rf->value);
@@ -125,14 +109,6 @@ static void rlib_field_resolve_pcode(rlib *r, struct report_field *rf) {
 	rf->wrapchars_code = rlib_infix_to_pcode(r, rf->xml_wrapchars);
 	rf->maxlines_code = rlib_infix_to_pcode(r, rf->xml_maxlines);
 	rf->width = -1;
-	
-#if 0
-	if(rf->xml_width != NULL)
-		rf->width = atol(rf->xml_width);
-
-	rf->align = getalign(rf->xml_align);
-#endif
-
 /*rlogit("DUMPING PCODE FOR [%s]\n", rf->value);
 rlib_pcode_dump(rf->code,0);	
 rlogit("\n\n");*/
@@ -145,13 +121,6 @@ static void rlib_text_resolve_pcode(rlib *r, struct report_literal *rt) {
 	rt->width_code = rlib_infix_to_pcode(r, rt->xml_width);
 	rt->align_code = rlib_infix_to_pcode(r, rt->xml_align);
 	rt->width = -1;
-
-#if 0
-	if(rt->xml_width != NULL)
-		rt->width = atol(rt->xml_width);
-
-	rt->align = getalign(rt->xml_align);
-#endif
 }
 
 static void rlib_break_resolve_pcode(rlib *r, struct break_fields *bf) {

@@ -1,4 +1,10 @@
 2004-01-13  Chet Heilman <cheilman@sicompos.com>
+	* libsrc/pcode.c: (rlib_operand_get_value): Fix memory allocation/
+	deallocation error.
+	* libsrc/resolution.c: (rlib_field_resolve_pcode),
+	(rlib_text_resolve_pcode): same
+
+2004-01-13  Chet Heilman <cheilman@sicompos.com>
 	* libsrc/pcode.c: (rlib_new_operand), (rlib_infix_to_pcode): Made
 	all attributes into pcode functions.
 	* libsrc/pcode.h: same
