@@ -188,6 +188,7 @@ void rlib_pdf_new_output_filter(rlib *r) {
 
 	OUTPUT(r)->do_align = TRUE;
 	OUTPUT(r)->do_break = TRUE;
+	OUTPUT(r)->do_grouptext = TRUE;	
 
 	OUTPUT(r)->rlib_get_string_width = rlib_pdf_get_string_width;
 	OUTPUT(r)->rlib_print_text = rlib_pdf_print_text;

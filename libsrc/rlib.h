@@ -369,6 +369,7 @@ struct output_filter {
 	void *private;
 	int do_align;
 	int do_break;
+	int do_grouptext;
 	float	(*rlib_get_string_width)(rlib *, char *);
 	void (*rlib_print_text)(rlib *, float, float, char *, int, int);
 	void (*rlib_set_fg_color)(rlib *, float, float, float);

@@ -68,7 +68,7 @@ static PGresult * rlib_postgre_query(PGconn *conn, char *query) {
 	PGresult *result = NULL;
 	int rtn;
 
-	result = PQexec(conn, "SELECT * from EXAMPLE");
+	result = PQexec(conn, query);
 	if (PQresultStatus(result) != PGRES_TUPLES_OK) {
 		PQclear(result);
 		PQfinish(conn);

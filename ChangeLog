@@ -1,3 +1,13 @@
+2003-10-24  Bob Doan  <bdoan@sicompos.com>
+	* configure.in: Bump version to 1.1.2
+	* inputs/postgre/postgre.c: don't hardcode the query
+	* libsrc/reportgen.c: cash line output so only calling write_text only when necessary.. makes pdf reports 2-3x faster
+	* libsrc/csv.c: likewise
+	* libsrc/html.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/txt.c: likewise
+
 2003-10-23  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/Makefile.am: version numbers
 	* configure.in: likewise
