@@ -19,6 +19,13 @@
  */
  
 #include <rlib.h>
+#include <input.h>
+
+
+struct _data {
+	char name[MAXSTRLEN];
+	char address[MAXSTRLEN];
+};
 
 int main(int argc, char **argv) {
 	char *hostname, *username, *password, *database;
@@ -36,10 +43,10 @@ int main(int argc, char **argv) {
 	database = argv[4];
 
 	r = rlib_init(NULL);
-	rlib_add_datasource_mysql(r, hostname, username, password, database);
-	rlib_add_query_as(r, "select * from example", "example");
-	rlib_add_query_as(r, "select * from example order by name", "example2");
-	rlib_add_query_as(r, "select * from example", "example3");
+	rlib_add_datasource_mysql(r, "local_mysql", hostname, username, password, database);
+	rlib_add_query_as(r, "local_mysql", "select * from example", "example");
+	rlib_add_query_as(r, "local_mysql", "select * from example order by name", "example2");
+	rlib_add_query_as(r, "local_mysql", "select * from example", "example3");
 	rlib_add_report(r, "report.xml", NULL);
 	rlib_add_report(r, "report.xml", "example2");
 	rlib_add_report(r, "report2.xml", "example3");

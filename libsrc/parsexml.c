@@ -266,42 +266,42 @@ static struct report_element * parse_report_variables(xmlDocPtr doc, xmlNsPtr ns
 	return e;
 }
 
-struct report * parse_report_file(char *filename) {
+struct rlib_report * parse_report_file(char *filename) {
 	xmlDocPtr doc;
-	struct report *ret;
+	struct rlib_report *ret;
 	xmlNsPtr ns = NULL;
 	xmlNodePtr cur;
 
 	doc = xmlParseFile(filename);
 
 	if (doc == NULL)  {
-		debugf("xmlParseError \n");
+		rlogit("xmlParseError \n");
 		return(NULL);
 	}
   
 	cur = xmlDocGetRootElement(doc);
 	if (cur == NULL) {
-		debugf("xmlParseError \n");
+		rlogit("xmlParseError \n");
 		xmlFreeDoc(doc);
 		return(NULL);
 	}
 	
 	if (xmlStrcmp(cur->name, (const xmlChar *) "Report")) {
-		debugf("Report Node Expected.. C ya!\n");
+		rlogit("Report Node Expected.. C ya!\n");
 		xmlFreeDoc(doc);
 		return(NULL);
 	}
 
-	ret = (struct report *) rmalloc(sizeof(struct report));
+	ret = (struct rlib_report *) rmalloc(sizeof(struct rlib_report));
 	if (ret == NULL) {
-		debugf("Out of Memory :(\n");
+		rlogit("Out of Memory :(\n");
 		xmlFreeDoc(doc);
 		return(NULL);
 	}
 	
 	ret->report_header = NULL;
 
-	bzero(ret, sizeof(struct report));
+	bzero(ret, sizeof(struct rlib_report));
 
 	ret->doc = doc;
 
@@ -313,8 +313,8 @@ struct report * parse_report_file(char *filename) {
    	return ( NULL );
 
 	if ((xmlStrcmp(cur->name, (const xmlChar *) "Report"))) {
-		debugf("document of the wrong type, was '%s', Report expected", cur->name);
-		debugf("xmlDocDump follows\n");
+		rlogit("document of the wrong type, was '%s', Report expected", cur->name);
+		rlogit("xmlDocDump follows\n");
 		xmlDocDump ( stderr, doc );
 		xmlFreeDoc(doc);
 		rfree(ret);

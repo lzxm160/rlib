@@ -1,3 +1,31 @@
+2003-10-20  Bob Doan  <bdoan@sicompos.com>
+	* Makefile.am: Added posgre in/ split datasource out a bit more, 
+		also new c bindings in rlib core
+	* bindings/php/Makefile.am: likewise
+	* bindings/php/php.c: likewise
+	* configure.in: likewise
+	* libsrc/Makefile.am: likewise
+	* libsrc/datasource.c: likewise
+	* libsrc/free.c: likewise
+	* libsrc/fxp.c: likewise
+	* libsrc/init.c: likewise
+	* libsrc/input.h: likewise
+	* libsrc/mysql.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/pcode.c: likewise
+	* libsrc/pcode.h: likewise
+	* libsrc/pcode_op_functions.c: likewise
+	* libsrc/postgre.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/util.c: likewise
+	* rlib.pc.in: likewise
+	* tests/Makefile.am: likewise
+	* tests/test1.c: likewise
+	* tests/test2.c: likewise
+	* libsrc/breaks.c:  rework so that input is really plugable
+
 2003-10-16  Bob Doan  <bdoan@sicompos.com>
 	* configure.in: don't crash
 	* libsrc/Makefile.am: likewise

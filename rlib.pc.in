@@ -1,0 +1,12 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@/
+
+Name: rlib
+Description: Report Generation Library
+Version: @VERSION@
+Requires:libxml-2.0
+Libs: -L${libdir} -lr @MYSQL_LIBS@ -lcpdf 
+Cflags: -I${includedir}/rlib
+

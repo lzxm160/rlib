@@ -75,9 +75,18 @@ PHP_EXTENSTION_DIR=`$PHP_CONFIG --extension-dir`
 AC_SUBST(PHP_CFLAGS)
 AC_SUBST(PHP_EXTENSTION_DIR)
 
-AC_PREFIX_DEFAULT(`php-config --extension-dir`)
+AC_PATH_PROG(POSTGRE_CONFIG, pg_config, no)
+POSTGRE_CFLAGS="-I `$POSTGRE_CONFIG --includedir`"
+POSTGRE_LIBS="-L`$POSTGRE_CONFIG --libdir` -lpgeasy"
+AC_SUBST(POSTGRE_CFLAGS)
+AC_SUBST(POSTGRE_LIBS)
+
+
+PHP_PREFIX_DEFAULT=`php-config --extension-dir`
+AC_SUBST(PHP_PREFIX_DEFAULT)
+
 echo "*****************************************************************"
-echo " RLIB IS GOING TO INSTALL IN $PHP_EXTENSTION_DIR "
+echo " RLIB IS GOING TO INSTALL PHP EXT IN $PHP_EXTENSTION_DIR "
 echo " THIS WAS PICKED UP FROM $PHP_CONFIG "
 echo " MAKE SURE THIS IS RIGHT "
 echo "*****************************************************************"
@@ -91,4 +100,4 @@ AC_C_CONST
 
 dnl Checks for library functions.
 
-AC_OUTPUT(Makefile libsrc/Makefile bindings/Makefile bindings/php/Makefile tests/Makefile)
+AC_OUTPUT(Makefile rlib.pc libsrc/Makefile bindings/Makefile bindings/php/Makefile tests/Makefile)

@@ -36,7 +36,7 @@ long long int llabs(long long int j);
 
 static void myFaultHandler (int signum, siginfo_t *si, void *aptr) {
 	struct rlimit rlim;
-	debugf("** NUTS.. WE CRASHED\n");
+	rlogit("** NUTS.. WE CRASHED\n");
 	getrlimit (RLIMIT_CORE, &rlim); //POSIBLY NOT NECESSARY
 	rlim.rlim_cur = 1024000000; //NECESSARY
 	setrlimit (RLIMIT_CORE, &rlim); //NECESSARY
@@ -106,7 +106,7 @@ char *rmwhitespacesexceptquoted(char *s) {
 	return orig;
 }
 
-void debugf(const char *fmt, ...) {
+void rlogit(const char *fmt, ...) {
 	va_list vl;
 	char *result = NULL;
 

@@ -44,13 +44,13 @@ char * rlib_value_get_type_as_str(struct rlib_value *v) {
 }
 
 static void rlib_pcode_operator_fatal_execption(char *operator, int pcount, struct rlib_value *v1, struct rlib_value *v2, struct rlib_value *v3) {
-	debugf("RLIB EXPERIENCED A FATAL MATH ERROR WHILE TRYING TO PREFORM THE FOLLOWING OPERATION: %s\n", operator);
-	debugf("\tDATA TYPES ARE [%s]", rlib_value_get_type_as_str(v1));
+	rlogit("RLIB EXPERIENCED A FATAL MATH ERROR WHILE TRYING TO PREFORM THE FOLLOWING OPERATION: %s\n", operator);
+	rlogit("\tDATA TYPES ARE [%s]", rlib_value_get_type_as_str(v1));
 	if(pcount > 1)
-		debugf(" [%s]", rlib_value_get_type_as_str(v2));
+		rlogit(" [%s]", rlib_value_get_type_as_str(v2));
 	if(pcount > 2)
-		debugf(" [%s]", rlib_value_get_type_as_str(v3));
-	debugf("\n");
+		rlogit(" [%s]", rlib_value_get_type_as_str(v3));
+	rlogit("\n");
 }
 
 int rlib_pcode_operator_add(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {

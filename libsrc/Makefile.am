@@ -21,8 +21,15 @@
 ## Process this file with automake to produce Makefile.in
 
 lib_LTLIBRARIES = libr.la
-libr_la_SOURCES = parsexml.c reportgen.c init.c resolution.c util.c pcode.c pcode_op_functions.c formatstring.c \
-	fxp.c breaks.c pdf.c html.c txt.c csv.c ralloc.c environment.c free.c mysql.c  input.h  pcode.h  ralloc.h  rlib.h 
-libr_la_LIBADD = $(LIBXML_LIBS) $(MYSQL_LIBS) -lcpdf
-INCLUDES = $(LIBXML_CFLAGS) $(MYSQL_CFLAGS)
-libdir = ${exec_prefix}/
+libr_la_SOURCES = parsexml.c reportgen.c init.c resolution.c util.c pcode.c \
+	pcode_op_functions.c formatstring.c fxp.c breaks.c pdf.c html.c txt.c \
+	datasource.c  mysql.c postgre.c csv.c ralloc.c environment.c free.c input.h \
+	pcode.h ralloc.h rlib.h 
+
+libr_la_LIBADD = $(LIBXML_LIBS) $(MYSQL_LIBS) $(POSTGRE_LIBS) -lcpdf
+
+INCLUDES = $(LIBXML_CFLAGS) $(MYSQL_CFLAGS) $(POSTGRE_CFLAGS)
+
+include_HEADERS = rlib.h input.h
+
+includedir=$(prefix)/include/rlib

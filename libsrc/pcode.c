@@ -202,43 +202,43 @@ void rlib_pcode_dump(struct rlib_pcode *p, int offset) {
 	int i,j;
 	for(i=0;i<p->count;i++) {
 		for(j=0;j<offset*5;j++)
-			debugf(" ");
-		debugf("DUMP: ");
+			rlogit(" ");
+		rlogit("DUMP: ");
 		if(p->instructions[i].instruction == PCODE_PUSH) {
 			struct rlib_pcode_operand *o = p->instructions[i].value;
-			debugf("PUSH: ");
+			rlogit("PUSH: ");
 			if(o->type == OPERAND_NUMBER)
-				debugf("%lld", *((long long *)o->value));
+				rlogit("%lld", *((long long *)o->value));
 			else if(o->type == OPERAND_STRING) 
-				debugf("%s", (char *)o->value);
+				rlogit("%s", (char *)o->value);
 			else if(o->type == OPERAND_FIELD) {
 				struct rlib_resultset_field *rf = o->value;
-				debugf("Result Set = [%d]; Field = [%d]", rf->resultset, rf->field);
+				rlogit("Result Set = [%d]; Field = [%d]", rf->resultset, rf->field);
 			} else if(o->type == OPERAND_MEMORY_VARIABLE) {
-				debugf("Result Memory Variable = [%s]", (char *)o->value);
+				rlogit("Result Memory Variable = [%s]", (char *)o->value);
 			} else if(o->type == OPERAND_VARIABLE) {
 				struct report_variable *rv = o->value;
-				debugf("Result Variable = [%s]", rv->name);
+				rlogit("Result Variable = [%s]", rv->name);
 			} else if(o->type == OPERAND_RLIB_VARIABLE) {
-				debugf("RLIB Variable\n");
+				rlogit("RLIB Variable\n");
 			} else if(o->type == OPERAND_IIF) {
 				struct rlib_pcode_if *rpi = o->value;
-				debugf("*IFF EXPRESSION EVAULATION:\n");
+				rlogit("*IFF EXPRESSION EVAULATION:\n");
 				rlib_pcode_dump(rpi->evaulation, offset+1);
-				debugf("*IFF EXPRESSION TRUE:\n");
+				rlogit("*IFF EXPRESSION TRUE:\n");
 				rlib_pcode_dump(rpi->true, offset+1);
-				debugf("*IFF EXPRESSION FALSE:\n");
+				rlogit("*IFF EXPRESSION FALSE:\n");
 				rlib_pcode_dump(rpi->false, offset+1);
-				debugf("*IFF DONE\n");
+				rlogit("*IFF DONE\n");
 				
 			}
 
 		} else if(p->instructions[i].instruction == PCODE_EXECUTE) {
 			struct rlib_pcode_operator *o = p->instructions[i].value;
 			
-		debugf("EXECUTE: %s", o->tag);
+		rlogit("EXECUTE: %s", o->tag);
 		}
-		debugf("\n");
+		rlogit("\n");
 	}
 }
 
@@ -568,7 +568,7 @@ struct rlib_value *rlib_operand_get_value(rlib *r, struct rlib_value *rval, stru
 		} else if(rv->type == REPORT_VARIABLE_SUM) {
 			val = RLIB_VALUE_GET_AS_NUMBER(amount);
 		} else if(rv->type == REPORT_VARIABLE_AVERAGE) {
-			val = fxp_div(RLIB_VALUE_GET_AS_NUMBER(amount), RLIB_VALUE_GET_AS_NUMBER(count), RLIB_FXP_PERCISION);
+			val = rlib_fxp_div(RLIB_VALUE_GET_AS_NUMBER(amount), RLIB_VALUE_GET_AS_NUMBER(count), RLIB_FXP_PERCISION);
 		} else if(rv->type == REPORT_VARIABLE_LOWEST) {
 			val = RLIB_VALUE_GET_AS_NUMBER(amount);
 		} else if(rv->type == REPORT_VARIABLE_HIGHEST) {

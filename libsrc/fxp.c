@@ -29,7 +29,7 @@
 long long int llabs(long long int j);
 
 
-long long fxp_mul(long long a, long long b, long long factor) {
+long long rlib_fxp_mul(long long a, long long b, long long factor) {
 	long long wholea;
 	long long wholeb;
 	long long parta;
@@ -42,7 +42,7 @@ long long fxp_mul(long long a, long long b, long long factor) {
 	return( (wholea*wholeb)*factor+(parta*wholeb+partb*wholea)+DIV0(parta*partb,factor));
 }
 
-long long fxp_div( long long num, long long denom, int places) {
+long long rlib_fxp_div( long long num, long long denom, int places) {
 	long long result = 0l;
 
 	if( denom != 0L) {

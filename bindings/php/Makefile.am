@@ -24,4 +24,6 @@ lib_LTLIBRARIES = libphpr.la
 libphpr_la_SOURCES = environment.c php.c rlib_php.h
 libphpr_la_LIBADD = -L${top_srcdir}/libsrc/ -lr $(MYSQL_LIBS) $(LIBXML_LIBS) 
 INCLUDES = -I${top_srcdir}/libsrc/ $(MYSQL_CFLAGS) $(PHP_CFLAGS) $(LIBXML_CFLAGS)
-libdir = ${exec_prefix}/
+
+#destdir = $(PHP_PREFIX_DEFAULT)
+libdir = $(PHP_PREFIX_DEFAULT)

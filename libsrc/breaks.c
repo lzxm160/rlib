@@ -23,6 +23,7 @@
 
 #include "rlib.h"
 #include "pcode.h"
+#include "input.h"
 
 static void rlib_print_break_header_lines(rlib *r, struct report_break *rb, struct report_output_array *roa, int backwards) {
 	int blank = TRUE;
@@ -184,11 +185,11 @@ void rlib_break_all_below_in_reverse_order(rlib *r, struct report_element *e) {
 	Fun little hack so break lines reflect the correct value.. not the next row
 */
 
-		INPUT(r)->previous(INPUT(r), r->results[r->current_result].result);
+		INPUT(r, r->current_result)->previous(INPUT(r, r->current_result), r->results[r->current_result].result);
 		
 		rlib_print_break_footer_lines(r, rb, rb->footer, FALSE);
 
-		INPUT(r)->next(INPUT(r), r->results[r->current_result].result);
+		INPUT(r, r->current_result)->next(INPUT(r, r->current_result), r->results[r->current_result].result);
 
 		rlib_reset_variables_on_break(r, rb->name);
 
@@ -197,7 +198,7 @@ void rlib_break_all_below_in_reverse_order(rlib *r, struct report_element *e) {
 		}
 	}
 	if(do_endpage) {
-		if(!INPUT(r)->isdone(INPUT(r), r->results[r->current_result].result)) {
+		if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
 			OUTPUT(r)->rlib_end_page(r);
 			rlib_force_break_headers(r);
 		}
@@ -226,7 +227,7 @@ void rlib_handle_break_footers(rlib *r) {
 		for(be = rb->fields; be != NULL; be=be->next) {
 			struct rlib_value rval_tmp;
 			bf = be->data;
-			if(dobreak && (INPUT(r)->isdone(INPUT(r), r->results[r->current_result].result) || rvalcmp(bf->rval, rlib_execute_pcode(r, &rval_tmp, bf->code, NULL)))) {
+			if(dobreak && (INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result) || rvalcmp(bf->rval, rlib_execute_pcode(r, &rval_tmp, bf->code, NULL)))) {
 				dobreak=1;
 			} else {
 				dobreak = 0;

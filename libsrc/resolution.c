@@ -24,15 +24,13 @@
 #include "ralloc.h"
 #include "rlib.h"
 #include "pcode.h"
+#include "input.h"
 
 /*
 	RLIB needs to find direct pointer to result sets and fields ahead of time so
 	during executing time things are fast.. The following functions will resolve
 	fields and variables into almost direct pointers
 
-*/
-
-/*
 	Rlib variables are internal variables to rlib that it exports to you to use in reports
 	Right now I only export pageno, value (which is a pointer back to the field value resolved), lineno, detailcnt
 	Rlib variables should be referecned as r.whatever
@@ -55,7 +53,7 @@ int rlib_resolve_rlib_variable(rlib *r, char *name) {
 }
 
 char * rlib_resolve_field_value(rlib *r, struct rlib_resultset_field *rf) {
-	return INPUT(r)->get_field_value_as_string(INPUT(r), r->results[rf->resultset].result , rf->field);
+	return INPUT(r, rf->resultset)->get_field_value_as_string(INPUT(r, rf->resultset), r->results[rf->resultset].result , rf->field);
 }
 
 int rlib_lookup_result(rlib *r, char *name) {
@@ -87,15 +85,14 @@ int rlib_resolve_resultset_field(rlib *r, char *name, void **rtn_field, int *rtn
 			resultset = t;
 		} else {
 			if(!isdigit(*result_name))
-				debugf("rlib_resolve_namevalue: INVALID RESULT SET %s\n", result_name);
+				rlogit("rlib_resolve_namevalue: INVALID RESULT SET %s\n", result_name);
 		}
 		rfree(result_name);
 	}
-	*rtn_field = INPUT(r)->resolve_field_pointer(INPUT(r), r->results[resultset].result, name);
+	*rtn_field = INPUT(r, resultset)->resolve_field_pointer(INPUT(r, resultset), r->results[resultset].result, name);
 	
 	if(*rtn_field != NULL)
 		found = TRUE;
-		
 	*rtn_resultset = resultset;
 	return found;
 }
@@ -127,9 +124,9 @@ static void rlib_field_resolve_pcode(rlib *r, struct report_field *rf) {
 
 	rf->align = getalign(rf->xml_align);
 
-//debugf("DUMPING PCODE FOR [%s]\n", rf->value);
+//rlogit("DUMPING PCODE FOR [%s]\n", rf->value);
 //rlib_pcode_dump(rf->code,0);	
-//debugf("\n\n");
+//rlogit("\n\n");
 }
 
 static void rlib_text_resolve_pcode(rlib *r, struct report_text *rt) {
@@ -147,15 +144,15 @@ static void rlib_text_resolve_pcode(rlib *r, struct report_text *rt) {
 
 static void rlib_break_resolve_pcode(rlib *r, struct break_fields *bf) {
 	if(bf->value == NULL)
-		debugf("RLIB ERROR: BREAK FIELD VALUE CAN NOT BE NULL\n");
+		rlogit("RLIB ERROR: BREAK FIELD VALUE CAN NOT BE NULL\n");
 	bf->code = rlib_infix_to_pcode(r, bf->value);
 }
 
 static void rlib_variable_resolve_pcode(rlib *r, struct report_variable *rv) {
 	rv->code = rlib_infix_to_pcode(r, rv->value);
-/*debugf("DUMPING PCODE FOR [%s]\n", rv->value);
+/*rlogit("DUMPING PCODE FOR [%s]\n", rv->value);
 rlib_pcode_dump(rv->code,0);	
-debugf("\n\n");*/
+rlogit("\n\n");*/
 }
 
 static void rlib_hr_resolve_pcode(rlib *r, struct report_horizontal_line * rhl) {

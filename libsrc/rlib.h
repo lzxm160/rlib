@@ -19,7 +19,12 @@
  */
 #include <libxml/parser.h>
 #include <time.h>
-#include "input.h"
+
+#define RLIB_WEB_CONTENT_TYPE_HTML "Content-Type: text/html\n"
+#define RLIB_WEB_CONTENT_TYPE_TEXT "Content-Type: text/plain\n"
+#define RLIB_WEB_CONTENT_TYPE_PDF "Content-Type: application/pdf\n"
+#define RLIB_WEB_CONTENT_TYPE_CSV "Content-type: application/octet-stream\nContent-Disposition: attachment; filename=report.csv\n"
+
 
 //man 3 llabs says the prototype is in stdlib.. no it aint!
 long long int llabs(long long int j);
@@ -31,7 +36,7 @@ long long int llabs(long long int j);
 
 /*********** STUFF FOR THE PHP SIDE OF THINGS                                  */
 #define LE_RLIB_NAME "rlib"
-#define RLIB_MAXIMUM_QUERIES	10
+#define RLIB_MAXIMUM_QUERIES	50
 #define RLIB_MAXIMUM_REPORTS	5
 
 #define RLIB_CONTENT_TYPE_ERROR	-1
@@ -108,7 +113,7 @@ struct rlib_resultset_field {
 struct rlib_results {
 	char *name;
 	void *result;
-	void *input_engine;
+	struct input_filter *input;
 };
 
 struct rlib_line_extra_data {
@@ -265,7 +270,7 @@ struct report_variable {
 	void *dude;	
 };
 
-struct report {
+struct rlib_report {
 	xmlDocPtr doc;
 	xmlChar *xml_fontsize;
 	xmlChar *defaultResult;
@@ -293,11 +298,19 @@ struct report {
 struct rlib_queries {
 	char *sql;
 	char *name;
+	struct input_filter *input;
 };
 
 struct rip_reports {
 	char *name;
 	char *query;
+};
+
+#define MAX_INPUT_FILTERS	10
+
+struct input_filters {
+	char *name;
+	struct input_filter *input;
 };
 
 struct rlib {
@@ -324,17 +337,19 @@ struct rlib {
 	int results_count;
 	struct rlib_results results[RLIB_MAXIMUM_QUERIES];
 	
-	struct report *reports[RLIB_MAXIMUM_REPORTS];
+	struct rlib_report *reports[RLIB_MAXIMUM_REPORTS];
 	int reports_count;
 	int current_report;
 	int current_result;
 	int format;
 	struct output_filter *o;
-	struct input_filter *input;
+	int inputs_count;
+	struct input_filters inputs[MAX_INPUT_FILTERS];
 	struct environment_filter *environment;
 };
 typedef struct rlib rlib;
 
+#define INPUT(r, i) (r->results[i].input)
 #define ENVIRONMENT(r) (r->environment)
 #define ENVIRONMENT_PRIVATE(r) (((struct _private *)r->evnironment->private))
 
@@ -395,17 +410,18 @@ int rlib_number_sprintf(char *dest, char *fmtstr, const struct rlib_value *rval,
 int rlib_format_string(rlib *r, struct report_field *rf, struct rlib_value *rval, char *buf);
 
 /***** PROTOTYPES: fxp.c ******************************************************/
-long long fxp_mul(long long a, long long b, long long factor);
-long long fxp_div( long long num, long long denom, int places);
+long long rlib_fxp_mul(long long a, long long b, long long factor);
+long long rlib_fxp_div( long long num, long long denom, int places);
 
 /***** PROTOTYPES: init.c *****************************************************/
 rlib * rlib_init(struct environment_filter *environment);
-int rlib_add_datasource_mysql(rlib *r, char *database_host, char *database_user, char *database_password, char *database_database);
-int rlib_add_query_as(rlib *r, char *sql, char *name);
+int rlib_add_query_as(rlib *r, char *input_name, char *sql, char *name);
 int rlib_add_report(rlib *r, char *name, char *mainloop);
+int rlib_execute(rlib *r);
+char * rlib_get_content_type_as_text(rlib *r);
 
 /***** PROTOTYPES: parsexml.c *************************************************/
-struct report * parse_report_file(char *filename);
+struct rlib_report * parse_report_file(char *filename);
 
 /***** PROTOTYPES: pcode.c ****************************************************/
 struct rlib_value * rlib_execute_pcode(rlib *r, struct rlib_value *rval, struct rlib_pcode *code, struct rlib_value *this_field_value);
@@ -443,7 +459,7 @@ void rlib_resolve_fields(rlib *r);
 /***** PROTOTYPES: util.c *****************************************************/
 char *strlwrexceptquoted (char *s);
 char *rmwhitespacesexceptquoted(char *s);
-void debugf(const char *fmt, ...);
+void rlogit(const char *fmt, ...);
 long long tentothe(int n);
 char hextochar(char c);
 char *colornames(char *str);
@@ -475,5 +491,15 @@ void rlib_txt_new_output_filter(rlib *r);
 /***** PROTOTYPES: csv.c ******************************************************/
 void rlib_csv_new_output_filter(rlib *r);
 
-/***** PROTOTYPES: sql.c ******************************************************/
+/***** PROTOTYPES: mysql.c ****************************************************/
 void * rlib_mysql_new_input_filter();
+void * rlib_mysql_real_connect(void * input_ptr, char *host, char *user, char *password, char *database);
+
+/***** PROTOTYPES: datasource.c ***********************************************/
+int rlib_add_datasource(rlib *r, char *input_name, struct input_filter *input);
+int rlib_add_datasource_mysql(rlib *r, char *input_name, char *database_host, char *database_user, char *database_password, char *database_database);
+int rlib_add_datasource_postgre(rlib *r, char *input_name, char *conn);
+
+/***** PROTOTYPES: postgre.c **************************************************/
+void * rlib_postgre_new_input_filter();
+void * rlib_postgre_connect(void * input_ptr, char *conn);

@@ -23,6 +23,7 @@
 #include "ralloc.h"
 #include "rlib.h"
 #include "pcode.h"
+#include "input.h"
 
 static void free_pcode(struct rlib_pcode *code) {
 	int i=0;
@@ -139,17 +140,21 @@ void rlib_free_tree(rlib *r) {
 void free_results(rlib *r) {
 	int i;
 	for(i=0;i<r->queries_count;i++) {
-		INPUT(r)->rlib_free_result(INPUT(r), r->results[i].result);
+		INPUT(r, i)->free_result(INPUT(r, i), r->results[i].result);
 	}
 }
 
 int rlib_free(rlib *r) {
+	int i;
 	rlib_free_tree(r);
 	xmlCleanupParser();
 	
 	free_results(r);
-	INPUT(r)->input_close(INPUT(r));
-	INPUT(r)->free(INPUT(r));	
+
+	for(i=0;i<r->inputs_count;i++) {
+		r->inputs[i].input->input_close(r->inputs[i].input);
+		r->inputs[i].input->free(r->inputs[i].input);	
+	}
 
 	OUTPUT(r)->rlib_free(r);
 	

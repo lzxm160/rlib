@@ -39,8 +39,8 @@
 #define RLIB_VALUE_GET_AS_DATE(a) (a->date_value)
 #define RLIB_VALUE_GET_AS_IIF(a) ((struct rlib_pcode_if *)a->iif_value)
 
-#define RLIB_FXP_MUL(a, b) fxp_mul(a, b, RLIB_DECIMAL_PERCISION)
-#define RLIB_FXP_DIV(num, denom) fxp_div(num, denom, RLIB_FXP_PERCISION)
+#define RLIB_FXP_MUL(a, b) rlib_fxp_mul(a, b, RLIB_DECIMAL_PERCISION)
+#define RLIB_FXP_DIV(num, denom) rlib_fxp_div(num, denom, RLIB_FXP_PERCISION)
 
 #define RLIB_FXP_TO_NORMAL_LONG_LONG(a) (a/RLIB_DECIMAL_PERCISION)
 #define LONG_TO_FXP_NUMBER(a) ((a)*RLIB_DECIMAL_PERCISION)

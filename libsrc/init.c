@@ -23,6 +23,7 @@
 
 #include "ralloc.h"
 #include "rlib.h"
+#include "input.h"
 
 rlib * rlib_init(struct environment_filter *environment) {
 	rlib *r;
@@ -33,8 +34,6 @@ rlib * rlib_init(struct environment_filter *environment) {
 	r = rmalloc(sizeof(rlib));
 	bzero(r, sizeof(rlib));
 
-	r->input = rlib_mysql_new_input_filter();
-	
 	if(environment == NULL)
 		rlib_new_c_environment(r);
 	else
@@ -43,25 +42,20 @@ rlib * rlib_init(struct environment_filter *environment) {
 	return r;
 }
 
-int rlib_add_datasource_mysql(rlib *r, char *database_host, char *database_user, char *database_password, char *database_database) {
-	void *mysql;
-
-	mysql = INPUT(r)->input_connect(INPUT(r), database_host, database_user, database_password, database_database);
-
-	if(mysql == NULL) {
-		debugf("ERROR: Could not connect to MYSQL\n");
-		return -1;
-	}
-	return 0;
-}
-
-int rlib_add_query_as(rlib *r, char *sql, char *name) {
+int rlib_add_query_as(rlib *r, char *input_source, char *sql, char *name) {
+	int i;
 	if(r->queries_count > (RLIB_MAXIMUM_QUERIES-1)) {
 		return -1;
 	}
 
 	r->queries[r->queries_count].sql = sql;
 	r->queries[r->queries_count].name = name;
+	for(i=0;i<r->inputs_count;i++) {
+		if(!strcmp(r->inputs[i].name, input_source)) {
+			r->queries[r->queries_count].input = r->inputs[i].input;
+		}
+	}
+	
 	r->queries_count++;
 	return r->queries_count;
 }
@@ -79,11 +73,11 @@ int rlib_add_report(rlib *r, char *name, char *mainloop) {
 
 int rlib_execute(rlib *r) {
 	int i,j;
-
 	for(i=0;i<r->queries_count;i++) {
-		r->results[i].result = INPUT(r)->new_result_from_query(INPUT(r), r->queries[i].sql);
+		r->results[i].input = r->queries[i].input;
+		r->results[i].result = INPUT(r,i)->new_result_from_query(INPUT(r,i), r->queries[i].sql);
 		if(r->results[i].result == NULL) {
-			debugf("Failed To Run A Query!\n");			
+			rlogit("Failed To Run A Query!\n");			
 			return -1;
 		}
 		r->results[i].name =  r->queries[i].name;
@@ -108,7 +102,7 @@ int rlib_execute(rlib *r) {
 		xmlCleanupParser();		
 		if(r->reports[i] == NULL) {
 			//TODO:FREE REPORT AND ALL ABOVE REPORTS
-			debugf("Failed to run a Report\n");
+			rlogit("Failed to run a Report\n");
 			return -1;
 		}
 	}
@@ -116,4 +110,15 @@ int rlib_execute(rlib *r) {
 	make_report(r);	
 		
 	return 0;
+}
+
+char * rlib_get_content_type_as_text(rlib *r) {
+	if(r->format == RLIB_CONTENT_TYPE_PDF)
+		return RLIB_WEB_CONTENT_TYPE_PDF;
+	else if(r->format == RLIB_CONTENT_TYPE_HTML)
+		return RLIB_WEB_CONTENT_TYPE_HTML;
+	else if(r->format == RLIB_CONTENT_TYPE_CSV)
+		return RLIB_WEB_CONTENT_TYPE_CSV;
+	else
+		return RLIB_WEB_CONTENT_TYPE_TEXT;
 }

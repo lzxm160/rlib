@@ -24,6 +24,7 @@
 #include "ralloc.h"
 #include "rlib.h"
 #include "pcode.h"
+#include "input.h"
 
 #define FONTPOINT 	10.0
 #define RLIB_GET_LINE(a) ((float)(a/72.0))
@@ -123,13 +124,17 @@ char *align_text(rlib *r, char *rtn, int len, char *src, long align, long width)
 	} else {
 		if(align == RLIB_ALIGN_RIGHT) {
 			int x = width-strlen(src);
-			memset(rtn, ' ', x);
-			strcpy(rtn+x, src);
+			if(x > 0) {
+				memset(rtn, ' ', x);
+				strcpy(rtn+x, src);
+			}
 		}
 		if(align == RLIB_ALIGN_CENTER) {
 			int x = (width-strlen(src))/2;
-			memset(rtn, ' ', x);
-			strcpy(rtn+x, src);
+			if(x > 0) {
+				memset(rtn, ' ', x);
+				strcpy(rtn+x, src);
+			}
 		}
 	
 	}
@@ -251,7 +256,7 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 		if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_bgcolor))) {
 			char *colorstring;
 			if(!RLIB_VALUE_IS_STRING((&extra_data[i].rval_bgcolor))) {
-				debugf("RLIB ENCOUNTERED AN ERROR PROCESSING THE BGCOLOR FOR THIS VALUE [%s].. BGCOLOR VALUE WAS NOT OF TYPE STRING\n", text);
+				rlogit("RLIB ENCOUNTERED AN ERROR PROCESSING THE BGCOLOR FOR THIS VALUE [%s].. BGCOLOR VALUE WAS NOT OF TYPE STRING\n", text);
 			} else {
 				char *idx;
 				colorstring = RLIB_VALUE_GET_AS_STRING((&extra_data[i].rval_bgcolor));
@@ -273,7 +278,7 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 		if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_color))) {
 			char *colorstring;
 			if(!RLIB_VALUE_IS_STRING((&extra_data[i].rval_color))) {
-				debugf("RLIB ENCOUNTERED AN ERROR PROCESSING THE COLOR FOR THIS VALUE [%s].. COLOR VALUE WAS NOT OF TYPE STRING\n", text);
+				rlogit("RLIB ENCOUNTERED AN ERROR PROCESSING THE COLOR FOR THIS VALUE [%s].. COLOR VALUE WAS NOT OF TYPE STRING\n", text);
 			} else {
 				char *idx;
 				colorstring = RLIB_VALUE_GET_AS_STRING((&extra_data[i].rval_color));
@@ -293,7 +298,7 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 		extra_data[i].col = 0;
 		if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_col))) {
 			if(!RLIB_VALUE_IS_NUMBER((&extra_data[i].rval_col))) {
-				debugf("RLIB EXPECTS A expN FOR A COLUMN... text=[%s]\n", text);
+				rlogit("RLIB EXPECTS A expN FOR A COLUMN... text=[%s]\n", text);
 			} else {
 				extra_data[i].col = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER((&extra_data[i].rval_col)));
 			}
@@ -302,7 +307,7 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 		extra_data[i].found_link = FALSE;
 		if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_link))) {
 			if(!RLIB_VALUE_IS_STRING((&extra_data[i].rval_link))) {
-				debugf("RLIB ENCOUNTERED AN ERROR PROCESSING THE LINK FOR THIS VALUE [%s].. LINK VALUE WAS NOT OF TYPE STRING [%d]\n", text, RLIB_VALUE_GET_TYPE((&extra_data[i].rval_link)));
+				rlogit("RLIB ENCOUNTERED AN ERROR PROCESSING THE LINK FOR THIS VALUE [%s].. LINK VALUE WAS NOT OF TYPE STRING [%d]\n", text, RLIB_VALUE_GET_TYPE((&extra_data[i].rval_link)));
 			} else {
 				extra_data[i].link = RLIB_VALUE_GET_AS_STRING((&extra_data[i].rval_link));
 				if(extra_data[i].link != NULL && strcmp(extra_data[i].link, "")) {
@@ -415,7 +420,7 @@ static void print_detail_line_private(rlib *r, struct report_output_array *roa, 
 			struct report_horizontal_line *rhl = ro->data;
 			rlib_execute_pcode(r, &rval2, rhl->bgcolor_code, NULL);
 			if(!RLIB_VALUE_IS_STRING(rval)) {
-				debugf("RLIB ENCOUNTERED AN ERROR PROCESSING THE BGCOLOR FOR A HR.. COLOR VALUE WAS NOT OF TYPE STRING\n");
+				rlogit("RLIB ENCOUNTERED AN ERROR PROCESSING THE BGCOLOR FOR A HR.. COLOR VALUE WAS NOT OF TYPE STRING\n");
 			} else {
 				struct rgb bgcolor;
 				float font_point;
@@ -450,7 +455,7 @@ static void print_detail_line_private(rlib *r, struct report_output_array *roa, 
 			rlib_execute_pcode(r, &rval3, ri->width_code, NULL);
 			rlib_execute_pcode(r, &rval4, ri->height_code, NULL);
 			if(!RLIB_VALUE_IS_STRING(rval_value) || !RLIB_VALUE_IS_NUMBER(rval_width) || !RLIB_VALUE_IS_NUMBER(rval_height)) {
-				debugf("RLIB ENCOUNTERED AN ERROR PROCESSING THE BGCOLOR FOR A IMAGE\n");
+				rlogit("RLIB ENCOUNTERED AN ERROR PROCESSING THE BGCOLOR FOR A IMAGE\n");
 			} else {
 				float height = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(rval_height));
 				float width = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(rval_width));
@@ -547,7 +552,7 @@ void rlib_print_report_footer(rlib *r) {
 int rlib_fetch_first_rows(rlib *r) {
 	int i;
 	for(i=0;i<r->results_count;i++)
-		INPUT(r)->first(INPUT(r), r->results[i].result);
+		INPUT(r,i)->first(INPUT(r,i), r->results[i].result);
 	return 0;
 }
 
@@ -594,30 +599,30 @@ void rlib_process_variables(rlib *r) {
 			if(RLIB_VALUE_IS_NUMBER(er))
 				RLIB_VALUE_GET_AS_NUMBER(amount) = RLIB_VALUE_GET_AS_NUMBER(er);
 			else
-				debugf("rlib_process_variables EXPECTED TYPE NUMBER FOR REPORT_VARIABLE_EXPRESSION\n");
+				rlogit("rlib_process_variables EXPECTED TYPE NUMBER FOR REPORT_VARIABLE_EXPRESSION\n");
 		} else if(rv->type == REPORT_VARIABLE_SUM) {
 			if(RLIB_VALUE_IS_NUMBER(er))
 				RLIB_VALUE_GET_AS_NUMBER(amount) += RLIB_VALUE_GET_AS_NUMBER(er);
 			else
-				debugf("rlib_process_variables EXPECTED TYPE NUMBER FOR REPORT_VARIABLE_SUM\n");
+				rlogit("rlib_process_variables EXPECTED TYPE NUMBER FOR REPORT_VARIABLE_SUM\n");
 		} else if(rv->type == REPORT_VARIABLE_AVERAGE) {
 			RLIB_VALUE_GET_AS_NUMBER(count) += RLIB_DECIMAL_PERCISION;
 			if(RLIB_VALUE_IS_NUMBER(er))
 				RLIB_VALUE_GET_AS_NUMBER(amount) += RLIB_VALUE_GET_AS_NUMBER(er);
 			else
-				debugf("rlib_process_variables EXPECTED TYPE NUMBER FOR REPORT_VARIABLE_AVERAGE\n");
+				rlogit("rlib_process_variables EXPECTED TYPE NUMBER FOR REPORT_VARIABLE_AVERAGE\n");
 		} else if(rv->type == REPORT_VARIABLE_LOWEST) {
 			if(RLIB_VALUE_IS_NUMBER(er)) {
 				if(RLIB_VALUE_GET_AS_NUMBER(er) < RLIB_VALUE_GET_AS_NUMBER(amount) || RLIB_VALUE_GET_AS_NUMBER(amount) == 0) //TODO: EVIL HACK
 					RLIB_VALUE_GET_AS_NUMBER(amount) = RLIB_VALUE_GET_AS_NUMBER(er);
 			} else
-				debugf("rlib_process_variables EXPECTED TYPE NUMBER FOR REPORT_VARIABLE_LOWEST\n");
+				rlogit("rlib_process_variables EXPECTED TYPE NUMBER FOR REPORT_VARIABLE_LOWEST\n");
 		} else if(rv->type == REPORT_VARIABLE_HIGHEST) {
 			if(RLIB_VALUE_IS_NUMBER(er)) {
 				if(RLIB_VALUE_GET_AS_NUMBER(er) > RLIB_VALUE_GET_AS_NUMBER(amount) || RLIB_VALUE_GET_AS_NUMBER(amount) == 0) //TODO: EVIL HACK
 					RLIB_VALUE_GET_AS_NUMBER(amount) = RLIB_VALUE_GET_AS_NUMBER(er);
 			} else
-				debugf("rlib_process_variables EXPECTED TYPE NUMBER FOR REPORT_VARIABLE_HIGHEST\n");
+				rlogit("rlib_process_variables EXPECTED TYPE NUMBER FOR REPORT_VARIABLE_HIGHEST\n");
 		}
 	}
 	
@@ -686,8 +691,8 @@ int make_report(rlib *r) {
 			r->detail_line_count++;
 			i++;
 
-			if(INPUT(r)->next(INPUT(r), r->results[r->current_result].result) == FALSE) {
-				INPUT(r)->last(INPUT(r), r->results[r->current_result].result);
+			if(INPUT(r, r->current_result)->next(INPUT(r, r->current_result), r->results[r->current_result].result) == FALSE) {
+				INPUT(r, r->current_result)->last(INPUT(r, r->current_result), r->results[r->current_result].result);
 				rlib_handle_break_footers(r);
 				break;
 			} 
@@ -695,7 +700,7 @@ int make_report(rlib *r) {
 			rlib_handle_break_footers(r);
 		}
 
-		INPUT(r)->last(INPUT(r), r->results[r->current_result].result);
+		INPUT(r, r->current_result)->last(INPUT(r, r->current_result), r->results[r->current_result].result);
 
 		rlib_print_report_footer(r);
 	

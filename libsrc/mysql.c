@@ -26,12 +26,6 @@
 #include "ralloc.h"
 #include "input.h"
 
-/*
-	In case we have multiple servers later and we need to figure out which is the most avaialble one to hit up for a query
-*/
-
-#define RLIB_MAXIMUM_QUERIES	10
-
 #define INPUT_PRIVATE(input) (((struct _private *)input->private))
 
 struct rlib_mysql_results {
@@ -49,8 +43,8 @@ struct _private {
 	MYSQL *mysql;
 };
 
-void * rlib_mysql_real_connect(void * woot, char *host, char *user, char *password, char *database) {
-	struct input_filter *input = woot;
+void * rlib_mysql_real_connect(void * input_ptr, char *host, char *user, char *password, char *database) {
+	struct input_filter *input = input_ptr;
 	MYSQL *mysql;
 
 	mysql = mysql_init(NULL);
@@ -67,8 +61,8 @@ void * rlib_mysql_real_connect(void * woot, char *host, char *user, char *passwo
 	return mysql;
 }
 
-static int rlib_mysql_input_close(void *woot) {
-	struct input_filter *input = woot;
+static int rlib_mysql_input_close(void *input_ptr) {
+	struct input_filter *input = input_ptr;
 	mysql_close(INPUT_PRIVATE(input)->mysql);
 	INPUT_PRIVATE(input)->mysql = NULL;
 	
@@ -189,13 +183,14 @@ void * mysql_new_result_from_query(void *input_ptr, char *query) {
 }
 
 static void rlib_mysql_rlib_free_result(void *input_ptr, void *result_ptr) {
-	struct rlib_mysql_results *result = result_ptr;
-	mysql_free_result(result->result);
-	rfree(result->fields);
+	struct rlib_mysql_results *results = result_ptr;
+	mysql_free_result(results->result);
+	rfree(results->fields);
+	rfree(results);
 }
 
-static int rlib_mysql_free_input_filter(void *woot) {
-	struct input_filter *input = woot;
+static int rlib_mysql_free_input_filter(void *input_ptr) {
+	struct input_filter *input = input_ptr;
 	rfree(input->private);
 	rfree(input);
 	return 0;
@@ -213,13 +208,12 @@ void * rlib_mysql_new_input_filter() {
 	input->previous = rlib_mysql_previous;
 	input->last = rlib_mysql_last;
 	input->isdone = rlib_mysql_isdone;
-	input->input_connect = rlib_mysql_real_connect;
 	input->new_result_from_query = mysql_new_result_from_query;
 	input->get_field_value_as_string = rlib_mysql_get_field_value_as_string;
 
 	input->resolve_field_pointer = rlib_mysql_resolve_field_pointer;
 
 	input->free = rlib_mysql_free_input_filter;
-	input->rlib_free_result = rlib_mysql_rlib_free_result;
+	input->free_result = rlib_mysql_rlib_free_result;
 	return input;
 }
