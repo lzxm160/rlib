@@ -28,6 +28,11 @@ if HAVE_POSTGRE
 POSTGRE_INPUT=postgre
 endif
 
+if HAVE_ODBC
+ODBC_INPUT=odbc
+endif
+
 SUBDIRS = \
 	$(MYSQL_INPUT) \
+	$(ODBC_INPUT) \
 	$(POSTGRE_INPUT)

@@ -37,6 +37,9 @@ ZEND_FUNCTION(rlib_add_datasource_mysql);
 #if HAVE_POSTGRE
 ZEND_FUNCTION(rlib_add_datasource_postgre);
 #endif
+#if HAVE_ODBC
+ZEND_FUNCTION(rlib_add_datasource_odbc);
+#endif
 ZEND_FUNCTION(rlib_add_query_as);
 ZEND_FUNCTION(rlib_add_resultset_follower);
 ZEND_FUNCTION(rlib_add_report);
@@ -59,6 +62,9 @@ zend_function_entry rlib_functions[] =
 #endif
 #if HAVE_POSTGRE
 	 ZEND_FE(rlib_add_datasource_postgre, NULL)
+#endif
+#if HAVE_ODBC
+	 ZEND_FE(rlib_add_datasource_odbc, NULL)
 #endif
 	 ZEND_FE(rlib_add_query_as, NULL)
 	 ZEND_FE(rlib_add_resultset_follower, NULL)
@@ -163,6 +169,30 @@ ZEND_FUNCTION(rlib_add_datasource_postgre) {
 	RETURN_LONG(result);
 }
 #endif
+
+#if HAVE_ODBC
+ZEND_FUNCTION(rlib_add_datasource_odbc) {
+	zval *z_rip = NULL;
+	long datasource_length, sql_odbc_length, sql_user_length, sql_password_length;
+	char *datasource_name, *database_odbc, *database_user, *database_password;
+	rlib_inout_pass *rip;
+	int id = -1;
+	int result = 0;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rssss", &z_rip,
+		&datasource_name, &datasource_length,
+		&database_odbc, &sql_odbc_length, 
+		&database_user, &sql_user_length, 
+		&database_password, &sql_password_length) == FAILURE) {
+		return;
+	}
+	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);
+	
+	result = rlib_add_datasource_odbc(rip->r, datasource_name, database_odbc, database_user, database_password);
+	RETURN_LONG(result);
+}
+#endif
+
 
 ZEND_FUNCTION(rlib_add_query_as) {
 	zval *z_rip = NULL;

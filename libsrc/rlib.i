@@ -36,3 +36,4 @@ char *rlib_get_output(rlib *r);
 long rlib_get_output_length(rlib *r);
 int rlib_mysql_report(char *hostname, char *username, char *password, char *database, char *xmlfilename, char *sqlquery, char *outputformat);
 int rlib_postgre_report(char *connstr, char *xmlfilename, char *sqlquery, char *outputformat);
+int rlib_add_datasource_odbc(rlib *r, char *input_name, char *source, char *user, char *password);

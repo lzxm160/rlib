@@ -534,6 +534,7 @@ void * rlib_mysql_real_connect(void * input_ptr, char *host, char *user, char *p
 int rlib_add_datasource(rlib *r, char *input_name, struct input_filter *input);
 int rlib_add_datasource_mysql(rlib *r, char *input_name, char *database_host, char *database_user, char *database_password, char *database_database);
 int rlib_add_datasource_postgre(rlib *r, char *input_name, char *conn);
+int rlib_add_datasource_odbc(rlib *r, char *input_name, char *source, char *user, char *password);
 
 /***** PROTOTYPES: postgre.c **************************************************/
 void * rlib_postgre_new_input_filter();

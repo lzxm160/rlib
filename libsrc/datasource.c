@@ -91,3 +91,31 @@ int rlib_add_datasource_postgre(rlib *r, char *input_name, char *conn) {
 	return 0;
 }
 #endif
+
+#if HAVE_ODBC
+int rlib_add_datasource_odbc(rlib *r, char *input_name, char *source, char *user, char *password) {
+	void *handle;
+	void * (*rlib_odbc_new_input_filter)();
+	void * (*rlib_odbc_connect)(void *, char *, char *, char *);
+	void *odbc;
+
+	handle = dlopen ("libr-odbc.so", RTLD_LAZY);
+	if (!handle)
+		return -1;
+
+	rlib_odbc_new_input_filter = dlsym(handle, "rlib_odbc_new_input_filter");
+	rlib_odbc_connect = dlsym(handle, "rlib_odbc_connect");
+
+	r->inputs[r->inputs_count].input = rlib_odbc_new_input_filter();
+	odbc = rlib_odbc_connect(r->inputs[r->inputs_count].input, source, user, password);
+	r->inputs[r->inputs_count].name = input_name;
+	if(odbc == NULL) {
+		rlogit("ERROR: Could not connect to ODBC\n");
+		return -1;
+	}
+	r->inputs[r->inputs_count].handle = handle;
+	
+	r->inputs_count++;
+	return 0;
+}
+#endif

@@ -1,4 +1,4 @@
-## bindings/php/Makefile.am for RLIB
+## libsrc/Makefile.am for RLIB
 
 ## Copyright (c) 2003 SICOM Systems Inc (bdoan@sicompos.com)
 ## rlib is free software; you can redistribute it and/or modify
@@ -20,25 +20,13 @@
 ##
 ## Process this file with automake to produce Makefile.in
 
-if HAVE_MYSQL
-MYSQL_INPUT=test1 test3
-endif
+lib_LTLIBRARIES = libr-odbc.la
+libr_odbc_la_SOURCES = odbc.c
 
-if HAVE_POSTGRE
-POSTGRE_INPUT=test2
-endif
+libr_odbc_la_LIBADD = $(ODBC_LIBS) -L${top_srcdir}/libsrc/ -lr
 
-noinst_PROGRAMS = \
-	$(MYSQL_INPUT) \
-	$(POSTGRE_INPUT)
+INCLUDES = $(ODBC_CFLAGS) -I${top_srcdir}/libsrc/
 
-INCLUDES = $(POSTGRE_CFLAGS) $(LIBXML_CFLAGS) -I${top_srcdir}/libsrc/  
+libr_odbc_la_LDFLAGS = -release $(RLIB_VERSION)
 
-test1_SOURCES= test1.c
-test1_LDADD = -L${top_srcdir}/libsrc/ $(MYSQL_LIBS) $(POSTGRE_LIBS) $(ODBC_LIBS) $(LIBXML_LIBS) -lcpdf -lr
-
-test2_SOURCES= test2.c
-test2_LDADD = -L${top_srcdir}/libsrc/ $(MYSQL_LIBS) $(POSTGRE_LIBS) $(LIBXML_LIBS) -lcpdf -lr
-
-test3_SOURCES= test3.c
-test3_LDADD = -L${top_srcdir}/libsrc/ $(MYSQL_LIBS) $(POSTGRE_LIBS) $(LIBXML_LIBS) -lcpdf -lr
+includedir=$(prefix)/include/rlib

@@ -1,3 +1,14 @@
+2003-11-16  Bob Doan  <bdoan@sicompos.com>
+	* bindings/php/php.c: ODBC support
+	* configure.in: likewise
+	* inputs/Makefile.am: likewise
+	* inputs/odbc/Makefile.am: likewise
+	* inputs/odbc/odbc.c: likewise
+	* libsrc/datasource.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/rlib.i: likewise
+	* tests/Makefile.am: likewise
+
 2003-11-12  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/pcode_op_functions.c: fixed bug with string to date conversions
 	* libsrc/parsexml.c: new TODO
