@@ -167,7 +167,7 @@ gint rlib_number_sprintf(gchar *dest, gchar *fmtstr, const struct rlib_value *rv
 }
 
 gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value *rval, gchar *buf) {
-	if(rf->format == NULL) {
+	if(rf->xml_format == NULL) {
 		if(RLIB_VALUE_IS_NUMBER(rval)) {
 			sprintf(buf, "%lld", RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(rval)));
 		} else if(RLIB_VALUE_IS_STRING(rval)) {

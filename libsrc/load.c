@@ -55,22 +55,22 @@ gchar * read_xml_str(gchar **ptr) {
 struct rlib_report_image * read_image(gchar **ptr) {
 	struct rlib_report_image *ri;
 	ri = g_malloc(sizeof(struct rlib_report_image));
-	ri->value = read_xml_str(ptr);
-	ri->type = read_xml_str(ptr);
-	ri->width = read_xml_str(ptr);
-	ri->height = read_xml_str(ptr);
+	ri->xml_value = read_xml_str(ptr);
+	ri->xml_type = read_xml_str(ptr);
+	ri->xml_width = read_xml_str(ptr);
+	ri->xml_height = read_xml_str(ptr);
 	return ri;
 }
 
 struct rlib_report_horizontal_line * read_hr(gchar **ptr) {
 	struct rlib_report_horizontal_line *hr;
 	hr = g_malloc(sizeof(struct rlib_report_horizontal_line));
-	hr->bgcolor = read_xml_str(ptr);
-	hr->size = read_xml_str(ptr);
-	hr->indent = read_xml_str(ptr);
-	hr->length = read_xml_str(ptr);
-	hr->font_size = read_xml_str(ptr);
-	hr->suppress = read_xml_str(ptr);
+	hr->xml_bgcolor = read_xml_str(ptr);
+	hr->xml_size = read_xml_str(ptr);
+	hr->xml_indent = read_xml_str(ptr);
+	hr->xml_length = read_xml_str(ptr);
+	hr->xml_font_size = read_xml_str(ptr);
+	hr->xml_suppress = read_xml_str(ptr);
 	return hr;
 }
 
@@ -85,10 +85,10 @@ struct rlib_report_literal * read_text(gchar **ptr) {
 	else
 		rt->value[0] = 0;
 	rt->xml_align = read_xml_str(ptr);
-	rt->color = read_xml_str(ptr);
-	rt->bgcolor = read_xml_str(ptr);
+	rt->xml_color = read_xml_str(ptr);
+	rt->xml_bgcolor = read_xml_str(ptr);
 	rt->xml_width = read_xml_str(ptr);
-	rt->col = read_xml_str(ptr);
+	rt->xml_col = read_xml_str(ptr);
 	return rt;
 }
 
@@ -104,12 +104,12 @@ struct rlib_report_field * read_field(gchar **ptr) {
 		rf->value[0] = 0;
 
 	rf->xml_align = read_xml_str(ptr);
-	rf->bgcolor = read_xml_str(ptr);
-	rf->color = read_xml_str(ptr);
+	rf->xml_bgcolor = read_xml_str(ptr);
+	rf->xml_color = read_xml_str(ptr);
 	rf->xml_width = read_xml_str(ptr);
-	rf->format = read_xml_str(ptr);
-	rf->link = read_xml_str(ptr);
-	rf->col = read_xml_str(ptr);
+	rf->xml_format = read_xml_str(ptr);
+	rf->xml_link = read_xml_str(ptr);
+	rf->xml_col = read_xml_str(ptr);
 	rf->xml_wrapchars = read_xml_str(ptr);
 	rf->xml_maxlines = read_xml_str(ptr);
 	return rf;
@@ -122,10 +122,10 @@ struct rlib_report_lines * read_line(gchar **ptr) {
 	gpointer pointer = NULL;
 	struct rlib_element *current;
 	
-	rl->bgcolor = read_xml_str(ptr);
-	rl->color = read_xml_str(ptr);
-	rl->font_size = read_xml_str(ptr);
-	rl->suppress = read_xml_str(ptr);
+	rl->xml_bgcolor = read_xml_str(ptr);
+	rl->xml_color = read_xml_str(ptr);
+	rl->xml_font_size = read_xml_str(ptr);
+	rl->xml_suppress = read_xml_str(ptr);
 	rl->e = NULL;
 
 	type = (gint32 *)*ptr;
@@ -226,10 +226,10 @@ struct rlib_report_variable * read_variable(gchar **ptr) {
 	type = (gint32 *)*ptr;
 	if(*type == RLIB_FILE_VARIABLE) {
 		*ptr += sizeof(gint32);
-		rv->name = read_xml_str(ptr);
-		rv->str_type = read_xml_str(ptr);
-		rv->value = read_xml_str(ptr);
-		rv->resetonbreak = read_xml_str(ptr);
+		rv->xml_name = read_xml_str(ptr);
+		rv->xml_str_type = read_xml_str(ptr);
+		rv->xml_value = read_xml_str(ptr);
+		rv->xml_resetonbreak = read_xml_str(ptr);
 		*ptr += sizeof(gint32);
 	}	
 	return rv;
@@ -270,7 +270,7 @@ struct rlib_report_break * read_break(gchar **ptr) {
 	type = (gint32 *)*ptr;
 	if(*type == RLIB_FILE_BREAK) {
 		*ptr += sizeof(gint32);
-		rb->name = read_xml_str(ptr);
+		rb->xml_name = read_xml_str(ptr);
 		rb->xml_newpage = read_xml_str(ptr);
 		rb->xml_headernewpage = read_xml_str(ptr);
 		rb->xml_suppressblank = read_xml_str(ptr);
@@ -289,7 +289,7 @@ struct rlib_report_break * read_break(gchar **ptr) {
 				}
 				bf = g_malloc(sizeof(struct rlib_break_fields));
 				bf->rval = NULL;
-				bf->value = read_xml_str(ptr);
+				bf->xml_value = read_xml_str(ptr);
 				current->data = bf;
 				current->next = NULL;
 				*ptr += sizeof(gint32);

@@ -152,10 +152,12 @@ struct rlib_element {
 struct rlib_report_literal {
 	gchar value[MAXSTRLEN];
 	xmlChar *xml_align;
-	xmlChar *color;
-	xmlChar *bgcolor;
+	xmlChar *xml_color;
+	xmlChar *xml_bgcolor;
 	xmlChar *xml_width;
-	xmlChar *col;
+	xmlChar *xml_bold;
+	xmlChar *xml_italics;
+	xmlChar *xml_col;
 	
 	gint width;
 	gint align;
@@ -164,6 +166,8 @@ struct rlib_report_literal {
 	struct rlib_pcode *bgcolor_code;
 	struct rlib_pcode *col_code;
 	struct rlib_pcode *width_code;
+	struct rlib_pcode *bold_code;
+	struct rlib_pcode *italics_code;
 	struct rlib_pcode *align_code;
 };
 
@@ -203,12 +207,14 @@ struct rlib_line_extra_data {
 struct rlib_report_field {
 	gchar value[MAXSTRLEN];
 	xmlChar *xml_align;
-	xmlChar *bgcolor;
-	xmlChar *color;
+	xmlChar *xml_bgcolor;
+	xmlChar *xml_color;
 	xmlChar *xml_width;
-	xmlChar *format;
-	xmlChar *link;
-	xmlChar *col;
+	xmlChar *xml_bold;
+	xmlChar *xml_italics;
+	xmlChar *xml_format;
+	xmlChar *xml_link;
+	xmlChar *xml_col;
 	xmlChar *xml_wrapchars;
 	xmlChar *xml_maxlines;
 
@@ -223,8 +229,9 @@ struct rlib_report_field {
 	struct rlib_pcode *col_code;
 	struct rlib_pcode *wrapchars_code;
 	struct rlib_pcode *maxlines_code;
-
 	struct rlib_pcode *width_code;
+	struct rlib_pcode *bold_code;
+	struct rlib_pcode *italics_code;
 	struct rlib_pcode *align_code;
 		
 	struct rlib_value *rval;
@@ -247,17 +254,17 @@ struct rlib_report_output_array {
 };
 
 struct rlib_report_horizontal_line {
-	xmlChar *bgcolor;
-	xmlChar *size;
-	xmlChar *indent;
-	xmlChar *length;
-	xmlChar *font_size;
-	xmlChar *suppress;
+	xmlChar *xml_bgcolor;
+	xmlChar *xml_size;
+	xmlChar *xml_indent;
+	xmlChar *xml_length;
+	xmlChar *xml_font_size;
+	xmlChar *xml_suppress;
 
 	gint font_point;
-	gfloat realsize;
-	gint realindent;
-	gint reallength;
+	gfloat size;
+	gint indent;
+	gint length;
 
 	struct rlib_pcode *bgcolor_code;
 	struct rlib_pcode *size_code;
@@ -268,10 +275,10 @@ struct rlib_report_horizontal_line {
 };
 
 struct rlib_report_image {
-	xmlChar *value;
-	xmlChar *type;
-	xmlChar *width;
-	xmlChar *height;
+	xmlChar *xml_value;
+	xmlChar *xml_type;
+	xmlChar *xml_width;
+	xmlChar *xml_height;
 	
 	struct rlib_pcode *value_code;
 	struct rlib_pcode *type_code;
@@ -280,10 +287,12 @@ struct rlib_report_image {
 };
 
 struct rlib_report_lines {
-	xmlChar *bgcolor;
-	xmlChar *color;
-	xmlChar *font_size;
-	xmlChar *suppress;
+	xmlChar *xml_bgcolor;
+	xmlChar *xml_color;
+	xmlChar *xml_bold;
+	xmlChar *xml_italics;
+	xmlChar *xml_font_size;
+	xmlChar *xml_suppress;
 
 	gint font_point;
 
@@ -291,19 +300,21 @@ struct rlib_report_lines {
 	struct rlib_pcode *color_code;
 	struct rlib_pcode *suppress_code;
 	struct rlib_pcode *font_size_code;
+	struct rlib_pcode *bold_code;
+	struct rlib_pcode *italics_code;
 	
 	struct rlib_element *e;
 };
 
 struct rlib_break_fields {
-	xmlChar *value;
+	xmlChar *xml_value;
 	struct rlib_pcode *code;
 	struct rlib_value rval2;
 	struct rlib_value *rval;
 };
 
 struct rlib_report_break {
-	xmlChar *name;
+	xmlChar *xml_name;
 	xmlChar *xml_newpage;
 	xmlChar *xml_headernewpage;
 	xmlChar *xml_suppressblank;
@@ -347,10 +358,10 @@ struct rlib_count_amount {
 #define RLIB_VARIABLE_CA(a)	((struct rlib_count_amount *)a->data)
 
 struct rlib_report_variable {
-	xmlChar *name;
-	xmlChar *str_type;
-	xmlChar *value;
-	xmlChar *resetonbreak;
+	xmlChar *xml_name;
+	xmlChar *xml_str_type;
+	xmlChar *xml_value;
+	xmlChar *xml_resetonbreak;
 
 	gint type;
 	struct rlib_pcode *code;
@@ -358,7 +369,7 @@ struct rlib_report_variable {
 };
 
 struct rlib_part_load {
-	xmlChar *name;
+	xmlChar *xml_name;
 	struct rlib_pcode *name_code;
 };
 

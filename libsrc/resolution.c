@@ -110,12 +110,14 @@ gint rlib_resolve_resultset_field(rlib *r, char *name, void **rtn_field, gint *r
 
 static void rlib_field_resolve_pcode(rlib *r, struct rlib_report *report, struct rlib_report_field *rf) {
 	rf->code = rlib_infix_to_pcode(r, report, rf->value);
-	rf->format_code = rlib_infix_to_pcode(r, report, rf->format);
-	rf->link_code = rlib_infix_to_pcode(r, report, rf->link);
-	rf->color_code = rlib_infix_to_pcode(r, report, rf->color);
-	rf->bgcolor_code = rlib_infix_to_pcode(r, report, rf->bgcolor);
-	rf->col_code = rlib_infix_to_pcode(r, report, rf->col);
+	rf->format_code = rlib_infix_to_pcode(r, report, rf->xml_format);
+	rf->link_code = rlib_infix_to_pcode(r, report, rf->xml_link);
+	rf->color_code = rlib_infix_to_pcode(r, report, rf->xml_color);
+	rf->bgcolor_code = rlib_infix_to_pcode(r, report, rf->xml_bgcolor);
+	rf->col_code = rlib_infix_to_pcode(r, report, rf->xml_col);
 	rf->width_code = rlib_infix_to_pcode(r, report, rf->xml_width);
+	rf->bold_code = rlib_infix_to_pcode(r, report, rf->xml_bold);
+	rf->italics_code = rlib_infix_to_pcode(r, report, rf->xml_italics);
 	rf->align_code = rlib_infix_to_pcode(r, report, rf->xml_align);
 	rf->wrapchars_code = rlib_infix_to_pcode(r, report, rf->xml_wrapchars);
 	rf->maxlines_code = rlib_infix_to_pcode(r, report, rf->xml_maxlines);
@@ -126,10 +128,12 @@ static void rlib_field_resolve_pcode(rlib *r, struct rlib_report *report, struct
 }
 
 static void rlib_literal_resolve_pcode(rlib *r, struct rlib_report *report, struct rlib_report_literal *rt) {
-	rt->color_code = rlib_infix_to_pcode(r, report, rt->color);
-	rt->bgcolor_code = rlib_infix_to_pcode(r, report, rt->bgcolor);
-	rt->col_code = rlib_infix_to_pcode(r, report, rt->col);
+	rt->color_code = rlib_infix_to_pcode(r, report, rt->xml_color);
+	rt->bgcolor_code = rlib_infix_to_pcode(r, report, rt->xml_bgcolor);
+	rt->col_code = rlib_infix_to_pcode(r, report, rt->xml_col);
 	rt->width_code = rlib_infix_to_pcode(r, report, rt->xml_width);
+	rt->bold_code = rlib_infix_to_pcode(r, report, rt->xml_width);
+	rt->italics_code = rlib_infix_to_pcode(r, report, rt->xml_width);
 	rt->align_code = rlib_infix_to_pcode(r, report, rt->xml_align);
 	rt->width = -1;
 //rlogit("DUMPING PCODE FOR [%s]\n", rt->value);
@@ -138,40 +142,40 @@ static void rlib_literal_resolve_pcode(rlib *r, struct rlib_report *report, stru
 }
 
 static void rlib_break_resolve_pcode(rlib *r, struct rlib_report *report, struct rlib_break_fields *bf) {
-	if(bf->value == NULL)
-		rlogit("RLIB ERROR: BREAK FIELD VALUE CAN NOT BE NULL\n");
-	bf->code = rlib_infix_to_pcode(r, report, bf->value);
+	if(bf->xml_value == NULL)
+		r_error("RLIB ERROR: BREAK FIELD VALUE CAN NOT BE NULL\n");
+	bf->code = rlib_infix_to_pcode(r, report, bf->xml_value);
 }
 
 static void rlib_variable_resolve_pcode(rlib *r, struct rlib_report *report, struct rlib_report_variable *rv) {
-	rv->code = rlib_infix_to_pcode(r, report, rv->value);
+	rv->code = rlib_infix_to_pcode(r, report, rv->xml_value);
 /*rlogit("DUMPING PCODE FOR [%s]\n", rv->value);
 rlib_pcode_dump(rv->code,0);	
 rlogit("\n\n");*/
 }
 
 static void rlib_hr_resolve_pcode(rlib *r, struct rlib_report *report, struct rlib_report_horizontal_line * rhl) {
-	if(rhl->size == NULL)
-		rhl->realsize = 0;
+	if(rhl->xml_size == NULL)
+		rhl->size = 0;
 	else
-		rhl->realsize = atof(rhl->size);
-	if(rhl->indent == NULL)
-		rhl->realindent = 0;
+		rhl->size = atof(rhl->xml_size);
+	if(rhl->xml_indent == NULL)
+		rhl->indent = 0;
 	else
-		rhl->realindent = atof(rhl->indent);
-	if(rhl->length == NULL)
-		rhl->reallength = 0;
+		rhl->indent = atof(rhl->xml_indent);
+	if(rhl->xml_length == NULL)
+		rhl->length = 0;
 	else
-		rhl->reallength = atof(rhl->length);
-	rhl->bgcolor_code = rlib_infix_to_pcode(r, report, rhl->bgcolor);
-	rhl->suppress_code = rlib_infix_to_pcode(r, report, rhl->suppress);
+		rhl->length = atof(rhl->xml_length);
+	rhl->bgcolor_code = rlib_infix_to_pcode(r, report, rhl->xml_bgcolor);
+	rhl->suppress_code = rlib_infix_to_pcode(r, report, rhl->xml_suppress);
 }
 
 static void rlib_image_resolve_pcode(rlib *r, struct rlib_report *report, struct rlib_report_image * ri) {
-	ri->value_code = rlib_infix_to_pcode(r, report, ri->value);
-	ri->type_code = rlib_infix_to_pcode(r, report, ri->type);
-	ri->width_code = rlib_infix_to_pcode(r, report, ri->width);
-	ri->height_code = rlib_infix_to_pcode(r, report, ri->height);
+	ri->value_code = rlib_infix_to_pcode(r, report, ri->xml_value);
+	ri->type_code = rlib_infix_to_pcode(r, report, ri->xml_type);
+	ri->width_code = rlib_infix_to_pcode(r, report, ri->xml_width);
+	ri->height_code = rlib_infix_to_pcode(r, report, ri->xml_height);
 }
 
 static void rlib_resolve_fields2(rlib *r, struct rlib_report *report, struct rlib_report_output_array *roa) {
@@ -192,9 +196,11 @@ static void rlib_resolve_fields2(rlib *r, struct rlib_report *report, struct rli
 		if(ro->type == REPORT_PRESENTATION_DATA_LINE) {
 			struct rlib_report_lines *rl = ro->data;	
 			e = rl->e;
-			rl->bgcolor_code = rlib_infix_to_pcode(r, report, rl->bgcolor);
-			rl->color_code = rlib_infix_to_pcode(r, report, rl->color);
-			rl->suppress_code = rlib_infix_to_pcode(r, report, rl->suppress);
+			rl->bgcolor_code = rlib_infix_to_pcode(r, report, rl->xml_bgcolor);
+			rl->color_code = rlib_infix_to_pcode(r, report, rl->xml_color);
+			rl->suppress_code = rlib_infix_to_pcode(r, report, rl->xml_suppress);
+			rl->bold_code = rlib_infix_to_pcode(r, report, rl->xml_bold);
+			rl->italics_code = rlib_infix_to_pcode(r, report, rl->xml_italics);
 
 			for(; e != NULL; e=e->next) {
 				if(e->type == RLIB_ELEMENT_FIELD) {
@@ -231,7 +237,7 @@ struct rlib_report_variable *rlib_resolve_variable(rlib *r, struct rlib_report *
 		name += 2;
 		for(e = report->variables; e != NULL; e=e->next) {
 			struct rlib_report_variable *rv = e->data;
-		if(!strcmp(name, rv->name))
+		if(!strcmp(name, rv->xml_name))
 			return rv;
 		}	
 		rlogit("rlib_resolve_variable: Could not find [%s]\n", name);

@@ -620,18 +620,18 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 					else
 						font_point = rhl->font_point;
 					OUTPUT(r)->set_font_point(r, font_point);
-					indent = rlib_layout_estimate_string_width(r, rhl->realindent);			
-					length = rlib_layout_estimate_string_width(r, rhl->reallength);			
+					indent = rlib_layout_estimate_string_width(r, rhl->indent);			
+					length = rlib_layout_estimate_string_width(r, rhl->length);			
 					OUTPUT(r)->set_font_point(r, r->font_point);
 
 					if(length == 0)
 						OUTPUT(r)->hr(r, backwards, my_left_margin+indent, rlib_layout_get_next_line(r, part, *rlib_position, 
-							rhl->realsize),rlib_layout_get_report_width(r, part, report)-indent, rhl->realsize, &bgcolor, indent, length);
+							rhl->size),rlib_layout_get_report_width(r, part, report)-indent, rhl->size, &bgcolor, indent, length);
 					else
-						OUTPUT(r)->hr(r, backwards, my_left_margin+indent, rlib_layout_get_next_line(r, part, *rlib_position, rhl->realsize),
-							length, rhl->realsize, &bgcolor, indent, length);
+						OUTPUT(r)->hr(r, backwards, my_left_margin+indent, rlib_layout_get_next_line(r, part, *rlib_position, rhl->size),
+							length, rhl->size, &bgcolor, indent, length);
 
-					rlib_advance_vertical_position(r, rlib_position, rhl->realsize);
+					rlib_advance_vertical_position(r, rlib_position, rhl->size);
 					rlib_value_free(rval);
 				}
 			}

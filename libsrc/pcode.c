@@ -319,7 +319,7 @@ void rlib_pcode_dump(struct rlib_pcode *p, gint offset) {
 				rlogit("Result Memory Variable = [%s]", (char *)o->value);
 			} else if(o->type == OPERAND_VARIABLE) {
 				struct rlib_report_variable *rv = o->value;
-				rlogit("Result Variable = [%s]", rv->name);
+				rlogit("Result Variable = [%s]", rv->xml_name);
 			} else if(o->type == OPERAND_RLIB_VARIABLE) {
 				rlogit("RLIB Variable\n");
 			} else if(o->type == OPERAND_IIF) {

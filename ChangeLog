@@ -1,4 +1,17 @@
 2004-10-12  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/breaks.c: added bold and italics properties (doesn't work yet), renamed struct fields for consistant naming convention
+	* libsrc/formatstring.c: likewise
+	* libsrc/free.c: likewise
+	* libsrc/layout.c: likewise
+	* libsrc/load.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/pcode.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/save.c: likewise
+
+2004-10-12  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/php.c: new api function to load a report from memory, td borders, respect borders from xml
 	* libsrc/api.c: likewise
 	* libsrc/csv.c: likewise

@@ -75,6 +75,8 @@ static void rlib_text_free_pcode(rlib *r, struct rlib_report_literal *rt) {
 	free_pcode(rt->bgcolor_code);
 	free_pcode(rt->col_code);
 	free_pcode(rt->width_code);
+	free_pcode(rt->bold_code);
+	free_pcode(rt->italics_code);
 	free_pcode(rt->align_code);
 	g_free(rt);
 }
@@ -89,6 +91,8 @@ static void rlib_field_free_pcode(rlib *r, struct rlib_report_field *rf) {
 	free_pcode(rf->maxlines_code);
 	free_pcode(rf->wrapchars_code);
 	free_pcode(rf->width_code);
+	free_pcode(rf->bold_code);
+	free_pcode(rf->italics_code);
 	free_pcode(rf->align_code);
 	g_free(rf);
 }
@@ -108,6 +112,8 @@ static void rlib_free_fields(rlib *r, struct rlib_report_output_array *roa) {
 			free_pcode(rl->color_code);
 			free_pcode(rl->suppress_code);
 			free_pcode(rl->font_size_code);
+			free_pcode(rl->bold_code);
+			free_pcode(rl->italics_code);
 			for(; e != NULL; e=e->next) {
 				if(e->type == RLIB_ELEMENT_FIELD) {
 					rlib_field_free_pcode(r, ((struct rlib_report_field *)e->data));

@@ -91,12 +91,14 @@ static struct rlib_element * parse_line_array(xmlDocPtr doc, xmlNsPtr ns, xmlNod
 //Nevermind			//TODO: we need to utf to 8813 all string values in single quotes
 			strcpy(f->value, xmlGetProp(cur, (const xmlChar *) "value"));
 			f->xml_align = xmlGetProp(cur, (const xmlChar *) "align");
-			f->bgcolor = xmlGetProp(cur, (const xmlChar *) "bgcolor");
-			f->color = xmlGetProp(cur, (const xmlChar *) "color");
+			f->xml_bgcolor = xmlGetProp(cur, (const xmlChar *) "bgcolor");
+			f->xml_color = xmlGetProp(cur, (const xmlChar *) "color");
 			f->xml_width = xmlGetProp(cur, (const xmlChar *) "width");
-			f->format = xmlGetProp(cur, (const xmlChar *) "format");
-			f->link = xmlGetProp(cur, (const xmlChar *) "link");
-			f->col = xmlGetProp(cur, (const xmlChar *) "col");
+			f->xml_bold = xmlGetProp(cur, (const xmlChar *) "bold");
+			f->xml_italics = xmlGetProp(cur, (const xmlChar *) "italics");
+			f->xml_format = xmlGetProp(cur, (const xmlChar *) "format");
+			f->xml_link = xmlGetProp(cur, (const xmlChar *) "link");
+			f->xml_col = xmlGetProp(cur, (const xmlChar *) "col");
 			f->xml_wrapchars = xmlGetProp(cur, (const xmlChar *) "wrapchars");
 			f->xml_maxlines = xmlGetProp(cur, (const xmlChar *) "maxlines");
 			current->data = f;
@@ -110,10 +112,12 @@ static struct rlib_element * parse_line_array(xmlDocPtr doc, xmlNsPtr ns, xmlNod
 			safestrncpy(t->value, xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), sizeof(t->value));
 #endif
 			t->xml_align = xmlGetProp(cur, (const xmlChar *) "align");
-			t->bgcolor = xmlGetProp(cur, (const xmlChar *) "bgcolor");
-			t->color = xmlGetProp(cur, (const xmlChar *) "color");
+			t->xml_bgcolor = xmlGetProp(cur, (const xmlChar *) "bgcolor");
+			t->xml_color = xmlGetProp(cur, (const xmlChar *) "color");
 			t->xml_width = xmlGetProp(cur, (const xmlChar *) "width");
-			t->col = xmlGetProp(cur, (const xmlChar *) "col");
+			t->xml_bold = xmlGetProp(cur, (const xmlChar *) "bold");
+			t->xml_italics = xmlGetProp(cur, (const xmlChar *) "italics");
+			t->xml_col = xmlGetProp(cur, (const xmlChar *) "col");
 			current->data = t;
 			current->type = RLIB_ELEMENT_LITERAL;
 		} else if (ignoreElement(cur->name)) {
@@ -159,38 +163,40 @@ static struct rlib_element * parse_report_output(xmlDocPtr doc, xmlNsPtr ns, xml
 	while (cur != NULL) {      
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "Line"))) {
 			struct rlib_report_lines *rl = g_new0(struct rlib_report_lines, 1);
-			rl->bgcolor = xmlGetProp(cur, (const xmlChar *) "bgcolor");
-			rl->color = xmlGetProp(cur, (const xmlChar *) "color");
-			rl->font_size = xmlGetProp(cur, (const xmlChar *) "fontSize");
-			rl->suppress = xmlGetProp(cur, (const xmlChar *) "suppress");
-			if(rl->font_size == NULL)
+			rl->xml_bgcolor = xmlGetProp(cur, (const xmlChar *) "bgcolor");
+			rl->xml_color = xmlGetProp(cur, (const xmlChar *) "color");
+			rl->xml_bold = xmlGetProp(cur, (const xmlChar *) "bold");
+			rl->xml_italics = xmlGetProp(cur, (const xmlChar *) "italics");
+			rl->xml_font_size = xmlGetProp(cur, (const xmlChar *) "fontSize");
+			rl->xml_suppress = xmlGetProp(cur, (const xmlChar *) "suppress");
+			if(rl->xml_font_size == NULL)
 				rl->font_point = -1;
 			else
-				rl->font_point = atoi(rl->font_size);
+				rl->font_point = atoi(rl->xml_font_size);
 				
 			rl->e = parse_line_array(doc, ns, cur);
 			roa->data = g_realloc(roa->data, sizeof(struct rlib_report_output_array *) * (roa->count + 1));
 			roa->data[roa->count++] = report_output_new(REPORT_PRESENTATION_DATA_LINE, rl);
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "HorizontalLine"))) {
 			struct rlib_report_horizontal_line *rhl = g_new0(struct rlib_report_horizontal_line, 1);
-			rhl->bgcolor = xmlGetProp(cur, (const xmlChar *) "bgcolor");
-			rhl->size = xmlGetProp(cur, (const xmlChar *) "size");
-			rhl->indent = xmlGetProp(cur, (const xmlChar *) "indent");
-			rhl->length = xmlGetProp(cur, (const xmlChar *) "length");
-			rhl->font_size = xmlGetProp(cur, (const xmlChar *) "fontSize");
-			rhl->suppress = xmlGetProp(cur, (const xmlChar *) "suppress");
-			if(rhl->font_size == NULL)
+			rhl->xml_bgcolor = xmlGetProp(cur, (const xmlChar *) "bgcolor");
+			rhl->xml_size = xmlGetProp(cur, (const xmlChar *) "size");
+			rhl->xml_indent = xmlGetProp(cur, (const xmlChar *) "indent");
+			rhl->xml_length = xmlGetProp(cur, (const xmlChar *) "length");
+			rhl->xml_font_size = xmlGetProp(cur, (const xmlChar *) "fontSize");
+			rhl->xml_suppress = xmlGetProp(cur, (const xmlChar *) "suppress");
+			if(rhl->xml_font_size == NULL)
 				rhl->font_point = -1;
 			else
-				rhl->font_point = atoi(rhl->font_size);
+				rhl->font_point = atoi(rhl->xml_font_size);
 			roa->data = g_realloc(roa->data, sizeof(struct rlib_report_output_array *) * (roa->count + 1));
 			roa->data[roa->count++] = report_output_new(REPORT_PRESENTATION_DATA_HR, rhl);
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "Image"))) {
 			struct rlib_report_image *ri = g_new0(struct rlib_report_image, 1);
-			ri->value = xmlGetProp(cur, (const xmlChar *) "value");
-			ri->type = xmlGetProp(cur, (const xmlChar *) "type");
-			ri->width = xmlGetProp(cur, (const xmlChar *) "width");
-			ri->height = xmlGetProp(cur, (const xmlChar *) "height");
+			ri->xml_value = xmlGetProp(cur, (const xmlChar *) "value");
+			ri->xml_type = xmlGetProp(cur, (const xmlChar *) "type");
+			ri->xml_width = xmlGetProp(cur, (const xmlChar *) "width");
+			ri->xml_height = xmlGetProp(cur, (const xmlChar *) "height");
 			roa->data = g_realloc(roa->data, sizeof(struct rlib_report_output_array *) * (roa->count + 1));
 			roa->data[roa->count++] = report_output_new(REPORT_PRESENTATION_DATA_IMAGE, ri);
 		} else if (ignoreElement(cur->name)) {
@@ -235,7 +241,7 @@ static struct rlib_element * parse_break_field(xmlDocPtr doc, xmlNsPtr ns, xmlNo
 	while (cur != NULL) {
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "BreakField"))) {
 			bf->rval = NULL;
-			bf->value = xmlGetProp(cur, (const xmlChar *) "value");
+			bf->xml_value = xmlGetProp(cur, (const xmlChar *) "value");
 		} else if (ignoreElement(cur->name)) {
 			/* ignore comments, etc */
 		} else {
@@ -251,7 +257,7 @@ static struct rlib_element * parse_report_break(struct rlib_report *report, xmlD
 	struct rlib_report_break *rb = g_new0(struct rlib_report_break, 1);
 	e->next = NULL;
 	e->data = rb;
-	rb->name = xmlGetProp(cur, (const xmlChar *) "name");
+	rb->xml_name = xmlGetProp(cur, (const xmlChar *) "name");
 	rb->xml_newpage = xmlGetProp(cur, (const xmlChar *) "newpage");
 	rb->xml_headernewpage = xmlGetProp(cur, (const xmlChar *) "headernewpage");
 	rb->xml_suppressblank = xmlGetProp(cur, (const xmlChar *) "suppressblank");
@@ -343,26 +349,26 @@ static struct rlib_element * parse_report_variable(xmlDocPtr doc, xmlNsPtr ns, x
 	struct rlib_report_variable *rv = g_new0(struct rlib_report_variable, 1);
 	e->next = NULL;
 	e->data = rv;
-	rv->name = xmlGetProp(cur, (const xmlChar *) "name");
-	rv->str_type = xmlGetProp(cur, (const xmlChar *) "type");
-	rv->value = xmlGetProp(cur, (const xmlChar *) "value");
-	rv->resetonbreak = xmlGetProp(cur, (const xmlChar *) "resetonbreak");
+	rv->xml_name = xmlGetProp(cur, (const xmlChar *) "name");
+	rv->xml_str_type = xmlGetProp(cur, (const xmlChar *) "type");
+	rv->xml_value = xmlGetProp(cur, (const xmlChar *) "value");
+	rv->xml_resetonbreak = xmlGetProp(cur, (const xmlChar *) "resetonbreak");
 	rv->type = REPORT_VARIABLE_UNDEFINED;
-	if(rv->str_type != NULL && rv->str_type[0] != '\0') {
-		if(!strcmp(rv->str_type, "expression") || !strcmp(rv->str_type, "static"))
+	if(rv->xml_str_type != NULL && rv->xml_str_type[0] != '\0') {
+		if(!strcmp(rv->xml_str_type, "expression") || !strcmp(rv->xml_str_type, "static"))
 			rv->type = REPORT_VARIABLE_EXPRESSION;
-		else if(!strcmp(rv->str_type, "count"))
+		else if(!strcmp(rv->xml_str_type, "count"))
 			rv->type = REPORT_VARIABLE_COUNT;
-		else if(!strcmp(rv->str_type, "sum"))
+		else if(!strcmp(rv->xml_str_type, "sum"))
 			rv->type = REPORT_VARIABLE_SUM;
-		else if(!strcmp(rv->str_type, "average"))
+		else if(!strcmp(rv->xml_str_type, "average"))
 			rv->type = REPORT_VARIABLE_AVERAGE;
-		else if(!strcmp(rv->str_type, "lowest"))
+		else if(!strcmp(rv->xml_str_type, "lowest"))
 			rv->type = REPORT_VARIABLE_LOWEST;
-		else if(!strcmp(rv->str_type, "highest"))
+		else if(!strcmp(rv->xml_str_type, "highest"))
 			rv->type = REPORT_VARIABLE_HIGHEST;
 		else
-			rlogit("Unknown report variable type [%s] in <Variable>\n", rv->str_type);
+			rlogit("Unknown report variable type [%s] in <Variable>\n", rv->xml_str_type);
 	}
 
 	return e;

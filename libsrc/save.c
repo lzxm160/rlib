@@ -55,30 +55,30 @@ void write_xml_str(gint fd, gchar *str) {
 }
 
 void write_image(gint fd, struct rlib_report_image *ri) {
-	write_xml_str(fd, ri->value);
-	write_xml_str(fd, ri->type);
-	write_xml_str(fd, ri->width);
-	write_xml_str(fd, ri->height);
+	write_xml_str(fd, ri->xml_value);
+	write_xml_str(fd, ri->xml_type);
+	write_xml_str(fd, ri->xml_width);
+	write_xml_str(fd, ri->xml_height);
 }
 
 void write_hr(gint fd, struct rlib_report_horizontal_line *hr) {
-	write_xml_str(fd, hr->bgcolor);
-	write_xml_str(fd, hr->size);
-	write_xml_str(fd, hr->indent);
-	write_xml_str(fd, hr->length);
-	write_xml_str(fd, hr->font_size);
-	write_xml_str(fd, hr->suppress);
+	write_xml_str(fd, hr->xml_bgcolor);
+	write_xml_str(fd, hr->xml_size);
+	write_xml_str(fd, hr->xml_indent);
+	write_xml_str(fd, hr->xml_length);
+	write_xml_str(fd, hr->xml_font_size);
+	write_xml_str(fd, hr->xml_suppress);
 }
 
 void write_field(gint fd, struct rlib_report_field *rf) {
 	write_xml_str(fd, rf->value);
 	write_xml_str(fd, rf->xml_align);
-	write_xml_str(fd, rf->bgcolor);
-	write_xml_str(fd, rf->color);
+	write_xml_str(fd, rf->xml_bgcolor);
+	write_xml_str(fd, rf->xml_color);
 	write_xml_str(fd, rf->xml_width);
-	write_xml_str(fd, rf->format);
-	write_xml_str(fd, rf->link);
-	write_xml_str(fd, rf->col);
+	write_xml_str(fd, rf->xml_format);
+	write_xml_str(fd, rf->xml_link);
+	write_xml_str(fd, rf->xml_col);
 	write_xml_str(fd, rf->xml_wrapchars);
 	write_xml_str(fd, rf->xml_maxlines);
 }
@@ -86,19 +86,19 @@ void write_field(gint fd, struct rlib_report_field *rf) {
 void write_text(gint fd, struct rlib_report_literal *rt) {
 	write_xml_str(fd, rt->value);
 	write_xml_str(fd, rt->xml_align);
-	write_xml_str(fd, rt->color);
-	write_xml_str(fd, rt->bgcolor);
+	write_xml_str(fd, rt->xml_color);
+	write_xml_str(fd, rt->xml_bgcolor);
 	write_xml_str(fd, rt->xml_width);
-	write_xml_str(fd, rt->col);
+	write_xml_str(fd, rt->xml_col);
 }
 
 void write_line(gint fd, struct rlib_report_lines *rl) {
 	struct rlib_element *e;
 	gint32 type;
-	write_xml_str(fd, rl->bgcolor);
-	write_xml_str(fd, rl->color);
-	write_xml_str(fd, rl->font_size);
-	write_xml_str(fd, rl->suppress);
+	write_xml_str(fd, rl->xml_bgcolor);
+	write_xml_str(fd, rl->xml_color);
+	write_xml_str(fd, rl->xml_font_size);
+	write_xml_str(fd, rl->xml_suppress);
 
 	type = RLIB_FILE_LINE;
 	write(fd, &type, sizeof(gint32));		
@@ -165,10 +165,10 @@ void write_variables(gint fd, struct rlib_element *rv) {
 		struct rlib_report_variable *rv = e->data;
 		type = RLIB_FILE_VARIABLE;
 		write(fd, &type, sizeof(gint32));
-		write_xml_str(fd, rv->name);
-		write_xml_str(fd, rv->str_type);
-		write_xml_str(fd, rv->value);
-		write_xml_str(fd, rv->resetonbreak);
+		write_xml_str(fd, rv->xml_name);
+		write_xml_str(fd, rv->xml_str_type);
+		write_xml_str(fd, rv->xml_value);
+		write_xml_str(fd, rv->xml_resetonbreak);
 		type = RLIB_FILE_VARIABLE+1;
 		write(fd, &type, sizeof(gint32));
 	}
@@ -186,7 +186,7 @@ void write_breaks(gint fd, struct rlib_element *breaks) {
 		struct rlib_element *be;
 		type = RLIB_FILE_BREAK;
 		write(fd, &type, sizeof(gint32));
-		write_xml_str(fd, rb->name);
+		write_xml_str(fd, rb->xml_name);
 		write_xml_str(fd, rb->xml_newpage);
 		write_xml_str(fd, rb->xml_headernewpage);
 		write_xml_str(fd, rb->xml_suppressblank);
@@ -196,7 +196,7 @@ void write_breaks(gint fd, struct rlib_element *breaks) {
 			struct rlib_break_fields *bf = be->data;
 			type = RLIB_FILE_BREAK_FIELD;
 			write(fd, &type, sizeof(gint32));
-			write_xml_str(fd, bf->value);
+			write_xml_str(fd, bf->xml_value);
 			type = RLIB_FILE_BREAK_FIELD+1;
 			write(fd, &type, sizeof(gint32));
 		}		

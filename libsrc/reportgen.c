@@ -193,7 +193,7 @@ gfloat get_output_size(rlib *r, struct rlib_report_output_array *roa) {
 //Here to adjust size of memo field output.			
 		} else if(rd->type == REPORT_PRESENTATION_DATA_HR) {
 			struct rlib_report_horizontal_line *rhl = rd->data;
-			total += RLIB_GET_LINE(rhl->realsize);		
+			total += RLIB_GET_LINE(rhl->size);		
 		}
 	}
 	return total;
