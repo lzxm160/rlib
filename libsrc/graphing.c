@@ -167,10 +167,11 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 		y_axis_title[0] = 0;
 
 	graph_type = determine_graph_type(type, subtype);	
-	if( graph_type == RLIB_GRAPH_TYPE_ROW_STACKED ) 
-		rlogit("----------------------> STACKED GRAPH TYPE\n");
-	else
-		rlogit("-----------------------------------------\n");
+
+	//if( graph_type == RLIB_GRAPH_TYPE_ROW_STACKED ) 
+	//	rlogit("----------------------> STACKED GRAPH TYPE\n");
+	//else
+		//rlogit("-----------------------------------------\n");
 
 			
 	OUTPUT(r)->graph_start(r, left_margin_offset, rlib_layout_get_next_line(r, part, part->position_top[0]+top_margin_offset, 0), graph_width, graph_height);
@@ -216,7 +217,7 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 	
 						rlib_parsecolor(&color[data_plot_count%MAX_COLOR_POOL], color_pool[data_plot_count%MAX_COLOR_POOL]);
 							data_plot_count++;
-		rlogit("DATAPLOT = %d YVALUE=%f YTRY_MAX=%f YTRY_MIN=%f\n",data_plot_count,y_value,y_value_try_max,y_value_try_min);
+		//rlogit("DATAPLOT = %d YVALUE=%f YTRY_MAX=%f YTRY_MIN=%f\n",data_plot_count,y_value,y_value_try_max,y_value_try_min);
 /*****
 							if(row_count == 0 ) {
 								y_min = y_value_try_min;
@@ -227,7 +228,7 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 									y_min = y_value_try_min;
 								if(y_value_try_max > y_max)
 									y_max = y_value_try_max;
-	rlogit("CURRMAX=%f CURRMIN=%f\n",y_max,y_min);
+	//rlogit("CURRMAX=%f CURRMIN=%f\n",y_max,y_min);
 /**
 							}
 **/
@@ -241,10 +242,10 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 				break;
 		}
 	}
-	rlogit("Me have %d rows AND THE MIN IS %f and the MAX IS %f\n", row_count, y_min, y_max);
+	//rlogit("Me have %d rows AND THE MIN IS %f and the MAX IS %f\n", row_count, y_min, y_max);
 	rlib_graph_find_y_range(r, y_min, y_max, &y_min, &y_max, graph_type);
 	y_ticks = rlib_graph_num_ticks(r, y_min, y_max);
-	rlogit("Mike.. We have %d rows AND THE MIN IS %f and the MAX IS %f and ticks is %d\n", row_count, y_min, y_max, y_ticks);
+	//rlogit("Mike.. We have %d rows AND THE MIN IS %f and the MAX IS %f and ticks is %d\n", row_count, y_min, y_max, y_ticks);
 
 	rlib_graph_label_y_axis(r, FALSE, y_ticks, y_min, y_max, y_origin);
 

@@ -1,5 +1,9 @@
 2004-12-17  Michael Roth  <mroth@sicompos.com>
 
+	* libsrc/graphing.c: (rlib_graph): remove debug prints
+
+2004-12-17  Michael Roth  <mroth@sicompos.com>
+
 	* bindings/php/php.c: (ZEND_FUNCTION): add n_to_1 follower
 	* libsrc/api.c: (rlib_execute),
 	(rlib_add_resultset_follower_n_to_1),
