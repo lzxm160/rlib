@@ -1,3 +1,7 @@
+2004-07-29  Michael Roth  <mroth@sicompos.com>
+	* libsrc/api.c: compile fixes
+	* libsrc/parsexml.c: likewise
+
 2004-07-27  Chet Heilman <cheilman@sicompos.com>
 	* libsrc/pcode.c: (rlib_infix_to_pcode):
 		Fix problem valgrind found.
