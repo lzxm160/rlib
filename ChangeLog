@@ -1,3 +1,7 @@
+2004-01-14  Chet Heilman <cheilman@sicompos.com>
+	* libsrc/reportgen.c: (rlib_check_is_not_suppressed): Fix
+	suppress so it will also work with 'old' string syntax.
+
 2004-01-13  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/php.c: pho bug work around
 	* bindings/python/python.c: ability to use MySql groups (steuer@unixsystems.de)

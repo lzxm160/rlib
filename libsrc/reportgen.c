@@ -47,6 +47,15 @@ static gchar *aligns[] = {
 };
 
 
+static gchar *truefalses[] = {
+	"no",
+	"yes",
+	"false",
+	"true",
+	NULL
+};
+
+
 static gint rlib_execute_as_int(rlib *r, struct rlib_pcode *pcode, gint *result) {
 	struct rlib_value val;
 	gint isok = FALSE;
@@ -514,9 +523,15 @@ void find_stuff_in_common(rlib *r, struct rlib_line_extra_data *extra_data, gint
 
 
 static gint rlib_check_is_not_suppressed(rlib *r, struct rlib_pcode *code) {
+#if 0	
 	struct rlib_value suppress;
-	gint result = TRUE;
+	gint result = ;
+#endif
 	
+	gint result = FALSE;
+	if (rlib_execute_as_int_inlist(r, code, &result, truefalses))
+		result &= 1;
+#if 0	
 	if(code != NULL) {
 		rlib_execute_pcode(r, &suppress, code, NULL);
 
@@ -530,7 +545,8 @@ static gint rlib_check_is_not_suppressed(rlib *r, struct rlib_pcode *code) {
 			rlib_value_free(&suppress);
 		}
 	}
-	return result;
+#endif
+	return result? FALSE : TRUE;
 }
 
 
