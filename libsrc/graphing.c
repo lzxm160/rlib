@@ -2,7 +2,6 @@
  *  Copyright (C) 2003-2004 SICOM Systems, INC.
  *
  *  Authors: Bob Doan <bdoan@sicompos.com>
- *           Michael Ibison <ibison@earthtech.org> (The Math Behind the Graphs and some PSEUDO Code)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -206,6 +205,10 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 	if(!rlib_will_this_fit(r, part, report, graph_height / RLIB_PDF_DPI, 1)) {
 		top_margin_offset = 0;
 		rlib_layout_end_page(r, part, report);
+		if(report->font_size != -1) {
+			r->font_point = report->font_size;
+			OUTPUT(r)->set_font_point(r, r->font_point);
+		}
 	}
 	
 	graph_type = determine_graph_type(type, subtype);	
@@ -412,7 +415,8 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 								if(row_count > 0)
 									OUTPUT(r)->graph_plot_line(r, row_count, last_row_values[i], last_row_height[i], value_a, last_height, &color[data_plot_count]);
 							} else if(is_pie_graph(graph_type)) {
-								OUTPUT(r)->graph_plot_pie(r, running_col_sum, value_a+running_col_sum, &color[row_count]);
+								gboolean offset = graph_type == RLIB_GRAPH_TYPE_PIE_OFFSET;
+								OUTPUT(r)->graph_plot_pie(r, running_col_sum, value_a+running_col_sum, offset, &color[row_count]);
 								running_col_sum += value_a;
 								if(rlib_execute_as_string(r, plot->label_code, legend_label, MAXSTRLEN))
 									OUTPUT(r)->graph_draw_legend_label(r, row_count, legend_label, &color[row_count]);

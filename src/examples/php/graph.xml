@@ -13,7 +13,7 @@
 
 	<pr>
 		<pd width="48">
-			<Report fontSize="9" orientation="landscape" query="'pie_data'">
+			<Report fontSize="12" orientation="landscape" query="'pie_data'">
 				<Graph type="'pie'" subtype="'normal'" width="370" height="250" title="'Pie Charts (Bob Kratz Emotions)'">
 					<Plot axis="'y'" field="val(value)" label="emotion"/>
 				</Graph>
@@ -21,7 +21,7 @@
 		</pd>
 		<pd width="2"/>
 		<pd width="48">
-			<Report fontSize="9" orientation="landscape" query="'pie_data'">
+			<Report fontSize="12" orientation="landscape" query="'pie_data'">
 				<Detail>
 					<FieldHeaders>
 						<Output>
@@ -51,7 +51,7 @@
 
 	<pr>
 		<pd width="48">
-			<Report fontSize="9" orientation="landscape" query="'pie_data2'">
+			<Report fontSize="12" orientation="landscape" query="'pie_data2'">
 				<Graph type="'pie'" subtype="'normal'" width="370" height="250" title="'Pie Charts (Bob Kratz Food)'">
 					<Plot axis="'y'" field="val(value)" label="food"/>
 				</Graph>
@@ -59,7 +59,7 @@
 		</pd>
 		<pd width="2"/>
 		<pd width="48">
-			<Report fontSize="9" orientation="landscape" query="'pie_data2'">
+			<Report fontSize="12" orientation="landscape" query="'pie_data2'">
 				<Detail>
 					<FieldHeaders>
 						<Output>
@@ -87,10 +87,86 @@
 		</pd>
 	</pr>
 
+
+	<pr newpage="yes">
+		<pd width="48">
+			<Report fontSize="12" orientation="landscape" query="'pie_data'">
+				<Graph type="'pie'" subtype="'offset'" width="370" height="250" title="'Offset Pie Charts (Bob Kratz Emotions)'">
+					<Plot axis="'y'" field="val(value)" label="emotion"/>
+				</Graph>
+			</Report>
+		</pd>
+		<pd width="2"/>
+		<pd width="48">
+			<Report fontSize="12" orientation="landscape" query="'pie_data'">
+				<Detail>
+					<FieldHeaders>
+						<Output>
+							<HorizontalLine size="1" bgcolor="'black'"/>
+							<Line bgcolor="'0xe5e5e5'">
+								<literal width="10" col="1">Emotion</literal>
+								<literal width="1"/>
+								<literal width="5" col="1">Value</literal>
+							</Line>
+							<HorizontalLine size="1" bgcolor="'black'"/>
+							<HorizontalLine size="4" bgcolor="'white'"/>
+						</Output>
+					</FieldHeaders>		
+					<FieldDetails>
+						<Output>
+							<Line bgcolor="iif(r.detailcnt%2,'0xe5e5e5','white')">
+								<field value="emotion" width="10" align="left" col="1"/>
+								<literal width="1"/>
+								<field value="value" width="5" align="left" col="1"/>
+							</Line>
+						</Output>
+					</FieldDetails>
+				</Detail>
+			</Report>
+		</pd>
+	</pr>
+
+	<pr>
+		<pd width="48">
+			<Report fontSize="12" orientation="landscape" query="'pie_data2'">
+				<Graph type="'pie'" subtype="'offset'" width="370" height="250" title="'Offset Pie Charts (Bob Kratz Food)'">
+					<Plot axis="'y'" field="val(value)" label="food"/>
+				</Graph>
+			</Report>
+		</pd>
+		<pd width="2"/>
+		<pd width="48">
+			<Report fontSize="12" orientation="landscape" query="'pie_data2'">
+				<Detail>
+					<FieldHeaders>
+						<Output>
+							<HorizontalLine size="1" bgcolor="'black'"/>
+							<Line bgcolor="'0xe5e5e5'">
+								<literal width="10" col="1">Food</literal>
+								<literal width="1"/>
+								<literal width="5" col="1">Value</literal>
+							</Line>
+							<HorizontalLine size="1" bgcolor="'black'"/>
+							<HorizontalLine size="4" bgcolor="'white'"/>
+						</Output>
+					</FieldHeaders>		
+					<FieldDetails>
+						<Output>
+							<Line bgcolor="iif(r.detailcnt%2,'0xe5e5e5','white')">
+								<field value="food" width="10" align="left" col="1"/>
+								<literal width="1"/>
+								<field value="value" width="5" align="left" col="1"/>
+							</Line>
+						</Output>
+					</FieldDetails>
+				</Detail>
+			</Report>
+		</pd>
+	</pr>
 	
 	<pr newpage="yes">
 		<pd width="48">
-			<Report fontSize="9" orientation="landscape" query="'line_data'">
+			<Report fontSize="12" orientation="landscape" query="'line_data'">
 				<Graph type="'line'" subtype="'normal'" width="370" height="250" title="'Normal Line Charts!'" x_axis_title="'Day Of Week'" y_axis_title="'Sales $$$'">
 					<Plot axis="'x'" field="doy"/>
 					<Plot axis="'y'" field="val(rest1)" label="'BK 1'"/>
@@ -104,7 +180,7 @@
 		</pd>
 		<pd width="2"/>
 		<pd width="48">
-			<Report fontSize="9" orientation="landscape" query="'line_data'">
+			<Report fontSize="12" orientation="landscape" query="'line_data'">
 				<Graph type="'line'" subtype="'stacked'" width="370" height="250" title="'Stacked Line Charts!'" x_axis_title="'Day Of Week'" y_axis_title="'Sales $$$'">
 					<Plot axis="'x'" field="doy"/>
 					<Plot axis="'y'" field="val(rest1)" label="'BK 1'"/>
@@ -119,7 +195,7 @@
 	</pr>
 	<pr>
 		<pd width="48">
-			<Report fontSize="9" orientation="landscape" query="'line_data'">
+			<Report fontSize="12" orientation="landscape" query="'line_data'">
 				<Graph type="'line'" subtype="'percent'" width="370" height="250" title="'Percent Line Charts!'" x_axis_title="'Day Of Week'" y_axis_title="'Sales $$$'">
 					<Plot axis="'x'" field="doy"/>
 					<Plot axis="'y'" field="val(rest1)" label="'BK 1'"/>
@@ -133,7 +209,7 @@
 		</pd>
 		<pd width="2"/>
 		<pd width="48">
-			<Report fontSize="9" orientation="landscape" query="'line_data'">
+			<Report fontSize="12" orientation="landscape" query="'line_data'">
 				<Detail>
 					<FieldHeaders>
 						<Output>
@@ -184,7 +260,7 @@
 
 	<pr>
 		<pd width="48">
-			<Report fontSize="9" orientation="landscape" query="'line_data'">
+			<Report fontSize="12" orientation="landscape" query="'line_data'">
 				<Graph type="'line'" subtype="'normal'" width="370" height="250" title="'Normal Line Charts!'" x_axis_title="'Day Of Week'" y_axis_title="'OS $$$'">
 					<Plot axis="'x'" field="doy"/>
 					<Plot axis="'y'" field="val(os1)" label="'BK 1'"/>
@@ -198,7 +274,7 @@
 		</pd>
 		<pd width="2"/>
 		<pd width="48">
-			<Report fontSize="9" orientation="landscape" query="'line_data'">
+			<Report fontSize="12" orientation="landscape" query="'line_data'">
 				<Graph type="'line'" subtype="'stacked'" width="370" height="250" title="'Stacked Line Charts!'" x_axis_title="'Day Of Week'" y_axis_title="'OS $$$'">
 					<Plot axis="'x'" field="doy"/>
 					<Plot axis="'y'" field="val(os1)" label="'BK 1'"/>
@@ -213,7 +289,7 @@
 	</pr>
 	<pr>
 		<pd width="48">
-			<Report fontSize="9" orientation="landscape" query="'line_data'">
+			<Report fontSize="12" orientation="landscape" query="'line_data'">
 				<Graph type="'line'" subtype="'percent'" width="370" height="250" title="'Percent Line Charts!'" x_axis_title="'Day Of Week'" y_axis_title="'OS $$$'">
 					<Plot axis="'x'" field="doy"/>
 					<Plot axis="'y'" field="val(os1)" label="'BK 1'"/>
@@ -227,7 +303,7 @@
 		</pd>
 		<pd width="2"/>
 		<pd width="48">
-			<Report fontSize="9" orientation="landscape" query="'line_data'">
+			<Report fontSize="12" orientation="landscape" query="'line_data'">
 				<Detail>
 					<FieldHeaders>
 						<Output>
@@ -280,7 +356,7 @@
 	
 	<pr>
 		<pd width="48">
-			<Report fontSize="9" orientation="landscape">
+			<Report fontSize="12" orientation="landscape">
 				<Graph type="'row'" subtype="'normal'" width="370" height="250" title="'Normal Bar Charts!'" x_axis_title="'i can label a x axis'" y_axis_title="'y axis'">
 					<Plot axis="'x'" field="name"/>
 					<Plot axis="'y'" field="val(ty_sales)" label="'Sales'"/>
@@ -290,7 +366,7 @@
 		</pd>
 		<pd width="2"/>
 		<pd width="48">
-			<Report fontSize="9" orientation="landscape">
+			<Report fontSize="12" orientation="landscape">
 				<Graph type="'row'" subtype="'normal'" width="370" height="250" title="'Test 2'">
 					<Plot axis="'x'" field="name"/>
 					<Plot axis="'y'" field="val(ty_sales)" label="'TY Salesg"/>
@@ -303,7 +379,7 @@
 	</pr>
 	<pr>
 		<pd width="48">
-			<Report fontSize="9" orientation="landscape">
+			<Report fontSize="12" orientation="landscape">
 				<Graph type="'row'" subtype="'normal'" width="370" height="250" title="'Test 3'">
 					<Plot axis="'x'" field="name"/>
 					<Plot axis="'y'" field="val(sold)" label="'Sold'"/>
@@ -312,7 +388,7 @@
 		</pd>
 		<pd width="2"/>
 		<pd width="48">
-			<Report fontSize="9" orientation="landscape">
+			<Report fontSize="12" orientation="landscape">
 				<Graph type="'row'" subtype="'normal'" width="370" height="250" title="'Test 4'">
 					<Plot axis="'x'" field="name"/>
 					<Plot axis="'y'" field="val(negative)" label="'A Really Long Label Foo!'"/>
@@ -323,7 +399,7 @@
 	</pr>
 	<pr>
 		<pd width="48">
-			<Report fontSize="9" orientation="landscape">
+			<Report fontSize="12" orientation="landscape">
 				<Graph type="'row'" subtype="'stacked'" width="370" height="250" title="'Stacked Bar Charts'" x_axis_title="'i can label a x axis'" y_axis_title="'y axis'">
 					<Plot axis="'x'" field="name"/>
 					<Plot axis="'y'" field="val(ty_sales)" label="'Sales'"/>
@@ -334,7 +410,7 @@
 		</pd>
 		<pd width="2"/>
 		<pd width="48">
-			<Report fontSize="9" orientation="landscape">
+			<Report fontSize="12" orientation="landscape">
 				<Graph type="'row'" subtype="'stacked'" width="370" height="250" title="'Test 2'">
 					<Plot axis="'x'" field="name"/>
 					<Plot axis="'y'" field="val(ty_sales)" label="'TY Salesg"/>
@@ -347,7 +423,7 @@
 	</pr>
 	<pr>
 		<pd width="48">
-			<Report fontSize="9" orientation="landscape">
+			<Report fontSize="12" orientation="landscape">
 				<Graph type="'row'" subtype="'stacked'" width="370" height="250" title="'Test 3'">
 					<Plot axis="'x'" field="name"/>
 					<Plot axis="'y'" field="val(sold)" label="'Sold'"/>
@@ -357,7 +433,7 @@
 		</pd>
 		<pd width="2"/>
 		<pd width="48">
-			<Report fontSize="9" orientation="landscape">
+			<Report fontSize="12" orientation="landscape">
 				<Detail>
 					<FieldHeaders>
 						<Output>
@@ -399,7 +475,7 @@
 
 	<pr>
 		<pd width="48">
-			<Report fontSize="9" orientation="landscape">
+			<Report fontSize="12" orientation="landscape">
 				<Graph type="'row'" subtype="'percent'" width="370" height="250" title="'Percent Bar Charts'" x_axis_title="'i can label a x axis'" y_axis_title="'y axis'">
 					<Plot axis="'x'" field="name"/>
 					<Plot axis="'y'" field="val(ty_sales)" label="'Sales'"/>
@@ -410,7 +486,7 @@
 		</pd>
 		<pd width="2"/>
 		<pd width="48">
-			<Report fontSize="9" orientation="landscape">
+			<Report fontSize="12" orientation="landscape">
 				<Graph type="'row'" subtype="'percent'" width="370" height="250" title="'Test 2'">
 					<Plot axis="'x'" field="name"/>
 					<Plot axis="'y'" field="val(ty_sales)" label="'TY Salesg"/>
@@ -423,7 +499,7 @@
 	</pr>
 	<pr>
 		<pd width="48">
-			<Report fontSize="9" orientation="landscape">
+			<Report fontSize="12" orientation="landscape">
 				<Graph type="'row'" subtype="'percent'" width="370" height="250" title="'Test 3'">
 					<Plot axis="'x'" field="name"/>
 					<Plot axis="'y'" field="val(sold)" label="'Sold'"/>
@@ -433,7 +509,7 @@
 		</pd>
 		<pd width="2"/>
 		<pd width="48">
-			<Report fontSize="9" orientation="landscape">
+			<Report fontSize="12" orientation="landscape">
 				<Detail>
 					<FieldHeaders>
 						<Output>

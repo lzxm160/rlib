@@ -157,16 +157,19 @@
 	$pie_data[0][1] = "value";
 
 	$pie_data[1][0] = "Happy";
-	$pie_data[1][1] = "50";
+	$pie_data[1][1] = "10";
 
 	$pie_data[2][0] = "Sad";
-	$pie_data[2][1] = "30";
+	$pie_data[2][1] = "20";
 
 	$pie_data[3][0] = "Grumpy";
-	$pie_data[3][1] = "80";
+	$pie_data[3][1] = "40";
 
 	$pie_data[4][0] = "Sleepy";
-	$pie_data[4][1] = "40";
+	$pie_data[4][1] = "30";
+
+	$pie_data[5][0] = "Bashful";
+	$pie_data[5][1] = "25";
 
 	$pie_data2[0][0] = "food";
 	$pie_data2[0][1] = "value";

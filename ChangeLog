@@ -1,3 +1,14 @@
+2005-01-03  Bob Doan  <bdoan@sicompos.com>
+	* configure.in: Better checks for gd
+	* libsrc/Makefile.am: likewise
+	* libsrc/gd.c: likewise
+	* libsrc/graphing.c: cleanup/ pie work
+	* libsrc/pdf.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/rlib.h: likewise
+	* src/examples/php/graph.php: likewise
+	* src/examples/php/graph.xml: likewise
+
 2004-12-31  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/breaks.c: line graphs, pie graphs, and make sure the graph will fit, more minor cleanups
 	* libsrc/graphing.c: likewise

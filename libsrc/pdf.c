@@ -485,6 +485,7 @@ static void pdf_graph_title(rlib *r, gchar *title) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
 	gfloat title_width = pdf_get_string_width(r, title);
 	graph->title_height = RLIB_GET_LINE(r->current_font_point);
+
 	pdf_print_text(r, graph->left + ((graph->width-title_width)/2.0), graph->top-graph->title_height, title, 0);
 }
 
@@ -699,18 +700,36 @@ void pdf_graph_plot_line(rlib *r, int iteration, gfloat p1_height, gfloat p1_las
 	OUTPUT(r)->set_bg_color(r, 0, 0, 0);
 }
 
-static void pdf_graph_plot_pie(rlib *r, gfloat start, gfloat end, struct rlib_rgb *color) {
+static void pdf_graph_plot_pie(rlib *r, gfloat start, gfloat end, gboolean offset, struct rlib_rgb *color) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
 	gfloat start_angle = 360.0 * start;
 	gfloat end_angle = 360.0 * end;
 	gfloat x = graph->x_start + (graph->x_width / 2);
 	gfloat y = graph->y_start + (graph->y_height / 2);
 	gfloat radius = 0;
-
+	gfloat offset_factor = 0;
 	if(graph->x_width < graph->y_height)
 		radius = graph->x_width / 2;
 	else
 		radius = graph->y_height /2 ;
+
+	offset_factor = radius * .05;
+
+	if(offset) {
+		if(start_angle >= 180) {
+			y -= offset_factor;
+		} else {
+			y += offset_factor;
+		}
+		
+		if((start_angle >= 0 && start_angle < 90) || (start_angle >= 270)) {
+			x += offset_factor;			
+		} else {
+			x -= offset_factor;
+		}
+		
+		radius -= offset_factor;
+	}
 
 	pdf_turn_text_off(r);
 	OUTPUT(r)->set_bg_color(r, color->r, color->g, color->b);
@@ -719,7 +738,6 @@ static void pdf_graph_plot_pie(rlib *r, gfloat start, gfloat end, struct rlib_rg
 	cpdf_closepath(OUTPUT_PRIVATE(r)->pdf);
 	cpdf_fillAndStroke(OUTPUT_PRIVATE(r)->pdf);
 	OUTPUT(r)->set_bg_color(r, 0, 0, 0);
-
 }
 
 static void pdf_graph_hint_legend(rlib *r, gchar *label) {
