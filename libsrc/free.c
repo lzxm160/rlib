@@ -219,9 +219,10 @@ void rlib_free_report(rlib *r, gint which) {
 			struct report_variable *rv = e->data;
 			free_pcode(rv->code);
 
-			if(rv->type == REPORT_VARIABLE_EXPRESSION)
+			if(rv->type == REPORT_VARIABLE_EXPRESSION) {
+				rlib_value_free(&RLIB_VARIABLE_CA(rv)->amount);
 				g_free(RLIB_VARIABLE_CA(rv));
-			else if(rv->type == REPORT_VARIABLE_COUNT)
+			} else if(rv->type == REPORT_VARIABLE_COUNT)
 				g_free(RLIB_VARIABLE_CA(rv));
 			else if(rv->type == REPORT_VARIABLE_SUM)
 				g_free(RLIB_VARIABLE_CA(rv));
