@@ -66,6 +66,15 @@
 		</para>
 	</sect1>
 	<sect1>
+		<title>rlib_datasource_set_decoding</title>
+		<para>
+			rlib_datasource_set_decoding(<emphasis>rlib * rlib_ptr</emphasis>, char *datasource_name, char *decoding)
+		</para>
+		<para>
+			Set the decoding method for your datasource if its not already ISO8859-1
+		</para>
+	</sect1>
+	<sect1>
 		<title>rlib_add_query_as</title>
 		<para>
 			rlib_add_query_as(<emphasis>rlib * rlib_ptr</emphasis>, char *datasource_name, char *query, char *rlib_query_name)

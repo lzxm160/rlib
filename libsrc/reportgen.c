@@ -264,6 +264,7 @@ struct rlib_line_extra_data *extra_data) {
  */
 static const gchar *encode_text(rlib *r, const gchar *text) {
 	gchar *result = "";
+
 	if (text == NULL) {
 		r_error("encode_text called with NULL text");
 		result = "!ERR_ENC1";
@@ -274,6 +275,7 @@ static const gchar *encode_text(rlib *r, const gchar *text) {
 			result = "!ERR_ENC2";
 		}
 	}
+rlogit("encode_text TEXT BEFORE[%s] AFTER[%s]\n", text, result);
 	return result;
 }
 
@@ -284,6 +286,7 @@ static gfloat rlib_output_text(rlib *r, gint backwards,
 	gfloat rtn_width;
 	gchar *text;
 	text = extra_data->formatted_string;
+	
 	OUTPUT(r)->rlib_set_font_point(r, extra_data->font_point);
 	if(extra_data->found_color) {
 		OUTPUT(r)->rlib_set_fg_color(r, extra_data->color.r, extra_data->color.g, extra_data->color.b);
@@ -1152,16 +1155,13 @@ static void rlib_evaluate_break_attributes(rlib *r) {
 	}
 }
 
-
-#define ENCODING "UTF-8"
-
 static iconv_t get_encoder(rlib *r, const char *encoding) {
 	iconv_t result = (iconv_t) -1;
 	if (!g_strcasecmp(encoding, "UTF-8") || !g_strcasecmp(encoding, "UTF8")) {
 		*r->output_encoding_name = '\0';	//No conversion leave as UTF8
 		r->utf8 = TRUE;
 	} else {
-		result = iconv_open(encoding, ENCODING);
+		result = iconv_open(encoding, RLIB_ENCODING);
 		r->utf8 = FALSE;
 	}
 	return result;
@@ -1207,7 +1207,8 @@ gint make_report(rlib *r) {
 		}
 		if (*(tmp = rr->output_encoding_name)) {
 			encoder = get_encoder(r, tmp);
-			if ((encoder == (iconv_t) -1) && !r->utf8) r_error("Could not open encoder for %s", tmp);
+			if ((encoder == (iconv_t) -1) && !r->utf8) 
+				r_error("Could not open encoder for %s", tmp);
 		}
 		if (!r->utf8 && (encoder == (iconv_t) -1)) {
 			if (r->output_encoder != (iconv_t) -1) { // already a default encoder, just use it
@@ -1215,7 +1216,8 @@ gint make_report(rlib *r) {
 				tmp = r->output_encoding_name; //For log
 			} else if (*(tmp = r->output_encoding_name)) {
 				encoder = r->output_encoder = get_encoder(r, tmp);
-				if (!r->utf8 && (encoder == (iconv_t) -1)) r_error("Could not open encoder for %s", tmp);
+				if (!r->utf8 && (encoder == (iconv_t) -1)) 
+					r_error("Could not open encoder for %s", tmp);
 			}
 		}
 		r->current_output_encoder = encoder;

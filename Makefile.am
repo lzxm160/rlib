@@ -21,7 +21,7 @@
 ## Process this file with automake to produce Makefile.in
 
 EXTRA_DIST = AUTHORS CVS HACKING install-sh README rlib.pc.in
-SUBDIRS = libsrc bin inputs bindings tests 
+SUBDIRS = libsrc src inputs bindings tests 
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = rlib.pc

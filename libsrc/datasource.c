@@ -27,8 +27,9 @@
 
 gint rlib_add_datasource(rlib *r, gchar *input_name, struct input_filter *input) {
 	r->inputs[r->inputs_count].input = input;
-	r->inputs[r->inputs_count].name = input_name;
+	r->inputs[r->inputs_count].name = g_strdup(input_name);
 	r->inputs[r->inputs_count].handle = NULL;
+	r->inputs[r->inputs_count].input->input_decoder = (iconv_t)-1;
 	r->inputs_count++;
 	return 0;
 }
@@ -42,8 +43,8 @@ gchar *database_user, gchar *database_password, gchar *database_database) {
 	gpointer (*f1)();
 	gpointer (*f2)(gpointer, gchar *, gchar *, gchar *, gchar*, gchar *);
 	gpointer mysql;
-	
-	handle = g_module_open("libr-mysql", 0);
+
+	handle = g_module_open("libr-mysql", 2);
 	if (!handle) {
 		rlogit("Could Not Load MYSQL Input [%s]\n", g_module_error());
 		return -1;
@@ -62,8 +63,9 @@ gchar *database_user, gchar *database_password, gchar *database_database) {
 		return -1;
 	}
 	
-	r->inputs[r->inputs_count].name = input_name;
+	r->inputs[r->inputs_count].name = g_strdup(input_name);
 	r->inputs[r->inputs_count].handle = handle;
+	r->inputs[r->inputs_count].input->input_decoder = (iconv_t)-1;
 	r->inputs_count++;
 
 	return 0;	
@@ -90,7 +92,7 @@ gint rlib_add_datasource_postgre(rlib *r, gchar *input_name, gchar *conn) {
 	gpointer (*f1)();
 	gpointer (*f2)(gpointer, gchar *);
 
-	handle = g_module_open("libr-postgre", 0);
+	handle = g_module_open("libr-postgre", 2);
 	if (!handle) {
 		rlogit("Could Not Load POSTGRE Input [%s]\n", g_module_error());
 		return -1;
@@ -101,12 +103,13 @@ gint rlib_add_datasource_postgre(rlib *r, gchar *input_name, gchar *conn) {
 	f2 = rlib_postgre_connect;
 	r->inputs[r->inputs_count].input = f1();
 	postgre = f2(r->inputs[r->inputs_count].input, conn);
-	r->inputs[r->inputs_count].name = input_name;
+	r->inputs[r->inputs_count].name = g_strdup(input_name);
 	if(postgre == NULL) {
 		rlogit("ERROR: Could not connect to POSTGRE\n");
 		return -1;
 	}
 	r->inputs[r->inputs_count].handle = handle;
+	r->inputs[r->inputs_count].input->input_decoder = (iconv_t)-1;
 	
 	r->inputs_count++;
 	return 0;
@@ -122,7 +125,7 @@ gint rlib_add_datasource_odbc(rlib *r, gchar *input_name, gchar *source, gchar *
 	gpointer (*f2)(gpointer, gchar *, gchar *, gchar *);
 	gpointer odbc;
 
-	handle = g_module_open("libr-odbc", 0);
+	handle = g_module_open("libr-odbc", 2);
 	if (!handle) {
 		rlogit("Could Not Load ODBC Input [%s]\n", g_module_error());
 		return -1;
@@ -133,14 +136,31 @@ gint rlib_add_datasource_odbc(rlib *r, gchar *input_name, gchar *source, gchar *
 	f2 = rlib_odbc_connect;
 	r->inputs[r->inputs_count].input = f1();
 	odbc = f2(r->inputs[r->inputs_count].input, source, user, password);
-	r->inputs[r->inputs_count].name = input_name;
+	r->inputs[r->inputs_count].name = g_strdup(input_name);
 	if(odbc == NULL) {
 		rlogit("ERROR: Could not connect to ODBC\n");
 		return -1;
 	}
 	r->inputs[r->inputs_count].handle = handle;
+	r->inputs[r->inputs_count].input->input_decoder = (iconv_t)-1;
 	
 	r->inputs_count++;
 	return 0;
 }
 #endif
+
+gint rlib_datasource_set_decoding(rlib *r, gchar *input_name, gchar *decoding) {
+	int i;
+	for(i=0;i<r->inputs_count;i++) {
+		if(strcmp(r->inputs[i].name, input_name) == 0) {
+			r->inputs[i].input->input_decoder = iconv_open(RLIB_ENCODING, decoding);
+			if(r->inputs[i].input->input_decoder == (iconv_t) -1)  {
+				rlogit("Error.. invalid decoding [%s]\n", decoding);
+				return -1;			
+			}
+			return 0;
+		}
+	}
+	rlogit("Error.. datasource [%s] does not exist\n", input_name);
+	return -1;
+}

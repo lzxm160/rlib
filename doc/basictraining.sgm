@@ -303,6 +303,10 @@ dtos(database.somedatefield)-7
 		<para>
 			bottomMargin - how much space to leave at the bottom
 		</para>	
+		<para>
+			paperType - defines the type of paper you are targeting with your report.  This field is a STRING Expression.
+			values are: 'LETTER', 'LEGAL', 'A4', 'B5', 'C5', 'DL', 'EXECUTIVE', 'COMM10', 'MONARCH', and 'FILM35MM'
+		</para>	
 	</sect1>
 	<sect1>
 		<title>Output</title>

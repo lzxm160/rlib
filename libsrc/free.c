@@ -257,6 +257,8 @@ void rlib_free_tree(rlib *r) {
 	int i;
 	for(i=0;i<r->reports_count;i++) {
 		rlib_free_report(r, i);
+		g_free(r->reportstorun[i].name);
+		g_free(r->reportstorun[i].query);
 		if(r->reports[i]->doc != NULL)
 			xmlFreeDoc(r->reports[i]->doc);
 		else
@@ -270,6 +272,8 @@ void free_results(rlib *r) {
 	int i;
 	for(i=0;i<r->queries_count;i++) {
 		INPUT(r, i)->free_result(INPUT(r, i), r->results[i].result);
+		g_free(r->queries[i].sql);
+		g_free(r->queries[i].name);
 	}
 }
 

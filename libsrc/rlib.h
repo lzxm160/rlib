@@ -40,6 +40,9 @@
 #define RLIB_NAVIGATE_PREVIOUS 3
 #define RLIB_NAVIGATE_LAST 4
 
+#define RLIB_ENCODING "UTF-8"
+
+
 //man 3 llabs says the prototype is in stdlib.. no it aint!
 long long int llabs(long long int j);
 
@@ -665,6 +668,7 @@ gint rlib_add_datasource_mysql(rlib *r, gchar *input_name, gchar *database_host,
 gint rlib_add_datasource_mysql_from_group(rlib *r, gchar *input_name, gchar *group);
 gint rlib_add_datasource_postgre(rlib *r, gchar *input_name, gchar *conn);
 gint rlib_add_datasource_odbc(rlib *r, gchar *input_name, gchar *source, gchar *user, gchar *password);
+gint rlib_datasource_set_decoding(rlib *r, gchar *input_name, gchar *decoding);
 
 /***** PROTOTYPES: postgre.c **************************************************/
 gpointer rlib_postgre_new_input_filter(void);

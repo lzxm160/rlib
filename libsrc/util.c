@@ -27,6 +27,10 @@
 #include <stdarg.h>
 #include <time.h>
 #include <sys/resource.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+ 
 
 #include "rlib.h"
 

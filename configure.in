@@ -383,12 +383,13 @@ AC_OUTPUT([
 Makefile
 rlib.pc
 libsrc/Makefile
-bin/Makefile
+src/Makefile
 bindings/Makefile
 bindings/php/Makefile
 bindings/python/Makefile
 bindings/perl/Makefile
 bindings/java/Makefile
+bindings/interfaces/Makefile
 inputs/Makefile
 inputs/mysql/Makefile
 inputs/odbc/Makefile

@@ -52,7 +52,13 @@ gint rlib_resolve_rlib_variable(rlib *r, gchar *name) {
 }
 
 gchar * rlib_resolve_field_value(rlib *r, struct rlib_resultset_field *rf) {
-	return INPUT(r, rf->resultset)->get_field_value_as_string(INPUT(r, rf->resultset), r->results[rf->resultset].result , rf->field);
+	gchar *value = INPUT(r, rf->resultset)->get_field_value_as_string(INPUT(r, rf->resultset), r->results[rf->resultset].result , rf->field);
+	if(INPUT(r, rf->resultset)->input_decoder == (iconv_t) -1) 
+		return g_strdup(value);
+	else {
+		return g_strdup(encode(INPUT(r, rf->resultset)->input_decoder, value));
+	}
+	return value;
 }
 
 gint rlib_lookup_result(rlib *r, gchar *name) {

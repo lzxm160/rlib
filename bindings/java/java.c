@@ -35,6 +35,7 @@ typedef struct {
   const char *java_exception;
 } SWIG_JavaExceptions_t;
 
+
 #if 0
 static void SWIG_JavaThrowException(JNIEnv *jenv, SWIG_JavaExceptionCodes code, const char *msg) {
   jclass excep;
@@ -60,7 +61,6 @@ static void SWIG_JavaThrowException(JNIEnv *jenv, SWIG_JavaExceptionCodes code, 
     (*jenv)->ThrowNew(jenv, excep, msg);
 }
 #endif
-
 
 /* Contract support */
 

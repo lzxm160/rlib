@@ -147,7 +147,7 @@ static void rlib_pdf_start_new_page(rlib *r) {
 	gint pages_accross = report->pages_accross;
 	gint page_number = r->current_page_number * pages_accross;
 	gchar paper_type[40];
-	sprintf(paper_type, "0 0 %d %d", report->paper->width, report->paper->height);
+	sprintf(paper_type, "0 0 %ld %ld", report->paper->width, report->paper->height);
 	for(i=0;i<pages_accross;i++) {
 		if(report->orientation == RLIB_ORIENTATION_LANDSCAPE) {
 			report->position_bottom[i] = (report->paper->width/RLIB_PDF_DPI)-GET_MARGIN(r)->bottom_margin;

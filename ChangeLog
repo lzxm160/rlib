@@ -1,4 +1,29 @@
-2004-03-25  Chet Heilman  <set EMAIL_ADDRESS environment variable>
+2004-04-04  Bob Doan  <bdoan@sicompos.com>
+	* Makefile.am: added interfaces for EXTRA_DIST
+	* bin/Makefile.am: moving
+	* bin/rlibc.c: gomoving
+	* bindings/Makefile.am: added interfaces for EXTRA_DIST
+	* bindings/java/java.c: small cleanups so it actually works
+	* bindings/php/php.c: added datasource decoder
+	* configure.in: 
+	* doc/basictraining.sgm: updated doc w/ paperType and interface decoder
+	* doc/capi.sgm: likewise
+	* doc/phpapi.sgm: likewise
+	* libsrc/api.c: datasource decoder && java support
+	* libsrc/datasource.c: likewise
+	* libsrc/free.c: likewise
+	* libsrc/pcode.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/rlib.i: likewise
+	* libsrc/rlib_input.h: likewise
+	* libsrc/util.c: likewise
+	* src/Makefile.am: moving
+	* src/rlibc.c: moving
+
+2004-03-25  Chet Heilman  <cheilman@sicompos.com>
 	* libsrc/pcode.c: (rlib_new_operand):
 		Change order of operand checks to stop calls to variable containers
 		when operand is a constant.

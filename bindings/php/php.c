@@ -55,6 +55,7 @@ ZEND_FUNCTION(rlib_version);
 ZEND_FUNCTION(rlib_set_pdf_font);
 ZEND_FUNCTION(rlib_set_pdf_font_directories);
 ZEND_FUNCTION(rlib_set_output_encoding);
+ZEND_FUNCTION(rlib_datasource_set_decoding);
 ZEND_FUNCTION(rlib_set_report_output_encoding);
 
 ZEND_MODULE_STARTUP_D(rlib);
@@ -89,6 +90,7 @@ zend_function_entry rlib_functions[] =
 	ZEND_FE(rlib_version, NULL)
 	ZEND_FE(rlib_set_pdf_font, NULL)
 	ZEND_FE(rlib_set_pdf_font_directories, NULL)
+	ZEND_FE(rlib_datasource_set_decoding, NULL)
 	ZEND_FE(rlib_set_output_encoding, NULL)
 	ZEND_FE(rlib_set_report_output_encoding, NULL)
     {NULL, NULL, NULL}
@@ -399,7 +401,6 @@ ZEND_FUNCTION(rlib_set_locale) {
 	rlib_set_locale(rip->r, locale);
 }
 
-
 ZEND_FUNCTION(rlib_version) {
 	gint id = -1;
 	zval *z_rip = NULL;
@@ -409,6 +410,21 @@ ZEND_FUNCTION(rlib_version) {
 	RETURN_STRING(ver, TRUE);
 }
 
+ZEND_FUNCTION(rlib_datasource_set_decoding) {
+	zval *z_rip = NULL;
+	gint whatever;
+	gchar *decoding, *datasource;
+	rlib_inout_pass *rip;
+	gint id = -1;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss", &z_rip, &datasource, &whatever, &decoding, &whatever) == FAILURE) {
+		return;
+	}
+	
+	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
+
+	rlib_datasource_set_decoding(rip->r, datasource, decoding);
+}
 
 ZEND_FUNCTION(rlib_set_output_encoding) {
 	zval *z_rip = NULL;
@@ -425,8 +441,6 @@ ZEND_FUNCTION(rlib_set_output_encoding) {
 
 	rlib_set_output_encoding(rip->r, encoding);
 }
-
-
 ZEND_FUNCTION(rlib_set_report_output_encoding) {
 	gint id = -1;
 	gint whatever;

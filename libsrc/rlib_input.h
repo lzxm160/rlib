@@ -17,6 +17,8 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+
+#include <iconv.h>
  
 #ifndef TRUE
 #define TRUE	1
@@ -28,19 +30,18 @@
 
 struct input_filter {
 	gpointer private;
+	iconv_t input_decoder; 
+	
 	gint (*input_close)(gpointer);
 	gpointer (*new_result_from_query)(gpointer, gchar *);
 	gint (*free)(gpointer);
-	
 	gint (*first)(gpointer, gpointer);
 	gint (*next)(gpointer, gpointer);
 	gint (*previous)(gpointer, gpointer);
 	gint (*last)(gpointer, gpointer);
 	gint (*isdone)(gpointer, gpointer);
-
-	gchar * (*get_field_value_as_string)(gpointer, gpointer, gpointer);	
-
+	gchar * (*get_field_value_as_string)(gpointer, gpointer, gpointer);
 	gpointer (*resolve_field_pointer)(gpointer, gpointer, gchar *);
-
 	void (*free_result)(gpointer, gpointer);	
+	gint (*set_encoding)(gpointer);
 };

@@ -68,8 +68,8 @@ gint rlib_add_query_as(rlib *r, gchar *input_source, gchar *sql, gchar *name) {
 		return -1;
 	}
 
-	r->queries[r->queries_count].sql = sql;
-	r->queries[r->queries_count].name = name;
+	r->queries[r->queries_count].sql = g_strdup(sql);
+	r->queries[r->queries_count].name = g_strdup(name);
 	for(i=0;i<r->inputs_count;i++) {
 		if(!strcmp(r->inputs[i].name, input_source)) {
 			r->queries[r->queries_count].input = r->inputs[i].input;
@@ -84,9 +84,8 @@ gint rlib_add_report(rlib *r, gchar *name, gchar *mainloop) {
 	if(r->reports_count > (RLIB_MAXIMUM_REPORTS-1)) {
 		return - 1;
 	}
-	
-	r->reportstorun[r->reports_count].name = name;
-	r->reportstorun[r->reports_count].query = mainloop;
+	r->reportstorun[r->reports_count].name = g_strdup(name);
+	r->reportstorun[r->reports_count].query = g_strdup(mainloop);
 	r->reports_count++;
 	return r->reports_count;
 }
@@ -95,9 +94,10 @@ gint rlib_execute(rlib *r) {
 	gint i,j;
 	char newfile[MAXSTRLEN];
 
-	r->now = time(NULL);// snapshot of the current date/time
+	r->now = time(NULL);
 	for(i=0;i<r->queries_count;i++) {
 		r->results[i].input = r->queries[i].input;
+
 		r->results[i].result = INPUT(r,i)->new_result_from_query(INPUT(r,i), r->queries[i].sql);
 		if(r->results[i].result == NULL) {
 			rlogit("Failed To Run A Query!\n");			
@@ -183,8 +183,8 @@ gint rlib_add_resultset_follower(rlib *r, gchar *leader, gchar *follower) {
 		rlogit("rlib_add_resultset_follower: Followes can't be leaders ;)!\n");
 		return -1;
 	}
-	r->followers[r->resultset_followers_count].leader = ptr_leader;	
-	r->followers[r->resultset_followers_count++].follower = ptr_follower;	
+	r->followers[r->resultset_followers_count].leader = ptr_leader;
+	r->followers[r->resultset_followers_count++].follower = ptr_follower;
 
 	return 0;
 }
@@ -225,7 +225,7 @@ gint rlib_add_parameter(rlib *r, const gchar *name, const gchar *value) {
 		ht = r->htParameters = rlib_hashtable_new_copyboth();
 	}
 	if (ht) {
-		rlib_hashtable_insert(ht, (gpointer) name, (gpointer) value);
+		rlib_hashtable_insert(ht, (gpointer) g_strdup(name), (gpointer) g_strdup(value));
 		result = 0;
 	}
 	return result;
