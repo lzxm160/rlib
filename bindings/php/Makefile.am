@@ -22,6 +22,6 @@
 lib_LTLIBRARIES = librlib.la
 librlib_la_SOURCES = environment.c php.c array_data_source.c rlib_php.h
 librlib_la_LIBADD = -L${top_builddir}/libsrc/ -lr $(RLIB_LIBS)
-INCLUDES = -I${top_srcdir}/libsrc/ $(RLIB_CFLAGS)
+INCLUDES = -I${top_srcdir}/libsrc/ $(RLIB_CFLAGS) $(RLIB_WERROR)
 librlib_la_LDFLAGS = -release $(RLIB_VERSION)
 libdir = $(PHP_EXTENSION_DIR)

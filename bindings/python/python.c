@@ -8,6 +8,8 @@
  * interface file instead. 
  * ----------------------------------------------------------------------------- */
 
+#include "config.h"
+
 #define SWIGPYTHON
 
 #include "Python.h"
@@ -180,6 +182,36 @@ SWIGRUNTIME(void *)
 SWIG_TypeCast(swig_type_info *ty, void *ptr) {
   if ((!ty) || (!ty->converter)) return ptr;
   return (*ty->converter)(ptr);
+}
+
+/* Dynamic pointer casting. Down an inheritance hierarchy */
+SWIGRUNTIME(swig_type_info *) 
+SWIG_TypeDynamicCast(swig_type_info *ty, void **ptr) {
+  swig_type_info *lastty = ty;
+  if (!ty || !ty->dcast) return ty;
+  while (ty && (ty->dcast)) {
+    ty = (*ty->dcast)(ptr);
+    if (ty) lastty = ty;
+  }
+  return lastty;
+}
+
+/* Return the name associated with this type */
+SWIGRUNTIME(const char *)
+SWIG_TypeName(const swig_type_info *ty) {
+  return ty->name;
+}
+
+/* Search for a swig_type_info structure */
+SWIGRUNTIME(swig_type_info *)
+SWIG_TypeQuery(const char *name) {
+  swig_type_info *ty = swig_type_list;
+  while (ty) {
+    if (ty->str && (strcmp(name,ty->str) == 0)) return ty;
+    if (ty->name && (strcmp(name,ty->name) == 0)) return ty;
+    ty = ty->prev;
+  }
+  return 0;
 }
 
 /* Set the clientdata field for a type */
@@ -410,6 +442,20 @@ SWIG_Python_newvarlink(void) {
   return ((PyObject*) result);
 }
 
+SWIGRUNTIME(void)
+SWIG_Python_addvarlink(PyObject *p, char *name, PyObject *(*get_attr)(void), int (*set_attr)(PyObject *p)) {
+  swig_varlinkobject *v;
+  swig_globalvar *gv;
+  v= (swig_varlinkobject *) p;
+  gv = (swig_globalvar *) malloc(sizeof(swig_globalvar));
+  gv->name = (char *) malloc(strlen(name)+1);
+  strcpy(gv->name,name);
+  gv->get_attr = get_attr;
+  gv->set_attr = set_attr;
+  gv->next = v->vars;
+  v->vars = gv;
+}
+
 /* Convert a pointer value */
 SWIGRUNTIME(int)
 SWIG_Python_ConvertPtr(PyObject *obj, void **ptr, swig_type_info *ty, int flags) {
@@ -490,6 +536,47 @@ cobject:
 
 type_error:
   if (flags & SWIG_POINTER_EXCEPTION) {
+    if (ty && c) {
+      char *temp = (char *) malloc(64+strlen(ty->name)+strlen(c));
+      sprintf(temp,"Type error. Got %s, expected %s", c, ty->name);
+      PyErr_SetString(PyExc_TypeError, temp);
+      free((char *) temp);
+    } else {
+      PyErr_SetString(PyExc_TypeError,"Expected a pointer");
+    }
+  }
+  return -1;
+}
+
+/* Convert a pointer value, signal an exception on a type mismatch */
+SWIGRUNTIME(void *)
+SWIG_Python_MustGetPtr(PyObject *obj, swig_type_info *ty, int argnum, int flags) {
+  void *result;
+  SWIG_Python_ConvertPtr(obj, &result, ty, flags | SWIG_POINTER_EXCEPTION);
+  return result;
+}
+
+/* Convert a packed value value */
+SWIGRUNTIME(int)
+SWIG_Python_ConvertPacked(PyObject *obj, void *ptr, int sz, swig_type_info *ty, int flags) {
+  swig_type_info *tc;
+  char  *c = 0;
+
+  if ((!obj) || (!PyString_Check(obj))) goto type_error;
+  c = PyString_AsString(obj);
+  /* Pointer values must start with leading underscore */
+  if (*c != '_') goto type_error;
+  c++;
+  c = SWIG_UnpackData(c,ptr,sz);
+  if (ty) {
+    tc = SWIG_TypeCheck(c,ty);
+    if (!tc) goto type_error;
+  }
+  return 0;
+
+type_error:
+
+  if (flags) {
     if (ty && c) {
       char *temp = (char *) malloc(64+strlen(ty->name)+strlen(c));
       sprintf(temp,"Type error. Got %s, expected %s", c, ty->name);
@@ -599,7 +686,8 @@ SWIG_Python_InstallConstants(PyObject *d, swig_const_info constants[]) {
 /* -------- TYPES TABLE (BEGIN) -------- */
 
 #define  SWIGTYPE_p_rlib swig_types[0] 
-static swig_type_info *swig_types[2];
+#define  SWIGTYPE_p_f_p_rlib_p_void__int swig_types[1] 
+static swig_type_info *swig_types[3];
 
 /* -------- TYPES TABLE (END) -------- */
 
@@ -640,7 +728,7 @@ static PyObject *_wrap_rlib_add_datasource_mysql(PyObject *self, PyObject *args)
     char *arg6 ;
     int result;
     PyObject * obj0 = 0 ;
-    
+#if HAVE_MYSQL
     if(!PyArg_ParseTuple(args,(char *)"Osssss:rlib_add_datasource_mysql",&obj0,&arg2,&arg3,&arg4,&arg5,&arg6)) goto fail;
     if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
     result = (int)rlib_add_datasource_mysql(arg1,arg2,arg3,arg4,arg5,arg6);
@@ -648,6 +736,7 @@ static PyObject *_wrap_rlib_add_datasource_mysql(PyObject *self, PyObject *args)
     resultobj = PyInt_FromLong((long)result);
     return resultobj;
     fail:
+#endif
     return NULL;
 }
 
@@ -659,6 +748,7 @@ static PyObject *_wrap_rlib_add_datasource_postgre(PyObject *self, PyObject *arg
     char *arg3 ;
     int result;
     PyObject * obj0 = 0 ;
+#if HAVE_POSTGRE
     
     if(!PyArg_ParseTuple(args,(char *)"Oss:rlib_add_datasource_postgre",&obj0,&arg2,&arg3)) goto fail;
     if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
@@ -667,6 +757,29 @@ static PyObject *_wrap_rlib_add_datasource_postgre(PyObject *self, PyObject *arg
     resultobj = PyInt_FromLong((long)result);
     return resultobj;
     fail:
+#endif
+    return NULL;
+}
+
+
+static PyObject *_wrap_rlib_add_datasource_odbc(PyObject *self, PyObject *args) {
+    PyObject *resultobj;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    char *arg3 ;
+    char *arg4 ;
+    char *arg5 ;
+    int result;
+    PyObject * obj0 = 0 ;
+#if HAVE_ODBC    
+    if(!PyArg_ParseTuple(args,(char *)"Ossss:rlib_add_datasource_odbc",&obj0,&arg2,&arg3,&arg4,&arg5)) goto fail;
+    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    result = (int)rlib_add_datasource_odbc(arg1,arg2,arg3,arg4,arg5);
+    
+    resultobj = PyInt_FromLong((long)result);
+    return resultobj;
+    fail:
+#endif	 
     return NULL;
 }
 
@@ -709,6 +822,24 @@ static PyObject *_wrap_rlib_add_report(PyObject *self, PyObject *args) {
 }
 
 
+static PyObject *_wrap_rlib_add_report_from_buffer(PyObject *self, PyObject *args) {
+    PyObject *resultobj;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    int result;
+    PyObject * obj0 = 0 ;
+    
+    if(!PyArg_ParseTuple(args,(char *)"Os:rlib_add_report_from_buffer",&obj0,&arg2)) goto fail;
+    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    result = (int)rlib_add_report_from_buffer(arg1,arg2);
+    
+    resultobj = PyInt_FromLong((long)result);
+    return resultobj;
+    fail:
+    return NULL;
+}
+
+
 static PyObject *_wrap_rlib_execute(PyObject *self, PyObject *args) {
     PyObject *resultobj;
     rlib *arg1 = (rlib *) 0 ;
@@ -726,18 +857,17 @@ static PyObject *_wrap_rlib_execute(PyObject *self, PyObject *args) {
 }
 
 
-static PyObject *_wrap_rlib_set_output_format_from_text(PyObject *self, PyObject *args) {
+static PyObject *_wrap_rlib_get_content_type_as_text(PyObject *self, PyObject *args) {
     PyObject *resultobj;
     rlib *arg1 = (rlib *) 0 ;
-    char *arg2 ;
-    int result;
+    char *result;
     PyObject * obj0 = 0 ;
     
-    if(!PyArg_ParseTuple(args,(char *)"Os:rlib_set_output_format_from_text",&obj0,&arg2)) goto fail;
+    if(!PyArg_ParseTuple(args,(char *)"O:rlib_get_content_type_as_text",&obj0)) goto fail;
     if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
-    result = (int)rlib_set_output_format_from_text(arg1,arg2);
+    result = (char *)rlib_get_content_type_as_text(arg1);
     
-    resultobj = PyInt_FromLong((long)result);
+    resultobj = result ? PyString_FromString(result) : Py_BuildValue((char*)"");
     return resultobj;
     fail:
     return NULL;
@@ -761,15 +891,74 @@ static PyObject *_wrap_rlib_spool(PyObject *self, PyObject *args) {
 }
 
 
-static PyObject *_wrap_rlib_free(PyObject *self, PyObject *args) {
+static PyObject *_wrap_rlib_set_output_format(PyObject *self, PyObject *args) {
     PyObject *resultobj;
     rlib *arg1 = (rlib *) 0 ;
+    int arg2 ;
     int result;
     PyObject * obj0 = 0 ;
     
-    if(!PyArg_ParseTuple(args,(char *)"O:rlib_free",&obj0)) goto fail;
+    if(!PyArg_ParseTuple(args,(char *)"Oi:rlib_set_output_format",&obj0,&arg2)) goto fail;
     if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
-    result = (int)rlib_free(arg1);
+    result = (int)rlib_set_output_format(arg1,arg2);
+    
+    resultobj = PyInt_FromLong((long)result);
+    return resultobj;
+    fail:
+    return NULL;
+}
+
+
+static PyObject *_wrap_rlib_add_resultset_follower_n_to_1(PyObject *self, PyObject *args) {
+    PyObject *resultobj;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    char *arg3 ;
+    char *arg4 ;
+    char *arg5 ;
+    int result;
+    PyObject * obj0 = 0 ;
+    
+    if(!PyArg_ParseTuple(args,(char *)"Ossss:rlib_add_resultset_follower_n_to_1",&obj0,&arg2,&arg3,&arg4,&arg5)) goto fail;
+    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    result = (int)rlib_add_resultset_follower_n_to_1(arg1,arg2,arg3,arg4,arg5);
+    
+    resultobj = PyInt_FromLong((long)result);
+    return resultobj;
+    fail:
+    return NULL;
+}
+
+
+static PyObject *_wrap_rlib_add_resultset_follower(PyObject *self, PyObject *args) {
+    PyObject *resultobj;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    char *arg3 ;
+    int result;
+    PyObject * obj0 = 0 ;
+    
+    if(!PyArg_ParseTuple(args,(char *)"Oss:rlib_add_resultset_follower",&obj0,&arg2,&arg3)) goto fail;
+    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    result = (int)rlib_add_resultset_follower(arg1,arg2,arg3);
+    
+    resultobj = PyInt_FromLong((long)result);
+    return resultobj;
+    fail:
+    return NULL;
+}
+
+
+static PyObject *_wrap_rlib_set_output_format_from_text(PyObject *self, PyObject *args) {
+    PyObject *resultobj;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    int result;
+    PyObject * obj0 = 0 ;
+    
+    if(!PyArg_ParseTuple(args,(char *)"Os:rlib_set_output_format_from_text",&obj0,&arg2)) goto fail;
+    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    result = (int)rlib_set_output_format_from_text(arg1,arg2);
     
     resultobj = PyInt_FromLong((long)result);
     return resultobj;
@@ -798,12 +987,12 @@ static PyObject *_wrap_rlib_get_output(PyObject *self, PyObject *args) {
 static PyObject *_wrap_rlib_get_output_length(PyObject *self, PyObject *args) {
     PyObject *resultobj;
     rlib *arg1 = (rlib *) 0 ;
-    long result;
+    int result;
     PyObject * obj0 = 0 ;
     
     if(!PyArg_ParseTuple(args,(char *)"O:rlib_get_output_length",&obj0)) goto fail;
     if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
-    result = (long)rlib_get_output_length(arg1);
+    result = (int)rlib_get_output_length(arg1);
     
     resultobj = PyInt_FromLong((long)result);
     return resultobj;
@@ -812,19 +1001,22 @@ static PyObject *_wrap_rlib_get_output_length(PyObject *self, PyObject *args) {
 }
 
 
-static PyObject *_wrap_rlib_mysql_report(PyObject *self, PyObject *args) {
+static PyObject *_wrap_rlib_signal_connect(PyObject *self, PyObject *args) {
     PyObject *resultobj;
-    char *arg1 ;
-    char *arg2 ;
-    char *arg3 ;
-    char *arg4 ;
-    char *arg5 ;
-    char *arg6 ;
-    char *arg7 ;
+    rlib *arg1 = (rlib *) 0 ;
+    int arg2 ;
+    int (*arg3)(rlib *,void *) = (int (*)(rlib *,void *)) 0 ;
+    void *arg4 = (void *) 0 ;
     int result;
+    PyObject * obj0 = 0 ;
+    PyObject * obj2 = 0 ;
+    PyObject * obj3 = 0 ;
     
-    if(!PyArg_ParseTuple(args,(char *)"sssssss:rlib_mysql_report",&arg1,&arg2,&arg3,&arg4,&arg5,&arg6,&arg7)) goto fail;
-    result = (int)rlib_mysql_report(arg1,arg2,arg3,arg4,arg5,arg6,arg7);
+    if(!PyArg_ParseTuple(args,(char *)"OiOO:rlib_signal_connect",&obj0,&arg2,&obj2,&obj3)) goto fail;
+    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    if ((SWIG_ConvertPtr(obj2,(void **) &arg3, SWIGTYPE_p_f_p_rlib_p_void__int,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    if ((SWIG_ConvertPtr(obj3,(void **) &arg4, 0, SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    result = (int)rlib_signal_connect(arg1,arg2,arg3,arg4);
     
     resultobj = PyInt_FromLong((long)result);
     return resultobj;
@@ -833,37 +1025,22 @@ static PyObject *_wrap_rlib_mysql_report(PyObject *self, PyObject *args) {
 }
 
 
-static PyObject *_wrap_rlib_postgre_report(PyObject *self, PyObject *args) {
-    PyObject *resultobj;
-    char *arg1 ;
-    char *arg2 ;
-    char *arg3 ;
-    char *arg4 ;
-    int result;
-    
-    if(!PyArg_ParseTuple(args,(char *)"ssss:rlib_postgre_report",&arg1,&arg2,&arg3,&arg4)) goto fail;
-    result = (int)rlib_postgre_report(arg1,arg2,arg3,arg4);
-    
-    resultobj = PyInt_FromLong((long)result);
-    return resultobj;
-    fail:
-    return NULL;
-}
-
-
-static PyObject *_wrap_rlib_add_datasource_odbc(PyObject *self, PyObject *args) {
+static PyObject *_wrap_rlib_signal_connect_string(PyObject *self, PyObject *args) {
     PyObject *resultobj;
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;
-    char *arg3 ;
-    char *arg4 ;
-    char *arg5 ;
+    int (*arg3)(rlib *,void *) = (int (*)(rlib *,void *)) 0 ;
+    void *arg4 = (void *) 0 ;
     int result;
     PyObject * obj0 = 0 ;
+    PyObject * obj2 = 0 ;
+    PyObject * obj3 = 0 ;
     
-    if(!PyArg_ParseTuple(args,(char *)"Ossss:rlib_add_datasource_odbc",&obj0,&arg2,&arg3,&arg4,&arg5)) goto fail;
+    if(!PyArg_ParseTuple(args,(char *)"OsOO:rlib_signal_connect_string",&obj0,&arg2,&obj2,&obj3)) goto fail;
     if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
-    result = (int)rlib_add_datasource_odbc(arg1,arg2,arg3,arg4,arg5);
+    if ((SWIG_ConvertPtr(obj2,(void **) &arg3, SWIGTYPE_p_f_p_rlib_p_void__int,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    if ((SWIG_ConvertPtr(obj3,(void **) &arg4, 0, SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    result = (int)rlib_signal_connect_string(arg1,arg2,arg3,arg4);
     
     resultobj = PyInt_FromLong((long)result);
     return resultobj;
@@ -872,17 +1049,15 @@ static PyObject *_wrap_rlib_add_datasource_odbc(PyObject *self, PyObject *args) 
 }
 
 
-static PyObject *_wrap_rlib_add_resultset_follower(PyObject *self, PyObject *args) {
+static PyObject *_wrap_rlib_query_refresh(PyObject *self, PyObject *args) {
     PyObject *resultobj;
     rlib *arg1 = (rlib *) 0 ;
-    char *arg2 ;
-    char *arg3 ;
     int result;
     PyObject * obj0 = 0 ;
     
-    if(!PyArg_ParseTuple(args,(char *)"Oss:rlib_add_resultset_follower",&obj0,&arg2,&arg3)) goto fail;
+    if(!PyArg_ParseTuple(args,(char *)"O:rlib_query_refresh",&obj0)) goto fail;
     if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
-    result = (int)rlib_add_resultset_follower(arg1,arg2,arg3);
+    result = (int)rlib_query_refresh(arg1);
     
     resultobj = PyInt_FromLong((long)result);
     return resultobj;
@@ -910,6 +1085,148 @@ static PyObject *_wrap_rlib_add_parameter(PyObject *self, PyObject *args) {
 }
 
 
+static PyObject *_wrap_rlib_set_locale(PyObject *self, PyObject *args) {
+    PyObject *resultobj;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    int result;
+    PyObject * obj0 = 0 ;
+    
+    if(!PyArg_ParseTuple(args,(char *)"Os:rlib_set_locale",&obj0,&arg2)) goto fail;
+    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    result = (int)rlib_set_locale(arg1,arg2);
+    
+    resultobj = PyInt_FromLong((long)result);
+    return resultobj;
+    fail:
+    return NULL;
+}
+
+
+static PyObject *_wrap_rlib_set_output_parameter(PyObject *self, PyObject *args) {
+    PyObject *resultobj;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    char *arg3 ;
+    PyObject * obj0 = 0 ;
+    
+    if(!PyArg_ParseTuple(args,(char *)"Oss:rlib_set_output_parameter",&obj0,&arg2,&arg3)) goto fail;
+    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    rlib_set_output_parameter(arg1,arg2,arg3);
+    
+    Py_INCREF(Py_None); resultobj = Py_None;
+    return resultobj;
+    fail:
+    return NULL;
+}
+
+
+static PyObject *_wrap_rlib_set_output_encoding(PyObject *self, PyObject *args) {
+    PyObject *resultobj;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    PyObject * obj0 = 0 ;
+    
+    if(!PyArg_ParseTuple(args,(char *)"Os:rlib_set_output_encoding",&obj0,&arg2)) goto fail;
+    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    rlib_set_output_encoding(arg1,(char const *)arg2);
+    
+    Py_INCREF(Py_None); resultobj = Py_None;
+    return resultobj;
+    fail:
+    return NULL;
+}
+
+
+static PyObject *_wrap_rlib_set_database_encoding(PyObject *self, PyObject *args) {
+    PyObject *resultobj;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    PyObject * obj0 = 0 ;
+    
+    if(!PyArg_ParseTuple(args,(char *)"Os:rlib_set_database_encoding",&obj0,&arg2)) goto fail;
+    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    rlib_set_database_encoding(arg1,(char const *)arg2);
+    
+    Py_INCREF(Py_None); resultobj = Py_None;
+    return resultobj;
+    fail:
+    return NULL;
+}
+
+
+static PyObject *_wrap_rlib_set_datasource_encoding(PyObject *self, PyObject *args) {
+    PyObject *resultobj;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    char *arg3 ;
+    int result;
+    PyObject * obj0 = 0 ;
+    
+    if(!PyArg_ParseTuple(args,(char *)"Oss:rlib_set_datasource_encoding",&obj0,&arg2,&arg3)) goto fail;
+    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    result = (int)rlib_set_datasource_encoding(arg1,arg2,arg3);
+    
+    resultobj = PyInt_FromLong((long)result);
+    return resultobj;
+    fail:
+    return NULL;
+}
+
+
+static PyObject *_wrap_rlib_set_parameter_encoding(PyObject *self, PyObject *args) {
+    PyObject *resultobj;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    PyObject * obj0 = 0 ;
+    
+    if(!PyArg_ParseTuple(args,(char *)"Os:rlib_set_parameter_encoding",&obj0,&arg2)) goto fail;
+    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    rlib_set_parameter_encoding(arg1,(char const *)arg2);
+    
+    Py_INCREF(Py_None); resultobj = Py_None;
+    return resultobj;
+    fail:
+    return NULL;
+}
+
+
+static PyObject *_wrap_rlib_set_encodings(PyObject *self, PyObject *args) {
+    PyObject *resultobj;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    char *arg3 ;
+    char *arg4 ;
+    PyObject * obj0 = 0 ;
+    
+    if(!PyArg_ParseTuple(args,(char *)"Osss:rlib_set_encodings",&obj0,&arg2,&arg3,&arg4)) goto fail;
+    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    rlib_set_encodings(arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
+    
+    Py_INCREF(Py_None); resultobj = Py_None;
+    return resultobj;
+    fail:
+    return NULL;
+}
+
+
+static PyObject *_wrap_rlib_free(PyObject *self, PyObject *args) {
+    PyObject *resultobj;
+    rlib *arg1 = (rlib *) 0 ;
+    int result;
+    PyObject * obj0 = 0 ;
+    
+    if(!PyArg_ParseTuple(args,(char *)"O:rlib_free",&obj0)) goto fail;
+    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    result = (int)rlib_free(arg1);
+    
+    resultobj = PyInt_FromLong((long)result);
+    return resultobj;
+    fail:
+    return NULL;
+}
+
+
 static PyObject *_wrap_rlib_version(PyObject *self, PyObject *args) {
     PyObject *resultobj;
     char *result;
@@ -924,24 +1241,35 @@ static PyObject *_wrap_rlib_version(PyObject *self, PyObject *args) {
 }
 
 
-
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"rlib_init", _wrap_rlib_init, METH_VARARGS },
 	 { (char *)"rlib_add_datasource_mysql", _wrap_rlib_add_datasource_mysql, METH_VARARGS },
 	 { (char *)"rlib_add_datasource_postgre", _wrap_rlib_add_datasource_postgre, METH_VARARGS },
+	 { (char *)"rlib_add_datasource_odbc", _wrap_rlib_add_datasource_odbc, METH_VARARGS },
 	 { (char *)"rlib_add_query_as", _wrap_rlib_add_query_as, METH_VARARGS },
 	 { (char *)"rlib_add_report", _wrap_rlib_add_report, METH_VARARGS },
+	 { (char *)"rlib_add_report_from_buffer", _wrap_rlib_add_report_from_buffer, METH_VARARGS },
 	 { (char *)"rlib_execute", _wrap_rlib_execute, METH_VARARGS },
-	 { (char *)"rlib_set_output_format_from_text", _wrap_rlib_set_output_format_from_text, METH_VARARGS },
+	 { (char *)"rlib_get_content_type_as_text", _wrap_rlib_get_content_type_as_text, METH_VARARGS },
 	 { (char *)"rlib_spool", _wrap_rlib_spool, METH_VARARGS },
-	 { (char *)"rlib_free", _wrap_rlib_free, METH_VARARGS },
+	 { (char *)"rlib_set_output_format", _wrap_rlib_set_output_format, METH_VARARGS },
+	 { (char *)"rlib_add_resultset_follower_n_to_1", _wrap_rlib_add_resultset_follower_n_to_1, METH_VARARGS },
+	 { (char *)"rlib_add_resultset_follower", _wrap_rlib_add_resultset_follower, METH_VARARGS },
+	 { (char *)"rlib_set_output_format_from_text", _wrap_rlib_set_output_format_from_text, METH_VARARGS },
 	 { (char *)"rlib_get_output", _wrap_rlib_get_output, METH_VARARGS },
 	 { (char *)"rlib_get_output_length", _wrap_rlib_get_output_length, METH_VARARGS },
-	 { (char *)"rlib_mysql_report", _wrap_rlib_mysql_report, METH_VARARGS },
-	 { (char *)"rlib_postgre_report", _wrap_rlib_postgre_report, METH_VARARGS },
-	 { (char *)"rlib_add_datasource_odbc", _wrap_rlib_add_datasource_odbc, METH_VARARGS },
-	 { (char *)"rlib_add_resultset_follower", _wrap_rlib_add_resultset_follower, METH_VARARGS },
+	 { (char *)"rlib_signal_connect", _wrap_rlib_signal_connect, METH_VARARGS },
+	 { (char *)"rlib_signal_connect_string", _wrap_rlib_signal_connect_string, METH_VARARGS },
+	 { (char *)"rlib_query_refresh", _wrap_rlib_query_refresh, METH_VARARGS },
 	 { (char *)"rlib_add_parameter", _wrap_rlib_add_parameter, METH_VARARGS },
+	 { (char *)"rlib_set_locale", _wrap_rlib_set_locale, METH_VARARGS },
+	 { (char *)"rlib_set_output_parameter", _wrap_rlib_set_output_parameter, METH_VARARGS },
+	 { (char *)"rlib_set_output_encoding", _wrap_rlib_set_output_encoding, METH_VARARGS },
+	 { (char *)"rlib_set_database_encoding", _wrap_rlib_set_database_encoding, METH_VARARGS },
+	 { (char *)"rlib_set_datasource_encoding", _wrap_rlib_set_datasource_encoding, METH_VARARGS },
+	 { (char *)"rlib_set_parameter_encoding", _wrap_rlib_set_parameter_encoding, METH_VARARGS },
+	 { (char *)"rlib_set_encodings", _wrap_rlib_set_encodings, METH_VARARGS },
+	 { (char *)"rlib_free", _wrap_rlib_free, METH_VARARGS },
 	 { (char *)"rlib_version", _wrap_rlib_version, METH_VARARGS },
 	 { NULL, NULL }
 };
@@ -950,9 +1278,11 @@ static PyMethodDef SwigMethods[] = {
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
 static swig_type_info _swigt__p_rlib[] = {{"_p_rlib", 0, "rlib *", 0},{"_p_rlib"},{0}};
+static swig_type_info _swigt__p_f_p_rlib_p_void__int[] = {{"_p_f_p_rlib_p_void__int", 0, "int (*)(rlib *,void *)", 0},{"_p_f_p_rlib_p_void__int"},{0}};
 
 static swig_type_info *swig_types_initial[] = {
 _swigt__p_rlib, 
+_swigt__p_f_p_rlib_p_void__int, 
 0
 };
 

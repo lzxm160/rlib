@@ -187,7 +187,6 @@ gfloat nheight) {
 #if USEPDFLOCALE
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
-	gfloat xscale = 1.0, yscale = 1.0;
 	gint realtype=RPDF_IMAGE_JPEG;
 	pdf_turn_text_off(r);
 	rpdf_image(OUTPUT_PRIVATE(r)->pdf, left_origin, bottom_origin, nwidth, nheight, realtype, nname);
@@ -245,7 +244,6 @@ static void pdf_start_new_page(rlib *r, struct rlib_part *part) {
 #endif
 	gint i=0;
 	gint pages_across = part->pages_across;
-	gint page_number = r->current_page_number * pages_across;
 	gchar paper_type[40];
 	sprintf(paper_type, "0 0 %ld %ld", part->paper->width, part->paper->height);
 	for(i=0;i<pages_across;i++) {

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003 SICOM Systems, INC.
+ *  Copyright (C) 2003-2005 SICOM Systems, INC.
  *
  *  Authors: Bob Doan <bdoan@sicompos.com>
  *
@@ -26,23 +26,29 @@
 rlib * rlib_init();
 int rlib_add_datasource_mysql(rlib *r, char *input_name, char *database_host, char *database_user, char *database_password, char *database_database);
 int rlib_add_datasource_postgre(rlib *r, char *input_name, char *conn);
+int rlib_add_datasource_odbc(rlib *r, char *input_name, char *source, char *user, char *password);
 int rlib_add_query_as(rlib *r, char *input_source, char *sql, char *name);
 int rlib_add_report(rlib *r, char *name);
 int rlib_add_report_from_buffer(rlib *r, char *buffer);
 int rlib_execute(rlib *r);
-int rlib_set_output_format_from_text(rlib *r, char * name);
+char * rlib_get_content_type_as_text(rlib *r);
 int rlib_spool(rlib *r);
-int rlib_free(rlib *r);
-char *rlib_get_output(rlib *r);
-long rlib_get_output_length(rlib *r);
-int rlib_mysql_report(char *hostname, char *username, char *password, char *database, char *xmlfilename, char *sqlquery, char *outputformat);
-int rlib_postgre_report(char *connstr, char *xmlfilename, char *sqlquery, char *outputformat);
-int rlib_add_datasource_odbc(rlib *r, char *input_name, char *source, char *user, char *password);
+int rlib_set_output_format(rlib *r, int format);
+int rlib_add_resultset_follower_n_to_1(rlib *r, char *leader, char *leader_field, char *follower, char *follower_field);
 int rlib_add_resultset_follower(rlib *r, char *leader, char *follower);
+int rlib_set_output_format_from_text(rlib *r, char *name);
+char *rlib_get_output(rlib *r);
+int rlib_get_output_length(rlib *r);
+int rlib_signal_connect(rlib *r, int signal_number, int (*signal_function)(rlib *, void *), void * data);
+int rlib_signal_connect_string(rlib *r, char *signal_name, int (*signal_function)(rlib *, void *), void * data);
+int rlib_query_refresh(rlib *r);
 int rlib_add_parameter(rlib *r, const char *name, const char *value);
-
-char *rlib_version();
+int rlib_set_locale(rlib *r, char *locale);
+void rlib_set_output_parameter(rlib *r, char *parameter, char *value);
 void rlib_set_output_encoding(rlib *r, const char *encoding);
-void rlib_set_report_output_encoding(rlib *r, int reportnum, const char *encoding);
-void rlib_set_pdf_font(rlib *r, const char *encoding, const char *fontname);
-void rlib_set_pdf_font_directories(rlib *r, const char *d1, const char *d2);
+void rlib_set_database_encoding(rlib *r, const char *encoding);
+int rlib_set_datasource_encoding(rlib *r, char *input_name, char *encoding);
+void rlib_set_parameter_encoding(rlib *r, const char *encoding);
+void rlib_set_encodings(rlib *r, const char *outputencoding, const char *dbencoding, const char *paramencoding);
+int rlib_free(rlib *r);
+char *rlib_version(void);

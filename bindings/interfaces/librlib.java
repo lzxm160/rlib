@@ -21,28 +21,48 @@ public class librlib {
     return librlibJNI.rlib_add_datasource_postgre(SWIGTYPE_p_rlib.getCPtr(r), input_name, conn);
   }
 
+  public static int rlib_add_datasource_odbc(SWIGTYPE_p_rlib r, String input_name, String source, String user, String password) {
+    return librlibJNI.rlib_add_datasource_odbc(SWIGTYPE_p_rlib.getCPtr(r), input_name, source, user, password);
+  }
+
   public static int rlib_add_query_as(SWIGTYPE_p_rlib r, String input_source, String sql, String name) {
     return librlibJNI.rlib_add_query_as(SWIGTYPE_p_rlib.getCPtr(r), input_source, sql, name);
   }
 
-  public static int rlib_add_report(SWIGTYPE_p_rlib r, String name, String mainloop) {
-    return librlibJNI.rlib_add_report(SWIGTYPE_p_rlib.getCPtr(r), name, mainloop);
+  public static int rlib_add_report(SWIGTYPE_p_rlib r, String name) {
+    return librlibJNI.rlib_add_report(SWIGTYPE_p_rlib.getCPtr(r), name);
+  }
+
+  public static int rlib_add_report_from_buffer(SWIGTYPE_p_rlib r, String buffer) {
+    return librlibJNI.rlib_add_report_from_buffer(SWIGTYPE_p_rlib.getCPtr(r), buffer);
   }
 
   public static int rlib_execute(SWIGTYPE_p_rlib r) {
     return librlibJNI.rlib_execute(SWIGTYPE_p_rlib.getCPtr(r));
   }
 
-  public static int rlib_set_output_format_from_text(SWIGTYPE_p_rlib r, String name) {
-    return librlibJNI.rlib_set_output_format_from_text(SWIGTYPE_p_rlib.getCPtr(r), name);
+  public static String rlib_get_content_type_as_text(SWIGTYPE_p_rlib r) {
+    return librlibJNI.rlib_get_content_type_as_text(SWIGTYPE_p_rlib.getCPtr(r));
   }
 
   public static int rlib_spool(SWIGTYPE_p_rlib r) {
     return librlibJNI.rlib_spool(SWIGTYPE_p_rlib.getCPtr(r));
   }
 
-  public static int rlib_free(SWIGTYPE_p_rlib r) {
-    return librlibJNI.rlib_free(SWIGTYPE_p_rlib.getCPtr(r));
+  public static int rlib_set_output_format(SWIGTYPE_p_rlib r, int format) {
+    return librlibJNI.rlib_set_output_format(SWIGTYPE_p_rlib.getCPtr(r), format);
+  }
+
+  public static int rlib_add_resultset_follower_n_to_1(SWIGTYPE_p_rlib r, String leader, String leader_field, String follower, String follower_field) {
+    return librlibJNI.rlib_add_resultset_follower_n_to_1(SWIGTYPE_p_rlib.getCPtr(r), leader, leader_field, follower, follower_field);
+  }
+
+  public static int rlib_add_resultset_follower(SWIGTYPE_p_rlib r, String leader, String follower) {
+    return librlibJNI.rlib_add_resultset_follower(SWIGTYPE_p_rlib.getCPtr(r), leader, follower);
+  }
+
+  public static int rlib_set_output_format_from_text(SWIGTYPE_p_rlib r, String name) {
+    return librlibJNI.rlib_set_output_format_from_text(SWIGTYPE_p_rlib.getCPtr(r), name);
   }
 
   public static String rlib_get_output(SWIGTYPE_p_rlib r) {
@@ -53,44 +73,56 @@ public class librlib {
     return librlibJNI.rlib_get_output_length(SWIGTYPE_p_rlib.getCPtr(r));
   }
 
-  public static int rlib_mysql_report(String hostname, String username, String password, String database, String xmlfilename, String sqlquery, String outputformat) {
-    return librlibJNI.rlib_mysql_report(hostname, username, password, database, xmlfilename, sqlquery, outputformat);
+  public static int rlib_signal_connect(SWIGTYPE_p_rlib r, int signal_number, SWIGTYPE_p_f_p_rlib_p_void__int signal_function, SWIGTYPE_p_void data) {
+    return librlibJNI.rlib_signal_connect(SWIGTYPE_p_rlib.getCPtr(r), signal_number, SWIGTYPE_p_f_p_rlib_p_void__int.getCPtr(signal_function), SWIGTYPE_p_void.getCPtr(data));
   }
 
-  public static int rlib_postgre_report(String connstr, String xmlfilename, String sqlquery, String outputformat) {
-    return librlibJNI.rlib_postgre_report(connstr, xmlfilename, sqlquery, outputformat);
+  public static int rlib_signal_connect_string(SWIGTYPE_p_rlib r, String signal_name, SWIGTYPE_p_f_p_rlib_p_void__int signal_function, SWIGTYPE_p_void data) {
+    return librlibJNI.rlib_signal_connect_string(SWIGTYPE_p_rlib.getCPtr(r), signal_name, SWIGTYPE_p_f_p_rlib_p_void__int.getCPtr(signal_function), SWIGTYPE_p_void.getCPtr(data));
   }
 
-  public static int rlib_add_datasource_odbc(SWIGTYPE_p_rlib r, String input_name, String source, String user, String password) {
-    return librlibJNI.rlib_add_datasource_odbc(SWIGTYPE_p_rlib.getCPtr(r), input_name, source, user, password);
-  }
-
-  public static int rlib_add_resultset_follower(SWIGTYPE_p_rlib r, String leader, String follower) {
-    return librlibJNI.rlib_add_resultset_follower(SWIGTYPE_p_rlib.getCPtr(r), leader, follower);
+  public static int rlib_query_refresh(SWIGTYPE_p_rlib r) {
+    return librlibJNI.rlib_query_refresh(SWIGTYPE_p_rlib.getCPtr(r));
   }
 
   public static int rlib_add_parameter(SWIGTYPE_p_rlib r, String name, String value) {
     return librlibJNI.rlib_add_parameter(SWIGTYPE_p_rlib.getCPtr(r), name, value);
   }
 
-  public static String rlib_version() {
-    return librlibJNI.rlib_version();
+  public static int rlib_set_locale(SWIGTYPE_p_rlib r, String locale) {
+    return librlibJNI.rlib_set_locale(SWIGTYPE_p_rlib.getCPtr(r), locale);
+  }
+
+  public static void rlib_set_output_parameter(SWIGTYPE_p_rlib r, String parameter, String value) {
+    librlibJNI.rlib_set_output_parameter(SWIGTYPE_p_rlib.getCPtr(r), parameter, value);
   }
 
   public static void rlib_set_output_encoding(SWIGTYPE_p_rlib r, String encoding) {
     librlibJNI.rlib_set_output_encoding(SWIGTYPE_p_rlib.getCPtr(r), encoding);
   }
 
-  public static void rlib_set_report_output_encoding(SWIGTYPE_p_rlib r, int reportnum, String encoding) {
-    librlibJNI.rlib_set_report_output_encoding(SWIGTYPE_p_rlib.getCPtr(r), reportnum, encoding);
+  public static void rlib_set_database_encoding(SWIGTYPE_p_rlib r, String encoding) {
+    librlibJNI.rlib_set_database_encoding(SWIGTYPE_p_rlib.getCPtr(r), encoding);
   }
 
-  public static void rlib_set_pdf_font(SWIGTYPE_p_rlib r, String encoding, String fontname) {
-    librlibJNI.rlib_set_pdf_font(SWIGTYPE_p_rlib.getCPtr(r), encoding, fontname);
+  public static int rlib_set_datasource_encoding(SWIGTYPE_p_rlib r, String input_name, String encoding) {
+    return librlibJNI.rlib_set_datasource_encoding(SWIGTYPE_p_rlib.getCPtr(r), input_name, encoding);
   }
 
-  public static void rlib_set_pdf_font_directories(SWIGTYPE_p_rlib r, String d1, String d2) {
-    librlibJNI.rlib_set_pdf_font_directories(SWIGTYPE_p_rlib.getCPtr(r), d1, d2);
+  public static void rlib_set_parameter_encoding(SWIGTYPE_p_rlib r, String encoding) {
+    librlibJNI.rlib_set_parameter_encoding(SWIGTYPE_p_rlib.getCPtr(r), encoding);
+  }
+
+  public static void rlib_set_encodings(SWIGTYPE_p_rlib r, String outputencoding, String dbencoding, String paramencoding) {
+    librlibJNI.rlib_set_encodings(SWIGTYPE_p_rlib.getCPtr(r), outputencoding, dbencoding, paramencoding);
+  }
+
+  public static int rlib_free(SWIGTYPE_p_rlib r) {
+    return librlibJNI.rlib_free(SWIGTYPE_p_rlib.getCPtr(r));
+  }
+
+  public static String rlib_version() {
+    return librlibJNI.rlib_version();
   }
 
 }

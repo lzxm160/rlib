@@ -31,7 +31,7 @@ libr_la_SOURCES = parsexml.c reportgen.c layout.c graphing.c api.c resolution.c 
 
 libr_la_LIBADD = $(RLIB_LIBS) -L${top_builddir}/rpdf/ -lrpdf
 
-INCLUDES = $(RLIB_CFLAGS) -I../rpdf
+INCLUDES = $(RLIB_CFLAGS) $(RLIB_WERROR) -I../rpdf
 
 include_HEADERS = rlib.h rlib_input.h containers.h charencoder.h datetime.h\
 	util.h value.h

@@ -1,4 +1,29 @@
 2005-03-06  Bob Doan  <bdoan@sicompos.com>
+	* bindings/interfaces/Makefile.am: Make python and java work again, make utf8 disabled the defualt, don't -Werror on swig stuff 
+	* bindings/interfaces/SWIGTYPE_p_f_p_rlib_p_void__int.java: likewise
+	* bindings/interfaces/SWIGTYPE_p_void.java:  likewise
+	* bindings/interfaces/librlib.java: likewise
+	* bindings/interfaces/librlib.py: likewise
+	* bindings/interfaces/librlibJNI.java:  likewise
+	* bindings/java/java.c: likewise
+	* bindings/php/Makefile.am: likewise
+	* bindings/python/python.c: likewise
+	* configure.in: likewise
+	* doc/Makefile: likewise
+	* inputs/mysql/Makefile.am: likewise
+	* inputs/odbc/Makefile.am: likewise
+	* inputs/postgre/Makefile.am: likewise
+	* libsrc/Makefile.am: likewise
+	* libsrc/free.c: likewise
+	* libsrc/pdf.c:  likewise
+	* libsrc/rlib.i: likewise
+	* rpdf/Makefile.am: likewise
+	* rpdf/rpdf.h: likewise
+	* src/examples/java/Makefile.am: likewise
+	* src/examples/java/example.java:  likewise
+	* src/examples/python/example.py: likewise
+
+2005-03-06  Bob Doan  <bdoan@sicompos.com>
 	* Makefile.am: Added docs
 	* README: spelling
 	* README-JPEG: added JPEG READ ME STUFF

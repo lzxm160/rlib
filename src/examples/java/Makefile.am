@@ -22,6 +22,8 @@
 
 JAVAROOT=.
 
+javafiles = librlib.java librlibJNI.java SWIGTYPE_p_f_p_rlib_p_void__int.java SWIGTYPE_p_rlib.java SWIGTYPE_p_void.java
+
 java_JAVA = SWIGTYPE_p_rlib.java librlib.java librlibJNI.java example.java 
 
 noinst_SCRIPTS = products.xml
@@ -30,4 +32,4 @@ products.xml:
 	cp ../common/products.xml .
 	cp ../../../bindings/interfaces/*.java .
 
-CLEANFILES = *.class *.xml SWIGTYPE_p_rlib.java librlib.java librlibJNI.java
+CLEANFILES = *.class *.xml $(javafiles)

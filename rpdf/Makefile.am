@@ -25,7 +25,7 @@ librpdf_la_SOURCES = rpdf.c rpdf.h
 
 librpdf_la_LIBADD = $(RPDF_LIBS) 
 
-INCLUDES = $(RPDF_CFLAGS)
+INCLUDES = $(RPDF_CFLAGS) $(RLIB_WERROR)
 
 include_HEADERS = rpdf.h
 

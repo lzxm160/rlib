@@ -289,4 +289,3 @@ gdouble rpdf_text_width(struct rpdf *pdf, gchar *text);
 gint rpdf_arc(struct rpdf *pdf, gdouble x, gdouble y, gdouble radius, gdouble start_angle, gdouble end_angle);
 gchar *rpdf_get_buffer(struct rpdf *pdf, gint *length);
 void rpdf_free(struct rpdf *pdf);
-static gchar * obj_printf(gchar *obj, gchar *fmt, ...);

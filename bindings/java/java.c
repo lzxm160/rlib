@@ -8,6 +8,7 @@
  * interface file instead. 
  * ----------------------------------------------------------------------------- */
 
+#include "config.h"
 
 #if defined(__GNUC__)
     typedef long long __int64; /*For gcc on Windows */
@@ -36,7 +37,6 @@ typedef struct {
 } SWIG_JavaExceptions_t;
 
 
-#if 0
 static void SWIG_JavaThrowException(JNIEnv *jenv, SWIG_JavaExceptionCodes code, const char *msg) {
   jclass excep;
   static const SWIG_JavaExceptions_t java_exceptions[] = {
@@ -60,7 +60,7 @@ static void SWIG_JavaThrowException(JNIEnv *jenv, SWIG_JavaExceptionCodes code, 
   if (excep)
     (*jenv)->ThrowNew(jenv, excep, msg);
 }
-#endif
+
 
 /* Contract support */
 
@@ -88,6 +88,7 @@ JNIEXPORT jlong JNICALL Java_librlibJNI_rlib_1init(JNIEnv *jenv, jclass jcls) {
 
 
 JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1datasource_1mysql(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5, jstring jarg6) {
+#if HAVE_MYSQL
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;
@@ -99,6 +100,7 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1datasource_1mysql(JNIEnv *jenv
     
     (void)jenv;
     (void)jcls;
+	 
     arg1 = *(rlib **)&jarg1; 
     {
         arg2 = 0;
@@ -154,10 +156,14 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1datasource_1mysql(JNIEnv *jenv
         if (arg6) (*jenv)->ReleaseStringUTFChars(jenv, jarg6, arg6); 
     }
     return jresult;
+#else
+	return 0;
+#endif	 
 }
 
 
 JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1datasource_1postgre(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3) {
+#if HAVE_POSTGRE
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;
@@ -191,345 +197,14 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1datasource_1postgre(JNIEnv *je
         if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, arg3); 
     }
     return jresult;
-}
-
-
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1query_1as(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
-    jint jresult = 0 ;
-    rlib *arg1 = (rlib *) 0 ;
-    char *arg2 ;
-    char *arg3 ;
-    char *arg4 ;
-    int result;
-    
-    (void)jenv;
-    (void)jcls;
-    arg1 = *(rlib **)&jarg1; 
-    {
-        arg2 = 0;
-        if (jarg2) {
-            arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
-            if (!arg2) return 0;
-        }
-    }
-    {
-        arg3 = 0;
-        if (jarg3) {
-            arg3 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg3, 0);
-            if (!arg3) return 0;
-        }
-    }
-    {
-        arg4 = 0;
-        if (jarg4) {
-            arg4 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg4, 0);
-            if (!arg4) return 0;
-        }
-    }
-    result = (int)rlib_add_query_as(arg1,arg2,arg3,arg4);
-    
-    jresult = (jint)result; 
-    {
-        if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, arg2); 
-    }
-    {
-        if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, arg3); 
-    }
-    {
-        if (arg4) (*jenv)->ReleaseStringUTFChars(jenv, jarg4, arg4); 
-    }
-    return jresult;
-}
-
-
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1report(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3) {
-    jint jresult = 0 ;
-    rlib *arg1 = (rlib *) 0 ;
-    char *arg2 ;
-    char *arg3 ;
-    int result;
-    
-    (void)jenv;
-    (void)jcls;
-    arg1 = *(rlib **)&jarg1; 
-    {
-        arg2 = 0;
-        if (jarg2) {
-            arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
-            if (!arg2) return 0;
-        }
-    }
-    {
-        arg3 = 0;
-        if (jarg3) {
-            arg3 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg3, 0);
-            if (!arg3) return 0;
-        }
-    }
-    result = (int)rlib_add_report(arg1,arg2,arg3);
-    
-    jresult = (jint)result; 
-    {
-        if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, arg2); 
-    }
-    {
-        if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, arg3); 
-    }
-    return jresult;
-}
-
-
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1execute(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jint jresult = 0 ;
-    rlib *arg1 = (rlib *) 0 ;
-    int result;
-    
-    (void)jenv;
-    (void)jcls;
-    arg1 = *(rlib **)&jarg1; 
-    result = (int)rlib_execute(arg1);
-    
-    jresult = (jint)result; 
-    return jresult;
-}
-
-
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1set_1output_1format_1from_1text(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
-    jint jresult = 0 ;
-    rlib *arg1 = (rlib *) 0 ;
-    char *arg2 ;
-    int result;
-    
-    (void)jenv;
-    (void)jcls;
-    arg1 = *(rlib **)&jarg1; 
-    {
-        arg2 = 0;
-        if (jarg2) {
-            arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
-            if (!arg2) return 0;
-        }
-    }
-    result = (int)rlib_set_output_format_from_text(arg1,arg2);
-    
-    jresult = (jint)result; 
-    {
-        if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, arg2); 
-    }
-    return jresult;
-}
-
-
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1spool(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jint jresult = 0 ;
-    rlib *arg1 = (rlib *) 0 ;
-    int result;
-    
-    (void)jenv;
-    (void)jcls;
-    arg1 = *(rlib **)&jarg1; 
-    result = (int)rlib_spool(arg1);
-    
-    jresult = (jint)result; 
-    return jresult;
-}
-
-
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1free(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jint jresult = 0 ;
-    rlib *arg1 = (rlib *) 0 ;
-    int result;
-    
-    (void)jenv;
-    (void)jcls;
-    arg1 = *(rlib **)&jarg1; 
-    result = (int)rlib_free(arg1);
-    
-    jresult = (jint)result; 
-    return jresult;
-}
-
-
-JNIEXPORT jstring JNICALL Java_librlibJNI_rlib_1get_1output(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jstring jresult = 0 ;
-    rlib *arg1 = (rlib *) 0 ;
-    char *result;
-    
-    (void)jenv;
-    (void)jcls;
-    arg1 = *(rlib **)&jarg1; 
-    result = (char *)rlib_get_output(arg1);
-    
-    {
-        if(result) jresult = (*jenv)->NewStringUTF(jenv, result); 
-    }
-    return jresult;
-}
-
-
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1get_1output_1length(JNIEnv *jenv, jclass jcls, jlong jarg1) {
-    jint jresult = 0 ;
-    rlib *arg1 = (rlib *) 0 ;
-    long result;
-    
-    (void)jenv;
-    (void)jcls;
-    arg1 = *(rlib **)&jarg1; 
-    result = (long)rlib_get_output_length(arg1);
-    
-    jresult = (jint)result; 
-    return jresult;
-}
-
-
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1mysql_1report(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5, jstring jarg6, jstring jarg7) {
-    jint jresult = 0 ;
-    char *arg1 ;
-    char *arg2 ;
-    char *arg3 ;
-    char *arg4 ;
-    char *arg5 ;
-    char *arg6 ;
-    char *arg7 ;
-    int result;
-    
-    (void)jenv;
-    (void)jcls;
-    {
-        arg1 = 0;
-        if (jarg1) {
-            arg1 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg1, 0);
-            if (!arg1) return 0;
-        }
-    }
-    {
-        arg2 = 0;
-        if (jarg2) {
-            arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
-            if (!arg2) return 0;
-        }
-    }
-    {
-        arg3 = 0;
-        if (jarg3) {
-            arg3 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg3, 0);
-            if (!arg3) return 0;
-        }
-    }
-    {
-        arg4 = 0;
-        if (jarg4) {
-            arg4 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg4, 0);
-            if (!arg4) return 0;
-        }
-    }
-    {
-        arg5 = 0;
-        if (jarg5) {
-            arg5 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg5, 0);
-            if (!arg5) return 0;
-        }
-    }
-    {
-        arg6 = 0;
-        if (jarg6) {
-            arg6 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg6, 0);
-            if (!arg6) return 0;
-        }
-    }
-    {
-        arg7 = 0;
-        if (jarg7) {
-            arg7 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg7, 0);
-            if (!arg7) return 0;
-        }
-    }
-    result = (int)rlib_mysql_report(arg1,arg2,arg3,arg4,arg5,arg6,arg7);
-    
-    jresult = (jint)result; 
-    {
-        if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, arg1); 
-    }
-    {
-        if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, arg2); 
-    }
-    {
-        if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, arg3); 
-    }
-    {
-        if (arg4) (*jenv)->ReleaseStringUTFChars(jenv, jarg4, arg4); 
-    }
-    {
-        if (arg5) (*jenv)->ReleaseStringUTFChars(jenv, jarg5, arg5); 
-    }
-    {
-        if (arg6) (*jenv)->ReleaseStringUTFChars(jenv, jarg6, arg6); 
-    }
-    {
-        if (arg7) (*jenv)->ReleaseStringUTFChars(jenv, jarg7, arg7); 
-    }
-    return jresult;
-}
-
-
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1postgre_1report(JNIEnv *jenv, jclass jcls, jstring jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
-    jint jresult = 0 ;
-    char *arg1 ;
-    char *arg2 ;
-    char *arg3 ;
-    char *arg4 ;
-    int result;
-    
-    (void)jenv;
-    (void)jcls;
-    {
-        arg1 = 0;
-        if (jarg1) {
-            arg1 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg1, 0);
-            if (!arg1) return 0;
-        }
-    }
-    {
-        arg2 = 0;
-        if (jarg2) {
-            arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
-            if (!arg2) return 0;
-        }
-    }
-    {
-        arg3 = 0;
-        if (jarg3) {
-            arg3 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg3, 0);
-            if (!arg3) return 0;
-        }
-    }
-    {
-        arg4 = 0;
-        if (jarg4) {
-            arg4 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg4, 0);
-            if (!arg4) return 0;
-        }
-    }
-    result = (int)rlib_postgre_report(arg1,arg2,arg3,arg4);
-    
-    jresult = (jint)result; 
-    {
-        if (arg1) (*jenv)->ReleaseStringUTFChars(jenv, jarg1, arg1); 
-    }
-    {
-        if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, arg2); 
-    }
-    {
-        if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, arg3); 
-    }
-    {
-        if (arg4) (*jenv)->ReleaseStringUTFChars(jenv, jarg4, arg4); 
-    }
-    return jresult;
+#else
+	return 0;
+#endif	 
 }
 
 
 JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1datasource_1odbc(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5) {
+#if HAVE_ODBC
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;
@@ -585,6 +260,232 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1datasource_1odbc(JNIEnv *jenv,
         if (arg5) (*jenv)->ReleaseStringUTFChars(jenv, jarg5, arg5); 
     }
     return jresult;
+#else
+	return 0;
+#endif	 
+}
+
+
+JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1query_1as(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
+    jint jresult = 0 ;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    char *arg3 ;
+    char *arg4 ;
+    int result;
+    
+    (void)jenv;
+    (void)jcls;
+    arg1 = *(rlib **)&jarg1; 
+    {
+        arg2 = 0;
+        if (jarg2) {
+            arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
+            if (!arg2) return 0;
+        }
+    }
+    {
+        arg3 = 0;
+        if (jarg3) {
+            arg3 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg3, 0);
+            if (!arg3) return 0;
+        }
+    }
+    {
+        arg4 = 0;
+        if (jarg4) {
+            arg4 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg4, 0);
+            if (!arg4) return 0;
+        }
+    }
+    result = (int)rlib_add_query_as(arg1,arg2,arg3,arg4);
+    
+    jresult = (jint)result; 
+    {
+        if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, arg2); 
+    }
+    {
+        if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, arg3); 
+    }
+    {
+        if (arg4) (*jenv)->ReleaseStringUTFChars(jenv, jarg4, arg4); 
+    }
+    return jresult;
+}
+
+
+JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1report(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
+    jint jresult = 0 ;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    int result;
+    
+    (void)jenv;
+    (void)jcls;
+    arg1 = *(rlib **)&jarg1; 
+    {
+        arg2 = 0;
+        if (jarg2) {
+            arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
+            if (!arg2) return 0;
+        }
+    }
+    result = (int)rlib_add_report(arg1,arg2);
+    
+    jresult = (jint)result; 
+    {
+        if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, arg2); 
+    }
+    return jresult;
+}
+
+
+JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1report_1from_1buffer(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
+    jint jresult = 0 ;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    int result;
+    
+    (void)jenv;
+    (void)jcls;
+    arg1 = *(rlib **)&jarg1; 
+    {
+        arg2 = 0;
+        if (jarg2) {
+            arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
+            if (!arg2) return 0;
+        }
+    }
+    result = (int)rlib_add_report_from_buffer(arg1,arg2);
+    
+    jresult = (jint)result; 
+    {
+        if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, arg2); 
+    }
+    return jresult;
+}
+
+
+JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1execute(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+    jint jresult = 0 ;
+    rlib *arg1 = (rlib *) 0 ;
+    int result;
+    
+    (void)jenv;
+    (void)jcls;
+    arg1 = *(rlib **)&jarg1; 
+    result = (int)rlib_execute(arg1);
+    
+    jresult = (jint)result; 
+    return jresult;
+}
+
+
+JNIEXPORT jstring JNICALL Java_librlibJNI_rlib_1get_1content_1type_1as_1text(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+    jstring jresult = 0 ;
+    rlib *arg1 = (rlib *) 0 ;
+    char *result;
+    
+    (void)jenv;
+    (void)jcls;
+    arg1 = *(rlib **)&jarg1; 
+    result = (char *)rlib_get_content_type_as_text(arg1);
+    
+    {
+        if(result) jresult = (*jenv)->NewStringUTF(jenv, result); 
+    }
+    return jresult;
+}
+
+
+JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1spool(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+    jint jresult = 0 ;
+    rlib *arg1 = (rlib *) 0 ;
+    int result;
+    
+    (void)jenv;
+    (void)jcls;
+    arg1 = *(rlib **)&jarg1; 
+    result = (int)rlib_spool(arg1);
+    
+    jresult = (jint)result; 
+    return jresult;
+}
+
+
+JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1set_1output_1format(JNIEnv *jenv, jclass jcls, jlong jarg1, jint jarg2) {
+    jint jresult = 0 ;
+    rlib *arg1 = (rlib *) 0 ;
+    int arg2 ;
+    int result;
+    
+    (void)jenv;
+    (void)jcls;
+    arg1 = *(rlib **)&jarg1; 
+    arg2 = (int)jarg2; 
+    result = (int)rlib_set_output_format(arg1,arg2);
+    
+    jresult = (jint)result; 
+    return jresult;
+}
+
+
+JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1resultset_1follower_1n_1to_11(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5) {
+    jint jresult = 0 ;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    char *arg3 ;
+    char *arg4 ;
+    char *arg5 ;
+    int result;
+    
+    (void)jenv;
+    (void)jcls;
+    arg1 = *(rlib **)&jarg1; 
+    {
+        arg2 = 0;
+        if (jarg2) {
+            arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
+            if (!arg2) return 0;
+        }
+    }
+    {
+        arg3 = 0;
+        if (jarg3) {
+            arg3 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg3, 0);
+            if (!arg3) return 0;
+        }
+    }
+    {
+        arg4 = 0;
+        if (jarg4) {
+            arg4 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg4, 0);
+            if (!arg4) return 0;
+        }
+    }
+    {
+        arg5 = 0;
+        if (jarg5) {
+            arg5 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg5, 0);
+            if (!arg5) return 0;
+        }
+    }
+    result = (int)rlib_add_resultset_follower_n_to_1(arg1,arg2,arg3,arg4,arg5);
+    
+    jresult = (jint)result; 
+    {
+        if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, arg2); 
+    }
+    {
+        if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, arg3); 
+    }
+    {
+        if (arg4) (*jenv)->ReleaseStringUTFChars(jenv, jarg4, arg4); 
+    }
+    {
+        if (arg5) (*jenv)->ReleaseStringUTFChars(jenv, jarg5, arg5); 
+    }
+    return jresult;
 }
 
 
@@ -621,6 +522,130 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1resultset_1follower(JNIEnv *je
     {
         if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, arg3); 
     }
+    return jresult;
+}
+
+
+JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1set_1output_1format_1from_1text(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
+    jint jresult = 0 ;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    int result;
+    
+    (void)jenv;
+    (void)jcls;
+    arg1 = *(rlib **)&jarg1; 
+    {
+        arg2 = 0;
+        if (jarg2) {
+            arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
+            if (!arg2) return 0;
+        }
+    }
+    result = (int)rlib_set_output_format_from_text(arg1,arg2);
+    
+    jresult = (jint)result; 
+    {
+        if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, arg2); 
+    }
+    return jresult;
+}
+
+
+JNIEXPORT jstring JNICALL Java_librlibJNI_rlib_1get_1output(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+    jstring jresult = 0 ;
+    rlib *arg1 = (rlib *) 0 ;
+    char *result;
+    
+    (void)jenv;
+    (void)jcls;
+    arg1 = *(rlib **)&jarg1; 
+    result = (char *)rlib_get_output(arg1);
+    
+    {
+        if(result) jresult = (*jenv)->NewStringUTF(jenv, result); 
+    }
+    return jresult;
+}
+
+
+JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1get_1output_1length(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+    jint jresult = 0 ;
+    rlib *arg1 = (rlib *) 0 ;
+    int result;
+    
+    (void)jenv;
+    (void)jcls;
+    arg1 = *(rlib **)&jarg1; 
+    result = (int)rlib_get_output_length(arg1);
+    
+    jresult = (jint)result; 
+    return jresult;
+}
+
+
+JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1signal_1connect(JNIEnv *jenv, jclass jcls, jlong jarg1, jint jarg2, jlong jarg3, jlong jarg4) {
+    jint jresult = 0 ;
+    rlib *arg1 = (rlib *) 0 ;
+    int arg2 ;
+    int (*arg3)(rlib *,void *) = (int (*)(rlib *,void *)) 0 ;
+    void *arg4 = (void *) 0 ;
+    int result;
+    
+    (void)jenv;
+    (void)jcls;
+    arg1 = *(rlib **)&jarg1; 
+    arg2 = (int)jarg2; 
+    arg3 = *(int (**)(rlib *,void *))&jarg3; 
+    arg4 = *(void **)&jarg4; 
+    result = (int)rlib_signal_connect(arg1,arg2,arg3,arg4);
+    
+    jresult = (jint)result; 
+    return jresult;
+}
+
+
+JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1signal_1connect_1string(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jlong jarg3, jlong jarg4) {
+    jint jresult = 0 ;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    int (*arg3)(rlib *,void *) = (int (*)(rlib *,void *)) 0 ;
+    void *arg4 = (void *) 0 ;
+    int result;
+    
+    (void)jenv;
+    (void)jcls;
+    arg1 = *(rlib **)&jarg1; 
+    {
+        arg2 = 0;
+        if (jarg2) {
+            arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
+            if (!arg2) return 0;
+        }
+    }
+    arg3 = *(int (**)(rlib *,void *))&jarg3; 
+    arg4 = *(void **)&jarg4; 
+    result = (int)rlib_signal_connect_string(arg1,arg2,arg3,arg4);
+    
+    jresult = (jint)result; 
+    {
+        if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, arg2); 
+    }
+    return jresult;
+}
+
+
+JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1query_1refresh(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+    jint jresult = 0 ;
+    rlib *arg1 = (rlib *) 0 ;
+    int result;
+    
+    (void)jenv;
+    (void)jcls;
+    arg1 = *(rlib **)&jarg1; 
+    result = (int)rlib_query_refresh(arg1);
+    
+    jresult = (jint)result; 
     return jresult;
 }
 
@@ -662,18 +687,62 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1parameter(JNIEnv *jenv, jclass
 }
 
 
-JNIEXPORT jstring JNICALL Java_librlibJNI_rlib_1version(JNIEnv *jenv, jclass jcls) {
-    jstring jresult = 0 ;
-    char *result;
+JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1set_1locale(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
+    jint jresult = 0 ;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    int result;
     
     (void)jenv;
     (void)jcls;
-    result = (char *)rlib_version();
-    
+    arg1 = *(rlib **)&jarg1; 
     {
-        if(result) jresult = (*jenv)->NewStringUTF(jenv, result); 
+        arg2 = 0;
+        if (jarg2) {
+            arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
+            if (!arg2) return 0;
+        }
+    }
+    result = (int)rlib_set_locale(arg1,arg2);
+    
+    jresult = (jint)result; 
+    {
+        if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, arg2); 
     }
     return jresult;
+}
+
+
+JNIEXPORT void JNICALL Java_librlibJNI_rlib_1set_1output_1parameter(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3) {
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    char *arg3 ;
+    
+    (void)jenv;
+    (void)jcls;
+    arg1 = *(rlib **)&jarg1; 
+    {
+        arg2 = 0;
+        if (jarg2) {
+            arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
+            if (!arg2) return ;
+        }
+    }
+    {
+        arg3 = 0;
+        if (jarg3) {
+            arg3 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg3, 0);
+            if (!arg3) return ;
+        }
+    }
+    rlib_set_output_parameter(arg1,arg2,arg3);
+    
+    {
+        if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, arg2); 
+    }
+    {
+        if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, arg3); 
+    }
 }
 
 
@@ -699,34 +768,92 @@ JNIEXPORT void JNICALL Java_librlibJNI_rlib_1set_1output_1encoding(JNIEnv *jenv,
 }
 
 
-JNIEXPORT void JNICALL Java_librlibJNI_rlib_1set_1report_1output_1encoding(JNIEnv *jenv, jclass jcls, jlong jarg1, jint jarg2, jstring jarg3) {
+JNIEXPORT void JNICALL Java_librlibJNI_rlib_1set_1database_1encoding(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
     rlib *arg1 = (rlib *) 0 ;
-    int arg2 ;
-    char *arg3 ;
+    char *arg2 ;
     
     (void)jenv;
     (void)jcls;
     arg1 = *(rlib **)&jarg1; 
-    arg2 = (int)jarg2; 
     {
-        arg3 = 0;
-        if (jarg3) {
-            arg3 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg3, 0);
-            if (!arg3) return ;
+        arg2 = 0;
+        if (jarg2) {
+            arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
+            if (!arg2) return ;
         }
     }
-    rlib_set_report_output_encoding(arg1,arg2,(char const *)arg3);
+    rlib_set_database_encoding(arg1,(char const *)arg2);
     
     {
-        if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, arg3); 
+        if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, arg2); 
     }
 }
 
 
-JNIEXPORT void JNICALL Java_librlibJNI_rlib_1set_1pdf_1font(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3) {
+JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1set_1datasource_1encoding(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3) {
+    jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;
     char *arg3 ;
+    int result;
+    
+    (void)jenv;
+    (void)jcls;
+    arg1 = *(rlib **)&jarg1; 
+    {
+        arg2 = 0;
+        if (jarg2) {
+            arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
+            if (!arg2) return 0;
+        }
+    }
+    {
+        arg3 = 0;
+        if (jarg3) {
+            arg3 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg3, 0);
+            if (!arg3) return 0;
+        }
+    }
+    result = (int)rlib_set_datasource_encoding(arg1,arg2,arg3);
+    
+    jresult = (jint)result; 
+    {
+        if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, arg2); 
+    }
+    {
+        if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, arg3); 
+    }
+    return jresult;
+}
+
+
+JNIEXPORT void JNICALL Java_librlibJNI_rlib_1set_1parameter_1encoding(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    
+    (void)jenv;
+    (void)jcls;
+    arg1 = *(rlib **)&jarg1; 
+    {
+        arg2 = 0;
+        if (jarg2) {
+            arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
+            if (!arg2) return ;
+        }
+    }
+    rlib_set_parameter_encoding(arg1,(char const *)arg2);
+    
+    {
+        if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, arg2); 
+    }
+}
+
+
+JNIEXPORT void JNICALL Java_librlibJNI_rlib_1set_1encodings(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    char *arg3 ;
+    char *arg4 ;
     
     (void)jenv;
     (void)jcls;
@@ -745,47 +872,54 @@ JNIEXPORT void JNICALL Java_librlibJNI_rlib_1set_1pdf_1font(JNIEnv *jenv, jclass
             if (!arg3) return ;
         }
     }
-    rlib_set_pdf_font(arg1,(char const *)arg2,(char const *)arg3);
+    {
+        arg4 = 0;
+        if (jarg4) {
+            arg4 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg4, 0);
+            if (!arg4) return ;
+        }
+    }
+    rlib_set_encodings(arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
     
     {
         if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, arg2); 
     }
     {
         if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, arg3); 
+    }
+    {
+        if (arg4) (*jenv)->ReleaseStringUTFChars(jenv, jarg4, arg4); 
     }
 }
 
 
-JNIEXPORT void JNICALL Java_librlibJNI_rlib_1set_1pdf_1font_1directories(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3) {
+JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1free(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+    jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
-    char *arg2 ;
-    char *arg3 ;
+    int result;
     
     (void)jenv;
     (void)jcls;
     arg1 = *(rlib **)&jarg1; 
-    {
-        arg2 = 0;
-        if (jarg2) {
-            arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
-            if (!arg2) return ;
-        }
-    }
-    {
-        arg3 = 0;
-        if (jarg3) {
-            arg3 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg3, 0);
-            if (!arg3) return ;
-        }
-    }
-    rlib_set_pdf_font_directories(arg1,(char const *)arg2,(char const *)arg3);
+    result = (int)rlib_free(arg1);
+    
+    jresult = (jint)result; 
+    return jresult;
+}
+
+
+JNIEXPORT jstring JNICALL Java_librlibJNI_rlib_1version(JNIEnv *jenv, jclass jcls) {
+    jstring jresult = 0 ;
+    char *result;
+    
+    (void)jenv;
+    (void)jcls;
+    result = (char *)rlib_version();
     
     {
-        if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, arg2); 
+        if(result) jresult = (*jenv)->NewStringUTF(jenv, result); 
     }
-    {
-        if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, arg3); 
-    }
+    return jresult;
 }
 
 

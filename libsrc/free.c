@@ -21,7 +21,7 @@
  */
 
 #include <stdlib.h>
-#include <dlfcn.h>
+#include <gmodule.h>
 
 #include "config.h"
 #include "rlib.h"

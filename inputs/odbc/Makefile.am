@@ -25,7 +25,7 @@ libr_odbc_la_SOURCES = odbc.c
 
 libr_odbc_la_LIBADD = $(RLIB_LIBS) 
 
-INCLUDES = $(RLIB_CFLAGS) -I${top_srcdir}/libsrc/
+INCLUDES = $(RLIB_CFLAGS) $(RLIB_WERROR) -I${top_srcdir}/libsrc/
 
 libr_odbc_la_LDFLAGS = -release $(RLIB_VERSION)
 

@@ -25,7 +25,7 @@ libr_postgre_la_SOURCES = postgre.c
 
 libr_postgre_la_LIBADD = $(RLIB_LIBS) 
 
-INCLUDES = $(RLIB_CFLAGS) -I${top_srcdir}/libsrc/
+INCLUDES = $(RLIB_CFLAGS) $(RLIB_WERROR) -I${top_srcdir}/libsrc/
 
 libr_postgre_la_LDFLAGS = -release $(RLIB_VERSION)
 
