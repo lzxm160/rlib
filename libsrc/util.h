@@ -26,7 +26,7 @@
 
 #include <glib.h>
 
-struct rgb {
+struct rlib_rgb {
 	gfloat r;
 	gfloat g;
 	gfloat b;
@@ -54,7 +54,7 @@ gint rutil_enableSignalHandler(gint trueorfalse);
 gint64 tentothe(gint n);
 gchar hextochar(gchar c);
 gchar *colornames(gchar *str);
-void parsecolor(struct rgb *color, gchar *strx);
+void parsecolor(struct rlib_rgb *color, gchar *strx);
 struct rlib_datetime * stod(struct rlib_datetime *tm_date, gchar *str);
 void bumpday(gint *year, gint *month, gint *day);
 void bumpdaybackwords(gint *year, gint *month, gint *day);

@@ -313,7 +313,7 @@ gchar *colornames(char *str) {
 }
 
 
-void parsecolor(struct rgb *color, gchar *strx) {
+void parsecolor(struct rlib_rgb *color, gchar *strx) {
 	gchar *str = colornames(strx);
 	if(str != NULL && r_bytecount(str) == 8) {
 		guchar r;

@@ -37,8 +37,8 @@ struct _data {
 };
 
 struct _private {
-	struct rgb current_fg_color;
-	struct rgb current_bg_color;
+	struct rlib_rgb current_fg_color;
+	struct rlib_rgb current_bg_color;
 	struct _data *top;
 	struct _data *bottom;
 	gchar *both;
@@ -75,7 +75,7 @@ static gfloat rlib_html_get_string_width(rlib *r, gchar *text) {
 	return 1;
 }
 
-static gchar *get_html_color(gchar *str, struct rgb *color) {
+static gchar *get_html_color(gchar *str, struct rlib_rgb *color) {
 	sprintf(str, "#%02x%02x%02x", (gint)(color->r*0xFF), 
 		(gint)(color->g*0xFF), (gint)(color->b*0xFF));
 	return str;
@@ -170,7 +170,7 @@ static void rlib_html_set_bg_color(rlib *r, gfloat red, gfloat green, gfloat blu
 }
 
 static void rlib_html_hr(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
-struct rgb *color, gfloat indent, gfloat length) {
+struct rlib_rgb *color, gfloat indent, gfloat length) {
 	gchar buf[MAXSTRLEN];
 	gchar color_str[40];
 	get_html_color(color_str, color);
@@ -183,7 +183,7 @@ struct rgb *color, gfloat indent, gfloat length) {
 }
 
 static void rlib_html_draw_cell_background_start(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
-struct rgb *color) {
+struct rlib_rgb *color) {
 	OUTPUT(r)->rlib_set_bg_color(r, color->r, color->g, color->b);
 	OUTPUT_PRIVATE(r)->do_bg = TRUE;
 }

@@ -26,7 +26,7 @@
 #include "pcode.h"
 #include "rlib_input.h"
 
-static void rlib_print_break_header_output(rlib *r, struct report_break *rb, struct report_element *e, gint backwards) {
+static void rlib_print_break_header_output(rlib *r, struct rlib_report_break *rb, struct rlib_report_element *e, gint backwards) {
 	gint blank = TRUE;
 	gint suppress = FALSE;
 
@@ -34,10 +34,10 @@ static void rlib_print_break_header_output(rlib *r, struct report_break *rb, str
 		return;
 		
 	if(rb->suppressblank) {
-		struct report_element *be;
+		struct rlib_report_element *be;
 		suppress = TRUE;
 		for(be = rb->fields; be != NULL; be=be->next) {
-			struct break_fields *bf = be->data;
+			struct rlib_break_fields *bf = be->data;
 			if((bf->rval == NULL || (RLIB_VALUE_IS_STRING(bf->rval) && !strcmp(RLIB_VALUE_GET_AS_STRING(bf->rval), ""))) && blank == TRUE)
 				blank = TRUE;
 			else
@@ -54,7 +54,7 @@ static void rlib_print_break_header_output(rlib *r, struct report_break *rb, str
 	}
 }
 
-static void rlib_print_break_footer_output(rlib *r, struct report_break *rb, struct report_element *e, gint backwards) {
+static void rlib_print_break_footer_output(rlib *r, struct rlib_report_break *rb, struct rlib_report_element *e, gint backwards) {
 	if(!OUTPUT(r)->do_break)
 		return;
 
@@ -63,7 +63,7 @@ static void rlib_print_break_footer_output(rlib *r, struct report_break *rb, str
 }
 
 void rlib_force_break_headers(rlib *r) {
-	struct report_element *e;
+	struct rlib_report_element *e;
 
 	if(!OUTPUT(r)->do_break)
 		return;
@@ -73,10 +73,10 @@ void rlib_force_break_headers(rlib *r) {
 	
 	for(e = r->reports[r->current_report]->breaks; e != NULL; e=e->next) {
 		gint dobreak=1;
-		struct report_break *rb = e->data;
-		struct report_element *be;
+		struct rlib_report_break *rb = e->data;
+		struct rlib_report_element *be;
 		for(be = rb->fields; be != NULL; be=be->next) {
-			struct break_fields *bf = be->data;
+			struct rlib_break_fields *bf = be->data;
 			if(dobreak && bf->rval == NULL) {
 				dobreak=1;
 				rlib_value_free(bf->rval);
@@ -88,7 +88,7 @@ void rlib_force_break_headers(rlib *r) {
 	}
 	
 	for(e = r->reports[r->current_report]->breaks; e != NULL; e=e->next) {
-		struct report_break *rb = e->data;
+		struct rlib_report_break *rb = e->data;
 		if(rb->headernewpage) {
 			rlib_print_break_header_output(r, rb, rb->header, FALSE);
 		}
@@ -99,8 +99,8 @@ void rlib_force_break_headers(rlib *r) {
 void rlib_handle_break_headers(rlib *r) {
 	gint icache=0,page,i;
 	gfloat total[RLIB_MAXIMUM_PAGES_ACCROSS];
-	struct report_element *e;
-	struct report_break *cache[100];
+	struct rlib_report_element *e;
+	struct rlib_report_break *cache[100];
 
 	if(r->reports[r->current_report]->breaks == NULL)
 		return;
@@ -110,10 +110,10 @@ void rlib_handle_break_headers(rlib *r) {
 
 	for(e = r->reports[r->current_report]->breaks; e != NULL; e=e->next) {
 		gint dobreak=1;
-		struct report_break *rb = e->data;
-		struct report_element *be;
+		struct rlib_report_break *rb = e->data;
+		struct rlib_report_element *be;
 		for(be = rb->fields; be != NULL; be=be->next) {
-			struct break_fields *bf = be->data;
+			struct rlib_break_fields *bf = be->data;
 			if(dobreak && bf->rval == NULL) {
 				dobreak=1;
 				rlib_value_free(bf->rval);
@@ -154,10 +154,10 @@ void rlib_handle_break_headers(rlib *r) {
 
 //TODO: Variables need to resolve the name into a number or something.. like break numbers for more efficient compareseon
 void rlib_reset_variables_on_break(rlib *r, gchar *name) {
-	struct report_element *e;
+	struct rlib_report_element *e;
 
 	for(e = r->reports[r->current_report]->variables; e != NULL; e=e->next) {
-		struct report_variable *rv = e->data;
+		struct rlib_report_variable *rv = e->data;
 		if(rv->resetonbreak != NULL && rv->resetonbreak[0] != '\0' && !strcmp(rv->resetonbreak, name)) {
 			if(rv->type == REPORT_VARIABLE_COUNT) {
 				RLIB_VARIABLE_CA(rv)->count = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->count, 0);
@@ -179,12 +179,12 @@ void rlib_reset_variables_on_break(rlib *r, gchar *name) {
 	}
 }
 
-void rlib_break_all_below_in_reverse_order(rlib *r, struct report_element *e) {
+void rlib_break_all_below_in_reverse_order(rlib *r, struct rlib_report_element *e) {
 	gint count=0,i=0,j=0;
 	gint do_endpage = FALSE;
-	struct report_break *rb;
-	struct report_element *xxx, *be;
-	struct break_fields *bf;
+	struct rlib_report_break *rb;
+	struct rlib_report_element *xxx, *be;
+	struct rlib_break_fields *bf;
 
 	for(xxx =e; xxx != NULL; xxx=xxx->next)
 		count++;
@@ -228,15 +228,15 @@ void rlib_break_all_below_in_reverse_order(rlib *r, struct report_element *e) {
 
 */
 void rlib_handle_break_footers(rlib *r) {
-	struct report_element *e;
-	struct break_fields *bf;
+	struct rlib_report_element *e;
+	struct rlib_break_fields *bf;
 
 	if(r->reports[r->current_report]->breaks == NULL)
 		return;
 	for(e = r->reports[r->current_report]->breaks; e != NULL; e=e->next) {
 		gint dobreak=1;
-		struct report_break *rb = e->data;
-		struct report_element *be;
+		struct rlib_report_break *rb = e->data;
+		struct rlib_report_element *be;
 		for(be = rb->fields; be != NULL; be=be->next) {
 			struct rlib_value rval_tmp;
 			RLIB_VALUE_TYPE_NONE(&rval_tmp);

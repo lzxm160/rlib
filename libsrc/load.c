@@ -52,9 +52,9 @@ gchar * read_xml_str(gchar **ptr) {
 	return NULL;
 }
 
-struct report_image * read_image(gchar **ptr) {
-	struct report_image *ri;
-	ri = g_malloc(sizeof(struct report_image));
+struct rlib_report_image * read_image(gchar **ptr) {
+	struct rlib_report_image *ri;
+	ri = g_malloc(sizeof(struct rlib_report_image));
 	ri->value = read_xml_str(ptr);
 	ri->type = read_xml_str(ptr);
 	ri->width = read_xml_str(ptr);
@@ -62,9 +62,9 @@ struct report_image * read_image(gchar **ptr) {
 	return ri;
 }
 
-struct report_horizontal_line * read_hr(gchar **ptr) {
-	struct report_horizontal_line *hr;
-	hr = g_malloc(sizeof(struct report_horizontal_line));
+struct rlib_report_horizontal_line * read_hr(gchar **ptr) {
+	struct rlib_report_horizontal_line *hr;
+	hr = g_malloc(sizeof(struct rlib_report_horizontal_line));
 	hr->bgcolor = read_xml_str(ptr);
 	hr->size = read_xml_str(ptr);
 	hr->indent = read_xml_str(ptr);
@@ -74,10 +74,10 @@ struct report_horizontal_line * read_hr(gchar **ptr) {
 	return hr;
 }
 
-struct report_literal * read_text(gchar **ptr) {
-	struct report_literal *rt;
+struct rlib_report_literal * read_text(gchar **ptr) {
+	struct rlib_report_literal *rt;
 	gchar *tmp;
-	rt = g_malloc(sizeof(struct report_literal));
+	rt = g_malloc(sizeof(struct rlib_report_literal));
 	*ptr += sizeof(gint32);
 	tmp = read_xml_str(ptr);
 	if(tmp != NULL)
@@ -92,10 +92,10 @@ struct report_literal * read_text(gchar **ptr) {
 	return rt;
 }
 
-struct report_field * read_field(gchar **ptr) {
-	struct report_field *rf;
+struct rlib_report_field * read_field(gchar **ptr) {
+	struct rlib_report_field *rf;
 	gchar *tmp;
-	rf = g_malloc(sizeof(struct report_field));
+	rf = g_malloc(sizeof(struct rlib_report_field));
 	*ptr += sizeof(gint32);
 	tmp = read_xml_str(ptr);
 	if(tmp != NULL)
@@ -116,11 +116,11 @@ struct report_field * read_field(gchar **ptr) {
 }
 
 
-struct report_lines * read_line(gchar **ptr) {
-	struct report_lines *rl = g_malloc(sizeof(struct report_lines));
+struct rlib_report_lines * read_line(gchar **ptr) {
+	struct rlib_report_lines *rl = g_malloc(sizeof(struct rlib_report_lines));
 	gint32 *type;
 	gpointer pointer = NULL;
-	struct report_element *current;
+	struct rlib_report_element *current;
 	
 	rl->bgcolor = read_xml_str(ptr);
 	rl->color = read_xml_str(ptr);
@@ -141,12 +141,12 @@ struct report_lines * read_line(gchar **ptr) {
 				pointer = read_text(ptr);
 			if(*type == REPORT_ELEMENT_FIELD || *type == REPORT_ELEMENT_LITERAL) {
 				if(rl->e == NULL) {
-					rl->e = g_malloc(sizeof(struct report_element));
+					rl->e = g_malloc(sizeof(struct rlib_report_element));
 					current = rl->e;
 				} else {
-					struct report_element *e;
+					struct rlib_report_element *e;
 					for(e=rl->e;e->next != NULL;e=e->next);
-					e->next = g_malloc(sizeof(struct report_element));
+					e->next = g_malloc(sizeof(struct rlib_report_element));
 					current = e->next;
 				}
 				current->data = pointer;
@@ -159,9 +159,9 @@ struct report_lines * read_line(gchar **ptr) {
 	return rl;
 }
 
-struct report_output_array * read_roa(gchar **ptr) {
+struct rlib_report_output_array * read_roa(gchar **ptr) {
 	gint32 *type;
-	struct report_output_array *roa = g_new0(struct report_output_array, 1);
+	struct rlib_report_output_array *roa = g_new0(struct rlib_report_output_array, 1);
 	roa->count = 0;
 	roa->data = NULL;
 
@@ -175,7 +175,7 @@ struct report_output_array * read_roa(gchar **ptr) {
 			
 			if(*type == RLIB_FILE_ROA+1)
 				break;
-			roa->data = g_realloc(roa->data, sizeof(struct report_output_array *) * (roa->count + 1));
+			roa->data = g_realloc(roa->data, sizeof(struct rlib_report_output_array *) * (roa->count + 1));
 
 			if(*type == REPORT_PRESENTATION_DATA_IMAGE)
 				roa->data[roa->count++] = report_output_new(REPORT_PRESENTATION_DATA_IMAGE, read_image(ptr));				
@@ -190,8 +190,8 @@ struct report_output_array * read_roa(gchar **ptr) {
 	return NULL;
 }
 
-struct report_element * read_output(gchar **ptr) {
-	struct report_element *e = NULL;
+struct rlib_report_element * read_output(gchar **ptr) {
+	struct rlib_report_element *e = NULL;
 	gint32 *type;
 	type = (gint32 *)*ptr;
 	if(*type == RLIB_FILE_OUTPUTS) {
@@ -202,13 +202,13 @@ struct report_element * read_output(gchar **ptr) {
 				break;
 			if(*type == RLIB_FILE_ROA) {
 				if(e == NULL) {
-					e = g_new0(struct report_element, 1);
+					e = g_new0(struct rlib_report_element, 1);
 					e->data = read_roa(ptr);
 					e->next = NULL;
 				} else {
-					struct report_element *xxx, *newe;
+					struct rlib_report_element *xxx, *newe;
 					for(xxx=e;xxx->next != NULL; xxx=xxx->next) {};
-					newe = g_new0(struct report_element, 1);
+					newe = g_new0(struct rlib_report_element, 1);
 					xxx->next = newe;
 					newe->data = read_roa(ptr);
 					newe->next = NULL;
@@ -220,8 +220,8 @@ struct report_element * read_output(gchar **ptr) {
 	return e;
 }
 
-struct report_variable * read_variable(gchar **ptr) {
-	struct report_variable *rv = g_malloc(sizeof(struct report_variable));
+struct rlib_report_variable * read_variable(gchar **ptr) {
+	struct rlib_report_variable *rv = g_malloc(sizeof(struct rlib_report_variable));
 	gint32 *type;
 	type = (gint32 *)*ptr;
 	if(*type == RLIB_FILE_VARIABLE) {
@@ -235,8 +235,8 @@ struct report_variable * read_variable(gchar **ptr) {
 	return rv;
 }
 
-struct report_element * read_variables(gchar **ptr) {
-	struct report_element *e=NULL, *current=NULL, *moving=NULL;
+struct rlib_report_element * read_variables(gchar **ptr) {
+	struct rlib_report_element *e=NULL, *current=NULL, *moving=NULL;
 	gint32 *type;
 	type = (gint32 *)*ptr;
 	if(*type == RLIB_FILE_VARIABLES) {
@@ -247,10 +247,10 @@ struct report_element * read_variables(gchar **ptr) {
 				break;
 			if(*type == RLIB_FILE_VARIABLE) {
 				if(e == NULL) {
-					current = e = g_malloc(sizeof(struct report_element));	
+					current = e = g_malloc(sizeof(struct rlib_report_element));	
 				} else {
 					for(moving=e;moving->next != NULL;moving = moving->next);
-					current = moving->next = g_malloc(sizeof(struct report_element));	
+					current = moving->next = g_malloc(sizeof(struct rlib_report_element));	
 				}
 				current->data = read_variable(ptr);
 				current->next = NULL;
@@ -262,10 +262,10 @@ struct report_element * read_variables(gchar **ptr) {
 	return e;
 }
 
-struct report_break * read_break(gchar **ptr) {
-	struct report_break *rb = g_malloc(sizeof(struct report_break));
-	struct report_element *current=NULL, *moving=NULL;
-	struct break_fields *bf=NULL;
+struct rlib_report_break * read_break(gchar **ptr) {
+	struct rlib_report_break *rb = g_malloc(sizeof(struct rlib_report_break));
+	struct rlib_report_element *current=NULL, *moving=NULL;
+	struct rlib_break_fields *bf=NULL;
 	gint32 *type;
 	type = (gint32 *)*ptr;
 	if(*type == RLIB_FILE_BREAK) {
@@ -282,12 +282,12 @@ struct report_break * read_break(gchar **ptr) {
 			if(*type == RLIB_FILE_BREAK_FIELD) {
 				*ptr += sizeof(gint32);
 				if(rb->fields == NULL) {
-					current = rb->fields = g_malloc(sizeof(struct report_element));	
+					current = rb->fields = g_malloc(sizeof(struct rlib_report_element));	
 				} else {
 					for(moving=rb->fields;moving->next != NULL;moving = moving->next);
-					current = moving->next = g_malloc(sizeof(struct report_element));	
+					current = moving->next = g_malloc(sizeof(struct rlib_report_element));	
 				}
-				bf = g_malloc(sizeof(struct break_fields));
+				bf = g_malloc(sizeof(struct rlib_break_fields));
 				bf->rval = NULL;
 				bf->value = read_xml_str(ptr);
 				current->data = bf;
@@ -301,8 +301,8 @@ struct report_break * read_break(gchar **ptr) {
 	return rb;
 }
 
-struct report_element * read_breaks(gchar **ptr) {
-	struct report_element *e=NULL, *moving=NULL, *current=NULL;
+struct rlib_report_element * read_breaks(gchar **ptr) {
+	struct rlib_report_element *e=NULL, *moving=NULL, *current=NULL;
 	gint32 *type;
 	type = (gint32 *)*ptr;
 	if(*type == RLIB_FILE_BREAKS) {
@@ -313,10 +313,10 @@ struct report_element * read_breaks(gchar **ptr) {
 				break;
 			if(*type == RLIB_FILE_BREAK) {
 				if(e == NULL) {
-					current = e = g_malloc(sizeof(struct report_element));	
+					current = e = g_malloc(sizeof(struct rlib_report_element));	
 				} else {
 					for(moving=e;moving->next != NULL;moving = moving->next);
-					current = moving->next = g_malloc(sizeof(struct report_element));	
+					current = moving->next = g_malloc(sizeof(struct rlib_report_element));	
 				}
 				current->data = read_break(ptr);
 				current->next = NULL;

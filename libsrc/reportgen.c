@@ -38,7 +38,7 @@
 #define FONTPOINT 	10.0
 #define RLIB_GET_LINE(a) ((float)(a/RLIB_PDF_DPI))
 
-//Not used: static struct rgb COLOR_BLACK = {0, 0, 0};
+//Not used: static struct rlib_rgb COLOR_BLACK = {0, 0, 0};
 
 static gchar *orientations[] = {
 	"",
@@ -280,9 +280,7 @@ static const gchar *encode_text(rlib *r, const gchar *text) {
 }
 
 
-static gfloat rlib_output_text(rlib *r, gint backwards, 
-						gfloat left_origin, gfloat bottom_orgin, 
-							struct rlib_line_extra_data *extra_data) {
+static gfloat rlib_output_text(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_orgin, struct rlib_line_extra_data *extra_data) {
 	gfloat rtn_width;
 	gchar *text;
 	text = extra_data->formatted_string;
@@ -300,9 +298,8 @@ static gfloat rlib_output_text(rlib *r, gint backwards,
 }
 
 
-static gfloat rlib_output_text_text(rlib *r, gint backwards, 
-								gfloat left_origin, gfloat bottom_orgin, 
-									struct rlib_line_extra_data *extra_data, gchar *text) {
+static gfloat rlib_output_text_text(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_orgin, struct rlib_line_extra_data *extra_data, 
+gchar *text) {
 	gfloat rtn_width;
 	OUTPUT(r)->rlib_set_font_point(r, extra_data->font_point);
 	if(extra_data->found_color)
@@ -347,7 +344,7 @@ gchar *align_text(rlib *r, gchar *rtn, gint len, gchar *src, gint align, gint wi
 	return rtn;
 }
 	
-static gint get_font_point(rlib *r, struct report_lines *rl) {
+static gint get_font_point(rlib *r, struct rlib_report_lines *rl) {
 	if(rl->font_point == -1)
 		return r->font_point;
 	else
@@ -362,12 +359,12 @@ gfloat estimate_string_width_from_extra_data(rlib *r, struct rlib_line_extra_dat
 }
 	
 
-void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_extra_data *extra_data) {
+void execute_pcodes_for_line(rlib *r, struct rlib_report_lines *rl, struct rlib_line_extra_data *extra_data) {
 	gint i=0;
 	gchar *text;
-	struct report_field *rf;
-	struct report_literal *rt;
-	struct report_element *e = rl->e;
+	struct rlib_report_field *rf;
+	struct rlib_report_literal *rt;
+	struct rlib_report_element *e = rl->e;
 	struct rlib_value line_rval_color;
 	struct rlib_value line_rval_bgcolor;
 
@@ -565,7 +562,7 @@ void find_stuff_in_common(rlib *r, struct rlib_line_extra_data *extra_data, gint
 				e_ptr->running_bgcolor_status |= STATUS_START;
 				e_ptr->running_running_bg_total = e_ptr->output_width;
 			} else {
-				if(!memcmp(&save_ptr->bgcolor, &e_ptr->bgcolor, sizeof(struct rgb))) {
+				if(!memcmp(&save_ptr->bgcolor, &e_ptr->bgcolor, sizeof(struct rlib_rgb))) {
 					save_ptr->running_running_bg_total += e_ptr->output_width;
 				} else {
 					save_ptr = e_ptr;
@@ -644,8 +641,8 @@ void free_memo_lines(RVector *v) {
 #endif
 
 
-gint calc_memo_lines(struct report_lines *rl) {
-	struct report_element *e;
+gint calc_memo_lines(struct rlib_report_lines *rl) {
+	struct rlib_report_element *e;
 //	int hasmemo;
 	gint nlines = 0;
 //	RVector *v;
@@ -675,8 +672,8 @@ static gfloat length_of_line_accross_page(rlib *r) {
 }
 
 
-static gint print_report_output_private(rlib *r, struct report_output_array *roa, gint backwards, gint page) {
-	struct report_element *e=NULL;
+static gint print_report_output_private(rlib *r, struct rlib_report_output_array *roa, gint backwards, gint page) {
+	struct rlib_report_element *e=NULL;
 	gint j=0;
 	gfloat margin=0, width=0;
 	gfloat *rlib_position;
@@ -694,11 +691,11 @@ static gint print_report_output_private(rlib *r, struct report_output_array *roa
 		rlib_position = &r->reports[r->current_report]->position_top[page-1];
 		
 	for(j=0;j<roa->count;j++) {
-		struct report_output *ro = roa->data[j];
+		struct rlib_report_output *ro = roa->data[j];
 		margin = GET_MARGIN(r)->left_margin;
 
 		if(ro->type == REPORT_PRESENTATION_DATA_LINE) {
-			struct report_lines *rl = ro->data;
+			struct rlib_report_lines *rl = ro->data;
 			gint count=0;
 			
 			
@@ -720,7 +717,7 @@ static gint print_report_output_private(rlib *r, struct report_output_array *roa
 					gint start_count=-1;
 					for(e = rl->e; e != NULL; e=e->next) {
 						if(e->type == REPORT_ELEMENT_FIELD) {
-							struct report_field *rf = ((struct report_field *)e->data);
+							struct rlib_report_field *rf = ((struct rlib_report_field *)e->data);
 							rf->rval = &extra_data[count].rval_code;
 							width = rlib_output_extras(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)),  
 								&extra_data[count]);
@@ -768,7 +765,7 @@ static gint print_report_output_private(rlib *r, struct report_output_array *roa
 				} else {
 					for(e = rl->e; e != NULL; e=e->next) {
 						if(e->type == REPORT_ELEMENT_FIELD) {
-							struct report_field *rf = ((struct report_field *)e->data);
+							struct rlib_report_field *rf = ((struct rlib_report_field *)e->data);
 							rf->rval = &extra_data[count].rval_code;
 							rlib_output_extras_start(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)),  
 								&extra_data[count]);
@@ -809,7 +806,7 @@ static gint print_report_output_private(rlib *r, struct report_output_array *roa
 		} else if(ro->type == REPORT_PRESENTATION_DATA_HR) {
 			gchar *colorstring;
 			struct rlib_value rval2, *rval=&rval2;
-			struct report_horizontal_line *rhl = ro->data;
+			struct rlib_report_horizontal_line *rhl = ro->data;
 			if(rlib_check_is_not_suppressed(r, rhl->suppress_code)) {
 				rlib_execute_pcode(r, &rval2, rhl->bgcolor_code, NULL);
 				if(!RLIB_VALUE_IS_STRING(rval)) {
@@ -818,7 +815,7 @@ static gint print_report_output_private(rlib *r, struct report_output_array *roa
 					gfloat font_point;
 					gfloat indent;
 					gfloat length;
-					struct rgb bgcolor;
+					struct rlib_rgb bgcolor;
 					output_count++;
 					colorstring = RLIB_VALUE_GET_AS_STRING(rval);
 					parsecolor(&bgcolor, colorstring);
@@ -844,7 +841,7 @@ static gint print_report_output_private(rlib *r, struct report_output_array *roa
 			}
 		} else if(ro->type == REPORT_PRESENTATION_DATA_IMAGE) {
 			struct rlib_value rval2, rval3, rval4, rval5, *rval_value=&rval2, *rval_width=&rval3, *rval_height=&rval4, *rval_type=&rval5;
-			struct report_image *ri = ro->data;
+			struct rlib_report_image *ri = ro->data;
 			rlib_execute_pcode(r, &rval2, ri->value_code, NULL);
 			rlib_execute_pcode(r, &rval5, ri->type_code, NULL);
 			rlib_execute_pcode(r, &rval3, ri->width_code, NULL);
@@ -869,8 +866,8 @@ static gint print_report_output_private(rlib *r, struct report_output_array *roa
 	return output_count;
 }	
 
-gint print_report_outputs_private(rlib *r, struct report_element *e, gint backwards) {
-	struct report_output_array *roa;
+gint print_report_outputs_private(rlib *r, struct rlib_report_element *e, gint backwards) {
+	struct rlib_report_output_array *roa;
 	gint page;
 	gint i;
 	gint output_count = 0;
@@ -890,7 +887,7 @@ gint print_report_outputs_private(rlib *r, struct report_element *e, gint backwa
 	return output_count;
 }
 
-gint print_report_output(rlib *r, struct report_element *e, gint backwards) {
+gint print_report_output(rlib *r, struct rlib_report_element *e, gint backwards) {
 	gint output_count = 0;
 	OUTPUT(r)->rlib_start_output_section(r);
 	output_count = print_report_outputs_private(r, e, backwards);
@@ -900,13 +897,13 @@ gint print_report_output(rlib *r, struct report_element *e, gint backwards) {
 
 
 gint hack_print_report_outputs(rlib *r) {
-	struct report_element *e;
+	struct rlib_report_element *e;
 	gint output_count = 0;
 	OUTPUT(r)->rlib_start_output_section(r);
 
 	if(r->reports[r->current_report]->breaks != NULL) {
 		for(e = r->reports[r->current_report]->breaks; e != NULL; e=e->next) {
-			struct report_break *rb = e->data;
+			struct rlib_report_break *rb = e->data;
 			output_count += print_report_outputs_private(r, rb->header, FALSE);
 		}		
 	}
@@ -947,27 +944,27 @@ void rlib_init_page(rlib *r, gchar report_header) {
 	OUTPUT(r)->rlib_init_end_page(r);
 }
 
-gfloat get_output_size(rlib *r, struct report_output_array *roa) {
+gfloat get_output_size(rlib *r, struct rlib_report_output_array *roa) {
 	gint j;
 	gfloat total=0;
 	for(j=0;j<roa->count;j++) {
-		struct report_output *rd = roa->data[j];
+		struct rlib_report_output *rd = roa->data[j];
 		if(rd->type == REPORT_PRESENTATION_DATA_LINE) {
-			struct report_lines *rl = rd->data;
+			struct rlib_report_lines *rl = rd->data;
 			total += RLIB_GET_LINE(get_font_point(r, rl));
 			
 //Here to adjust size of memo field output.			
 		} else if(rd->type == REPORT_PRESENTATION_DATA_HR) {
-			struct report_horizontal_line *rhl = rd->data;
+			struct rlib_report_horizontal_line *rhl = rd->data;
 			total += RLIB_GET_LINE(rhl->realsize);		
 		}
 	}
 	return total;
 }
 
-gfloat get_outputs_size(rlib *r, struct report_element *e, gint page) {
+gfloat get_outputs_size(rlib *r, struct rlib_report_element *e, gint page) {
 	gfloat total=0;
-	struct report_output_array *roa;
+	struct rlib_report_output_array *roa;
 
 	for(; e != NULL; e=e->next) {
 		roa = e->data;
@@ -988,9 +985,9 @@ gint will_this_fit(rlib *r, gfloat total, gint page) {
 		return TRUE;
 }
 
-gint will_outputs_fit(rlib *r, struct report_element *e, gint page) {
+gint will_outputs_fit(rlib *r, struct rlib_report_element *e, gint page) {
 	gfloat size = 0;
-	struct report_output_array *roa;
+	struct rlib_report_output_array *roa;
 
 	if(OUTPUT(r)->rlib_is_single_page(r))
 		return TRUE;
@@ -1005,7 +1002,7 @@ gint will_outputs_fit(rlib *r, struct report_element *e, gint page) {
 }
 
 
-gint rlib_end_page_if_line_wont_fit(rlib *r, struct report_element *e) {
+gint rlib_end_page_if_line_wont_fit(rlib *r, struct rlib_report_element *e) {
 	gint i, fits=TRUE;	
 	for(i=0;i<r->reports[r->current_report]->pages_accross;i++) {
 		if(!will_outputs_fit(r,e, i+1))
@@ -1037,27 +1034,27 @@ gint rlib_fetch_first_rows(rlib *r) {
 }
 
 void rlib_init_variables(rlib *r) {
-	struct report_element *e;
+	struct rlib_report_element *e;
 	for(e = r->reports[r->current_report]->variables; e != NULL; e=e->next) {
-		struct report_variable *rv = e->data;
+		struct rlib_report_variable *rv = e->data;
 		if(rv->type == REPORT_VARIABLE_EXPRESSION) {
-			RLIB_VARIABLE_CA(rv) = g_malloc(sizeof(struct count_amount));
+			RLIB_VARIABLE_CA(rv) = g_malloc(sizeof(struct rlib_count_amount));
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		} else if(rv->type == REPORT_VARIABLE_COUNT) {
-			RLIB_VARIABLE_CA(rv) = g_malloc(sizeof(struct count_amount));
+			RLIB_VARIABLE_CA(rv) = g_malloc(sizeof(struct rlib_count_amount));
 			RLIB_VARIABLE_CA(rv)->count = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->count, 0);
 		} else if(rv->type == REPORT_VARIABLE_SUM) {
-			RLIB_VARIABLE_CA(rv) = g_malloc(sizeof(struct count_amount));
+			RLIB_VARIABLE_CA(rv) = g_malloc(sizeof(struct rlib_count_amount));
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		} else if(rv->type == REPORT_VARIABLE_AVERAGE) {
-			RLIB_VARIABLE_CA(rv) = g_malloc(sizeof(struct count_amount));
+			RLIB_VARIABLE_CA(rv) = g_malloc(sizeof(struct rlib_count_amount));
 			RLIB_VARIABLE_CA(rv)->count = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->count, 0);
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		} else if(rv->type == REPORT_VARIABLE_LOWEST) {
-			RLIB_VARIABLE_CA(rv) = g_malloc(sizeof(struct count_amount));
+			RLIB_VARIABLE_CA(rv) = g_malloc(sizeof(struct rlib_count_amount));
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		} else if(rv->type == REPORT_VARIABLE_HIGHEST) {
-			RLIB_VARIABLE_CA(rv) = g_malloc(sizeof(struct count_amount));
+			RLIB_VARIABLE_CA(rv) = g_malloc(sizeof(struct rlib_count_amount));
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		}
 	}
@@ -1065,9 +1062,9 @@ void rlib_init_variables(rlib *r) {
 }
 
 void rlib_process_variables(rlib *r) {
-	struct report_element *e;
+	struct rlib_report_element *e;
 	for(e = r->reports[r->current_report]->variables; e != NULL; e=e->next) {
-		struct report_variable *rv = e->data;
+		struct rlib_report_variable *rv = e->data;
 		struct rlib_value *count = &RLIB_VARIABLE_CA(rv)->count;
 		struct rlib_value *amount = &RLIB_VARIABLE_CA(rv)->amount;
 		struct rlib_value execute_result, *er = &execute_result;
@@ -1114,10 +1111,9 @@ void rlib_process_variables(rlib *r) {
 
 
 void rlib_process_expression_variables(rlib *r) {
-	struct report_element *e;
+	struct rlib_report_element *e;
 	for(e = r->reports[r->current_report]->variables; e != NULL; e=e->next) {
-		struct report_variable *rv = e->data;
-//		struct rlib_value *count = &RLIB_VARIABLE_CA(rv)->count;
+		struct rlib_report_variable *rv = e->data;
 		struct rlib_value *amount = &RLIB_VARIABLE_CA(rv)->amount;
 		struct rlib_value execute_result, *er = &execute_result;
 		if(rv->code != NULL)
@@ -1164,8 +1160,8 @@ static void rlib_evaluate_report_attributes(rlib *r) {
 }
 
 static void rlib_evaluate_break_attributes(rlib *r) {
-	struct report_break *rb;
-	struct report_element *e;
+	struct rlib_report_break *rb;
+	struct rlib_report_element *e;
 	struct rlib_report *thisreport = r->reports[r->current_report];
 	gint t;
 	

@@ -70,16 +70,16 @@ static int ignoreElement(const char *elname) {
 }
 
 
-struct report_element * parse_line_array(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
-	struct report_element *e, *current;
+struct rlib_report_element * parse_line_array(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
+	struct rlib_report_element *e, *current;
 	e = NULL;
 	
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
 		current = NULL;
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "field"))) {
-			struct report_field *f = g_new0(struct report_field, 1);
-			current = g_new0(struct report_element, 1);
+			struct rlib_report_field *f = g_new0(struct rlib_report_field, 1);
+			current = g_new0(struct rlib_report_element, 1);
 			//utf8_to_8813(rep, f->value, xmlGetProp(cur, (const xmlChar *) "value"));
 //Nevermind			//TODO: we need to utf to 8813 all string values in single quotes
 			strcpy(f->value, xmlGetProp(cur, (const xmlChar *) "value"));
@@ -95,8 +95,8 @@ struct report_element * parse_line_array(struct rlib_report *rep, xmlDocPtr doc,
 			current->data = f;
 			current->type = REPORT_ELEMENT_FIELD;
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "literal"))) {
-			struct report_literal *t = g_new0(struct report_literal, 1);
-			current = g_new0(struct report_element, 1);
+			struct rlib_report_literal *t = g_new0(struct rlib_report_literal, 1);
+			current = g_new0(struct rlib_report_element, 1);
 #if DISABLE_UTF8
 			utf8_to_8813(rep, t->value, xmlNodeListGetString(doc, cur->xmlChildrenNode, 1));
 #else
@@ -118,7 +118,7 @@ struct report_element * parse_line_array(struct rlib_report *rep, xmlDocPtr doc,
 			if(e == NULL) {
 				e = current;
 			} else {
-				struct report_element *xxx;
+				struct rlib_report_element *xxx;
 				xxx = e;
 				while(xxx->next != NULL) xxx =  xxx->next;
 				xxx->next = current;
@@ -130,16 +130,16 @@ struct report_element * parse_line_array(struct rlib_report *rep, xmlDocPtr doc,
 	return e;
 }
 
-struct report_output * report_output_new(gint type, gpointer data) {
-	struct report_output *ro = g_malloc(sizeof(struct report_output));
+struct rlib_report_output * report_output_new(gint type, gpointer data) {
+	struct rlib_report_output *ro = g_malloc(sizeof(struct rlib_report_output));
 	ro->type = type;
 	ro->data = data;
 	return ro;
 }
 
-static struct report_element * parse_report_output(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
-	struct report_element *e = g_malloc(sizeof(struct report_element));
-	struct report_output_array *roa = g_new0(struct report_output_array, 1);
+static struct rlib_report_element * parse_report_output(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
+	struct rlib_report_element *e = g_malloc(sizeof(struct rlib_report_element));
+	struct rlib_report_output_array *roa = g_new0(struct rlib_report_output_array, 1);
 	roa->count = 0;
 	roa->data = NULL;
 	e->next = NULL;
@@ -151,7 +151,7 @@ static struct report_element * parse_report_output(struct rlib_report *rep, xmlD
 	}	
 	while (cur != NULL) {      
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "Line"))) {
-			struct report_lines *rl = g_new0(struct report_lines, 1);
+			struct rlib_report_lines *rl = g_new0(struct rlib_report_lines, 1);
 			rl->bgcolor = xmlGetProp(cur, (const xmlChar *) "bgcolor");
 			rl->color = xmlGetProp(cur, (const xmlChar *) "color");
 			rl->font_size = xmlGetProp(cur, (const xmlChar *) "fontSize");
@@ -162,10 +162,10 @@ static struct report_element * parse_report_output(struct rlib_report *rep, xmlD
 				rl->font_point = atoi(rl->font_size);
 				
 			rl->e = parse_line_array(rep, doc, ns, cur);
-			roa->data = g_realloc(roa->data, sizeof(struct report_output_array *) * (roa->count + 1));
+			roa->data = g_realloc(roa->data, sizeof(struct rlib_report_output_array *) * (roa->count + 1));
 			roa->data[roa->count++] = report_output_new(REPORT_PRESENTATION_DATA_LINE, rl);
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "HorizontalLine"))) {
-			struct report_horizontal_line *rhl = g_new0(struct report_horizontal_line, 1);
+			struct rlib_report_horizontal_line *rhl = g_new0(struct rlib_report_horizontal_line, 1);
 			rhl->bgcolor = xmlGetProp(cur, (const xmlChar *) "bgcolor");
 			rhl->size = xmlGetProp(cur, (const xmlChar *) "size");
 			rhl->indent = xmlGetProp(cur, (const xmlChar *) "indent");
@@ -176,15 +176,15 @@ static struct report_element * parse_report_output(struct rlib_report *rep, xmlD
 				rhl->font_point = -1;
 			else
 				rhl->font_point = atoi(rhl->font_size);
-			roa->data = g_realloc(roa->data, sizeof(struct report_output_array *) * (roa->count + 1));
+			roa->data = g_realloc(roa->data, sizeof(struct rlib_report_output_array *) * (roa->count + 1));
 			roa->data[roa->count++] = report_output_new(REPORT_PRESENTATION_DATA_HR, rhl);
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "Image"))) {
-			struct report_image *ri = g_new0(struct report_image, 1);
+			struct rlib_report_image *ri = g_new0(struct rlib_report_image, 1);
 			ri->value = xmlGetProp(cur, (const xmlChar *) "value");
 			ri->type = xmlGetProp(cur, (const xmlChar *) "type");
 			ri->width = xmlGetProp(cur, (const xmlChar *) "width");
 			ri->height = xmlGetProp(cur, (const xmlChar *) "height");
-			roa->data = g_realloc(roa->data, sizeof(struct report_output_array *) * (roa->count + 1));
+			roa->data = g_realloc(roa->data, sizeof(struct rlib_report_output_array *) * (roa->count + 1));
 			roa->data[roa->count++] = report_output_new(REPORT_PRESENTATION_DATA_IMAGE, ri);
 		} else if (ignoreElement(cur->name)) {
 			/* ignore comments, etc */
@@ -196,8 +196,8 @@ static struct report_element * parse_report_output(struct rlib_report *rep, xmlD
 	return e;
 }
 
-static struct report_element * parse_report_outputs(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
-	struct report_element *e = NULL;
+static struct rlib_report_element * parse_report_outputs(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
+	struct rlib_report_element *e = NULL;
 
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {      
@@ -205,7 +205,7 @@ static struct report_element * parse_report_outputs(struct rlib_report *rep, xml
 			if(e == NULL) {
 				e = parse_report_output(rep, doc, ns, cur);
 			} else {
-				struct report_element *xxx = e;
+				struct rlib_report_element *xxx = e;
 				for(;xxx->next != NULL; xxx=xxx->next) {};
 				xxx->next = parse_report_output(rep, doc, ns, cur);				
 			}
@@ -220,9 +220,9 @@ static struct report_element * parse_report_outputs(struct rlib_report *rep, xml
 }
 
 
-static struct report_element * parse_break_field(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
-	struct report_element *e = g_malloc(sizeof(struct report_element));
-	struct break_fields *bf = g_new0(struct break_fields, 1);
+static struct rlib_report_element * parse_break_field(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
+	struct rlib_report_element *e = g_malloc(sizeof(struct rlib_report_element));
+	struct rlib_break_fields *bf = g_new0(struct rlib_break_fields, 1);
 	e->next = NULL;
 	e->data = bf;
 	cur = cur->xmlChildrenNode;
@@ -240,9 +240,9 @@ static struct report_element * parse_break_field(xmlDocPtr doc, xmlNsPtr ns, xml
 	return e;
 }
 
-static struct report_element * parse_report_break(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
-	struct report_element *e = g_malloc(sizeof(struct report_element));
-	struct report_break *rb = g_new0(struct report_break, 1);
+static struct rlib_report_element * parse_report_break(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
+	struct rlib_report_element *e = g_malloc(sizeof(struct rlib_report_element));
+	struct rlib_report_break *rb = g_new0(struct rlib_report_break, 1);
 	e->next = NULL;
 	e->data = rb;
 	rb->name = xmlGetProp(cur, (const xmlChar *) "name");
@@ -262,7 +262,7 @@ static struct report_element * parse_report_break(struct rlib_report *rep, xmlDo
 			if(rb->fields == NULL)
 				rb->fields = parse_break_field(doc, ns, cur);
 			else {
-				struct report_element *xxx = rb->fields;
+				struct rlib_report_element *xxx = rb->fields;
 				for(;xxx->next != NULL; xxx=xxx->next) {};
 				xxx->next = parse_report_break(rep, doc, ns, cur);							
 			}
@@ -277,8 +277,8 @@ static struct report_element * parse_report_break(struct rlib_report *rep, xmlDo
 	return e;
 }
 
-static struct report_element * parse_report_breaks(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
-	struct report_element *e = NULL;
+static struct rlib_report_element * parse_report_breaks(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
+	struct rlib_report_element *e = NULL;
 
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {      
@@ -286,7 +286,7 @@ static struct report_element * parse_report_breaks(struct rlib_report *rep, xmlD
 			if(e == NULL) {
 				e = parse_report_break(rep, doc, ns, cur);
 			} else {
-				struct report_element *xxx = e;
+				struct rlib_report_element *xxx = e;
 				for(;xxx->next != NULL; xxx=xxx->next) {};
 				xxx->next = parse_report_break(rep, doc, ns, cur);				
 			}
@@ -300,7 +300,7 @@ static struct report_element * parse_report_breaks(struct rlib_report *rep, xmlD
 	return e;
 }
 
-static void parse_detail(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur, struct report_detail *r) {
+static void parse_detail(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur, struct rlib_report_detail *r) {
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "FieldHeaders"))) {
@@ -317,7 +317,7 @@ static void parse_detail(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xm
 
 }
 
-static void parse_alternate(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur, struct report_alternate *ra) {
+static void parse_alternate(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur, struct rlib_report_alternate *ra) {
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "NoData"))) {
@@ -332,9 +332,9 @@ static void parse_alternate(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns,
 
 }
 
-static struct report_element * parse_report_variable(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
-	struct report_element *e = g_malloc(sizeof(struct report_element));
-	struct report_variable *rv = g_new0(struct report_variable, 1);
+static struct rlib_report_element * parse_report_variable(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
+	struct rlib_report_element *e = g_malloc(sizeof(struct rlib_report_element));
+	struct rlib_report_variable *rv = g_new0(struct rlib_report_variable, 1);
 	e->next = NULL;
 	e->data = rv;
 	rv->name = xmlGetProp(cur, (const xmlChar *) "name");
@@ -362,8 +362,8 @@ static struct report_element * parse_report_variable(xmlDocPtr doc, xmlNsPtr ns,
 	return e;
 }
 
-static struct report_element * parse_report_variables(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
-	struct report_element *e = NULL;
+static struct rlib_report_element * parse_report_variables(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
+	struct rlib_report_element *e = NULL;
 
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {      
@@ -371,7 +371,7 @@ static struct report_element * parse_report_variables(xmlDocPtr doc, xmlNsPtr ns
 			if(e == NULL) {
 				e = parse_report_variable(doc, ns, cur);
 			} else {
-				struct report_element *xxx = e;
+				struct rlib_report_element *xxx = e;
 				for(;xxx->next != NULL; xxx=xxx->next) {};
 				xxx->next = parse_report_variable(doc, ns, cur);				
 			}

@@ -30,7 +30,7 @@
 
 
 struct _private {
-	struct rgb current_color;
+	struct rlib_rgb current_color;
 	CPDFdoc *pdf;
 	gchar *buffer;
 	gint length;
@@ -93,7 +93,7 @@ static void rlib_pdf_set_fg_color(rlib *r, gfloat red, gfloat green, gfloat blue
 #endif
 }
 
-static void rlib_pdf_drawbox(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, struct rgb *color) {
+static void rlib_pdf_drawbox(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, struct rlib_rgb *color) {
 #if USEPDFLOCALE
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
@@ -112,7 +112,7 @@ static void rlib_pdf_drawbox(rlib *r, gfloat left_origin, gfloat bottom_origin, 
 }
 
 static void rlib_pdf_hr(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
-struct rgb *color, gfloat indent, gfloat length) {
+struct rlib_rgb *color, gfloat indent, gfloat length) {
 #if USEPDFLOCALE
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif

@@ -208,7 +208,7 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, gchar *str) {
 	gpointer field=NULL;
 	gchar *memresult;
 	struct rlib_pcode_operand *o;
-	struct report_variable *rv;
+	struct rlib_report_variable *rv;
 	gint rvar;
 	o = g_new0(struct rlib_pcode_operand, 1);
 	if(str[0] == '\'') {
@@ -308,7 +308,7 @@ void rlib_pcode_dump(struct rlib_pcode *p, gint offset) {
 			} else if(o->type == OPERAND_MEMORY_VARIABLE) {
 				rlogit("Result Memory Variable = [%s]", (char *)o->value);
 			} else if(o->type == OPERAND_VARIABLE) {
-				struct report_variable *rv = o->value;
+				struct rlib_report_variable *rv = o->value;
 				rlogit("Result Variable = [%s]", rv->name);
 			} else if(o->type == OPERAND_RLIB_VARIABLE) {
 				rlogit("RLIB Variable\n");
@@ -333,29 +333,29 @@ void rlib_pcode_dump(struct rlib_pcode *p, gint offset) {
 	}
 }
 
-struct operator_stack {
+struct rlib_operator_stack {
 	gint count;
 	struct rlib_pcode_operator *op[200];
 };
 
-int operator_stack_push(struct operator_stack *os, struct rlib_pcode_operator *op) {
+int operator_stack_push(struct rlib_operator_stack *os, struct rlib_pcode_operator *op) {
 	if(op->tag[0] != ')' && op->tag[0] != ',')
 		os->op[os->count++] = op;
 	return 0;
 }
 
-struct rlib_pcode_operator * operator_stack_pop(struct operator_stack *os) {
+struct rlib_pcode_operator * operator_stack_pop(struct rlib_operator_stack *os) {
 	if(os->count > 0) {
 		return os->op[--os->count];
 	} else
 		return NULL;
 }
 
-void operator_stack_init(struct operator_stack *os) {
+void operator_stack_init(struct rlib_operator_stack *os) {
 	os->count = 0;
 }
 
-gint operator_stack_is_all_less(struct operator_stack *os, struct rlib_pcode_operator *op) {
+gint operator_stack_is_all_less(struct rlib_operator_stack *os, struct rlib_pcode_operator *op) {
 	gint i;
 	if(op->tag[0] == ')' || op->tag[0] == ',')
 		return FALSE;
@@ -375,7 +375,7 @@ gint operator_stack_is_all_less(struct operator_stack *os, struct rlib_pcode_ope
 	return TRUE;
 }
 
-void popopstack(struct rlib_pcode *p, struct operator_stack *os, struct rlib_pcode_operator *op) {
+void popopstack(struct rlib_pcode *p, struct rlib_operator_stack *os, struct rlib_pcode_operator *op) {
 	struct rlib_pcode_operator *o;
 	struct rlib_pcode_instruction rpi;
 	if(op != NULL && (op->tag[0] == ')' || op->tag[0] == ',')) {
@@ -405,7 +405,7 @@ void popopstack(struct rlib_pcode *p, struct operator_stack *os, struct rlib_pco
 	}
 }
 
-void forcepopstack(struct rlib_pcode *p, struct operator_stack *os) {
+void forcepopstack(struct rlib_pcode *p, struct rlib_operator_stack *os) {
 	struct rlib_pcode_operator *o;
 	struct rlib_pcode_instruction rpi;
 	while((o=operator_stack_pop(os))) {
@@ -415,7 +415,7 @@ void forcepopstack(struct rlib_pcode *p, struct operator_stack *os) {
 }
 
 
-void smart_add_pcode(struct rlib_pcode *p, struct operator_stack *os, struct rlib_pcode_operator *op) {
+void smart_add_pcode(struct rlib_pcode *p, struct rlib_operator_stack *os, struct rlib_pcode_operator *op) {
 	if(operator_stack_is_all_less(os, op)) {
 		operator_stack_push(os, op);
 	} else {		
@@ -446,7 +446,7 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, gchar *infix) {
 	gint indate=0;
 	struct rlib_pcode_operator *op;
 	struct rlib_pcode *pcodes;
-	struct operator_stack os;
+	struct rlib_operator_stack os;
 	struct rlib_pcode_instruction rpi;
 
 	if(infix == NULL || infix[0] == '\0' || !strcmp(infix, ""))
@@ -668,7 +668,7 @@ struct rlib_value * rlib_value_new_error(struct rlib_value *rval) {
 */
 struct rlib_value *rlib_operand_get_value(rlib *r, struct rlib_value *rval, struct rlib_pcode_operand *o, 
 struct rlib_value *this_field_value) {
-	struct report_variable *rv = NULL;
+	struct rlib_report_variable *rv = NULL;
 
 	if(o->type == OPERAND_NUMBER) {
 		return rlib_value_new(rval, RLIB_VALUE_NUMBER, FALSE, o->value);

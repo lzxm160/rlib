@@ -109,7 +109,7 @@ gint rlib_resolve_resultset_field(rlib *r, char *name, void **rtn_field, gint *r
 }
 
 
-static void rlib_field_resolve_pcode(rlib *r, struct report_field *rf) {
+static void rlib_field_resolve_pcode(rlib *r, struct rlib_report_field *rf) {
 	rf->code = rlib_infix_to_pcode(r, rf->value);
 	rf->format_code = rlib_infix_to_pcode(r, rf->format);
 	rf->link_code = rlib_infix_to_pcode(r, rf->link);
@@ -126,7 +126,7 @@ rlib_pcode_dump(rf->code,0);
 rlogit("\n\n");*/
 }
 
-static void rlib_text_resolve_pcode(rlib *r, struct report_literal *rt) {
+static void rlib_text_resolve_pcode(rlib *r, struct rlib_report_literal *rt) {
 	rt->color_code = rlib_infix_to_pcode(r, rt->color);
 	rt->bgcolor_code = rlib_infix_to_pcode(r, rt->bgcolor);
 	rt->col_code = rlib_infix_to_pcode(r, rt->col);
@@ -135,20 +135,20 @@ static void rlib_text_resolve_pcode(rlib *r, struct report_literal *rt) {
 	rt->width = -1;
 }
 
-static void rlib_break_resolve_pcode(rlib *r, struct break_fields *bf) {
+static void rlib_break_resolve_pcode(rlib *r, struct rlib_break_fields *bf) {
 	if(bf->value == NULL)
 		rlogit("RLIB ERROR: BREAK FIELD VALUE CAN NOT BE NULL\n");
 	bf->code = rlib_infix_to_pcode(r, bf->value);
 }
 
-static void rlib_variable_resolve_pcode(rlib *r, struct report_variable *rv) {
+static void rlib_variable_resolve_pcode(rlib *r, struct rlib_report_variable *rv) {
 	rv->code = rlib_infix_to_pcode(r, rv->value);
 /*rlogit("DUMPING PCODE FOR [%s]\n", rv->value);
 rlib_pcode_dump(rv->code,0);	
 rlogit("\n\n");*/
 }
 
-static void rlib_hr_resolve_pcode(rlib *r, struct report_horizontal_line * rhl) {
+static void rlib_hr_resolve_pcode(rlib *r, struct rlib_report_horizontal_line * rhl) {
 	if(rhl->size == NULL)
 		rhl->realsize = 0;
 	else
@@ -165,16 +165,16 @@ static void rlib_hr_resolve_pcode(rlib *r, struct report_horizontal_line * rhl) 
 	rhl->suppress_code = rlib_infix_to_pcode(r, rhl->suppress);
 }
 
-static void rlib_image_resolve_pcode(rlib *r, struct report_image * ri) {
+static void rlib_image_resolve_pcode(rlib *r, struct rlib_report_image * ri) {
 	ri->value_code = rlib_infix_to_pcode(r, ri->value);
 	ri->type_code = rlib_infix_to_pcode(r, ri->type);
 	ri->width_code = rlib_infix_to_pcode(r, ri->width);
 	ri->height_code = rlib_infix_to_pcode(r, ri->height);
 }
 
-static void rlib_resolve_fields2(rlib *r, struct report_output_array *roa) {
+static void rlib_resolve_fields2(rlib *r, struct rlib_report_output_array *roa) {
 	gint j;
-	struct report_element *e;
+	struct rlib_report_element *e;
 	
 	if(roa == NULL)
 		return;
@@ -185,10 +185,10 @@ static void rlib_resolve_fields2(rlib *r, struct report_output_array *roa) {
 		roa->page = -1;
 	
 	for(j=0;j<roa->count;j++) {
-		struct report_output *ro = roa->data[j];
+		struct rlib_report_output *ro = roa->data[j];
 		
 		if(ro->type == REPORT_PRESENTATION_DATA_LINE) {
-			struct report_lines *rl = ro->data;	
+			struct rlib_report_lines *rl = ro->data;	
 			e = rl->e;
 			rl->bgcolor_code = rlib_infix_to_pcode(r, rl->bgcolor);
 			rl->color_code = rlib_infix_to_pcode(r, rl->color);
@@ -196,21 +196,21 @@ static void rlib_resolve_fields2(rlib *r, struct report_output_array *roa) {
 
 			for(; e != NULL; e=e->next) {
 				if(e->type == REPORT_ELEMENT_FIELD) {
-					rlib_field_resolve_pcode(r, ((struct report_field *)e->data));
+					rlib_field_resolve_pcode(r, ((struct rlib_report_field *)e->data));
 				} else if(e->type == REPORT_ELEMENT_LITERAL) {
-					rlib_text_resolve_pcode(r, ((struct report_literal *)e->data));
+					rlib_text_resolve_pcode(r, ((struct rlib_report_literal *)e->data));
 				}
 			}
 		} else if(ro->type == REPORT_PRESENTATION_DATA_HR) {
-			rlib_hr_resolve_pcode(r, ((struct report_horizontal_line *)ro->data));
+			rlib_hr_resolve_pcode(r, ((struct rlib_report_horizontal_line *)ro->data));
 		} else if(ro->type == REPORT_PRESENTATION_DATA_IMAGE) {
-			rlib_image_resolve_pcode(r, ((struct report_image *)ro->data));
+			rlib_image_resolve_pcode(r, ((struct rlib_report_image *)ro->data));
 		}
 	}
 }
 
-static void rlib_resolve_outputs(rlib *r, struct report_element *e) {
-	struct report_output_array *roa;
+static void rlib_resolve_outputs(rlib *r, struct rlib_report_element *e) {
+	struct rlib_report_output_array *roa;
 	for(; e != NULL; e=e->next) {
 		roa = e->data;
 		rlib_resolve_fields2(r, roa);
@@ -222,13 +222,13 @@ static void rlib_resolve_outputs(rlib *r, struct report_element *e) {
 	Report variables are refereced as v.whatever
 	but when created in the <variables/> section they use there normal name.. ie.. whatever
 */
-struct report_variable *rlib_resolve_variable(rlib *r, gchar *name) {
-	struct report_element *e;
+struct rlib_report_variable *rlib_resolve_variable(rlib *r, gchar *name) {
+	struct rlib_report_element *e;
 //r_debug("Resolving variable [%s]", name);	
 	if(r_bytecount(name) >= 3 && name[0] == 'v' && name[1] == '.') {
 		name += 2;
 		for(e = r->reports[r->current_report]->variables; e != NULL; e=e->next) {
-			struct report_variable *rv = e->data;
+			struct rlib_report_variable *rv = e->data;
 		if(!strcmp(name, rv->name))
 			return rv;
 		}	
@@ -245,7 +245,7 @@ int is_true_str(const gchar *str) {
 
 
 void rlib_resolve_fields(rlib *r) {
-	struct report_element *e;
+	struct rlib_report_element *e;
 	struct rlib_report *thisreport = r->reports[r->current_report];
 
 #if 0
@@ -288,8 +288,8 @@ void rlib_resolve_fields(rlib *r) {
 
 	if(thisreport->breaks != NULL) {
 		for(e = thisreport->breaks; e != NULL; e=e->next) {
-			struct report_break *rb = e->data;
-			struct report_element *be;
+			struct rlib_report_break *rb = e->data;
+			struct rlib_report_element *be;
 			
 			rlib_resolve_outputs(r, rb->header);
 			rlib_resolve_outputs(r, rb->footer);
@@ -297,7 +297,7 @@ void rlib_resolve_fields(rlib *r) {
 			rb->headernewpage_code = rlib_infix_to_pcode(r, rb->xml_headernewpage);
 			rb->suppressblank_code = rlib_infix_to_pcode(r, rb->xml_suppressblank);
 			for(be = rb->fields; be != NULL; be=be->next) {
-				struct break_fields *bf = be->data;
+				struct rlib_break_fields *bf = be->data;
 				rlib_break_resolve_pcode(r, bf);
 			}		
 		}
@@ -305,7 +305,7 @@ void rlib_resolve_fields(rlib *r) {
 	
 	if(thisreport->variables != NULL) {
 		for(e = thisreport->variables; e != NULL; e=e->next) {
-			struct report_variable *rv = e->data;
+			struct rlib_report_variable *rv = e->data;
 			rlib_variable_resolve_pcode(r, rv);
 		}
 	}
