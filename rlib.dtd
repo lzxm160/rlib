@@ -1,0 +1,64 @@
+
+<!ELEMENT Report (ReportHeader | PageHeader | Breaks | Variables 
+	| Detail | ReportFooter | PageFooter | xi:include)* >
+<!ATTLIST Report
+	fontSize CDATA #IMPLIED
+	xmlns:xi CDATA #IMPLIED
+	orientation CDATA #IMPLIED >
+<!ELEMENT xi:include EMPTY>
+<!ATTLIST xi:include
+	href CDATA #REQUIRED >
+<!ELEMENT ReportHeader (Output)* >
+<!ELEMENT PageHeader (Output)* >
+<!ELEMENT ReportFooter (Output)* >
+<!ELEMENT PageFooter (Output)* >
+<!ELEMENT Output (Line | HorizontalLine | Image)* >
+<!ELEMENT Line (field | text)* >
+<!ATTLIST Line 
+	fontSize CDATA #IMPLIED
+	suppress CDATA #IMPLIED
+	bgcolor CDATA #IMPLIED >
+<!ELEMENT HorizontalLine EMPTY>
+<!ATTLIST HorizontalLine
+	size CDATA #IMPLIED
+	bgcolor CDATA #IMPLIED >
+<!ELEMENT Image EMPTY >
+<!ATTLIST Image
+	value CDATA #REQUIRED
+	type CDATA #REQUIRED
+	width CDATA #REQUIRED
+	height CDATA #REQUIRED >
+<!ELEMENT field EMPTY>
+<!ATTLIST field
+	value CDATA #REQUIRED
+	width CDATA #IMPLIED
+	align CDATA #IMPLIED
+	format CDATA #IMPLIED
+	col CDATA #IMPLIED >
+<!ELEMENT text (#PCDATA) >
+<!ATTLIST text
+	width CDATA #IMPLIED
+	align CDATA #IMPLIED
+	col CDATA #IMPLIED >
+<!ELEMENT Detail (FieldHeaders?, FieldDetails?) >
+<!ELEMENT FieldHeaders (Output)* >
+<!ELEMENT FieldDetails (Output)* >
+<!ELEMENT Breaks (Break)* >
+<!ELEMENT Break (BreakHeader | BreakFooter | BreakFields)* >
+<!ATTLIST Break
+	name CDATA #REQUIRED
+	newpage CDATA #IMPLIED >
+<!ELEMENT BreakHeader (Output)* >
+<!ELEMENT BreakFooter (Output)* >
+<!ELEMENT BreakFields (BreakField)* >
+<!ELEMENT BreakField EMPTY>
+<!ATTLIST BreakField
+	value CDATA #REQUIRED >
+<!ELEMENT Variables (Variable)* >
+<!ELEMENT Variable EMPTY >
+<!ATTLIST Variable 
+	name CDATA #REQUIRED
+	value CDATA #REQUIRED
+	type CDATA #REQUIRED
+	resetonbreak CDATA #IMPLIED >
+	
