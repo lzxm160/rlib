@@ -1,4 +1,7 @@
 2003-12-12  Bob Doan  <bdoan@sicompos.com>
+	* NEWS: getting ready for a new release
+
+2003-12-12  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/patch from Mario Teijeiro Otero <emeteo@escomposlinux.org>.. Correct automake stuff so we build on debian
 	* bindings/python/Makefile.am: likewise
 	* inputs/mysql/Makefile.am: likewise

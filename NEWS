@@ -1,3 +1,12 @@
+1.1.6
+===
+- Start working on memo fields (chet)
+- Better checks for python (bob)
+- Correct problems with HTML output (bob)
+- Correct problems with breaking (bob)
+- GCC 3.2.2 compile problems fixed (bob)
+- Makefile corrections (Mario Teijeiro Otero <emeteo@escomposlinux.org>)
+
 1.1.5
 ===
 - rlib_add_parameter (chet)
