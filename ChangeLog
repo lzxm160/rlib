@@ -1,63 +1,42 @@
-2003-11-05  Bob Doan  <set EMAIL_ADDRESS environment variable>
+2003-11-05  Bob Doan  <bdoan@sicompos.com>
 
-	reviewed by: <delete if not using a buddy>
-
-	* autogen.sh:
-	* bindings/php/Makefile.am:
-	* bindings/php/php.c: (ZEND_FUNCTION):
-	* bindings/python/Makefile.am:
-	* bindings/python/python.c: (swig_varlink_repr),
-	(swig_varlink_print), (swig_varlink_getattr),
-	(swig_varlink_setattr), (SWIG_newvarlink), (SWIG_addvarlink),
-	(swigsort), (swigcmp), (SWIG_RegisterMapping), (SWIG_MakePtr),
-	(SWIG_GetPtr), (_wrap_rlib_init),
-	(_wrap_rlib_add_datasource_mysql),
-	(_wrap_rlib_add_datasource_postgre), (_wrap_rlib_add_query_as),
-	(_wrap_rlib_add_report), (_wrap_rlib_execute),
-	(_wrap_rlib_set_output_format_from_text), (_wrap_rlib_spool),
-	(_wrap_rlib_free), (_wrap_rlib_get_output),
-	(_wrap_rlib_get_output_length), (_wrap_rlib_mysql_report),
-	(_wrap_rlib_postgre_report), (initlibrlib):
-	* bindings/python/rlib_python.h:
-	* doc/book.sgm:
-	* doc/capi.sgm:
-	* doc/examples.sgm:
-	* doc/phpapi.sgm:
-	* inputs/mysql/Makefile.am:
-	* inputs/mysql/mysql.c:
-	* inputs/postgre/Makefile.am:
-	* inputs/postgre/postgre.c:
-	* libsrc/Makefile.am:
-	* libsrc/api.c: (rlib_init_with_environment), (rlib_init),
-	(rlib_add_query_as), (rlib_add_report), (rlib_execute),
-	(rlib_get_content_type_as_text), (rlib_spool),
-	(rlib_set_output_format), (rlib_set_output_format_from_text),
-	(rlib_get_output), (rlib_get_output_length), (rlib_mysql_report),
-	(rlib_postgre_report):
-	* libsrc/breaks.c:
-	* libsrc/csv.c: (rlib_csv_finalize_private), (rlib_csv_get_output),
-	(rlib_csv_get_output_length), (rlib_csv_new_output_filter):
-	* libsrc/datasource.c:
-	* libsrc/free.c:
-	* libsrc/html.c: (rlib_html_finalize_private),
-	(rlib_html_get_output), (rlib_html_get_output_length),
-	(rlib_html_free), (rlib_html_new_output_filter):
-	* libsrc/init.c:
-	* libsrc/input.h:
-	* libsrc/pdf.c: (rlib_pdf_finalize_private),
-	(rlib_pdf_spool_private), (rlib_pdf_get_output),
-	(rlib_pdf_get_output_length), (rlib_pdf_new_output_filter):
-	* libsrc/reportgen.c: (print_detail_line_private), (rlib_finalize):
-	* libsrc/resolution.c:
-	* libsrc/rlib.h:
-	* libsrc/rlib.i:
-	* libsrc/rlib_input.h:
-	* libsrc/txt.c: (rlib_txt_finalize_private), (rlib_txt_get_output),
-	(rlib_txt_get_output_length), (rlib_txt_new_output_filter):
-	* libsrc/util.c: (strproper), (make_more_space_if_necessary):
-	* tests/test1.c: (main):
-	* tests/test2.c: (main):
-	* tests/test3.c: (main):
+	* autogen.sh: Fixed bug with pdf field caching, have pything bindings now, removed init.c, renamed to api.c
+		New functions from John Buckman <john@magnatune.com> to make rlib easier for scripting rlib_mysql_report
+		I also made new functions so that you can write the output buffer instead of spooling it.. and I updated some
+		documentaion... using auto* 1.6 now instead of 1.4 renamed input.h to rlib_input.h
+	* bindings/php/Makefile.am: likewise
+	* bindings/php/php.c: likewise
+	* bindings/python/Makefile.am: likewise
+	* bindings/python/python.c: likewise
+	* bindings/python/rlib_python.h: likewise
+	* doc/book.sgm: likewise
+	* doc/capi.sgm: likewise
+	* doc/examples.sgm: likewise
+	* doc/phpapi.sgm: likewise
+	* inputs/mysql/Makefile.am: likewise
+	* inputs/mysql/mysql.c: likewise
+	* inputs/postgre/Makefile.am: likewise
+	* inputs/postgre/postgre.c: likewise
+	* libsrc/Makefile.am: likewise
+	* libsrc/api.c: likewise
+	* libsrc/breaks.c: likewise
+	* libsrc/csv.c: likewise
+	* libsrc/datasource.c: likewise
+	* libsrc/free.c: likewise
+	* libsrc/html.c: likewise
+	* libsrc/init.c: likewise
+	* libsrc/input.h: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/rlib.i: likewise
+	* libsrc/rlib_input.h: likewise
+	* libsrc/txt.c:  likewise
+	* libsrc/util.c: likewise
+	* tests/test1.c: likewise
+	* tests/test2.c: likewise
+	* tests/test3.c: likewise
 
 2003-11-04  Bob Doan  <bdoan@sicompos.com>
 	* autogen.sh: Add stuff for python bindings, speed up the engine a tad, better error checking
