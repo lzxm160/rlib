@@ -16,7 +16,7 @@
  * License along with this program; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- */
+*/
 #include <locale.h>
 #include <string.h>
 #include <math.h>
@@ -44,9 +44,12 @@ struct _graph {
 	gdouble non_standard_x_start;
 	gfloat tmp_y_offset;
 	gfloat y_label_width;
+	gfloat x_label_width;
+	gfloat legend_width;
 	gfloat top;
 	gfloat bottom;
 	gfloat left;
+	gfloat width_before_legend;
 	gfloat width;
 	gfloat height;
 	gfloat x_start;
@@ -60,6 +63,9 @@ struct _graph {
 	gint x_iterations;
 	gint y_iterations;
 	gint data_plot_count;
+	
+	gfloat legend_top;
+	gfloat legend_left;
 };
 
 struct _private {
@@ -460,6 +466,7 @@ static void pdf_graph_start(rlib *r, gfloat left, gfloat top, gfloat width, gflo
 	OUTPUT_PRIVATE(r)->graph.bottom = top - height;
 	OUTPUT_PRIVATE(r)->graph.left = left;
 	OUTPUT_PRIVATE(r)->graph.width = width;
+	OUTPUT_PRIVATE(r)->graph.width_before_legend = width;
 	OUTPUT_PRIVATE(r)->graph.height = height;
 	OUTPUT_PRIVATE(r)->graph.intersection = .2;
 }
@@ -512,49 +519,82 @@ static void pdf_graph_do_grid(rlib *r) {
 	graph->width_offset = graph->tmp_y_offset + graph->y_label_width + graph->intersection;
 
 	pdf_graph_draw_line(r, graph->left, graph->bottom, graph->left, graph->top, NULL);
-	pdf_graph_draw_line(r, graph->left+graph->width, graph->bottom, graph->left+graph->width, graph->top, NULL);
-	pdf_graph_draw_line(r, graph->left, graph->bottom, graph->left+graph->width, graph->bottom, NULL);
-	pdf_graph_draw_line(r, graph->left, graph->top, graph->left+graph->width, graph->top, NULL);
+	pdf_graph_draw_line(r, graph->left+graph->width_before_legend, graph->bottom, graph->left+graph->width_before_legend, graph->top, NULL);
+	pdf_graph_draw_line(r, graph->left, graph->bottom, graph->left+graph->width_before_legend, graph->bottom, NULL);
+	pdf_graph_draw_line(r, graph->left, graph->top, graph->left+graph->width_before_legend, graph->top, NULL);
 
 	graph->top -= graph->title_height*1.1;
 	graph->height -= graph->title_height*1.1;
 
 	graph->height_offset += graph->intersection;
+	
+	graph->x_width = graph->width - graph->width_offset - graph->intersection;
+	
+r_error("pdf_graph_do_grid %f %f %d\n", graph->x_label_width, graph->x_width,graph->x_iterations);
+	if(graph->x_label_width > (graph->x_width/graph->x_iterations)) {
+		graph->height_offset += graph->x_label_width - 	RLIB_GET_LINE(r->current_font_point);
+	
+	}
 
 	pdf_graph_draw_line(r, graph->left+graph->width_offset, graph->bottom+graph->height_offset-graph->intersection, graph->left+graph->width_offset, graph->top-graph->intersection, NULL);
 	pdf_graph_draw_line(r, graph->left+graph->width_offset-graph->intersection, graph->bottom+graph->height_offset, graph->left+graph->width-graph->intersection, graph->bottom+graph->height_offset, NULL);
 
 	graph->x_start = graph->left+graph->width_offset;
-	graph->x_width = graph->width - graph->width_offset - graph->intersection;
 
 	graph->y_start = graph->bottom + graph->height_offset;
 	graph->y_height = graph->height - graph->height_offset - graph->intersection;
 
 }
 
-static void pdf_graph_tick_x(rlib *r, gint iterations) {
+static void pdf_graph_tick_x(rlib *r) {
 	gfloat i;
 	gfloat spot;
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
-	graph->x_iterations = iterations;
 
 	graph->height_offset	+= graph->intersection;
 	
-	for(i=0;i<iterations;i++) {
-		spot = graph->x_start + ((graph->x_width/iterations)*i);
+	for(i=0;i<graph->x_iterations;i++) {
+		spot = graph->x_start + ((graph->x_width/graph->x_iterations)*i);
 		pdf_graph_draw_line(r, spot, graph->y_start-(graph->intersection/2.0), spot, graph->y_start+(graph->intersection/2.0), NULL);
 	}
 
 }
 
+static void pdf_graph_set_x_iterations(rlib *r, gint iterations) {
+	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
+	graph->x_iterations = iterations;
+}
+
+static void pdf_graph_hint_label_x(rlib *r, gchar *label) {
+	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
+	gfloat string_width = pdf_get_string_width(r, label);
+	if(string_width > graph->x_label_width)
+		graph->x_label_width = string_width;
+}
+
 static void pdf_graph_label_x(rlib *r, gint iteration, gchar *label) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
+	gfloat rotation = 0;
 	gfloat white_space = graph->x_width/graph->x_iterations;
 	gfloat left = graph->x_start + (white_space * iteration);
 	gfloat string_width = pdf_get_string_width(r, label);
-	if(string_width < white_space)
-		left += (white_space - string_width) / 2;
-	pdf_print_text(r, left, graph->y_start - RLIB_GET_LINE(r->current_font_point), label, 0);
+	gfloat w_width = pdf_get_string_width(r, "W");
+	gfloat height = RLIB_GET_LINE(r->current_font_point);
+	gfloat y_offset = RLIB_GET_LINE(r->current_font_point);
+	
+//HERE	
+
+	if(graph->x_label_width > (graph->x_width/graph->x_iterations)) {
+		y_offset = 0;
+		rotation = -90;
+		left += (white_space - w_width) / 2;
+		height = w_width;
+	} else {
+		if(string_width < white_space)
+			left += (white_space - string_width) / 2;
+	}
+
+	pdf_print_text(r, left, graph->y_start - y_offset, label, rotation);
 }
 
 static void pdf_graph_tick_y(rlib *r, gint iterations) {
@@ -610,16 +650,60 @@ static void pdf_graph_draw_bar(rlib *r, gint iteration, gint plot, gfloat height
 		start += (real_height * graph->y_height);
 	}
 	
-	//bar_width /= graph->data_plot_count;
-	bar_width /= 1;
+
+//TODO: HERE We don't want to make it smaller if we are stacking
+	bar_width /= graph->data_plot_count;
+	//bar_width /= 1;
+
+
 	left += (bar_width)*plot;	
 	bar_width -= (PDF_PIXEL * 4);
 	OUTPUT(r)->set_bg_color(r, color->r, color->g, color->b);
-	//cpdf_rect(OUTPUT_PRIVATE(r)->pdf, left, start, bar_width, graph->y_height*(height_percent));
 	cpdf_rect(OUTPUT_PRIVATE(r)->pdf, left, start + last_height*graph->y_height, bar_width, graph->y_height*(height_percent));
-	///rlogit("DRAW_BAR START=%f Y_HEIGHT=%f HEIGHT_PERCENT=%f LAST_HEIGHT=%f TOTAL_HEIGHT=%f\n",start,graph->y_height,height_percent,last_height,total_height);	
 	cpdf_fill(OUTPUT_PRIVATE(r)->pdf);
 	OUTPUT(r)->set_bg_color(r, 0, 0, 0);
+}
+
+static void pdf_graph_hint_legend(rlib *r, gchar *label) {
+	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
+	gfloat width =  pdf_get_string_width(r, label) + pdf_get_string_width(r, "WWW");
+
+	if(width > graph->legend_width)
+		graph->legend_width = width;
+};
+
+static void pdf_graph_draw_legend(rlib *r) {
+	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
+	gfloat left = graph->left+graph->width - graph->legend_width;
+	gfloat width = graph->legend_width;
+	gfloat height = (RLIB_GET_LINE(r->current_font_point) * graph->data_plot_count) + (RLIB_GET_LINE(r->current_font_point) / 2);
+	gfloat top = graph->top;
+	gfloat bottom = graph->top - height;
+
+	pdf_graph_draw_line(r, left, bottom, left, top, NULL);
+	pdf_graph_draw_line(r, left+width, bottom, left+width, top, NULL);
+	pdf_graph_draw_line(r, left, bottom, left+width, bottom, NULL);
+	pdf_graph_draw_line(r, left, top, left+width, top, NULL);
+	
+	graph->legend_top = top;
+	graph->legend_left = left;
+	
+	graph->width -= width;
+}
+
+static void pdf_graph_draw_legend_label(rlib *r, gint iteration, gchar *label, struct rlib_rgb *color) {
+	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
+	gfloat offset =  ((iteration + 1) * RLIB_GET_LINE(r->current_font_point) );
+	gfloat w_width = pdf_get_string_width(r, "W");
+	gfloat line_height = RLIB_GET_LINE(r->current_font_point);
+
+	OUTPUT(r)->set_bg_color(r, color->r, color->g, color->b);
+	pdf_turn_text_off(r);
+	cpdf_rect(OUTPUT_PRIVATE(r)->pdf, graph->legend_left + (w_width/2), graph->legend_top - offset , w_width, line_height*.6);
+	cpdf_fill(OUTPUT_PRIVATE(r)->pdf);
+	pdf_turn_text_on(r);
+	OUTPUT(r)->set_bg_color(r, 0, 0, 0);
+	pdf_print_text(r, graph->legend_left + (w_width*2), graph->legend_top - offset, label, 0);
 }
 
 static void pdf_end_td(rlib *r) {}
@@ -689,13 +773,17 @@ void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r)->graph_y_axis_title = pdf_graph_y_axis_title;
 	OUTPUT(r)->graph_do_grid = pdf_graph_do_grid;
 	OUTPUT(r)->graph_tick_x = pdf_graph_tick_x;
+	OUTPUT(r)->graph_set_x_iterations = pdf_graph_set_x_iterations;
 	OUTPUT(r)->graph_tick_y = pdf_graph_tick_y;
+	OUTPUT(r)->graph_hint_label_x = pdf_graph_hint_label_x;
 	OUTPUT(r)->graph_label_x = pdf_graph_label_x;
 	OUTPUT(r)->graph_label_y = pdf_graph_label_y;
 	OUTPUT(r)->graph_draw_line = pdf_graph_draw_line;
 	OUTPUT(r)->graph_draw_bar = pdf_graph_draw_bar;
 	OUTPUT(r)->graph_set_data_plot_count = pdf_graph_set_data_plot_count;
 	OUTPUT(r)->graph_hint_label_y = pdf_graph_hint_label_y;
-	
+	OUTPUT(r)->graph_hint_legend = pdf_graph_hint_legend;
+	OUTPUT(r)->graph_draw_legend = pdf_graph_draw_legend;
+	OUTPUT(r)->graph_draw_legend_label = pdf_graph_draw_legend_label;
 	OUTPUT(r)->free = pdf_free;
 }

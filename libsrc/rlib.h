@@ -455,10 +455,13 @@ struct rlib_part {
 struct rlib_graph_plot {
 	gchar *xml_axis;
 	gchar *xml_field;
+	gchar *xml_label;
 	struct rlib_value rval_axis;
 	struct rlib_value rval_field;
+	struct rlib_value rval_label;
 	struct rlib_pcode *axis_code;
 	struct rlib_pcode *field_code;	
+	struct rlib_pcode *label_code;	
 };
 
 #define RLIB_GRAPH_TYPE_LINE_NORMAL                   1
@@ -718,13 +721,18 @@ struct output_filter {
 	void (*graph_set_limits)(rlib *r, gdouble min, gdouble max, gdouble origin);
 	void (*graph_do_grid)(rlib *r);
 	void (*graph_draw_line)(rlib *, float, float, float, float, struct rlib_rgb *);
-	void (*graph_tick_x)(rlib *, int iterations);
+	void (*graph_set_x_iterations)(rlib *, int iterations);
+	void (*graph_tick_x)(rlib *);
 	void (*graph_tick_y)(rlib *, int iterations);
 	void (*graph_set_data_plot_count)(rlib *r, int count);
+	void (*graph_hint_label_x)(rlib *r, gchar *label);
 	void (*graph_label_x)(rlib *r, int iteration, gchar *label);
 	void (*graph_label_y)(rlib *r, int iteration, gchar *label, gboolean false_x);
 	void (*graph_draw_bar)(rlib *r, int iteration, int plot, gfloat height, struct rlib_rgb *,gfloat last_height);
 	void (*graph_hint_label_y)(rlib *r, gchar *string);
+	void (*graph_hint_legend)(rlib *r, gchar *string);
+	void (*graph_draw_legend)(rlib *r);
+	void (*graph_draw_legend_label)(rlib *r, gint iteration, gchar *string, struct rlib_rgb *);
 	int (*free)(rlib *r);
 };
 

@@ -16,7 +16,7 @@
 			<Report fontSize="9" orientation="landscape">
 				<Graph type="'row'" subtype="'normal'" width="370" height="250" title="'The mort important plot ever!'" x_axis_title="'i can label a x axis'" y_axis_title="'y axis'">
 					<Plot axis="'x'" field="name"/>
-					<Plot axis="'y'" field="val(ty_sales)"/>
+					<Plot axis="'y'" field="val(ty_sales)" label="'Sales'"/>
 				</Graph>
 
 			</Report>
@@ -26,9 +26,9 @@
 			<Report fontSize="9" orientation="landscape">
 				<Graph type="'row'" subtype="'normal'" width="370" height="250" title="'Test 2'">
 					<Plot axis="'x'" field="name"/>
-					<Plot axis="'y'" field="val(ty_sales)"/>
-					<Plot axis="'y'" field="val(ly_sales)"/>
-					<Plot axis="'y'" field="val(projection)"/>
+					<Plot axis="'y'" field="val(ty_sales)" label="'TY Salesg"/>
+					<Plot axis="'y'" field="val(ly_sales)" label="'LY Sales'"/>
+					<Plot axis="'y'" field="val(projection)" label="'Projection'"/>
 				</Graph>
 
 			</Report>
@@ -40,7 +40,7 @@
 			<Report fontSize="9" orientation="landscape">
 				<Graph type="'row'" subtype="'normal'" width="370" height="250" title="'Test 3'">
 					<Plot axis="'x'" field="name"/>
-					<Plot axis="'y'" field="val(sold)"/>
+					<Plot axis="'y'" field="val(sold)" label="'Sold'"/>
 				</Graph>
 			</Report>
 		</pd>
@@ -49,7 +49,7 @@
 			<Report fontSize="9" orientation="landscape">
 				<Graph type="'row'" subtype="'normal'" width="370" height="250" title="'Test 4'">
 					<Plot axis="'x'" field="name"/>
-					<Plot axis="'y'" field="val(negative)"/>
+					<Plot axis="'y'" field="val(negative)" label="'A Really Long Label Foo!'"/>
 				</Graph>
 
 			</Report>

@@ -1,3 +1,14 @@
+2004-12-30  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/free.c: legends, x axis labels try to fit better, minor cleanups
+	* libsrc/graphing.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/pcode.h: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+	* src/examples/php/graph.php: likewise
+	* src/examples/php/graph.xml: likewise
+
 2004-12-23  Bob Doan  <bdoan@sicompos.com>
 	* inputs/odbc/odbc.c: nada
 	* libsrc/api.c: better error reporting, set follower resultset to FALSE

@@ -272,6 +272,7 @@ void rlib_resolve_graph(rlib *r, struct rlib_report *report, struct rlib_graph *
 		plot = list->data;
 		plot->axis_code = rlib_infix_to_pcode(r, report, plot->xml_axis, TRUE);
 		plot->field_code = rlib_infix_to_pcode(r, report, plot->xml_field, TRUE);
+		plot->label_code = rlib_infix_to_pcode(r, report, plot->xml_label, TRUE);
 	}
 }
 
