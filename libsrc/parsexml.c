@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004 SICOM Systems, INC.
+ *  Copyright (C) 2003-2005 SICOM Systems, INC.
  *
  *  Authors: Bob Doan <bdoan@sicompos.com>
  *
@@ -77,6 +77,15 @@ static int ignoreElement(const char *elname) {
 	return result;
 }
 
+static struct rlib_report_image * parse_image(xmlNodePtr cur) {
+	struct rlib_report_image *ri = g_new0(struct rlib_report_image, 1);
+	ri->xml_value = xmlGetProp(cur, (const xmlChar *) "value");
+	ri->xml_type = xmlGetProp(cur, (const xmlChar *) "type");
+	ri->xml_width = xmlGetProp(cur, (const xmlChar *) "width");
+	ri->xml_height = xmlGetProp(cur, (const xmlChar *) "height");
+	return ri;
+}
+
 static struct rlib_element * parse_line_array(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
 	struct rlib_element *e, *current;
 	e = NULL;
@@ -126,6 +135,11 @@ static struct rlib_element * parse_line_array(xmlDocPtr doc, xmlNsPtr ns, xmlNod
 			t->xml_col = xmlGetProp(cur, (const xmlChar *) "col");
 			current->data = t;
 			current->type = RLIB_ELEMENT_LITERAL;
+		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "Image"))) {
+			struct rlib_report_image *ri = parse_image(cur);
+			current = (void *)g_new0(struct rlib_element, 1);
+			current->data = ri;
+			current->type = RLIB_ELEMENT_IMAGE;
 		} else if (ignoreElement(cur->name)) {
 			/* ignore comments, etc */
 		} else {
@@ -198,11 +212,7 @@ static struct rlib_element * parse_report_output(xmlDocPtr doc, xmlNsPtr ns, xml
 			roa->data = g_realloc(roa->data, sizeof(struct rlib_report_output_array *) * (roa->count + 1));
 			roa->data[roa->count++] = report_output_new(RLIB_REPORT_PRESENTATION_DATA_HR, rhl);
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "Image"))) {
-			struct rlib_report_image *ri = g_new0(struct rlib_report_image, 1);
-			ri->xml_value = xmlGetProp(cur, (const xmlChar *) "value");
-			ri->xml_type = xmlGetProp(cur, (const xmlChar *) "type");
-			ri->xml_width = xmlGetProp(cur, (const xmlChar *) "width");
-			ri->xml_height = xmlGetProp(cur, (const xmlChar *) "height");
+			struct rlib_report_image *ri = parse_image(cur);
 			roa->data = g_realloc(roa->data, sizeof(struct rlib_report_output_array *) * (roa->count + 1));
 			roa->data[roa->count++] = report_output_new(RLIB_REPORT_PRESENTATION_DATA_IMAGE, ri);
 		} else if (ignoreElement(cur->name)) {

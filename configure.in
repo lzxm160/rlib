@@ -1,6 +1,6 @@
 dnl Configure template for RLIB
 
-dnl Copyright (c) 2003 SICOM Systems Inc (bdoan@sicompos.com)
+dnl Copyright (c) 2003-2005 SICOM Systems Inc (bdoan@sicompos.com)
 dnl RLIB is free software; you can redistribute it and/or modify
 dnl it under the terms of the GNU General Public License as published by
 dnl the Free Software Foundation; either version 2, or (at your option)

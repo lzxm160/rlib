@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004 SICOM Systems, INC.
+ *  Copyright (C) 2003-2005 SICOM Systems, INC.
  *
  *  Authors: Bob Doan <bdoan@sicompos.com>
  *
@@ -76,11 +76,12 @@ double trunc(double x);
 
 #define RLIB_ELEMENT_LITERAL 1
 #define RLIB_ELEMENT_FIELD   2
-#define RLIB_ELEMENT_REPORT  3
-#define RLIB_ELEMENT_PART    4
-#define RLIB_ELEMENT_TR      5
-#define RLIB_ELEMENT_TD      6
-#define RLIB_ELEMENT_LOAD    7
+#define RLIB_ELEMENT_IMAGE   3
+#define RLIB_ELEMENT_REPORT  4
+#define RLIB_ELEMENT_PART    5
+#define RLIB_ELEMENT_TR      6
+#define RLIB_ELEMENT_TD      7
+#define RLIB_ELEMENT_LOAD    8
 
 #define RLIB_FORMAT_PDF 	1
 #define RLIB_FORMAT_HTML	2
@@ -124,15 +125,15 @@ double trunc(double x);
 #define RLIB_GET_LINE(a) ((float)(a/RLIB_PDF_DPI))
 
 #define RLIB_SIGNAL_ROW_CHANGE       0
-#define RLIB_SIGNAL_REPORT_DONE      1
-#define RLIB_SIGNAL_REPORT_ITERATION 2
-#define RLIB_SIGNAL_PART_ITERATION   3
+#define RLIB_SIGNAL_REPORT_START     1
+#define RLIB_SIGNAL_REPORT_DONE      2
+#define RLIB_SIGNAL_REPORT_ITERATION 3
+#define RLIB_SIGNAL_PART_ITERATION   4
 
 #define RLIB_SIGNALS 4
 
 #define RLIB_SIDE_LEFT  0
 #define RLIB_SIDE_RIGHT 1
-
 
 struct rlib_paper {
 	char type;
@@ -204,6 +205,12 @@ struct rlib_line_extra_data {
 	struct rlib_value rval_bold;
 	struct rlib_value rval_italics;
 	struct rlib_value rval_col;
+
+	struct rlib_value rval_image_name;
+	struct rlib_value rval_image_type;
+	struct rlib_value rval_image_width;
+	struct rlib_value rval_image_height;
+
 	gint font_point;
 	gchar formatted_string[MAXSTRLEN];
 	gint width;	
@@ -325,6 +332,8 @@ struct rlib_report_lines {
 	struct rlib_pcode *italics_code;
 	
 	struct rlib_element *e;
+	
+	gfloat max_line_height;
 };
 
 struct rlib_break_fields {
@@ -700,7 +709,8 @@ struct output_filter {
 	void (*end_bold)(rlib *);
 	void (*start_italics)(rlib *);
 	void (*end_italics)(rlib *);
-	void (*drawimage)(rlib *, float, float, char *, char *, float, float);
+	void (*background_image)(rlib *, float, float, char *, char *, float, float);
+	void (*line_image)(rlib *, float, float, char *, char *, float, float);
 	void (*set_font_point)(rlib *, int);
 	void (*start_new_page)(rlib *, struct rlib_part *);
 	void (*end_page)(rlib *, struct rlib_part *);
@@ -908,7 +918,8 @@ struct rlib_paper * rlib_layout_get_paper_by_name(rlib *r, gchar *paper_name);
 gint rlib_layout_report_output_with_break_headers(rlib *r, struct rlib_part *part, struct rlib_report *report);
 void rlib_layout_init_report_page(rlib *r, struct rlib_part *part, struct rlib_report *report);
 void rlib_layout_report_footer(rlib *r, struct rlib_part *part, struct rlib_report *report);
-gfloat rlib_layout_get_next_line(rlib *r, struct rlib_part *part, gfloat position, gfloat foint_point);
+gfloat rlib_layout_get_next_line(rlib *r, struct rlib_part *part, gfloat position, struct rlib_report_lines *rl);
+gfloat rlib_layout_get_next_line_by_font_point(rlib *r, struct rlib_part *part, gfloat position, gfloat point);
 gint rlib_layout_end_page(rlib *r, struct rlib_part *part, struct rlib_report *report);
 
 /***** PROTOTYPES: graphing.c **************************************************/

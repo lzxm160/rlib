@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004 SICOM Systems, INC.
+ *  Copyright (C) 2003-2005 SICOM Systems, INC.
  *
  *  Authors: Bob Doan <bdoan@sicompos.com>
  *
@@ -504,6 +504,9 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 
 	rlib_resolve_report_fields(r, part, report);
 
+	rlib_emit_signal(r, RLIB_SIGNAL_REPORT_START);
+
+
 	for(iterations=0;iterations<report->iterations;iterations++) {
 		rlib_init_variables(r, report);
 		rlib_process_variables(r, report);
@@ -631,7 +634,7 @@ void rlib_layout_part_td(rlib *r, struct rlib_part *part, GSList *part_deviation
 
 		rlib_parsecolor(&bgcolor, border_color);
 		
-		OUTPUT(r)->start_td(r, part, running_left_margin+part->left_margin, rlib_layout_get_next_line(r, part, running_top_margin+position_top+part->position_top[0], 0), width,  height, border_width, border_color[0] == 0 ? NULL : &bgcolor);
+		OUTPUT(r)->start_td(r, part, running_left_margin+part->left_margin, rlib_layout_get_next_line_by_font_point(r, part, running_top_margin+position_top+part->position_top[0], 0), width,  height, border_width, border_color[0] == 0 ? NULL : &bgcolor);
 
 		for(report_element=td->reports;report_element != NULL;report_element = g_slist_next(report_element)) {
 			struct rlib_report *report = report_element->data;

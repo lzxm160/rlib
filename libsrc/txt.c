@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004 SICOM Systems, INC.
+ *  Copyright (C) 2003-2005 SICOM Systems, INC.
  *
  *  Authors: Bob Doan <bdoan@sicompos.com>
  *
@@ -155,7 +155,7 @@ struct rlib_rgb *color) {}
 static void rlib_txt_end_draw_cell_background(rlib *r) {}
 static void rlib_txt_start_boxurl(rlib *r, struct rlib_part * part, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url) {}
 static void rlib_txt_end_boxurl(rlib *r) {}
-static void rlib_txt_drawimage(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *nname, gchar *type, gfloat nwidth, gfloat nheight) {}
+static void rlib_txt_background_image(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *nname, gchar *type, gfloat nwidth, gfloat nheight) {}
 static void rlib_txt_set_font_point(rlib *r, gint point) {}
 static void rlib_txt_start_line(rlib *r, gint backwards) {}
 static void rlib_txt_start_output_section(rlib *r) {}
@@ -213,7 +213,8 @@ void rlib_txt_new_output_filter(rlib *r) {
 	OUTPUT(r)->end_draw_cell_background = rlib_txt_end_draw_cell_background;
 	OUTPUT(r)->start_boxurl = rlib_txt_start_boxurl;
 	OUTPUT(r)->end_boxurl = rlib_txt_end_boxurl;
-	OUTPUT(r)->drawimage = rlib_txt_drawimage;
+	OUTPUT(r)->background_image = rlib_txt_background_image;
+	OUTPUT(r)->line_image = rlib_txt_background_image;
 	OUTPUT(r)->set_font_point = rlib_txt_set_font_point;
 	OUTPUT(r)->start_new_page = rlib_txt_start_new_page;
 	OUTPUT(r)->end_page = rlib_txt_end_page;   

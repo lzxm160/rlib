@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004 SICOM Systems, INC.
+ *  Copyright (C) 2003-2005 SICOM Systems, INC.
  *
  *  Authors: Bob Doan <bdoan@sicompos.com>
  *
@@ -190,7 +190,7 @@ static void pdf_start_boxurl(rlib *r, struct rlib_part *part, gfloat left_origin
 #endif
 }
 
-static void pdf_drawimage(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *nname, gchar *type, gfloat nwidth, 
+static void pdf_line_image(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *nname, gchar *type, gfloat nwidth, 
 gfloat nheight) {
 #if USEPDFLOCALE
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
@@ -832,7 +832,8 @@ void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r)->start_boxurl = pdf_start_boxurl;
 	OUTPUT(r)->end_boxurl = pdf_end_boxurl;
 
-	OUTPUT(r)->drawimage = pdf_drawimage;
+	OUTPUT(r)->line_image = pdf_line_image;
+	OUTPUT(r)->background_image = pdf_line_image;
 	OUTPUT(r)->set_font_point = pdf_set_font_point;
 	OUTPUT(r)->start_new_page = pdf_start_new_page;
 	OUTPUT(r)->end_page = pdf_end_page;

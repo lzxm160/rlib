@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004 SICOM Systems, INC.
+ *  Copyright (C) 2003-2005 SICOM Systems, INC.
  *
  *  Authors: Bob Doan <bdoan@sicompos.com>
  *
@@ -212,6 +212,8 @@ static void rlib_resolve_fields2(rlib *r, struct rlib_part *part, struct rlib_re
 					rlib_field_resolve_pcode(r, part, report, ((struct rlib_report_field *)e->data));
 				} else if(e->type == RLIB_ELEMENT_LITERAL) {
 					rlib_literal_resolve_pcode(r, part, report, ((struct rlib_report_literal *)e->data));
+				} else if(e->type == RLIB_ELEMENT_IMAGE) {
+					rlib_image_resolve_pcode(r, part, report, ((struct rlib_report_image *)e->data));
 				}
 			}
 		} else if(ro->type == RLIB_REPORT_PRESENTATION_DATA_HR) {

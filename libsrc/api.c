@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004 SICOM Systems, INC.
+ *  Copyright (C) 2003-2005 SICOM Systems, INC.
  *
  *  Authors: Bob Doan <bdoan@sicompos.com>
  *
@@ -288,6 +288,8 @@ gboolean rlib_signal_connect_string(rlib *r, gchar *signal_name, gboolean (*sign
 		signal = RLIB_SIGNAL_ROW_CHANGE;
 	else if(!strcasecmp(signal_name, "report_done"))
 		signal = RLIB_SIGNAL_REPORT_DONE;
+	else if(!strcasecmp(signal_name, "report_start"))
+		signal = RLIB_SIGNAL_REPORT_START;
 	else if(!strcasecmp(signal_name, "report_iteration"))
 		signal = RLIB_SIGNAL_REPORT_ITERATION;
 	else if(!strcasecmp(signal_name, "part_iteration"))

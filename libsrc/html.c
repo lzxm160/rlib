@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004 SICOM Systems, INC.
+ *  Copyright (C) 2003-2005 SICOM Systems, INC.
  *
  *  Authors:	Bob Doan <bdoan@sicompos.com>
  *
@@ -259,7 +259,7 @@ static void rlib_html_end_boxurl(rlib *r) {
 	print_text(r, "</a>", FALSE);
 }
 
-static void rlib_html_drawimage(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *nname, gchar *type, gfloat nwidth, 
+static void rlib_html_background_image(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *nname, gchar *type, gfloat nwidth, 
 gfloat nheight) {
 	gchar buf[MAXSTRLEN];
 
@@ -267,6 +267,14 @@ gfloat nheight) {
 	sprintf(buf, "<img src=\"%s\">", nname);
 	print_text(r, buf, FALSE);
 	print_text(r, "</DIV>", FALSE);
+}
+
+static void rlib_html_line_image(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *nname, gchar *type, gfloat nwidth, 
+gfloat nheight) {
+	gchar buf[MAXSTRLEN];
+
+	sprintf(buf, "<img src=\"%s\">", nname);
+	print_text(r, buf, FALSE);
 }
 
 static void rlib_html_set_font_point(rlib *r, gint point) {
@@ -804,7 +812,8 @@ void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT(r)->end_draw_cell_background = rlib_html_end_draw_cell_background;
 	OUTPUT(r)->start_boxurl = rlib_html_start_boxurl;
 	OUTPUT(r)->end_boxurl = rlib_html_end_boxurl;
-	OUTPUT(r)->drawimage = rlib_html_drawimage;
+	OUTPUT(r)->line_image = rlib_html_line_image;
+	OUTPUT(r)->background_image = rlib_html_background_image;
 	OUTPUT(r)->set_font_point = rlib_html_set_font_point;
 	OUTPUT(r)->start_new_page = rlib_html_start_new_page;
 	OUTPUT(r)->end_page = rlib_html_end_page;  
