@@ -122,6 +122,13 @@ long long int llabs(long long int j);
 
 #define RLIB_GET_LINE(a) ((float)(a/RLIB_PDF_DPI))
 
+#define RLIB_SIGNAL_ROW_CHANGE       0
+#define RLIB_SIGNAL_REPORT_DONE      1
+#define RLIB_SIGNAL_REPORT_ITERATION 2
+#define RLIB_SIGNAL_PART_ITERATION   3
+
+#define RLIB_SIGNALS 4
+
 struct rlib_paper {
 	char type;
 	long width;
@@ -410,8 +417,13 @@ struct rlib_part {
 	xmlChar *xml_bottom_margin;
 	xmlChar *xml_paper_type;
 	xmlChar *xml_font_size;
+	xmlChar *xml_iterations;
 
 	struct rlib_element *tr_elements;
+	struct rlib_element *report_header;
+	struct rlib_element *page_header;
+	struct rlib_element *page_footer;
+
 	struct rlib_pcode *name_code;
 	struct rlib_pcode *pages_across_code;
 	struct rlib_pcode *orientation_code;
@@ -420,15 +432,13 @@ struct rlib_part {
 	struct rlib_pcode *bottom_margin_code;
 	struct rlib_pcode *paper_type_code;
 	struct rlib_pcode *font_size_code;
-
-	struct rlib_element *report_header;
-	struct rlib_element *page_header;
-	struct rlib_element *page_footer;
+	struct rlib_pcode *iterations_code;
 
 	struct rlib_paper *paper;
 	gint orientation;
 	gint font_size;
 	gint pages_across;
+	gint iterations;
 	gfloat *position_top;
 	gfloat *position_bottom;
 	gfloat *bottom_size;
@@ -450,6 +460,7 @@ struct rlib_report {
 	xmlChar *xml_pages_across;
 	xmlChar *xml_suppress_page_header_first_page;
 	xmlChar *xml_height;
+	xmlChar *xml_iterations;
 	
 	gchar xml_encoding_name[ENCODING_NAME_SIZE]; //UTF8 if "", else whatever specified in xml
 	rlib_char_encoder *output_encoder;
@@ -467,9 +478,11 @@ struct rlib_report {
 	gfloat bottom_margin;
 	gfloat left_margin;
 	gfloat page_width;
+	gint iterations;
 	gint pages_across;
 	gint suppress_page_header_first_page;
 	gboolean is_the_only_report;
+	struct rlib_pcode *iterations_code;
 	
 	struct rlib_element *report_header;
 	struct rlib_element *page_header;
@@ -520,6 +533,11 @@ struct rlib_resultset_followers {
 	gint follower;
 };
 
+struct rlib_signal_functions {
+	gboolean (*signal_function)(gpointer, gpointer);
+	gpointer data;
+};
+
 struct rlib {
 	gint current_page_number;
 	gint total_pages_allocated;
@@ -545,6 +563,8 @@ struct rlib {
 	rlib_char_encoder *current_param_encoder;
 	
 	time_t now; //set when rlib starts now will then be a constant over the time of the report
+	
+	struct rlib_signal_functions signal_functions[RLIB_SIGNALS];
 	
 	struct rlib_queries queries[RLIB_MAXIMUM_QUERIES];
 
@@ -654,10 +674,13 @@ gint rlib_add_query_pointer_as(rlib *r, gchar *input_source, gchar *sql, gchar *
 gint rlib_add_report(rlib *r, gchar *name);
 gint rlib_add_report_from_buffer(rlib *r, gchar *buffer);
 gint rlib_execute(rlib *r);
-char * rlib_get_content_type_as_text(rlib *r);
+gchar * rlib_get_content_type_as_text(rlib *r);
 gint rlib_spool(rlib *r);
 gint rlib_set_output_format(rlib *r, gint format);
 gint rlib_set_output_format_from_text(rlib *r, gchar * name);
+gboolean rlib_query_refresh(rlib *r);
+gboolean rlib_signal_connect_string(rlib *r, gchar *signal_name, gboolean (*signal_function)(rlib *, gpointer), gpointer data);
+gboolean rlib_signal_connect(rlib *r, gint signal_number, gboolean (*signal_function)(rlib *, gpointer), gpointer data);
 
 gchar *rlib_get_output(rlib *r);
 gint rlib_get_output_length(rlib *r);
@@ -671,7 +694,6 @@ void rlib_init_profiler(void);
 void rlib_dump_profile(gint profilenum, const gchar *filename);
 void rlib_trap(void); //For internals debugging only
 gchar *rlib_version(); // returns the version string.
-
 void rlib_set_encodings(rlib *r, const char *output, const char *database, const char *params);
 void rlib_set_database_encoding(rlib *r, const char *encoding);
 void rlib_set_parameter_encoding(rlib *r, const char *encoding);
@@ -734,6 +756,7 @@ void rlib_new_c_environment(rlib *r);
 
 /***** PROTOTYPES: free.c *****************************************************/
 int rlib_free(rlib *r);
+void rlib_free_results(rlib *r);
 
 /***** PROTOTYPES: pdf.c ******************************************************/
 void rlib_pdf_new_output_filter(rlib *r);

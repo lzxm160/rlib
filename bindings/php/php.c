@@ -47,6 +47,8 @@ ZEND_FUNCTION(rlib_add_query_as);
 ZEND_FUNCTION(rlib_add_resultset_follower);
 ZEND_FUNCTION(rlib_add_report);
 ZEND_FUNCTION(rlib_add_report_from_buffer);
+ZEND_FUNCTION(rlib_query_refresh);
+ZEND_FUNCTION(rlib_signal_connect);
 ZEND_FUNCTION(rlib_set_output_format_from_text);
 ZEND_FUNCTION(rlib_execute);
 ZEND_FUNCTION(rlib_spool);
@@ -86,6 +88,8 @@ zend_function_entry rlib_functions[] =
 	ZEND_FE(rlib_add_resultset_follower, NULL)
 	ZEND_FE(rlib_add_report, NULL)
 	ZEND_FE(rlib_add_report_from_buffer, NULL)
+	ZEND_FE(rlib_query_refresh, NULL)
+	ZEND_FE(rlib_signal_connect, NULL)
 	ZEND_FE(rlib_set_output_format_from_text, NULL)
 	ZEND_FE(rlib_execute, NULL)
 	ZEND_FE(rlib_spool, NULL)
@@ -320,6 +324,50 @@ ZEND_FUNCTION(rlib_add_report_from_buffer) {
 
 	rlib_add_report_from_buffer(rip->r, estrdup(buffer));
 		
+}
+
+ZEND_FUNCTION(rlib_query_refresh) {
+	zval *z_rip = NULL;
+	rlib_inout_pass *rip;
+	gint id = -1;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_rip) == FAILURE)
+		return;
+	
+	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
+
+	rlib_query_refresh(rip->r);	
+}
+
+gboolean default_callback(rlib *r, gpointer data) {
+	zval *z_function_name = data;
+	zval *retval;
+
+	if(call_user_function_ex(CG(function_table), NULL, z_function_name, &retval, 0, NULL, 0, NULL TSRMLS_CC) == FAILURE) {
+	   return FALSE;
+	}
+	
+	return TRUE;
+}
+
+ZEND_FUNCTION(rlib_signal_connect) {
+	zval *z_rip = NULL;
+	zval *z_function_name;
+	rlib_inout_pass *rip;
+	gint id = -1;
+	gchar *function, *signal;
+	gint whatever;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss", &z_rip, &signal, &whatever, &function, &whatever) == FAILURE)
+		return;
+	
+	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
+
+
+	MAKE_STD_ZVAL(z_function_name);
+	ZVAL_STRING(z_function_name, function, 1);
+	
+	rlib_signal_connect_string(rip->r, signal, default_callback, z_function_name);
 }
 
 ZEND_FUNCTION(rlib_set_output_format_from_text) {

@@ -322,7 +322,14 @@ void rlib_free_tree(rlib *r) {
 	}
 }
 
-void free_results(rlib *r) {
+void rlib_free_results(rlib *r) {
+	int i;
+	for(i=0;i<r->queries_count;i++) {
+		INPUT(r, i)->free_result(INPUT(r, i), r->results[i].result);
+	}
+}
+
+void rlib_free_results_and_queries(rlib *r) {
 	int i;
 	for(i=0;i<r->queries_count;i++) {
 		INPUT(r, i)->free_result(INPUT(r, i), r->results[i].result);
@@ -341,7 +348,7 @@ gint rlib_free(rlib *r) {
 
 	rlib_free_tree(r);
 	xmlCleanupParser();
-	free_results(r);
+	rlib_free_results_and_queries(r);
 	for(i=0;i<r->inputs_count;i++) {
 		r->inputs[i].input->input_close(r->inputs[i].input);
 		r->inputs[i].input->free(r->inputs[i].input);	

@@ -271,10 +271,13 @@ void rlib_resolve_report_fields(rlib *r, struct rlib_report *report) {
 	report->suppress_page_header_first_page = FALSE;
 	report->suppress_page_header_first_page_code = rlib_infix_to_pcode(r, report, report->xml_suppress_page_header_first_page);
 	report->height_code = rlib_infix_to_pcode(r, report, report->xml_height);
+	report->iterations = 1;
+	report->iterations_code = rlib_infix_to_pcode(r, report, report->xml_iterations);
 
 	if (rlib_execute_as_float(r, report->pages_across_code, &f))
 		report->pages_across = f;
-
+	if (rlib_execute_as_float(r, report->iterations_code, &f))
+		report->iterations = f;
 		
 	report->position_top = g_malloc(report->pages_across * sizeof(float));
 	report->position_bottom = g_malloc(report->pages_across * sizeof(float));
@@ -352,10 +355,14 @@ void rlib_resolve_part_fields(rlib *r, struct rlib_part *part) {
 	part->paper_type_code = rlib_infix_to_pcode(r, NULL, part->xml_paper_type);
 	part->pages_across = 1;
 	part->pages_across_code = rlib_infix_to_pcode(r, NULL, part->xml_pages_across);
+	part->iterations = 1;
+	part->iterations_code = rlib_infix_to_pcode(r, NULL, part->xml_iterations);
 
 	if (rlib_execute_as_float(r, part->pages_across_code, &f))
 		part->pages_across = f;
-		
+	if (rlib_execute_as_float(r, part->iterations_code, &f))
+		part->iterations = f;
+
 	part->position_top = g_malloc(part->pages_across * sizeof(float));
 	part->position_bottom = g_malloc(part->pages_across * sizeof(float));
 	part->bottom_size = g_malloc(part->pages_across * sizeof(float));

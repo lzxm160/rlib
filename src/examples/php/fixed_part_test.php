@@ -1,4 +1,18 @@
 <? dl ("librlib.so");
+
+	function callback() {
+		global $rlib;
+		global $yields;
+
+		$yields[3][0] = "MIKEROTH";
+		$yields[3][1] = "CALL";
+		$yields[3][2] = "BACK";
+
+		rlib_query_refresh($rlib);
+
+		return "WHEEEE";
+	}  
+  
   
 	$yields[0][0] = "item";
 	$yields[0][1] = "portions";
@@ -133,7 +147,9 @@
 	$inventory[2][9] = "0";
 	$inventory[2][10] = "0";
 
-	$rlib =	rlib_init();
+	$sillypants = 5;
+
+	$rlib = rlib_init();
 	rlib_add_datasource_array($rlib, "local_array");
 	rlib_add_query_as($rlib, "local_array", "yields", "yields");
 	rlib_add_query_as($rlib, "local_array", "coupons", "coupons");
@@ -144,6 +160,7 @@
 	rlib_add_query_as($rlib, "local_array", "inventory", "inventory");
 	rlib_add_report($rlib, "fixed_part_test.xml");
 	rlib_set_output_format_from_text($rlib, "pdf");
+	rlib_signal_connect($rlib, "part_iteration", "callback");
 	rlib_execute($rlib);
 	header(rlib_get_content_type($rlib));
 	rlib_spool($rlib);

@@ -123,20 +123,26 @@ gint rlib_add_report_from_buffer(rlib *r, gchar *buffer) {
 	return r->parts_count;
 }
 
-gint rlib_execute(rlib *r) {
+static gint rlib_execute_queries(rlib *r) {
 	gint i;
-	char newfile[MAXSTRLEN];
-
-	r->now = time(NULL);
 	for(i=0;i<r->queries_count;i++) {
 		r->results[i].input = r->queries[i].input;
 		r->results[i].result = INPUT(r,i)->new_result_from_query(INPUT(r,i), r->queries[i].sql);
 		if(r->results[i].result == NULL) {
 			rlogit("Failed To Run A Query [%s]\n", r->queries[i].sql);
-			return -1;
+			return FALSE;
 		}
 		r->results[i].name =  r->queries[i].name;
 	}
+	return TRUE;
+}
+
+gint rlib_execute(rlib *r) {
+	gint i;
+	char newfile[MAXSTRLEN];
+
+	r->now = time(NULL);
+	rlib_execute_queries(r);
 
 	LIBXML_TEST_VERSION
 
@@ -252,6 +258,37 @@ gchar *rlib_get_output(rlib *r) {
 gint rlib_get_output_length(rlib *r) {
 	return OUTPUT(r)->get_output_length(r);
 }
+
+gboolean rlib_signal_connect(rlib *r, gint signal_number, gboolean (*signal_function)(rlib *, gpointer), gpointer data) {	
+	r->signal_functions[signal_number].signal_function = (gpointer)signal_function;
+	r->signal_functions[signal_number].data = data;
+	return TRUE;
+}
+
+
+gboolean rlib_signal_connect_string(rlib *r, gchar *signal_name, gboolean (*signal_function)(rlib *, gpointer), gpointer data) {
+	gint signal = -1;
+	if(!strcasecmp(signal_name, "row_change"))
+		signal = RLIB_SIGNAL_ROW_CHANGE;
+	else if(!strcasecmp(signal_name, "report_done"))
+		signal = RLIB_SIGNAL_REPORT_DONE;
+	else if(!strcasecmp(signal_name, "report_iteration"))
+		signal = RLIB_SIGNAL_REPORT_ITERATION;
+	else if(!strcasecmp(signal_name, "part_iteration"))
+		signal = RLIB_SIGNAL_PART_ITERATION;
+	else {
+		r_error("Unknowm SIGNAL [%s]\n", signal_name);
+		return FALSE;
+	}
+	return rlib_signal_connect(r, signal, signal_function, data);
+}
+
+gboolean rlib_query_refresh(rlib *r) {
+	rlib_free_results(r);
+	rlib_execute_queries(r);
+	return TRUE;
+}
+
 
 /**
  *	Add name/value pair to the memory constants.

@@ -1,3 +1,15 @@
+2004-10-29  Bob Doan  <bdoan@sicompos.com>
+	* bindings/php/environment.c: allow for different "m." data types
+	* bindings/php/php.c: implement signals, iterations, and query refreshing
+	* libsrc/api.c: likewise
+	* libsrc/free.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+	* src/examples/php/fixed_part_test.php: likewise
+	* src/examples/php/fixed_part_test.xml: likewise
+
 2004-10-28  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/resolution.c: figure out pages across earlier to prevent later memory corruption
 	* libsrc/layout.c:  move things around

@@ -422,6 +422,7 @@ static void parse_report(struct rlib_part *part, struct rlib_report *report, xml
 	report->xml_left_margin = xmlGetProp(cur, (const xmlChar *) "leftMargin");
 	report->xml_bottom_margin = xmlGetProp(cur, (const xmlChar *) "bottomMargin");
 	report->xml_height = xmlGetProp(cur, (const xmlChar *) "height");
+	report->xml_iterations = xmlGetProp(cur, (const xmlChar *) "iterations");
 
 	if(xmlGetProp(cur, (const xmlChar *) "paperType") != NULL && part->xml_paper_type == NULL)
 		part->xml_paper_type = xmlGetProp(cur, (const xmlChar *) "paperType");
@@ -548,6 +549,7 @@ static void parse_part(struct rlib_part *part, xmlDocPtr doc, xmlNsPtr ns, xmlNo
 	part->xml_left_margin = xmlGetProp(cur, (const xmlChar *) "left_margin");
 	part->xml_bottom_margin = xmlGetProp(cur, (const xmlChar *) "bottom_margin");
 	part->xml_paper_type = xmlGetProp(cur, (const xmlChar *) "paper_type");
+	part->xml_iterations = xmlGetProp(cur, (const xmlChar *) "iterations");
 	
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
@@ -691,6 +693,7 @@ struct rlib_part * parse_part_file(gchar *filename, gchar type) {
 		report->xml_left_margin = NULL;
 		report->xml_top_margin = NULL;
 		report->xml_bottom_margin = NULL;
+		
 		
 		part->xml_pages_across = report->xml_pages_across;
 		found = TRUE;

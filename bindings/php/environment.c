@@ -24,13 +24,29 @@
 #include "rlib.h"
 
 static char * rlib_php_resolve_memory_variable(char *name) {
-	void *data;
-	zval **f1;
-	if (zend_hash_find(&EG(symbol_table),name,strlen(name)+1, &data)==FAILURE) { 
+	void *temp;
+	zval ** data;
+	if (zend_hash_find(&EG(symbol_table),name,strlen(name)+1, (void *)&temp)==FAILURE) { 
 		return NULL;
 	} else {
-		f1 = data;
-		return Z_STRVAL_PP(f1);
+		char *data_result, dstr[1024];
+		memset(dstr, 1024, 0);
+		data = temp;
+		if( Z_TYPE_PP(data) == IS_STRING )	
+			data_result = Z_STRVAL_PP(data);
+		else if( Z_TYPE_PP(data) == IS_LONG ) {	
+			sprintf(dstr,"%ld",Z_LVAL_PP(data));
+			data_result = estrdup(dstr);
+		} else if( Z_TYPE_PP(data) == IS_DOUBLE ) {	
+			sprintf(dstr,"%f",Z_DVAL_PP(data));
+			data_result = estrdup(dstr);
+		} else if( Z_TYPE_PP(data) == IS_NULL ) {	
+			data_result = estrdup("");
+		} else {
+			sprintf(dstr,"ZEND Z_TYPE %d NOT SUPPORTED",Z_TYPE_PP(data));
+			data_result = estrdup(dstr);
+		}	
+		return data_result;
 	}
 }
 
