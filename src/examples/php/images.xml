@@ -78,18 +78,11 @@
 		<FieldDetails>
 			<Output>
 				<Line bgcolor="iif(r.detailcnt%2,'0xe5e5e5','white')">
-					<field value="first_name" width="20" align="left" col="1"/>
-					<field value="last_name" width="20" align="left" col="2"/>
+					<field value="first_name" width="22" align="left" col="1"/>
+					<field value="last_name" width="22" align="left" col="1"/>
 					<literal width="1"/>
 					<field value="color" width="20" align="left" col="3"/>
 					<literal width="1"/>
-					<Image value="'green.jpg'" type="'jpeg'" width="50" height="50"/>
-					<Image value="'yellow.jpg'" type="'jpeg'" width="50" height="50"/>
-					<Image value="'red.jpg'" type="'jpeg'" width="50" height="50"/>
-					<literal width="1"/>
-					<field value="amount" width="3" align="left" col="2" />
-					<literal width="1"/>
-					<Image value="iif(val(amount) &lt;= 20, 'red.jpg', iif(val(amount) &lt;= 75, 'yellow.jpg', 'green.jpg'))" type="'jpeg'" width="50" height="50"/>
 				</Line>
 			</Output>
 		</FieldDetails>

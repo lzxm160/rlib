@@ -500,12 +500,8 @@ ZEND_FUNCTION(rlib_set_locale) {
 }
 
 ZEND_FUNCTION(rlib_version) {
-	gint id = -1;
-	zval *z_rip = NULL;
-	rlib_inout_pass *rip;
-	char *ver = rlib_version();
-	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
-	RETURN_STRING(ver, TRUE);
+	gchar *ver = rlib_version();
+	RETURN_STRING(e_strdup(ver), TRUE);
 }
 
 ZEND_FUNCTION(rlib_set_datasource_encoding) {

@@ -282,9 +282,10 @@ static void rlib_advance_vertical_position_from_font_point(rlib *r, gfloat *rlib
 	*rlib_position += RLIB_GET_LINE(font_point);
 }
 
-static void rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_report_lines *rl, struct rlib_line_extra_data *extra_data) {
+static void rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_lines *rl, struct rlib_line_extra_data *extra_data) {
 	gint i=0;
 	gchar *text;
+	gint use_font_point;
 	struct rlib_report_field *rf;
 	struct rlib_report_literal *rt;
 	struct rlib_report_image *ri;
@@ -307,8 +308,16 @@ static void rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_report_line
 	if(rl->italics_code != NULL)
 		rlib_execute_pcode(r, &line_rval_italics, rl->italics_code, NULL);
 
-	if(rl->max_line_height < RLIB_GET_LINE(rl->font_point))
-		rl->max_line_height = RLIB_GET_LINE(rl->font_point);
+	if(rl->font_point > 0)
+		use_font_point = rl->font_point;
+	else if(report != NULL && report->font_size > 0)
+		use_font_point = report->font_size;
+	else
+		use_font_point = part->font_size;
+
+	if(rl->max_line_height < RLIB_GET_LINE(use_font_point)) {
+			rl->max_line_height = RLIB_GET_LINE(use_font_point);
+	}
 
 	for(; e != NULL; e=e->next) {
 		RLIB_VALUE_TYPE_NONE(&extra_data[i].rval_bgcolor);
@@ -437,7 +446,7 @@ static void rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_report_line
 			r_error("Line has invalid content");
 		}
 		if(rl->font_point == -1)
-			extra_data[i].font_point = r->font_point;
+			extra_data[i].font_point = use_font_point;
 		else
 			extra_data[i].font_point = rl->font_point;
 			
@@ -675,7 +684,7 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 					count++;
 
 				extra_data = g_new0(struct rlib_line_extra_data, count);
-				rlib_layout_execute_pcodes_for_line(r, rl, extra_data);
+				rlib_layout_execute_pcodes_for_line(r, part, report, rl, extra_data);
 				rlib_layout_find_common_properties_in_a_line(r, extra_data, count);
 				count = 0;
 

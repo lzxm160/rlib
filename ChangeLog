@@ -1,3 +1,9 @@
+2005-02-28  Bob Doan  <bdoan@sicompos.com>
+	* bindings/php/php.c: fix rlib_version() call crash
+	* libsrc/layout.c: get correct height of line all the time (from parts if we hae to)
+	* src/examples/php/images.php: nada
+	* src/examples/php/images.xml: nada
+
 2005-02-25  Chet Heilman <cheilman@sicompos.com>
 	* libsrc/gd.c:
 	Fix compile error when libgd is not found.

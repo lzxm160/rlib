@@ -27,7 +27,7 @@
 	$data[3][4] = "Green Eggs And Spam I Am I Am";
 	$data[3][5] = "50";
 
-	$data[4][0] = "Bob";
+	$data[4][0] = "Yaoundén";
 	$data[4][1] = "Kratz";
 	$data[4][2] = "pink";
 	$data[4][3] = "2";
