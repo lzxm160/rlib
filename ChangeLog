@@ -1,3 +1,9 @@
+2004-07-08  Bob Doan  <bdoan@sicompos.com>
+	* bindings/python/python.c: make it actually work
+	* libsrc/api.c: shutup
+	* libsrc/pcode.c: shutup
+	* NEWS: release time
+
 2004-06-28  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/Makefile.am: fix typo
 	* libsrc/api.c: include config.h in c files.. not .h's

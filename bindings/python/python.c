@@ -607,9 +607,9 @@ static swig_type_info *swig_types[2];
 /*-----------------------------------------------
               @(target):= _librlib.so
   ------------------------------------------------*/
-#define SWIG_init    init_librlib
+#define SWIG_init    initlibrlib
 
-#define SWIG_name    "_librlib"
+#define SWIG_name    "librlib"
 
 #include <rlib.h>
  

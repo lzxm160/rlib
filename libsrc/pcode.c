@@ -157,17 +157,13 @@ gint64 rlib_str_to_long_long(gchar *str) {
 	
 	if(str == NULL)
 		return 0;
-r_debug("hello");	
 	temp = nl_langinfo(RADIXCHAR);
 	if (!temp || r_bytecount(temp) != 1) {
 		r_warning("nl_langinfo returned %s as DECIMAL_POINT", temp);
 	} else {
 		decimalsep = *temp;
-//		r_debug("Decimal sep set to [%c]", decimalsep);
 	}
 	left = atoll(str);
-r_debug("leftstr is %s", str);	
-r_debug("left is %lld", left);	
 	other_side = strchr(str, decimalsep);
 	sign = strchr(str, '-')? -1 : 1;
 	if (left < 0) {
@@ -177,7 +173,6 @@ r_debug("left is %lld", left);
 	if(other_side != NULL) {
 		other_side++;
 		right = atoll(other_side);
-r_debug("right is %lld", right);		
 		len = r_bytecount(other_side);
 	}
 	if (len > RLIB_FXP_PRECISION) {
@@ -186,8 +181,6 @@ r_debug("right is %lld", right);
 	}
 	foo = ((right * tentothe(RLIB_FXP_PRECISION - len))
 				+ (left * RLIB_DECIMAL_PRECISION)) * sign;
-r_debug("foo is %lld, sign is %d", foo, sign);				
-//r_debug("left is %lld, right is %lld, sign is %d, foo is %lld", left, right, sign, foo);
 	return foo;
 }
 

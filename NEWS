@@ -1,3 +1,12 @@
+1.1.9
+===
+- Able to really disable UTF8 (me)
+- Make Python really work (me)
+- i18n fixed (me)
+- Fix numeric conversion so '-' works when the integer value is 0.
+- Compile Fixes
+
+
 1.1.8
 ===
 - UTF8 backed for international folks, can be disabled (CHET)
