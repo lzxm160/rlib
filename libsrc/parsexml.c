@@ -344,7 +344,7 @@ static struct report_element * parse_report_variable(xmlDocPtr doc, xmlNsPtr ns,
 	rv->resetonbreak = xmlGetProp(cur, (const xmlChar *) "resetonbreak");
 	rv->type = REPORT_VARIABLE_UNDEFINED;
 	if(rv->str_type != NULL && rv->str_type[0] != '\0') {
-		if(!strcmp(rv->str_type, "expression"))
+		if(!strcmp(rv->str_type, "expression") || !strcmp(rv->str_type, "static"))
 			rv->type = REPORT_VARIABLE_EXPRESSION;
 		else if(!strcmp(rv->str_type, "count"))
 			rv->type = REPORT_VARIABLE_COUNT;

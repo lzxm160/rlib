@@ -1,3 +1,8 @@
+2004-04-28  rlib  <set EMAIL_ADDRESS environment variable>
+	* libsrc/parsexml.c: (parse_report_variable):
+		Accept "static" as an "expression". It can later be changed to 
+		be actually static (computed once at report start).
+
 2004-04-27  Chet Heilman  <cheilman@sicompos.com>
 	* libsrc/breaks.c: (rlib_reset_variables_on_break):
 		Fix problem that reset expression variables to 0 on break.
