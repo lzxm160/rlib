@@ -31,13 +31,18 @@
 
 /* declaration of functions to be exported */
 ZEND_FUNCTION(rlib_init);
+#if HAVE_MYSQL
 ZEND_FUNCTION(rlib_add_datasource_mysql);
+#endif
+#if HAVE_POSTGRE
+ZEND_FUNCTION(rlib_add_datasource_postgre);
+#endif
 ZEND_FUNCTION(rlib_add_query_as);
 ZEND_FUNCTION(rlib_add_report);
 ZEND_FUNCTION(rlib_set_output_format);
 ZEND_FUNCTION(rlib_execute);
 ZEND_FUNCTION(rlib_spool);
-ZEND_FUNCTION(rlib_finalize);
+ZEND_FUNCTION(rlib_free);
 ZEND_FUNCTION(rlib_get_content_type);
 ZEND_MODULE_STARTUP_D(rlib);
 
@@ -48,13 +53,18 @@ static int le_link;
 zend_function_entry rlib_functions[] =
 {
 	 ZEND_FE(rlib_init, NULL)
+#if HAVE_MYSQL
 	 ZEND_FE(rlib_add_datasource_mysql, NULL)
+#endif
+#if HAVE_POSTGRE
+	 ZEND_FE(rlib_add_datasource_postgre, NULL)
+#endif
 	 ZEND_FE(rlib_add_query_as, NULL)
 	 ZEND_FE(rlib_add_report, NULL)
 	 ZEND_FE(rlib_set_output_format, NULL)
 	 ZEND_FE(rlib_execute, NULL)
 	 ZEND_FE(rlib_spool, NULL)
-	 ZEND_FE(rlib_finalize, NULL)
+	 ZEND_FE(rlib_free, NULL)
 	 ZEND_FE(rlib_get_content_type, NULL)
     {NULL, NULL, NULL}
 };
@@ -107,6 +117,7 @@ ZEND_FUNCTION(rlib_init) {
 	RETURN_RESOURCE(resource_id);
 }
 
+#if HAVE_MYSQL
 ZEND_FUNCTION(rlib_add_datasource_mysql) {
 	zval *z_rip = NULL;
 	long datasource_length, sql_host_length, sql_user_length, sql_password_length, sql_database_length;
@@ -126,6 +137,26 @@ ZEND_FUNCTION(rlib_add_datasource_mysql) {
 	
 	rlib_add_datasource_mysql(rip->r, datasource_name, database_host, database_user, database_password, database_database);
 }
+#endif
+
+#if HAVE_POSTGRE
+ZEND_FUNCTION(rlib_add_datasource_postgre) {
+	zval *z_rip = NULL;
+	long datasource_length, conn_length;
+	char *datasource_name, *conn;
+	rlib_inout_pass *rip;
+	int id = -1;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss", &z_rip,
+		&datasource_name, &datasource_length,
+		&conn, &conn_length) == FAILURE) {
+		return;
+	}
+	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);
+	
+	rlib_add_datasource_postgre(rip->r, datasource_name, conn);
+}
+#endif
 
 ZEND_FUNCTION(rlib_add_query_as) {
 	zval *z_rip = NULL;
@@ -224,11 +255,9 @@ ZEND_FUNCTION(rlib_spool) {
 		zend_error(E_ERROR, "Unable to run report with requested data");
 	}
 	
-	rlib_input_close(rip->r);
-
 }
 
-ZEND_FUNCTION(rlib_finalize) {
+ZEND_FUNCTION(rlib_free) {
 	zval *z_rip = NULL;
 	rlib_inout_pass *rip;
 	int id = -1;
@@ -239,15 +268,7 @@ ZEND_FUNCTION(rlib_finalize) {
 	
 	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);
 	if(rip->r != NULL) {
-		rlib_finalize(rip->r);
-		if(rip->format == RLIB_FORMAT_PDF)
-			rip->content_type = RLIB_CONTENT_TYPE_PDF;		
-		else if(rip->format == RLIB_FORMAT_HTML)
-			rip->content_type = RLIB_CONTENT_TYPE_HTML;
-		else if(rip->format == RLIB_FORMAT_TXT)
-			rip->content_type = RLIB_CONTENT_TYPE_TXT;
-		else if(rip->format == RLIB_FORMAT_CSV)
-			rip->content_type = RLIB_CONTENT_TYPE_CSV;
+		rlib_free(rip->r);
 	}
 }
 
@@ -256,7 +277,7 @@ ZEND_FUNCTION(rlib_get_content_type) {
 	rlib_inout_pass *rip;
 	int id = -1;
 	static char buf[MAXSTRLEN];
-	
+	char *content_type;
 	
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &z_rip) == FAILURE) {
 		return;
@@ -264,20 +285,9 @@ ZEND_FUNCTION(rlib_get_content_type) {
 	
 	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
 
-	if(rip->content_type == RLIB_CONTENT_TYPE_ERROR)
-		sprintf(buf, "%s", RLIB_WEB_CONTENT_TYPE_HTML);
-	else if(rip->content_type == RLIB_CONTENT_TYPE_PDF) {
-		sprintf(buf, "%s", RLIB_WEB_CONTENT_TYPE_PDF);
-		sprintf(buf, "%sContent-Length: %ld%c", buf, rip->r->length, 10);		
-	} else if(rip->content_type == RLIB_CONTENT_TYPE_TXT) {
-		sprintf(buf, "%s", RLIB_WEB_CONTENT_TYPE_TEXT);
-		sprintf(buf, "%sContent-Length: %ld%c", buf, rip->r->length, 10);		
-	} else if(rip->content_type == RLIB_CONTENT_TYPE_HTML) {
-		sprintf(buf, "%s", RLIB_WEB_CONTENT_TYPE_HTML);
-		sprintf(buf, "%sContent-Length: %ld%c", buf, rip->r->length, 10);		
-	} else if(rip->content_type == RLIB_CONTENT_TYPE_CSV) {
-		sprintf(buf, "%s", RLIB_WEB_CONTENT_TYPE_CSV);
-	}
+	content_type = rlib_get_content_type_as_text(rip->r);
+
+	sprintf(buf, "%s%c", content_type, 10);
 
 	RETURN_STRING(buf, TRUE);
 }

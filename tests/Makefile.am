@@ -23,8 +23,8 @@
 noinst_PROGRAMS = test1 test2
 INCLUDES = $(POSTGRE_CFLAGS) $(LIBXML_CFLAGS) -I${top_srcdir}/libsrc/  
 
-test1_SOURCES= rlib.h test1.c
+test1_SOURCES= test1.c
 test1_LDADD = -L${top_srcdir}/libsrc/ $(MYSQL_LIBS) $(POSTGRE_LIBS) $(LIBXML_LIBS) -lcpdf -lr
 
-test2_SOURCES= rlib.h test2.c
+test2_SOURCES= test2.c
 test2_LDADD = -L${top_srcdir}/libsrc/ $(MYSQL_LIBS) $(POSTGRE_LIBS) $(LIBXML_LIBS) -lcpdf -lr

@@ -121,7 +121,7 @@ static int rlib_mysql_isdone(void *input_ptr, void *result_ptr) {
 
 static int rlib_mysql_previous(void *input_ptr, void *result_ptr) {
 	struct rlib_mysql_results *result = result_ptr;
-	result->save_row = result->save_row;
+	result->save_row = result->this_row;
 	result->this_row = result->previous_row;
 	if(result->previous_row == NULL) {
 		result->didprevious = FALSE;
@@ -134,16 +134,13 @@ static int rlib_mysql_previous(void *input_ptr, void *result_ptr) {
 
 static int rlib_mysql_last(void *input_ptr, void *result_ptr) {
 	struct rlib_mysql_results *result = result_ptr;
-	result->this_row = result->last_row;
-	if(result->last_row == NULL)
-		return FALSE;
-	else
-		return TRUE;
+	return TRUE;
 }
 
 static char * rlib_mysql_get_field_value_as_string(void *input_ptr, void *result_ptr, void *field_ptr) {
 	struct rlib_mysql_results *result = result_ptr;
 	long field = (long)field_ptr;
+	field -= 1;
 	return result->this_row[field];
 }
 
@@ -177,7 +174,7 @@ void * mysql_new_result_from_query(void *input_ptr, char *query) {
 	count = mysql_field_count(INPUT_PRIVATE(input)->mysql);
 	results->fields = rmalloc(sizeof(int) * count);
 	for(i=0;i<count;i++) {
-		results->fields[i] = i;
+		results->fields[i] = i+1;
 	}
 	return results;
 }

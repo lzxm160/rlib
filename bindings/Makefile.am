@@ -20,4 +20,9 @@
 ##
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = php
+if HAVE_PHP
+PHP_BINDINGS=php
+endif
+
+SUBDIRS = \
+	$(PHP_BINDINGS)

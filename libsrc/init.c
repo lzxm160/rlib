@@ -24,7 +24,6 @@
 #include "ralloc.h"
 #include "rlib.h"
 #include "input.h"
-
 rlib * rlib_init(struct environment_filter *environment) {
 	rlib *r;
 	
@@ -108,7 +107,7 @@ int rlib_execute(rlib *r) {
 	}
 
 	make_report(r);	
-		
+	rlib_finalize(r);
 	return 0;
 }
 

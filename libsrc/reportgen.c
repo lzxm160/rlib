@@ -675,29 +675,31 @@ int make_report(rlib *r) {
 		rlib_init_variables(r);
 		rlib_init_page(r, TRUE);		
 		OUTPUT(r)->rlib_begin_text(r);
-		while (1) {
-			rlib_handle_break_headers(r);
-			
-			if(!will_line_fit(r, r->reports[r->current_report]->detail.fields)) {
-				OUTPUT(r)->rlib_end_page(r);
-				rlib_force_break_headers(r);
-			}
-			rlib_process_variables(r);
-			if(OUTPUT(r)->do_break) {
-				print_detail_line(r, r->reports[r->current_report]->detail.fields, FALSE);
-			} else
-				hack_print_detail_lines(r);
+		if(INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result) != TRUE) {
+			while (1) {
+				rlib_handle_break_headers(r);
+				
+				if(!will_line_fit(r, r->reports[r->current_report]->detail.fields)) {
+					OUTPUT(r)->rlib_end_page(r);
+					rlib_force_break_headers(r);
+				}
+				rlib_process_variables(r);
+				if(OUTPUT(r)->do_break) {
+					print_detail_line(r, r->reports[r->current_report]->detail.fields, FALSE);
+				} else
+					hack_print_detail_lines(r);
 
-			r->detail_line_count++;
-			i++;
+				r->detail_line_count++;
+				i++;
 
-			if(INPUT(r, r->current_result)->next(INPUT(r, r->current_result), r->results[r->current_result].result) == FALSE) {
-				INPUT(r, r->current_result)->last(INPUT(r, r->current_result), r->results[r->current_result].result);
+				if(INPUT(r, r->current_result)->next(INPUT(r, r->current_result), r->results[r->current_result].result) == FALSE) {
+					INPUT(r, r->current_result)->last(INPUT(r, r->current_result), r->results[r->current_result].result);
+					rlib_handle_break_footers(r);
+					break;
+				} 
+
 				rlib_handle_break_footers(r);
-				break;
-			} 
-
-			rlib_handle_break_footers(r);
+			}
 		}
 
 		INPUT(r, r->current_result)->last(INPUT(r, r->current_result), r->results[r->current_result].result);

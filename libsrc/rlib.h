@@ -310,6 +310,7 @@ struct rip_reports {
 
 struct input_filters {
 	char *name;
+	void *handle;
 	struct input_filter *input;
 };
 

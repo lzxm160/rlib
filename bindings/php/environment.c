@@ -25,7 +25,7 @@
 
 static char * rlib_php_resolve_memory_variable(char *name) {
 	zval **data; 
-	if (zend_hash_find(&EG(symbol_table),name,strlen(name),(void **)&data)==FAILURE) { 
+	if (zend_hash_find(&EG(symbol_table),name,strlen(name)+1,(void **)&data)==FAILURE) { 
 		return NULL;
 	} else {
 		return Z_STRVAL_PP(data);
@@ -37,7 +37,7 @@ static int rlib_php_write_output(char *data, int len) {
 }
 
 void rlib_php_free(rlib *r) {
-	rfree(ENVIRONMENT(r));
+	efree(ENVIRONMENT(r));
 }
 
 
@@ -48,4 +48,5 @@ struct environment_filter * rlib_php_new_environment() {
 	ef->rlib_resolve_memory_variable = rlib_php_resolve_memory_variable;
 	ef->rlib_write_output = rlib_php_write_output;
 	ef->free = rlib_php_free;
+	return ef;
 }

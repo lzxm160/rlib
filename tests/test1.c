@@ -52,7 +52,6 @@ int main(int argc, char **argv) {
 	rlib_add_report(r, "report2.xml", "example3");
 	rlib_set_output_format(r, RLIB_FORMAT_PDF);
 	rlib_execute(r);
-	rlib_finalize(r);
 	rlib_spool(r);
 	rlib_free(r);
 	return 0;

@@ -19,6 +19,7 @@
  */
 
 #include <stdlib.h>
+#include <dlfcn.h>
 
 #include "ralloc.h"
 #include "rlib.h"
@@ -148,12 +149,13 @@ int rlib_free(rlib *r) {
 	int i;
 	rlib_free_tree(r);
 	xmlCleanupParser();
-	
 	free_results(r);
 
 	for(i=0;i<r->inputs_count;i++) {
 		r->inputs[i].input->input_close(r->inputs[i].input);
 		r->inputs[i].input->free(r->inputs[i].input);	
+		if(r->inputs[i].handle != NULL)
+			dlclose(r->inputs[i].handle);
 	}
 
 	OUTPUT(r)->rlib_free(r);

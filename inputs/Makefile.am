@@ -1,12 +1,12 @@
-## libsrc/Makefile.am for RLIB
+## Makefile.am for RLIB
 
 ## Copyright (c) 2003 SICOM Systems Inc (bdoan@sicompos.com)
-## rlib is free software; you can redistribute it and/or modify
+## RLIB is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 2, or (at your option)
 ## any later version.
 
-## rlib is distributed in the hope that it will be useful,
+## RLIB is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
@@ -20,16 +20,14 @@
 ##
 ## Process this file with automake to produce Makefile.in
 
-lib_LTLIBRARIES = libr.la
-libr_la_SOURCES = parsexml.c reportgen.c init.c resolution.c util.c pcode.c \
-	pcode_op_functions.c formatstring.c fxp.c breaks.c pdf.c html.c txt.c \
-	datasource.c csv.c ralloc.c environment.c free.c input.h pcode.h \
-	ralloc.h rlib.h 
+if HAVE_MYSQL
+MYSQL_INPUT=mysql
+endif
 
-libr_la_LIBADD = $(LIBXML_LIBS) -lcpdf 
+if HAVE_POSTGRE
+POSTGRE_INPUT=postgre
+endif
 
-INCLUDES = $(LIBXML_CFLAGS)
-
-include_HEADERS = rlib.h input.h
-
-includedir=$(prefix)/include/rlib
+SUBDIRS = \
+	$(MYSQL_INPUT) \
+	$(POSTGRE_INPUT)
