@@ -120,8 +120,10 @@ static void rlib_pdf_start_new_page(rlib *r) {
 
 static void rlib_pdf_init_end_page(rlib *r) {
 //TODO: Why is this needed?
-	if(r->current_page_number == 1)
+	if(r->start_of_new_report == TRUE) {
+		r->start_of_new_report = FALSE;
 		cpdf_endText(OUTPUT_PRIVATE(r)->pdf);
+	}
 
 }
 

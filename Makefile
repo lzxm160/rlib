@@ -2,7 +2,8 @@ all: libr.so chopblock
 
 #-I/usr/include/gnome-xml -I/home/bdoan/mgrng/slib \
 
-CCFLAGS=-Wall -Wsign-compare -Werror -g -c
+#CCFLAGS=-Wall -Wsign-compare -Werror -g -c
+CCFLAGS=-Wall -Wsign-compare -g -c
 CCINC=-I/usr/include/libxml2/libxml -I /usr/include/libxml2 \
         -I/usr/include/php -I/usr/include/php/main -I/usr/include/php/Zend -I/usr/include/php/TSRM -I/usr/include/php/regex \
         -I$(HOME)/mgrng/slib/ -I/usr/include/mysql

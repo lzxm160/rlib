@@ -290,8 +290,10 @@ void rlib_resolve_fields(rlib *r) {
 	rlib_resolve_fields2(r, r->reports[r->current_report]->page_footer);
 	rlib_resolve_fields2(r, r->reports[r->current_report]->report_footer);
 
-	rlib_resolve_fields2(r, r->reports[r->current_report]->detail->fields);
-	rlib_resolve_fields2(r, r->reports[r->current_report]->detail->textlines);
+	if(r->reports[r->current_report]->detail != NULL) {
+		rlib_resolve_fields2(r, r->reports[r->current_report]->detail->fields);
+		rlib_resolve_fields2(r, r->reports[r->current_report]->detail->textlines);
+	}
 
 	if(r->reports[r->current_report]->breaks != NULL) {
 		for(e = r->reports[r->current_report]->breaks; e != NULL; e=e->next) {

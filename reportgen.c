@@ -360,6 +360,9 @@ static void print_detail_line_private(rlib *r, struct report_output_array *roa, 
 	float margin=0, width=0;
 	struct rlib_line_extra_data *extra_data;
 
+	if(roa == NULL)
+		return;
+
 	r->current_line_number++;
 	
 	for(j=0;j<roa->count;j++) {
@@ -376,7 +379,6 @@ static void print_detail_line_private(rlib *r, struct report_output_array *roa, 
 				count++;
 
 			extra_data = ecalloc(sizeof(struct rlib_line_extra_data), count);
-			
 			execute_pcodes_for_line(r, rl, extra_data);
 			find_stuff_in_common(r, extra_data, count);
 			count = 0;
@@ -477,8 +479,8 @@ void hack_print_detail_lines(rlib *r) {
 			print_detail_line_private(r, rb->header, FALSE);
 		}		
 	}
-	
-	print_detail_line_private(r, r->reports[r->current_report]->detail->fields, FALSE);
+	if(r->reports[r->current_report]->detail != NULL)
+		print_detail_line_private(r, r->reports[r->current_report]->detail->fields, FALSE);
 	OUTPUT(r)->rlib_end_output_section(r);
 }
 
@@ -486,12 +488,12 @@ void rlib_init_page(rlib *r, char report_header) {
 	r->position_top = GET_MARGIN(r)->top_margin;
 	OUTPUT(r)->rlib_start_new_page(r);
 	OUTPUT(r)->rlib_set_font_point(r, r->font_point);
-
 	if(report_header)
 		print_detail_line(r, r->reports[r->current_report]->report_header, FALSE);	
 	
-	print_detail_line(r, r->reports[r->current_report]->page_header, FALSE);	
-	print_detail_line(r, r->reports[r->current_report]->detail->textlines, FALSE);		
+	print_detail_line(r, r->reports[r->current_report]->page_header, FALSE);
+	if(r->reports[r->current_report]->detail != NULL)
+		print_detail_line(r, r->reports[r->current_report]->detail->textlines, FALSE);		
 	print_detail_line(r, r->reports[r->current_report]->page_footer, TRUE);
 
 	OUTPUT(r)->rlib_init_end_page(r);
@@ -536,8 +538,10 @@ void rlib_end_page_if_line_wont_fit(rlib *r, struct report_output_array *roa) {
 }
 
 void rlib_print_report_footer(rlib *r) {
-	rlib_end_page_if_line_wont_fit(r, r->reports[r->current_report]->report_footer);
-	print_detail_line(r, r->reports[r->current_report]->report_footer, FALSE);
+	if(r->reports[r->current_report]->report_footer != NULL) {
+		rlib_end_page_if_line_wont_fit(r, r->reports[r->current_report]->report_footer);
+		print_detail_line(r, r->reports[r->current_report]->report_footer, FALSE);
+	}
 }
 
 
@@ -621,7 +625,8 @@ void rlib_process_variables(rlib *r) {
 }
 
 int make_report(rlib *r) {
-	int i=0;
+	int i = 0;
+	int report = 0;
 	MYSQL_ROW last;
 	
 	if(r->format == RLIB_FORMAT_HTML)
@@ -639,12 +644,13 @@ int make_report(rlib *r) {
 	OUTPUT(r)->rlib_set_bg_color(r, -1, -1, -1);
 
 	r->current_page_number = 1;
-	r->current_line_number = 1;
-	r->detail_line_count = 1;
-	r->font_point = FONTPOINT;
-	r->results[r->current_result].row = NULL;
 	r->current_report = 0;
 	r->current_result = 0;
+	r->start_of_new_report = TRUE;
+	r->results[r->current_result].row = NULL;
+
+	OUTPUT(r)->rlib_init_output(r);
+	rlib_fetch_first_rows(r);
 
 	if(r->reports[r->current_report]->defaultResult != NULL && r->reports[r->current_report]->defaultResult[0] != '\0') {
 		int index;
@@ -653,51 +659,65 @@ int make_report(rlib *r) {
 			r->current_result = index;
 	}
 
-	rlib_resolve_fields(r);
+	for(report=0;report<r->reports_count;report++) {
+		r->current_report = report;
+		rlib_resolve_fields(r);
+		if(r->reports[r->current_report]->fontsize != -1)
+			r->font_point = r->reports[r->current_report]->fontsize;
+		rlib_init_variables(r);
+		rlib_init_page(r, TRUE);		
+		OUTPUT(r)->rlib_begin_text(r);
+		while (r->results[r->current_result].row) {
+			MYSQL_ROW temp=NULL;
+			rlib_handle_break_headers(r);
+			
+			if(r->reports[r->current_report]->detail != NULL) {
+				if(!will_line_fit(r, r->reports[r->current_report]->detail->fields)) {
+					OUTPUT(r)->rlib_end_page(r);
+					rlib_force_break_headers(r);
+				}
+			}
+			rlib_process_variables(r);
+			if(OUTPUT(r)->do_break) {
+				if(r->reports[r->current_report]->detail != NULL)
+					print_detail_line(r, r->reports[r->current_report]->detail->fields, FALSE);
+			} else
+				hack_print_detail_lines(r);
 
-	if(r->reports[r->current_report]->fontsize != -1)
-		r->font_point = r->reports[r->current_report]->fontsize;
+			r->detail_line_count++;
+			i++;
+			last = temp;
+			temp = mysql_fetch_row(r->results[r->current_result].result);
+			r->results[r->current_result].last_row = r->results[r->current_result].row;
+			if(temp == NULL) {
+				r->results[r->current_result].row = temp;
+				rlib_handle_break_footers(r);
+				break;
+			} else
+				r->results[r->current_result].row = temp;
 
-	OUTPUT(r)->rlib_init_output(r);
-
-	rlib_fetch_first_rows(r);
-	rlib_init_variables(r);
-	rlib_init_page(r, TRUE);		
-	OUTPUT(r)->rlib_begin_text(r);
-
-	while (r->results[r->current_result].row) {
-		MYSQL_ROW temp=NULL;
-		rlib_handle_break_headers(r);
-	
-		if(!will_line_fit(r, r->reports[r->current_report]->detail->fields)) {
-			OUTPUT(r)->rlib_end_page(r);
-			rlib_force_break_headers(r);
-		}
-		rlib_process_variables(r);
-		if(OUTPUT(r)->do_break)
-			print_detail_line(r, r->reports[r->current_report]->detail->fields, FALSE);
-		else
-			hack_print_detail_lines(r);
-
-		r->detail_line_count++;
-		i++;
-		last = temp;
-		temp = mysql_fetch_row(r->results[r->current_result].result);
-		r->results[r->current_result].last_row = r->results[r->current_result].row;
-		if(temp == NULL) {
-			r->results[r->current_result].row = temp;
 			rlib_handle_break_footers(r);
-			break;
-		} else
-			r->results[r->current_result].row = temp;
 
-		rlib_handle_break_footers(r);
+		}
 
-	}
-	r->results[r->current_result].row = r->results[r->current_result].last_row;
-	if(r->results[r->current_result].row != NULL)
-		rlib_print_report_footer(r);
+
+		r->results[r->current_result].row = r->results[r->current_result].last_row;
+		if(r->results[r->current_result].row != NULL)
+			rlib_print_report_footer(r);
+	
+		if(report+1 < r->reports_count) {
+			OUTPUT(r)->rlib_end_text(r);
+			r->current_page_number++;
+			r->start_of_new_report = TRUE;
+			r->current_line_number = 1;
+			r->detail_line_count = 1;
+			r->font_point = FONTPOINT;
+		}
+
+
+	}	
 	OUTPUT(r)->rlib_end_text(r);
+	
 	return 0;
 }
 

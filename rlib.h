@@ -295,6 +295,7 @@ struct rlib {
 	int current_page_number;
 	int current_line_number;
 	int detail_line_count;
+	int start_of_new_report;
 	
 	int font_point;
 	int landscape;
