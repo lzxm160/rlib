@@ -79,8 +79,6 @@ void write_field(gint fd, struct rlib_report_field *rf) {
 	write_xml_str(fd, rf->xml_format);
 	write_xml_str(fd, rf->xml_link);
 	write_xml_str(fd, rf->xml_col);
-	write_xml_str(fd, rf->xml_wrapchars);
-	write_xml_str(fd, rf->xml_maxlines);
 }
 
 void write_text(gint fd, struct rlib_report_literal *rt) {
@@ -128,13 +126,13 @@ void write_roa(gint fd, struct rlib_report_output_array *roa) {
 		struct rlib_report_output *ro = roa->data[j];
 		type = ro->type;
 		write(fd, &type, sizeof(gint32));
-		if(ro->type == REPORT_PRESENTATION_DATA_LINE) {			
+		if(ro->type == RLIB_REPORT_PRESENTATION_DATA_LINE) {			
 			struct rlib_report_lines *rl = ro->data;	
 			write_line(fd, rl);
-		} else if(ro->type == REPORT_PRESENTATION_DATA_HR) {
+		} else if(ro->type == RLIB_REPORT_PRESENTATION_DATA_HR) {
 			struct rlib_report_horizontal_line *hr = ro->data;
 			write_hr(fd, hr);
-		} else if(ro->type == REPORT_PRESENTATION_DATA_IMAGE) {
+		} else if(ro->type == RLIB_REPORT_PRESENTATION_DATA_IMAGE) {
 			struct rlib_report_image *ri = ro->data;
 			write_image(fd, ri);
 		}

@@ -219,8 +219,9 @@ struct rlib_report_field {
 	xmlChar *xml_format;
 	xmlChar *xml_link;
 	xmlChar *xml_col;
-	xmlChar *xml_wrapchars;
-	xmlChar *xml_maxlines;
+	xmlChar *xml_memo;
+	xmlChar *xml_memo_height;
+	xmlChar *xml_memo_wrap_chars;
 
 	gint width;
 	gint align;
@@ -231,19 +232,20 @@ struct rlib_report_field {
 	struct rlib_pcode *color_code;
 	struct rlib_pcode *bgcolor_code;
 	struct rlib_pcode *col_code;
-	struct rlib_pcode *wrapchars_code;
-	struct rlib_pcode *maxlines_code;
 	struct rlib_pcode *width_code;
 	struct rlib_pcode *bold_code;
 	struct rlib_pcode *italics_code;
 	struct rlib_pcode *align_code;
+	struct rlib_pcode *memo_code;
+	struct rlib_pcode *memo_height_code;
+	struct rlib_pcode *memo_wrap_chars_code;
 		
 	struct rlib_value *rval;
 };
 
-#define REPORT_PRESENTATION_DATA_LINE	1
-#define REPORT_PRESENTATION_DATA_HR 	2
-#define REPORT_PRESENTATION_DATA_IMAGE	3
+#define RLIB_REPORT_PRESENTATION_DATA_LINE	1
+#define RLIB_REPORT_PRESENTATION_DATA_HR 	2
+#define RLIB_REPORT_PRESENTATION_DATA_IMAGE	3
 
 struct rlib_report_output {
 	gint type;
@@ -351,13 +353,13 @@ struct rlib_count_amount {
 	struct rlib_value amount;
 };
 
-#define REPORT_VARIABLE_UNDEFINED	-1 
-#define REPORT_VARIABLE_EXPRESSION	1
-#define REPORT_VARIABLE_COUNT 		2
-#define REPORT_VARIABLE_SUM	 		3
-#define REPORT_VARIABLE_AVERAGE 		4
-#define REPORT_VARIABLE_LOWEST		5
-#define REPORT_VARIABLE_HIGHEST		6
+#define RLIB_REPORT_VARIABLE_UNDEFINED	-1 
+#define RLIB_REPORT_VARIABLE_EXPRESSION	1
+#define RLIB_REPORT_VARIABLE_COUNT 		2
+#define RLIB_REPORT_VARIABLE_SUM	 		3
+#define RLIB_REPORT_VARIABLE_AVERAGE 		4
+#define RLIB_REPORT_VARIABLE_LOWEST		5
+#define RLIB_REPORT_VARIABLE_HIGHEST		6
 
 #define RLIB_VARIABLE_CA(a)	((struct rlib_count_amount *)a->data)
 

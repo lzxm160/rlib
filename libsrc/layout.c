@@ -572,7 +572,7 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 		struct rlib_report_output *ro = roa->data[j];
 		margin = my_left_margin;
 
-		if(ro->type == REPORT_PRESENTATION_DATA_LINE) {
+		if(ro->type == RLIB_REPORT_PRESENTATION_DATA_LINE) {
 			struct rlib_report_lines *rl = ro->data;
 			gint count=0;
 			
@@ -683,7 +683,7 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 
 				g_free(extra_data);
 			}
-		} else if(ro->type == REPORT_PRESENTATION_DATA_HR) {
+		} else if(ro->type == RLIB_REPORT_PRESENTATION_DATA_HR) {
 			gchar *colorstring;
 			struct rlib_value rval2, *rval=&rval2;
 			struct rlib_report_horizontal_line *rhl = ro->data;
@@ -719,7 +719,7 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 					rlib_value_free(rval);
 				}
 			}
-		} else if(ro->type == REPORT_PRESENTATION_DATA_IMAGE) {
+		} else if(ro->type == RLIB_REPORT_PRESENTATION_DATA_IMAGE) {
 			struct rlib_value rval2, rval3, rval4, rval5, *rval_value=&rval2, *rval_width=&rval3, *rval_height=&rval4, *rval_type=&rval5;
 			struct rlib_report_image *ri = ro->data;
 			rlib_execute_pcode(r, &rval2, ri->value_code, NULL);

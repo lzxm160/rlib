@@ -159,21 +159,21 @@ void rlib_reset_variables_on_break(rlib *r, struct rlib_part *part, struct rlib_
 	for(e = report->variables; e != NULL; e=e->next) {
 		struct rlib_report_variable *rv = e->data;
 		if(rv->xml_resetonbreak != NULL && rv->xml_resetonbreak[0] != '\0' && !strcmp(rv->xml_resetonbreak, name)) {
-			if(rv->type == REPORT_VARIABLE_COUNT) {
+			if(rv->type == RLIB_REPORT_VARIABLE_COUNT) {
 				RLIB_VARIABLE_CA(rv)->count = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->count, 0);
-			} else if(rv->type == REPORT_VARIABLE_SUM) {
+			} else if(rv->type == RLIB_REPORT_VARIABLE_SUM) {
 				RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
-			} else if(rv->type == REPORT_VARIABLE_AVERAGE) {
+			} else if(rv->type == RLIB_REPORT_VARIABLE_AVERAGE) {
 				RLIB_VARIABLE_CA(rv)->count = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->count, 0);
 				RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
-			} else if(rv->type == REPORT_VARIABLE_LOWEST) {
+			} else if(rv->type == RLIB_REPORT_VARIABLE_LOWEST) {
 				RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
-			} else if(rv->type == REPORT_VARIABLE_HIGHEST) {
+			} else if(rv->type == RLIB_REPORT_VARIABLE_HIGHEST) {
 				RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 			}
 		}
 
-//		if(rv->type == REPORT_VARIABLE_EXPRESSION)
+//		if(rv->type == RLIB_REPORT_VARIABLE_EXPRESSION)
 //			RLIB_VARIABLE_CA(rv)->count = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		
 	}

@@ -186,12 +186,12 @@ gfloat get_output_size(rlib *r, struct rlib_report_output_array *roa) {
 	gfloat total=0;
 	for(j=0;j<roa->count;j++) {
 		struct rlib_report_output *rd = roa->data[j];
-		if(rd->type == REPORT_PRESENTATION_DATA_LINE) {
+		if(rd->type == RLIB_REPORT_PRESENTATION_DATA_LINE) {
 			struct rlib_report_lines *rl = rd->data;
 			total += RLIB_GET_LINE(get_font_point(r, rl));
 			
 //Here to adjust size of memo field output.			
-		} else if(rd->type == REPORT_PRESENTATION_DATA_HR) {
+		} else if(rd->type == RLIB_REPORT_PRESENTATION_DATA_HR) {
 			struct rlib_report_horizontal_line *rhl = rd->data;
 			total += RLIB_GET_LINE(rhl->size);		
 		}
@@ -285,23 +285,23 @@ static void rlib_init_variables(rlib *r, struct rlib_report *report) {
 	struct rlib_element *e;
 	for(e = report->variables; e != NULL; e=e->next) {
 		struct rlib_report_variable *rv = e->data;
-		if(rv->type == REPORT_VARIABLE_EXPRESSION) {
+		if(rv->type == RLIB_REPORT_VARIABLE_EXPRESSION) {
 			rv->data = g_malloc(sizeof(struct rlib_count_amount));
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
-		} else if(rv->type == REPORT_VARIABLE_COUNT) {
+		} else if(rv->type == RLIB_REPORT_VARIABLE_COUNT) {
 			rv->data = g_malloc(sizeof(struct rlib_count_amount));
 			RLIB_VARIABLE_CA(rv)->count = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->count, 0);
-		} else if(rv->type == REPORT_VARIABLE_SUM) {
+		} else if(rv->type == RLIB_REPORT_VARIABLE_SUM) {
 			rv->data = g_malloc(sizeof(struct rlib_count_amount));
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
-		} else if(rv->type == REPORT_VARIABLE_AVERAGE) {
+		} else if(rv->type == RLIB_REPORT_VARIABLE_AVERAGE) {
 			rv->data = g_malloc(sizeof(struct rlib_count_amount));
 			RLIB_VARIABLE_CA(rv)->count = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->count, 0);
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
-		} else if(rv->type == REPORT_VARIABLE_LOWEST) {
+		} else if(rv->type == RLIB_REPORT_VARIABLE_LOWEST) {
 			rv->data = g_malloc(sizeof(struct rlib_count_amount));
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
-		} else if(rv->type == REPORT_VARIABLE_HIGHEST) {
+		} else if(rv->type == RLIB_REPORT_VARIABLE_HIGHEST) {
 			rv->data = g_malloc(sizeof(struct rlib_count_amount));
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		}
@@ -318,9 +318,9 @@ static void rlib_process_variables(rlib *r, struct rlib_report *report) {
 		struct rlib_value execute_result, *er = &execute_result;
 		if(rv->code != NULL)
 			 rlib_execute_pcode(r, &execute_result, rv->code, NULL);
-		if(rv->type == REPORT_VARIABLE_COUNT) {
+		if(rv->type == RLIB_REPORT_VARIABLE_COUNT) {
 			RLIB_VALUE_GET_AS_NUMBER(count) += RLIB_DECIMAL_PRECISION;
-		} else if(rv->type == REPORT_VARIABLE_EXPRESSION) {
+		} else if(rv->type == RLIB_REPORT_VARIABLE_EXPRESSION) {
 			if(RLIB_VALUE_IS_NUMBER(er)) {
 				rlib_value_free(amount);
 				rlib_value_new_number(amount, RLIB_VALUE_GET_AS_NUMBER(er));
@@ -328,30 +328,30 @@ static void rlib_process_variables(rlib *r, struct rlib_report *report) {
 				rlib_value_free(amount);
 				rlib_value_new_string(amount, RLIB_VALUE_GET_AS_STRING(er));
 			} else
-				rlogit("rlib_process_variables EXPECTED TYPE NUMBER OR STRING FOR REPORT_VARIABLE_EXPRESSION\n");
-		} else if(rv->type == REPORT_VARIABLE_SUM) {
+				rlogit("rlib_process_variables EXPECTED TYPE NUMBER OR STRING FOR RLIB_REPORT_VARIABLE_EXPRESSION\n");
+		} else if(rv->type == RLIB_REPORT_VARIABLE_SUM) {
 			if(RLIB_VALUE_IS_NUMBER(er))
 				RLIB_VALUE_GET_AS_NUMBER(amount) += RLIB_VALUE_GET_AS_NUMBER(er);
 			else
-				rlogit("rlib_process_variables EXPECTED TYPE NUMBER FOR REPORT_VARIABLE_SUM\n");
-		} else if(rv->type == REPORT_VARIABLE_AVERAGE) {
+				rlogit("rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_SUM\n");
+		} else if(rv->type == RLIB_REPORT_VARIABLE_AVERAGE) {
 			RLIB_VALUE_GET_AS_NUMBER(count) += RLIB_DECIMAL_PRECISION;
 			if(RLIB_VALUE_IS_NUMBER(er))
 				RLIB_VALUE_GET_AS_NUMBER(amount) += RLIB_VALUE_GET_AS_NUMBER(er);
 			else
-				rlogit("rlib_process_variables EXPECTED TYPE NUMBER FOR REPORT_VARIABLE_AVERAGE\n");
-		} else if(rv->type == REPORT_VARIABLE_LOWEST) {
+				rlogit("rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_AVERAGE\n");
+		} else if(rv->type == RLIB_REPORT_VARIABLE_LOWEST) {
 			if(RLIB_VALUE_IS_NUMBER(er)) {
 				if(RLIB_VALUE_GET_AS_NUMBER(er) < RLIB_VALUE_GET_AS_NUMBER(amount) || RLIB_VALUE_GET_AS_NUMBER(amount) == 0) //TODO: EVIL HACK
 					RLIB_VALUE_GET_AS_NUMBER(amount) = RLIB_VALUE_GET_AS_NUMBER(er);
 			} else
-				rlogit("rlib_process_variables EXPECTED TYPE NUMBER FOR REPORT_VARIABLE_LOWEST\n");
-		} else if(rv->type == REPORT_VARIABLE_HIGHEST) {
+				rlogit("rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_LOWEST\n");
+		} else if(rv->type == RLIB_REPORT_VARIABLE_HIGHEST) {
 			if(RLIB_VALUE_IS_NUMBER(er)) {
 				if(RLIB_VALUE_GET_AS_NUMBER(er) > RLIB_VALUE_GET_AS_NUMBER(amount) || RLIB_VALUE_GET_AS_NUMBER(amount) == 0) //TODO: EVIL HACK
 					RLIB_VALUE_GET_AS_NUMBER(amount) = RLIB_VALUE_GET_AS_NUMBER(er);
 			} else
-				rlogit("rlib_process_variables EXPECTED TYPE NUMBER FOR REPORT_VARIABLE_HIGHEST\n");
+				rlogit("rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_HIGHEST\n");
 		}
 	}
 	
@@ -408,7 +408,7 @@ void rlib_process_expression_variables(rlib *r, struct rlib_report *report) {
 		struct rlib_value execute_result, *er = &execute_result;
 		if(rv->code != NULL)
 			 rlib_execute_pcode(r, &execute_result, rv->code, NULL);
-		if(rv->type == REPORT_VARIABLE_EXPRESSION) {
+		if(rv->type == RLIB_REPORT_VARIABLE_EXPRESSION) {
 			if(RLIB_VALUE_IS_NUMBER(er)) {
 				rlib_value_free(amount);
 				rlib_value_new_number(amount, RLIB_VALUE_GET_AS_NUMBER(er));
@@ -416,7 +416,7 @@ void rlib_process_expression_variables(rlib *r, struct rlib_report *report) {
 				rlib_value_free(amount);
 				rlib_value_new_string(amount, RLIB_VALUE_GET_AS_STRING(er));
 			} else
-				rlogit("rlib_process_variables EXPECTED TYPE NUMBER OR STRING FOR REPORT_VARIABLE_EXPRESSION\n");
+				rlogit("rlib_process_variables EXPECTED TYPE NUMBER OR STRING FOR RLIB_REPORT_VARIABLE_EXPRESSION\n");
 		}
 	}
 	

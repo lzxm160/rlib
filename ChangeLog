@@ -1,4 +1,16 @@
 2004-10-13  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/breaks.c: keep privitiazing rlib, reworked memo stuff to be more suitable for later development
+	* libsrc/free.c: likewise
+	* libsrc/layout.c: likewise
+	* libsrc/load.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/pcode.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/save.c: likewise
+
+2004-10-13  Bob Doan  <bdoan@sicompos.com>
 	* configure.in: update the music I'm listening to
 	* libsrc/csv.c: bold and italics support
 	* libsrc/html.c: likewise

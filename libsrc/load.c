@@ -110,8 +110,6 @@ struct rlib_report_field * read_field(gchar **ptr) {
 	rf->xml_format = read_xml_str(ptr);
 	rf->xml_link = read_xml_str(ptr);
 	rf->xml_col = read_xml_str(ptr);
-	rf->xml_wrapchars = read_xml_str(ptr);
-	rf->xml_maxlines = read_xml_str(ptr);
 	return rf;
 }
 
@@ -177,12 +175,12 @@ struct rlib_report_output_array * read_roa(gchar **ptr) {
 				break;
 			roa->data = g_realloc(roa->data, sizeof(struct rlib_report_output_array *) * (roa->count + 1));
 
-			if(*type == REPORT_PRESENTATION_DATA_IMAGE)
-				roa->data[roa->count++] = report_output_new(REPORT_PRESENTATION_DATA_IMAGE, read_image(ptr));				
-			else if(*type == REPORT_PRESENTATION_DATA_HR)
-				roa->data[roa->count++] = report_output_new(REPORT_PRESENTATION_DATA_HR, read_hr(ptr));				
-			else if(*type == REPORT_PRESENTATION_DATA_LINE)
-				roa->data[roa->count++] = report_output_new(REPORT_PRESENTATION_DATA_LINE, read_line(ptr));				
+			if(*type == RLIB_REPORT_PRESENTATION_DATA_IMAGE)
+				roa->data[roa->count++] = report_output_new(RLIB_REPORT_PRESENTATION_DATA_IMAGE, read_image(ptr));				
+			else if(*type == RLIB_REPORT_PRESENTATION_DATA_HR)
+				roa->data[roa->count++] = report_output_new(RLIB_REPORT_PRESENTATION_DATA_HR, read_hr(ptr));				
+			else if(*type == RLIB_REPORT_PRESENTATION_DATA_LINE)
+				roa->data[roa->count++] = report_output_new(RLIB_REPORT_PRESENTATION_DATA_LINE, read_line(ptr));				
 		
 		}
 		return roa;

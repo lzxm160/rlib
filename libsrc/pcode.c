@@ -707,22 +707,22 @@ struct rlib_value *this_field_value) {
 		rv = o->value;
 		count = &RLIB_VARIABLE_CA(rv)->count;
 		amount = &RLIB_VARIABLE_CA(rv)->amount;
-		if(rv->type == REPORT_VARIABLE_COUNT) {
+		if(rv->type == RLIB_REPORT_VARIABLE_COUNT) {
 			val = RLIB_VALUE_GET_AS_NUMBER(count);
-		} else if(rv->type == REPORT_VARIABLE_EXPRESSION) {
+		} else if(rv->type == RLIB_REPORT_VARIABLE_EXPRESSION) {
 			if (RLIB_VALUE_IS_STRING(amount)) {
 				gchar *strval = g_strdup(RLIB_VALUE_GET_AS_STRING(amount));
 				return rlib_value_new(rval, RLIB_VALUE_STRING, TRUE, strval);
 			} else {
 				val = RLIB_VALUE_GET_AS_NUMBER(amount);
 			}
-		} else if(rv->type == REPORT_VARIABLE_SUM) {
+		} else if(rv->type == RLIB_REPORT_VARIABLE_SUM) {
 			val = RLIB_VALUE_GET_AS_NUMBER(amount);
-		} else if(rv->type == REPORT_VARIABLE_AVERAGE) {
+		} else if(rv->type == RLIB_REPORT_VARIABLE_AVERAGE) {
 			val = rlib_fxp_div(RLIB_VALUE_GET_AS_NUMBER(amount), RLIB_VALUE_GET_AS_NUMBER(count), RLIB_FXP_PRECISION);
-		} else if(rv->type == REPORT_VARIABLE_LOWEST) {
+		} else if(rv->type == RLIB_REPORT_VARIABLE_LOWEST) {
 			val = RLIB_VALUE_GET_AS_NUMBER(amount);
-		} else if(rv->type == REPORT_VARIABLE_HIGHEST) {
+		} else if(rv->type == RLIB_REPORT_VARIABLE_HIGHEST) {
 			val = RLIB_VALUE_GET_AS_NUMBER(amount);
 		}
 		return rlib_value_new(rval, RLIB_VALUE_NUMBER, TRUE, &val);

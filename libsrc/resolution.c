@@ -119,8 +119,9 @@ static void rlib_field_resolve_pcode(rlib *r, struct rlib_report *report, struct
 	rf->bold_code = rlib_infix_to_pcode(r, report, rf->xml_bold);
 	rf->italics_code = rlib_infix_to_pcode(r, report, rf->xml_italics);
 	rf->align_code = rlib_infix_to_pcode(r, report, rf->xml_align);
-	rf->wrapchars_code = rlib_infix_to_pcode(r, report, rf->xml_wrapchars);
-	rf->maxlines_code = rlib_infix_to_pcode(r, report, rf->xml_maxlines);
+	rf->memo_code = rlib_infix_to_pcode(r, report, rf->xml_memo);
+	rf->memo_height_code = rlib_infix_to_pcode(r, report, rf->xml_memo_height);
+	rf->memo_wrap_chars_code = rlib_infix_to_pcode(r, report, rf->xml_memo_wrap_chars);
 	rf->width = -1;
 //rlogit("DUMPING PCODE FOR [%s]\n", rf->value);
 //rlib_pcode_dump(rf->code,0);	
@@ -193,7 +194,7 @@ static void rlib_resolve_fields2(rlib *r, struct rlib_report *report, struct rli
 	for(j=0;j<roa->count;j++) {
 		struct rlib_report_output *ro = roa->data[j];
 		
-		if(ro->type == REPORT_PRESENTATION_DATA_LINE) {
+		if(ro->type == RLIB_REPORT_PRESENTATION_DATA_LINE) {
 			struct rlib_report_lines *rl = ro->data;	
 			e = rl->e;
 			rl->bgcolor_code = rlib_infix_to_pcode(r, report, rl->xml_bgcolor);
@@ -209,9 +210,9 @@ static void rlib_resolve_fields2(rlib *r, struct rlib_report *report, struct rli
 					rlib_literal_resolve_pcode(r, report, ((struct rlib_report_literal *)e->data));
 				}
 			}
-		} else if(ro->type == REPORT_PRESENTATION_DATA_HR) {
+		} else if(ro->type == RLIB_REPORT_PRESENTATION_DATA_HR) {
 			rlib_hr_resolve_pcode(r, report, ((struct rlib_report_horizontal_line *)ro->data));
-		} else if(ro->type == REPORT_PRESENTATION_DATA_IMAGE) {
+		} else if(ro->type == RLIB_REPORT_PRESENTATION_DATA_IMAGE) {
 			rlib_image_resolve_pcode(r, report, ((struct rlib_report_image *)ro->data));
 		}
 	}

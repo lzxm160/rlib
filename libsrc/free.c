@@ -88,12 +88,13 @@ static void rlib_field_free_pcode(rlib *r, struct rlib_report_field *rf) {
 	free_pcode(rf->color_code);
 	free_pcode(rf->bgcolor_code);
 	free_pcode(rf->col_code);
-	free_pcode(rf->maxlines_code);
-	free_pcode(rf->wrapchars_code);
 	free_pcode(rf->width_code);
 	free_pcode(rf->bold_code);
 	free_pcode(rf->italics_code);
 	free_pcode(rf->align_code);
+	free_pcode(rf->memo_code);
+	free_pcode(rf->memo_height_code);
+	free_pcode(rf->memo_wrap_chars_code);
 	g_free(rf);
 }
 
@@ -105,7 +106,7 @@ static void rlib_free_fields(rlib *r, struct rlib_report_output_array *roa) {
 		return;
 	for(j=0;j<roa->count;j++) {
 		struct rlib_report_output *ro = roa->data[j];
-		if(ro->type == REPORT_PRESENTATION_DATA_LINE) {
+		if(ro->type == RLIB_REPORT_PRESENTATION_DATA_LINE) {
 			struct rlib_report_lines *rl = ro->data;	
 			e = rl->e;
 			free_pcode(rl->bgcolor_code);
@@ -127,9 +128,9 @@ static void rlib_free_fields(rlib *r, struct rlib_report_output_array *roa) {
 				g_free(save);
 			}
 			g_free(rl);
-		} else if(ro->type == REPORT_PRESENTATION_DATA_HR) {
+		} else if(ro->type == RLIB_REPORT_PRESENTATION_DATA_HR) {
 			rlib_hr_free_pcode(r, ((struct rlib_report_horizontal_line *)ro->data));
-		} else if(ro->type == REPORT_PRESENTATION_DATA_IMAGE) {
+		} else if(ro->type == RLIB_REPORT_PRESENTATION_DATA_IMAGE) {
 			rlib_image_free_pcode(r, ((struct rlib_report_image *)ro->data));
 		}
 		g_free(ro);
@@ -231,18 +232,18 @@ void rlib_free_report(rlib *r, struct rlib_report *report) {
 			struct rlib_report_variable *rv = e->data;
 			free_pcode(rv->code);
 
-			if(rv->type == REPORT_VARIABLE_EXPRESSION) {
+			if(rv->type == RLIB_REPORT_VARIABLE_EXPRESSION) {
 				rlib_value_free(&RLIB_VARIABLE_CA(rv)->amount);
 				g_free(RLIB_VARIABLE_CA(rv));
-			} else if(rv->type == REPORT_VARIABLE_COUNT)
+			} else if(rv->type == RLIB_REPORT_VARIABLE_COUNT)
 				g_free(RLIB_VARIABLE_CA(rv));
-			else if(rv->type == REPORT_VARIABLE_SUM)
+			else if(rv->type == RLIB_REPORT_VARIABLE_SUM)
 				g_free(RLIB_VARIABLE_CA(rv));
-			else if(rv->type == REPORT_VARIABLE_AVERAGE)
+			else if(rv->type == RLIB_REPORT_VARIABLE_AVERAGE)
 				g_free(RLIB_VARIABLE_CA(rv));
-			else if(rv->type == REPORT_VARIABLE_LOWEST)
+			else if(rv->type == RLIB_REPORT_VARIABLE_LOWEST)
 				g_free(RLIB_VARIABLE_CA(rv));
-			else if(rv->type == REPORT_VARIABLE_HIGHEST)
+			else if(rv->type == RLIB_REPORT_VARIABLE_HIGHEST)
 				g_free(RLIB_VARIABLE_CA(rv));
 			g_free(rv);
 		}

@@ -99,8 +99,9 @@ static struct rlib_element * parse_line_array(xmlDocPtr doc, xmlNsPtr ns, xmlNod
 			f->xml_format = xmlGetProp(cur, (const xmlChar *) "format");
 			f->xml_link = xmlGetProp(cur, (const xmlChar *) "link");
 			f->xml_col = xmlGetProp(cur, (const xmlChar *) "col");
-			f->xml_wrapchars = xmlGetProp(cur, (const xmlChar *) "wrapchars");
-			f->xml_maxlines = xmlGetProp(cur, (const xmlChar *) "maxlines");
+			f->xml_memo = xmlGetProp(cur, (const xmlChar *) "memo");
+			f->xml_memo_height = xmlGetProp(cur, (const xmlChar *) "memo_height");
+			f->xml_memo_wrap_chars = xmlGetProp(cur, (const xmlChar *) "memo_wrap_chars");
 			current->data = f;
 			current->type = RLIB_ELEMENT_FIELD;
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "literal"))) {
@@ -176,7 +177,7 @@ static struct rlib_element * parse_report_output(xmlDocPtr doc, xmlNsPtr ns, xml
 				
 			rl->e = parse_line_array(doc, ns, cur);
 			roa->data = g_realloc(roa->data, sizeof(struct rlib_report_output_array *) * (roa->count + 1));
-			roa->data[roa->count++] = report_output_new(REPORT_PRESENTATION_DATA_LINE, rl);
+			roa->data[roa->count++] = report_output_new(RLIB_REPORT_PRESENTATION_DATA_LINE, rl);
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "HorizontalLine"))) {
 			struct rlib_report_horizontal_line *rhl = g_new0(struct rlib_report_horizontal_line, 1);
 			rhl->xml_bgcolor = xmlGetProp(cur, (const xmlChar *) "bgcolor");
@@ -190,7 +191,7 @@ static struct rlib_element * parse_report_output(xmlDocPtr doc, xmlNsPtr ns, xml
 			else
 				rhl->font_point = atoi(rhl->xml_font_size);
 			roa->data = g_realloc(roa->data, sizeof(struct rlib_report_output_array *) * (roa->count + 1));
-			roa->data[roa->count++] = report_output_new(REPORT_PRESENTATION_DATA_HR, rhl);
+			roa->data[roa->count++] = report_output_new(RLIB_REPORT_PRESENTATION_DATA_HR, rhl);
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "Image"))) {
 			struct rlib_report_image *ri = g_new0(struct rlib_report_image, 1);
 			ri->xml_value = xmlGetProp(cur, (const xmlChar *) "value");
@@ -198,7 +199,7 @@ static struct rlib_element * parse_report_output(xmlDocPtr doc, xmlNsPtr ns, xml
 			ri->xml_width = xmlGetProp(cur, (const xmlChar *) "width");
 			ri->xml_height = xmlGetProp(cur, (const xmlChar *) "height");
 			roa->data = g_realloc(roa->data, sizeof(struct rlib_report_output_array *) * (roa->count + 1));
-			roa->data[roa->count++] = report_output_new(REPORT_PRESENTATION_DATA_IMAGE, ri);
+			roa->data[roa->count++] = report_output_new(RLIB_REPORT_PRESENTATION_DATA_IMAGE, ri);
 		} else if (ignoreElement(cur->name)) {
 			/* ignore comments, etc */
 		} else {
@@ -353,20 +354,20 @@ static struct rlib_element * parse_report_variable(xmlDocPtr doc, xmlNsPtr ns, x
 	rv->xml_str_type = xmlGetProp(cur, (const xmlChar *) "type");
 	rv->xml_value = xmlGetProp(cur, (const xmlChar *) "value");
 	rv->xml_resetonbreak = xmlGetProp(cur, (const xmlChar *) "resetonbreak");
-	rv->type = REPORT_VARIABLE_UNDEFINED;
+	rv->type = RLIB_REPORT_VARIABLE_UNDEFINED;
 	if(rv->xml_str_type != NULL && rv->xml_str_type[0] != '\0') {
 		if(!strcmp(rv->xml_str_type, "expression") || !strcmp(rv->xml_str_type, "static"))
-			rv->type = REPORT_VARIABLE_EXPRESSION;
+			rv->type = RLIB_REPORT_VARIABLE_EXPRESSION;
 		else if(!strcmp(rv->xml_str_type, "count"))
-			rv->type = REPORT_VARIABLE_COUNT;
+			rv->type = RLIB_REPORT_VARIABLE_COUNT;
 		else if(!strcmp(rv->xml_str_type, "sum"))
-			rv->type = REPORT_VARIABLE_SUM;
+			rv->type = RLIB_REPORT_VARIABLE_SUM;
 		else if(!strcmp(rv->xml_str_type, "average"))
-			rv->type = REPORT_VARIABLE_AVERAGE;
+			rv->type = RLIB_REPORT_VARIABLE_AVERAGE;
 		else if(!strcmp(rv->xml_str_type, "lowest"))
-			rv->type = REPORT_VARIABLE_LOWEST;
+			rv->type = RLIB_REPORT_VARIABLE_LOWEST;
 		else if(!strcmp(rv->xml_str_type, "highest"))
-			rv->type = REPORT_VARIABLE_HIGHEST;
+			rv->type = RLIB_REPORT_VARIABLE_HIGHEST;
 		else
 			rlogit("Unknown report variable type [%s] in <Variable>\n", rv->xml_str_type);
 	}
