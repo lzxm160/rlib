@@ -352,7 +352,7 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 		y_min[RLIB_SIDE_LEFT] = (long)y_min[RLIB_SIDE_LEFT];
 		
 	if(y_max[RLIB_SIDE_LEFT] > 1 || y_max[RLIB_SIDE_LEFT] < 1)
-		y_max[RLIB_SIDE_LEFT] = (long)y_max[RLIB_SIDE_LEFT];
+		y_max[RLIB_SIDE_LEFT] = (long)y_max[RLIB_SIDE_LEFT]+1;
 
 	if(is_percent_graph(graph_type) || is_pie_graph(graph_type)) {
 		y_min[RLIB_SIDE_LEFT] = y_min[RLIB_SIDE_RIGHT] = 0;

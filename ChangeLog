@@ -1,3 +1,8 @@
+2005-03-18  Mike Roth  <mroth@sicompos.com>
+
+	* doc/Makefile:
+	* libsrc/graphing.c: (rlib_graph): add + 1 to left side y_max
+
 2005-03-18  Bob Doan  <bdoan@sicompos.com>
 	* doc/Makefile: nada
 	* libsrc/graphing.c: Try harder to int axis values, have mod values for left axis "hints"
