@@ -1,3 +1,7 @@
+2004-07-27  Chet Heilman <cheilman@sicompos.com>
+	* libsrc/pcode.c: (rlib_infix_to_pcode):
+		Fix problem valgrind found.
+		
 2004-07-26  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/api.c: and we need braces around the if now.. this just isn't my day :(
 

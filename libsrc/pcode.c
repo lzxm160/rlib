@@ -516,7 +516,9 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, gchar *infix) {
 						if(pcount == 0)
 							break;
 					}
-					save_iif = iif = g_malloc(moving_ptr - save_ptr);
+					save_iif = iif = g_malloc(moving_ptr -
+					save_ptr + 1);
+					iif[moving_ptr-save_ptr] = '\0';
 					memcpy(iif, save_ptr, moving_ptr-save_ptr);
 					iif[moving_ptr-save_ptr-1] = '\0';
 					evaulation = iif;
