@@ -96,7 +96,7 @@
 	rlib_add_query_as($rlib, "local_array", "data", "data");
 	rlib_add_query_as($rlib, "local_array", "moredata", "moredata");
 	rlib_add_report($rlib, "flow_part.xml");
-	rlib_set_output_format_from_text($rlib, "txt");
+	rlib_set_output_format_from_text($rlib, "pdf");
 	rlib_execute($rlib);
 	header(rlib_get_content_type($rlib));
 	rlib_spool($rlib);

@@ -697,9 +697,13 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 		} else if(ro->type == RLIB_REPORT_PRESENTATION_DATA_HR) {
 			gchar *colorstring;
 			struct rlib_value rval2, *rval=&rval2;
+			gfloat f;
 			struct rlib_report_horizontal_line *rhl = ro->data;
 			if(rlib_check_is_not_suppressed(r, rhl->suppress_code)) {
 				rlib_execute_pcode(r, &rval2, rhl->bgcolor_code, NULL);
+				if (rlib_execute_as_float(r, rhl->size_code, &f))
+					rhl->size = f;
+				
 				if(!RLIB_VALUE_IS_STRING(rval)) {
 					r_error("RLIB ENCOUNTERED AN ERROR PROCESSING THE BGCOLOR FOR A HR.. COLOR VALUE WAS NOT OF TYPE STRING\n");
 				} else {

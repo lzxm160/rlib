@@ -1,3 +1,9 @@
+2004-11-04  Bob Doan  <bdoan@sicompos.com>
+	* bindings/php/array_data_source.c: return FALSE on first if source has no data
+	* libsrc/layout.c: hr->size is now a pcode
+	* libsrc/resolution.c: likewise
+	* src/examples/php/flow_part.php:
+
 2004-11-01  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/parsexml.c: compile error fix
 	* libsrc/api.c: new r.format variable
