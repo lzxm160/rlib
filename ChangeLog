@@ -1,3 +1,9 @@
+2005-02-08  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/navigation.c: correctly move followers
+	* libsrc/pcode.c: don't crash on null val string cmps
+	* libsrc/reportgen.c: don't process variables until after we KNOW we have good data
+	* libsrc/resolution.c: nada
+
 2005-02-07  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/axis.c: always have a max and a min
 	* libsrc/gd.c: color pool
@@ -7,7 +13,6 @@
 	* libsrc/rlib_gd.h: color pool
 
 2005-02-07  Michael Roth  <mroth@sicompos.com>
-
 	* src/examples/php/graph.php: Debug Example
 	* src/examples/php/graph.xml: Debug Example
 

@@ -223,6 +223,10 @@ gint rvalcmp(struct rlib_value *v1, struct rlib_value *v2) {
 			return -1;
 	}
 	if(RLIB_VALUE_IS_STRING(v1) && RLIB_VALUE_IS_STRING(v2)) {
+		if(RLIB_VALUE_GET_AS_STRING(v2) == NULL &&  RLIB_VALUE_GET_AS_STRING(v1) == NULL)
+			return 0;
+		else if(RLIB_VALUE_GET_AS_STRING(v2) == NULL ||  RLIB_VALUE_GET_AS_STRING(v1) == NULL)
+			return -1;
 		return r_strcmp(RLIB_VALUE_GET_AS_STRING(v1), RLIB_VALUE_GET_AS_STRING(v2));
 	}
 	if(RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_DATE(v2)) {

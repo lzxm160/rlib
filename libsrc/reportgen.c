@@ -466,7 +466,7 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 	gint i;
 	char query[MAXSTRLEN];
 	gint report_percent;
-	gfloat at_least = 0.0, origional_position_top;
+	gfloat at_least = 0.0, origional_position_top = 0;
 	gint iterations;
 
 	report->query_code = rlib_infix_to_pcode(r, part, report, report->xml_query, TRUE);
@@ -490,86 +490,79 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 
 
 	for(iterations=0;iterations<report->iterations;iterations++) {
-		rlib_init_variables(r, report);
-		rlib_process_variables(r, report);
-		rlib_process_input_metadata(r);
-
-		processed_variables = TRUE;
-		rlib_evaluate_report_attributes(r, report);
-
-		rlib_set_report_from_part(r, part, report, top_margin_offset);
-
-		report->left_margin += left_margin_offset + part->left_margin;
-
-		if(report->font_size != -1) {
-			r->font_point = report->font_size;
-			OUTPUT(r)->set_font_point(r, r->font_point);
-		}
-
-		if(rlib_execute_as_int(r, report->height_code, &report_percent)) 
-			at_least = (part->position_bottom[0] - part->position_top[0]) * ((gfloat)report_percent/100);					
-
-		origional_position_top = report->position_top[0];
-
-		rlib_layout_report_output(r, part, report, report->report_header, FALSE);
-		rlib_layout_init_report_page(r, part, report);
-		r->detail_line_count = 0;
-
-		if(report->font_size != -1) {
-			r->font_point = report->font_size;
-			OUTPUT(r)->set_font_point(r, r->font_point);
-		}
-
 		if(r->queries_count <= 0 || INPUT(r,r->current_result)->first(INPUT(r,r->current_result), r->results[r->current_result].result) == FALSE) {
-			rlib_layout_report_output(r, part, report, report->alternate.nodata, FALSE);	
-		} else if(report->graph.type_code != NULL) {
-			gfloat top;
-			top_margin_offset += rlib_graph(r, part, report, left_margin_offset, &top_margin_offset);
-			top = report->position_top[0];
-			rlib_layout_report_footer(r, part, report);	
-			top_margin_offset += report->position_top[0] - top;
+			rlib_layout_report_output(r, part, report, report->alternate.nodata, FALSE);
 		} else {
-			rlib_fetch_first_rows(r);
+			rlib_init_variables(r, report);
+			rlib_process_variables(r, report);
+			rlib_process_input_metadata(r);
 
-			if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
-				while (1) {
-					gint output_count = 0;
-					
-					
-					if(!processed_variables) {
-						rlib_process_input_metadata(r);
-						rlib_process_variables(r, report);
-						processed_variables = TRUE;
-					}
-					rlib_evaluate_break_attributes(r, report);
-					rlib_handle_break_headers(r, part, report);
-
-					if(rlib_end_page_if_line_wont_fit(r, part, report, report->detail.fields))
-						rlib_force_break_headers(r, part, report);
-
-					if(OUTPUT(r)->do_break)
-						output_count = rlib_layout_report_output(r, part, report, report->detail.fields, FALSE);
-					else
-						output_count = rlib_layout_report_output_with_break_headers(r, part, report);
-
-					if(output_count > 0)
-						r->detail_line_count++;
-
-					rlib_emit_signal(r, RLIB_SIGNAL_ROW_CHANGE);
-
-					if(rlib_navigate_next(r, r->current_result) == FALSE) {
-						rlib_navigate_last(r, r->current_result);
-						rlib_handle_break_footers(r, part, report);
-						break;
-					} 
-
-					rlib_evaluate_break_attributes(r, report);
-					rlib_handle_break_footers(r, part, report);
-					processed_variables = FALSE;
-				}
+			processed_variables = TRUE;
+			rlib_evaluate_report_attributes(r, report);
+			rlib_set_report_from_part(r, part, report, top_margin_offset);
+			report->left_margin += left_margin_offset + part->left_margin;
+			if(report->font_size != -1) {
+				r->font_point = report->font_size;
+				OUTPUT(r)->set_font_point(r, r->font_point);
 			}
-			rlib_navigate_last(r, r->current_result);
-			rlib_layout_report_footer(r, part, report);
+			if(rlib_execute_as_int(r, report->height_code, &report_percent)) 
+				at_least = (part->position_bottom[0] - part->position_top[0]) * ((gfloat)report_percent/100);					
+			origional_position_top = report->position_top[0];
+			rlib_layout_report_output(r, part, report, report->report_header, FALSE);
+			rlib_layout_init_report_page(r, part, report);
+			r->detail_line_count = 0;
+			if(report->font_size != -1) {
+				r->font_point = report->font_size;
+				OUTPUT(r)->set_font_point(r, r->font_point);
+			}
+
+			if(report->graph.type_code != NULL) {
+				gfloat top;
+				top_margin_offset += rlib_graph(r, part, report, left_margin_offset, &top_margin_offset);
+				top = report->position_top[0];
+				rlib_layout_report_footer(r, part, report);	
+				top_margin_offset += report->position_top[0] - top;
+			} else {
+				rlib_fetch_first_rows(r);
+
+				if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
+					while (1) {
+						gint output_count = 0;
+						if(!processed_variables) {
+							rlib_process_input_metadata(r);
+							rlib_process_variables(r, report);
+							processed_variables = TRUE;
+						}
+						rlib_evaluate_break_attributes(r, report);
+						rlib_handle_break_headers(r, part, report);
+
+						if(rlib_end_page_if_line_wont_fit(r, part, report, report->detail.fields))
+							rlib_force_break_headers(r, part, report);
+
+						if(OUTPUT(r)->do_break)
+							output_count = rlib_layout_report_output(r, part, report, report->detail.fields, FALSE);
+						else
+							output_count = rlib_layout_report_output_with_break_headers(r, part, report);
+
+						if(output_count > 0)
+							r->detail_line_count++;
+
+						rlib_emit_signal(r, RLIB_SIGNAL_ROW_CHANGE);
+
+						if(rlib_navigate_next(r, r->current_result) == FALSE) {
+							rlib_navigate_last(r, r->current_result);
+							rlib_handle_break_footers(r, part, report);
+							break;
+						} 
+
+						rlib_evaluate_break_attributes(r, report);
+						rlib_handle_break_footers(r, part, report);
+						processed_variables = FALSE;
+					}
+				}
+				rlib_navigate_last(r, r->current_result);
+				rlib_layout_report_footer(r, part, report);
+			}
 		}
 
 		if(at_least > 0) {

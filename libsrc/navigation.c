@@ -22,6 +22,7 @@
 
 #include "config.h"
 #include "rlib.h"
+#include "pcode.h"
 #include "rlib_input.h"
 
 static gint rlib_do_followers(rlib *r, gint i, gint way) {
@@ -45,6 +46,11 @@ static gint rlib_do_followers(rlib *r, gint i, gint way) {
 	} else if(way == RLIB_NAVIGATE_FIRST) {
 		if(rlib_navigate_first(r, follower) != TRUE)
 			rtn = FALSE;
+		else {
+			r->results[follower].next_failed = FALSE;
+			r->results[follower].navigation_failed = FALSE;
+		
+		}
 	} else if(way == RLIB_NAVIGATE_LAST) {
 		if(rlib_navigate_last(r, follower) != TRUE)
 			rtn = FALSE;
@@ -54,6 +60,7 @@ static gint rlib_do_followers(rlib *r, gint i, gint way) {
 
 static gint rlib_navigate_followers(rlib *r, gint my_leader, gint way) {
 	gint i, rtn = TRUE;
+	gint found = FALSE;
 	for(i=0;i<r->resultset_followers_count;i++) {
 		if(r->followers[i].leader == my_leader) {
 			if(r->followers[i].leader_code != NULL ) {
@@ -61,18 +68,25 @@ static gint rlib_navigate_followers(rlib *r, gint my_leader, gint way) {
 				rlib_execute_pcode(r, &rval_leader, r->followers[i].leader_code, NULL);
 				rlib_execute_pcode(r, &rval_follower, r->followers[i].follower_code, NULL);
 				if( rvalcmp(&rval_leader,&rval_follower) == 0 )  {
-				
 				} else {
-					if(rlib_do_followers(r, i, way) == FALSE) {
+					rlib_value_free(&rval_follower);
+					if(rlib_do_followers(r, i, way) == TRUE) {
+						rlib_execute_pcode(r, &rval_follower, r->followers[i].follower_code, NULL);
+						if( rvalcmp(&rval_leader,&rval_follower) == 0 )  {
+							found = TRUE;
+						} 
+					} 
+					if(found == FALSE) {
 						rlib_do_followers(r, i, RLIB_NAVIGATE_FIRST);
 						do {
-							rlib_value_free(&rval_follower);
 							rlib_execute_pcode(r, &rval_follower, r->followers[i].follower_code, NULL);
-							if(rvalcmp(&rval_leader,&rval_follower) == 0 )
+							if(rvalcmp(&rval_leader,&rval_follower) == 0 ) {
+								found = TRUE;
 								break;											
+							}
+							rlib_value_free(&rval_follower);
 						} while(rlib_do_followers(r, i, RLIB_NAVIGATE_NEXT) == TRUE);
-					
-					} 
+					}
 				}
 				rlib_value_free(&rval_leader);
 				rlib_value_free(&rval_follower);

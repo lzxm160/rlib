@@ -155,7 +155,7 @@ static void rlib_break_resolve_pcode(rlib *r, struct rlib_part *part, struct rli
 
 static void rlib_variable_resolve_pcode(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_variable *rv) {
 	rv->code = rlib_infix_to_pcode(r, part, report, rv->xml_value, TRUE);
-/*rlogit("DUMPING PCODE FOR [%s]\n", rv->value);
+/*rlogit("DUMPING PCODE FOR [%s]\n", rv->xml_value);
 rlib_pcode_dump(rv->code,0);	
 rlogit("\n\n");*/
 }
@@ -344,6 +344,7 @@ void rlib_resolve_report_fields(rlib *r, struct rlib_part *part, struct rlib_rep
 		for(e = report->variables; e != NULL; e=e->next) {
 			struct rlib_report_variable *rv = e->data;
 			rlib_variable_resolve_pcode(r, part, report, rv);
+
 		}
 	}
 }
