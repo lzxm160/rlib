@@ -30,8 +30,12 @@ static gint rlib_do_followers(rlib *r, gint i, gint way) {
 	gint rtn = TRUE;
 	follower = r->followers[i].follower;
 
+	if(r->results[follower].navigation_failed == TRUE)
+		return FALSE;
+
 	if(r->results[follower].next_failed)
 		r->results[follower].navigation_failed = TRUE;
+		
 
 	if(way == RLIB_NAVIGATE_NEXT) {
 		if(rlib_navigate_next(r, follower) != TRUE) {

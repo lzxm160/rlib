@@ -142,9 +142,11 @@ gint rlib_pcode_operator_add(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 			return TRUE;
 		}
 		if(RLIB_VALUE_IS_STRING(v1) && RLIB_VALUE_IS_STRING(v2)) {
-			gchar *newstr = g_malloc(r_bytecount(RLIB_VALUE_GET_AS_STRING(v1))+r_bytecount(RLIB_VALUE_GET_AS_STRING(v2))+1);
-			memcpy(newstr, RLIB_VALUE_GET_AS_STRING(v2), r_bytecount(RLIB_VALUE_GET_AS_STRING(v2))+1);
-			strcat(newstr, RLIB_VALUE_GET_AS_STRING(v1));
+			gchar *safe1 =  RLIB_VALUE_GET_AS_STRING(v1) == NULL ? "" : RLIB_VALUE_GET_AS_STRING(v1);
+			gchar *safe2 =  RLIB_VALUE_GET_AS_STRING(v2) == NULL ? "" : RLIB_VALUE_GET_AS_STRING(v2);
+			gchar *newstr = g_malloc(r_bytecount(safe1)+r_bytecount(safe2)+1);
+			memcpy(newstr, safe2, r_bytecount(safe2)+1);
+			strcat(newstr, safe1);
 			rlib_value_free(v1);
 			rlib_value_free(v2);
 			rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, newstr));
@@ -740,7 +742,7 @@ gint rlib_pcode_operator_round(rlib *r, struct rlib_value_stack *vs, struct rlib
 		gint64 result = RLIB_VALUE_GET_AS_NUMBER(v1);
 		if(dec > 0) {
 			result -= dec;
-			if(dec > (5 * RLIB_DECIMAL_PRECISION / 10))
+			if(dec >= (5 * RLIB_DECIMAL_PRECISION / 10))
 				result += RLIB_DECIMAL_PRECISION;
 		}
 		
