@@ -23,8 +23,9 @@
 
 #include "ralloc.h"
 #include "rlib.h"
-#include "input.h"
-rlib * rlib_init(struct environment_filter *environment) {
+#include "rlib_input.h"
+
+rlib * rlib_init_with_environment(struct environment_filter *environment) {
 	rlib *r;
 	
 	setlocale (LC_NUMERIC, "en_US");
@@ -38,6 +39,11 @@ rlib * rlib_init(struct environment_filter *environment) {
 	else
 		ENVIRONMENT(r) = environment;
 	return r;
+}
+
+
+rlib * rlib_init() {
+	return rlib_init_with_environment(NULL);
 }
 
 int rlib_add_query_as(rlib *r, char *input_source, char *sql, char *name) {
@@ -120,4 +126,68 @@ char * rlib_get_content_type_as_text(rlib *r) {
 		return RLIB_WEB_CONTENT_TYPE_CSV;
 	else
 		return RLIB_WEB_CONTENT_TYPE_TEXT;
+}
+
+int rlib_spool(rlib *r) {
+	OUTPUT(r)->rlib_spool_private(r);
+	return 0;
+}
+
+int rlib_set_output_format(rlib *r, int format) {
+	r->format = format;
+	return 0;
+}
+
+int rlib_set_output_format_from_text(rlib *r, char *name) {
+	if(!strcasecmp(name, "PDF"))
+		r->format = RLIB_FORMAT_PDF;
+	else if(!strcasecmp(name, "HTML"))
+		r->format = RLIB_FORMAT_HTML;
+	else if(!strcasecmp(name, "TXT"))
+		r->format = RLIB_FORMAT_TXT;
+	else if(!strcasecmp(name, "CSV"))
+		r->format = RLIB_FORMAT_CSV;
+	else if(!strcasecmp(name, "XML"))
+		r->format = RLIB_FORMAT_XML;
+	else
+		r->format = RLIB_FORMAT_TXT;
+	return 0;
+}
+
+char *rlib_get_output(rlib *r) {
+	return OUTPUT(r)->rlib_get_output(r);
+}
+
+long rlib_get_output_length(rlib *r) {
+	return OUTPUT(r)->rlib_get_output_length(r);
+}
+
+int rlib_mysql_report(char *hostname, char *username, char *password, char *database, char *xmlfilename, char *sqlquery, char *outputformat) {
+	rlib *r;
+	r = rlib_init();
+	if(rlib_add_datasource_mysql(r, "mysql", hostname, username, password, database) == -1)
+		return -1;
+	rlib_add_query_as(r, "mysql", sqlquery, "example");
+	rlib_add_report(r, xmlfilename, "example");
+	rlib_set_output_format_from_text(r, outputformat);
+	if(rlib_execute(r) == -1)
+		return -1;
+	rlib_spool(r);
+	rlib_free(r);
+	return 0;
+}
+
+int rlib_postgre_report(char *connstr, char *xmlfilename, char *sqlquery, char *outputformat) {
+	rlib *r;
+	r = rlib_init();
+	if(rlib_add_datasource_postgre(r, "postgre", connstr) == -1)
+		return -1;
+	rlib_add_query_as(r, "postgre", sqlquery, "example");
+	rlib_add_report(r, xmlfilename, "example");
+	rlib_set_output_format_from_text(r, outputformat);
+	if(rlib_execute(r) == -1)
+		return -1;
+	rlib_spool(r);
+	rlib_free(r);
+	return 0;
 }

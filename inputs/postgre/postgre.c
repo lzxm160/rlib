@@ -25,7 +25,7 @@
 #include "libpq-fe.h"
  
 #include "ralloc.h"
-#include "input.h"
+#include "rlib_input.h"
 
 #define INPUT_PRIVATE(input) (((struct _private *)input->private))
 

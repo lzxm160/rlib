@@ -19,9 +19,7 @@
  */
  
 #include <rlib.h>
-#include <input.h>
-
-
+#include <rlib_input.h>
 
 int main(int argc, char **argv) {
 	char *hostname, *username, *password, *database;
@@ -58,12 +56,12 @@ int main(int argc, char **argv) {
 	sprintf(query, "%s ORDER BY g0,g1,g2,g3,g4, stores.name", query);
 
 
-	r = rlib_init(NULL);
+	r = rlib_init();
 	rlib_add_datasource_mysql(r, "local_mysql", hostname, username, password, database);
 	rlib_add_query_as(r, "local_mysql", query, "topline");
 	rlib_add_query_as(r, "local_mysql", "select company.*, menu_items.name as report_name from company, menu_items where menu_items.id = 28", "header");
 	rlib_add_report(r, "report_financial_summary.xml", NULL);
-	rlib_set_output_format(r, RLIB_FORMAT_HTML);
+	rlib_set_output_format(r, RLIB_FORMAT_PDF);
 	rlib_execute(r);
 	rlib_spool(r);
 	rlib_free(r);

@@ -19,9 +19,9 @@
 ## Report bugs to rlib-devel@lists.sourceforge.net
 ##
 ## Process this file with automake to produce Makefile.in
-lib_LTLIBRARIES = librpython.la
-librpython_la_SOURCES = environment.c python.c rlib_python.h
-librpython_la_LIBADD = -L${top_srcdir}/libsrc/ -lr $(MYSQL_LIBS) $(LIBXML_LIBS) 
+lib_LTLIBRARIES = librlib.la
+librlib_la_SOURCES = environment.c python.c 
+librlib_la_LIBADD = -L${top_srcdir}/libsrc/ -lr $(MYSQL_LIBS) $(LIBXML_LIBS) 
 INCLUDES = -I${top_srcdir}/libsrc/ $(MYSQL_CFLAGS) $(PYTHON_CFLAGS) $(LIBXML_CFLAGS)
-librpython_la_LDFLAGS = -release $(RLIB_VERSION)
+librlib_la_LDFLAGS = -release $(RLIB_VERSION)
 libdir = $(PYTHON_EXTENSION_DIR)

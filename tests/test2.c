@@ -19,8 +19,7 @@
  */
  
 #include <rlib.h>
-#include <input.h>
-
+#include <rlib_input.h>
 
 struct _data {
 	char name[MAXSTRLEN];
@@ -41,7 +40,7 @@ int main(int argc, char **argv) {
 
 	fprintf(stderr, "CONN IS %s\n", conn);
 
-	r = rlib_init(NULL);
+	r = rlib_init();
 	rlib_add_datasource_postgre(r, "local_postgre", conn);
 	rlib_add_query_as(r, "local_postgre", "select * from example", "example");
 	rlib_add_report(r, "report.xml", NULL);

@@ -39,7 +39,7 @@ ZEND_FUNCTION(rlib_add_datasource_postgre);
 #endif
 ZEND_FUNCTION(rlib_add_query_as);
 ZEND_FUNCTION(rlib_add_report);
-ZEND_FUNCTION(rlib_set_output_format);
+ZEND_FUNCTION(rlib_set_output_format_from_text);
 ZEND_FUNCTION(rlib_execute);
 ZEND_FUNCTION(rlib_spool);
 ZEND_FUNCTION(rlib_free);
@@ -61,7 +61,7 @@ zend_function_entry rlib_functions[] =
 #endif
 	 ZEND_FE(rlib_add_query_as, NULL)
 	 ZEND_FE(rlib_add_report, NULL)
-	 ZEND_FE(rlib_set_output_format, NULL)
+	 ZEND_FE(rlib_set_output_format_from_text, NULL)
 	 ZEND_FE(rlib_execute, NULL)
 	 ZEND_FE(rlib_spool, NULL)
 	 ZEND_FE(rlib_free, NULL)
@@ -111,7 +111,7 @@ ZEND_FUNCTION(rlib_init) {
 	
 	rip->content_type = RLIB_CONTENT_TYPE_ERROR;
 
-	rip->r = rlib_init(rlib_php_new_environment());
+	rip->r = rlib_init_with_environment(rlib_php_new_environment());
 	
 	resource_id = ZEND_REGISTER_RESOURCE(return_value, rip, le_link);
 	RETURN_RESOURCE(resource_id);
@@ -200,7 +200,7 @@ ZEND_FUNCTION(rlib_add_report) {
 		
 }
 
-ZEND_FUNCTION(rlib_set_output_format) {
+ZEND_FUNCTION(rlib_set_output_format_from_text) {
 	zval *z_rip = NULL;
 	long whatever;
 	char *name;
@@ -213,20 +213,8 @@ ZEND_FUNCTION(rlib_set_output_format) {
 	
 	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
 
-	if(!strcasecmp(name, "PDF"))
-		rip->format = RLIB_FORMAT_PDF;
-	else if(!strcasecmp(name, "HTML"))
-		rip->format = RLIB_FORMAT_HTML;
-	else if(!strcasecmp(name, "TXT"))
-		rip->format = RLIB_FORMAT_TXT;
-	else if(!strcasecmp(name, "CSV"))
-		rip->format = RLIB_FORMAT_CSV;
-	else if(!strcasecmp(name, "XML"))
-		rip->format = RLIB_FORMAT_XML;
-	else
-		zend_error(E_ERROR, "Valid Formats are PDF, HTML, TXT, CSV, or XML");
-	
-	rip->r->format = rip->format;
+	rlib_set_output_format_from_text(rip->r, name);
+
 }
 
 ZEND_FUNCTION(rlib_execute) {

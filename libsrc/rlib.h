@@ -315,8 +315,6 @@ struct input_filters {
 };
 
 struct rlib {
-	long length;
-	char *bufPDF;
 	float position_top;
 	float position_bottom;
 
@@ -342,9 +340,11 @@ struct rlib {
 	int reports_count;
 	int current_report;
 	int current_result;
+
 	int format;
-	struct output_filter *o;
 	int inputs_count;
+
+	struct output_filter *o;
 	struct input_filters inputs[MAX_INPUT_FILTERS];
 	struct environment_filter *environment;
 };
@@ -395,6 +395,8 @@ struct output_filter {
 	int (*rlib_is_single_page)(rlib *);
 	void (*rlib_start_output_section)(rlib *);
 	void (*rlib_end_output_section)(rlib *);
+	char *(*rlib_get_output)(rlib *);
+	long (*rlib_get_output_length)(rlib *);
 	int (*rlib_free)(rlib *r);
 };
 
@@ -415,12 +417,20 @@ int rlib_format_string(rlib *r, struct report_field *rf, struct rlib_value *rval
 long long rlib_fxp_mul(long long a, long long b, long long factor);
 long long rlib_fxp_div( long long num, long long denom, int places);
 
-/***** PROTOTYPES: init.c *****************************************************/
-rlib * rlib_init(struct environment_filter *environment);
+/***** PROTOTYPES: api.c ******************************************************/
+rlib * rlib_init();
+rlib * rlib_init_with_environment(struct environment_filter *environment);
 int rlib_add_query_as(rlib *r, char *input_name, char *sql, char *name);
 int rlib_add_report(rlib *r, char *name, char *mainloop);
 int rlib_execute(rlib *r);
 char * rlib_get_content_type_as_text(rlib *r);
+int rlib_spool(rlib *r);
+int rlib_set_output_format(rlib *r, int format);
+int rlib_set_output_format_from_text(rlib *r, char * name);
+char *rlib_get_output(rlib *r);
+long rlib_get_output_length(rlib *r);
+int rlib_mysql_report(char *hostname, char *username, char *password, char *database, char *xmlfilename, char *sqlquery, char *outputformat);
+int rlib_postgre_report(char *connstr, char *xmlfilename, char *sqlquery, char *outputformat);
 
 /***** PROTOTYPES: parsexml.c *************************************************/
 struct rlib_report * parse_report_file(char *filename);
@@ -445,9 +455,6 @@ void rlib_end_page_if_line_wont_fit(rlib *r, struct report_output_array *roa);
 void rlib_process_variables(rlib *r);
 void rlib_init_page(rlib *r, char report_header);
 int make_report(rlib *r);
-int rlib_spool(rlib *r);
-int rlib_finalize(rlib *r);
-int rlib_set_output_format(rlib *r, int format);
 
 /***** PROTOTYPES: resolution.c ***********************************************/
 int rlib_resolve_rlib_variable(rlib *r, char *name);
@@ -474,6 +481,7 @@ char *strlwr (char *s);
 char *strproper (char *s);
 int daysinmonth(int year, int month);
 void init_signals();
+void make_more_space_if_necessary(char **str, int *size, int *total_size, int len);
 
 /***** PROTOTYPES: environment.c **********************************************/
 void rlib_new_c_environment(rlib *r);

@@ -38,7 +38,7 @@ INSERT INTO example (name, type, price)
 		<para>
 			PHP Source 
 			<programlisting>
-&lt;? dl ("libr-php.so");
+&lt;? dl ("librlib.so");
 
 	$format = "pdf";
 	$sql_host = "localhost";

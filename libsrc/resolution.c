@@ -24,7 +24,7 @@
 #include "ralloc.h"
 #include "rlib.h"
 #include "pcode.h"
-#include "input.h"
+#include "rlib_input.h"
 
 /*
 	RLIB needs to find direct pointer to result sets and fields ahead of time so

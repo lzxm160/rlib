@@ -24,7 +24,7 @@
 #include "ralloc.h"
 #include "rlib.h"
 #include "pcode.h"
-#include "input.h"
+#include "rlib_input.h"
 
 #define FONTPOINT 	10.0
 #define RLIB_GET_LINE(a) ((float)(a/72.0))
@@ -436,12 +436,13 @@ static void print_detail_line_private(rlib *r, struct report_output_array *roa, 
 				margin = GET_MARGIN(r)->left_margin;				
 				buf[0] = 0;
 				width = 0;
+				start_count = -1;
 				for(e = rl->e; e != NULL; e=e->next) {
 					if(!extra_data[count].found_color) {
 						if(start_count == -1)
 							start_count = count;
 						sprintf(buf, "%s%s", buf, extra_data[count].formatted_string);
-						fun_width += extra_data->output_width;
+						fun_width += extra_data[count].output_width;
 					} else {
 						if(start_count != -1) {
 							rlib_output_text_text(r, backwards, margin, rlib_get_next_line(r, backwards ? r->position_bottom : r->position_top, 
@@ -798,15 +799,5 @@ int make_report(rlib *r) {
 
 int rlib_finalize(rlib *r) {
 	OUTPUT(r)->rlib_finalize_private(r);
-	return 0;
-}
-
-int rlib_spool(rlib *r) {
-	OUTPUT(r)->rlib_spool_private(r);
-	return 0;
-}
-
-int rlib_set_output_format(rlib *r, int format) {
-	r->format = format;
 	return 0;
 }

@@ -19,7 +19,7 @@
  */
  
 #include <rlib.h>
-#include <input.h>
+#include <rlib_input.h>
 
 
 struct _data {
@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
 	password = argv[3];
 	database = argv[4];
 
-	r = rlib_init(NULL);
+	r = rlib_init();
 	rlib_add_datasource_mysql(r, "local_mysql", hostname, username, password, database);
 	rlib_add_query_as(r, "local_mysql", "select * from example", "example");
 	rlib_add_query_as(r, "local_mysql", "select * from example order by name", "example2");

@@ -23,7 +23,7 @@
 lib_LTLIBRARIES = libr-postgre.la
 libr_postgre_la_SOURCES = postgre.c
 
-libr_postgre_la_LIBADD = $(POSTGRE_LIBS) 
+libr_postgre_la_LIBADD = $(POSTGRE_LIBS) -L${top_srcdir}/libsrc/ -lr
 
 INCLUDES = $(POSTGRE_CFLAGS) -I${top_srcdir}/libsrc/
 

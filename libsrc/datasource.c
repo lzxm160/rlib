@@ -23,7 +23,7 @@
 
 #include "ralloc.h"
 #include "rlib.h"
-#include "input.h"
+#include "rlib_input.h"
 
 int rlib_add_datasource(rlib *r, char *input_name, struct input_filter *input) {
 	r->inputs[r->inputs_count].input = input;

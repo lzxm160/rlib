@@ -24,7 +24,7 @@
 #include "ralloc.h"
 #include "rlib.h"
 #include "pcode.h"
-#include "input.h"
+#include "rlib_input.h"
 
 static void free_pcode(struct rlib_pcode *code) {
 	int i=0;

@@ -33,20 +33,12 @@ struct _private {
 	char *bottom;
 	int bottom_size;
 	int bottom_total_size;
+	char *both;
 	int did_bg;
 	int bg_backwards;
 	int do_bg;
+	int length;
 };
-
-static void make_more_space_if_necessary(char **str, int *size, int *total_size, int len) {
-	if(*total_size == 0) {
-		*str = rcalloc(MAXSTRLEN, 1);
-		*total_size = MAXSTRLEN;
-	} else if((*size) + len > (*total_size)) {
-		*str = rrealloc(*str, (*total_size)*2);
-		*total_size = (*total_size) * 2;
-	}		
-}
 
 static void print_text(rlib *r, char *text, int backwards) {
 	char *str_ptr;
@@ -248,7 +240,10 @@ static void rlib_html_init_output_report(rlib *r) {
 static void rlib_html_begin_text(rlib *r) {}
 
 static void rlib_html_finalize_private(rlib *r) {
-	r->length = OUTPUT_PRIVATE(r)->top_size + OUTPUT_PRIVATE(r)->bottom_size;
+	OUTPUT_PRIVATE(r)->length = OUTPUT_PRIVATE(r)->top_size + OUTPUT_PRIVATE(r)->bottom_size;
+	OUTPUT_PRIVATE(r)->both = rmalloc(OUTPUT_PRIVATE(r)->length);
+	memcpy(OUTPUT_PRIVATE(r)->both, OUTPUT_PRIVATE(r)->top, OUTPUT_PRIVATE(r)->top_size);
+	memcpy(OUTPUT_PRIVATE(r)->both + OUTPUT_PRIVATE(r)->top_size, OUTPUT_PRIVATE(r)->bottom, OUTPUT_PRIVATE(r)->bottom_size);
 }
 
 static void rlib_html_spool_private(rlib *r) {
@@ -277,9 +272,18 @@ static int rlib_html_is_single_page(rlib *r) {
 	return TRUE;
 }
 
+static char *rlib_html_get_output(rlib *r) {
+	return OUTPUT_PRIVATE(r)->both;
+}
+
+static long rlib_html_get_output_length(rlib *r) {
+	OUTPUT_PRIVATE(r)->length;
+}
+
 static int rlib_html_free(rlib *r) {
 	rfree(OUTPUT_PRIVATE(r)->top);
 	rfree(OUTPUT_PRIVATE(r)->bottom);
+	rfree(OUTPUT_PRIVATE(r)->both);
 	rfree(OUTPUT_PRIVATE(r));
 	rfree(OUTPUT(r));
 	return 0;
@@ -326,5 +330,7 @@ void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT(r)->rlib_is_single_page = rlib_html_is_single_page;
 	OUTPUT(r)->rlib_start_output_section = rlib_html_start_output_section;	
 	OUTPUT(r)->rlib_end_output_section = rlib_html_end_output_section;	
+	OUTPUT(r)->rlib_get_output = rlib_html_get_output;
+	OUTPUT(r)->rlib_get_output_length = rlib_html_get_output_length;
 	OUTPUT(r)->rlib_free = rlib_html_free;
 }

@@ -7,6 +7,7 @@
 <!ENTITY phpapi SYSTEM "phpapi.sgm">
 <!ENTITY examples SYSTEM "examples.sgm">
 <!ENTITY gnulicense SYSTEM "gnulicense.sgm">
+<!ENTITY swiglicense SYSTEM "swiglicense.sgm">
 ]>
 <book>
 	<bookinfo>
@@ -44,4 +45,5 @@
 	&phpapi;
 	&examples;
 	&gnulicense;
+	&swiglicense;
 </book>

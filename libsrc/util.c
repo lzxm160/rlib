@@ -28,6 +28,7 @@
 #include <time.h>
 #include <sys/resource.h>
 
+#include "ralloc.h"
 #include "rlib.h"
 
 //man 3 llabs says the prototype is in stdlib.. no it aint!
@@ -268,4 +269,14 @@ char *strproper (char *s) {
 	while ((c = tolower(*s)) != '\0')
 		*s++ = c;
 	return ptr;
+}
+
+void make_more_space_if_necessary(char **str, int *size, int *total_size, int len) {
+	if(*total_size == 0) {
+		*str = rcalloc(MAXSTRLEN, 1);
+		*total_size = MAXSTRLEN;
+	} else if((*size) + len > (*total_size)) {
+		*str = rrealloc(*str, (*total_size)*2);
+		*total_size = (*total_size) * 2;
+	}		
 }

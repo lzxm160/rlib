@@ -65,7 +65,7 @@
 		</para>
 	</sect1>
 	<sect1>
-		<title>rlib_set_output_format</title>
+		<title>rlib_set_output_format_from_text</title>
 		<para>
 			rlib_set_output_format(<emphasis>rlib</emphasis>, type)
 		</para>
@@ -118,7 +118,7 @@
 		</para>
 		<para>
 			<programlisting>
-dl ("libr-php.so");
+dl ("librlib.so");
 $query = "SELECT * FROM plu";
 $rlib =	rlib_init();
 rlib_add_datasource_mysql($rlib, "mysql", "localhost", "user", "password", "database");

@@ -31,17 +31,8 @@ struct _private {
 	char *top;
 	int top_size;
 	int top_total_size;
+	long length;
 };
-
-static void make_more_space_if_necessary(char **str, int *size, int *total_size, int len) {
-	if(*total_size == 0) {
-		*str = rcalloc(MAXSTRLEN, 1);
-		*total_size = MAXSTRLEN;
-	} else if((*size) + len > (*total_size)) {
-		*str = rrealloc(*str, (*total_size)*2);
-		*total_size = (*total_size) * 2;
-	}		
-}
 
 static void print_text(rlib *r, char *text, int backwards, int col) {
 	if(col < MAX_COL) {
@@ -88,7 +79,7 @@ static void rlib_csv_init_output(rlib *r) {}
 static void rlib_csv_begin_text(rlib *r) {}
 
 static void rlib_csv_finalize_private(rlib *r) {
-	r->length = OUTPUT_PRIVATE(r)->top_size;
+	OUTPUT_PRIVATE(r)->length = OUTPUT_PRIVATE(r)->top_size;
 }
 
 static void rlib_csv_spool_private(rlib *r) {
@@ -155,6 +146,14 @@ static int rlib_csv_is_single_page(rlib *r) {
 	return TRUE;
 }
 
+static char *rlib_csv_get_output(rlib *r) {
+	return OUTPUT_PRIVATE(r)->top;
+}
+
+static long rlib_csv_get_output_length(rlib *r) {
+	OUTPUT_PRIVATE(r)->top_size;
+}
+
 static int rlib_csv_free(rlib *r) {
 	rfree(OUTPUT_PRIVATE(r)->top);
 	rfree(OUTPUT_PRIVATE(r));
@@ -199,5 +198,7 @@ void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT(r)->rlib_is_single_page = rlib_csv_is_single_page;
 	OUTPUT(r)->rlib_start_output_section = rlib_csv_start_output_section;	
 	OUTPUT(r)->rlib_end_output_section = rlib_csv_end_output_section;	
+	OUTPUT(r)->rlib_get_output = rlib_csv_get_output;
+	OUTPUT(r)->rlib_get_output_length = rlib_csv_get_output_length;
 	OUTPUT(r)->rlib_free = rlib_csv_free;
 }

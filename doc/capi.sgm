@@ -1,13 +1,25 @@
 <chapter label="5" id="capi">
 	<title>C API</title>
 	<sect1>
-		<title>rlib_init</title>
+		<title>rlib_init_with_environment</title>
 		<para>
-			rlib * rlib_init(struct environment_filter *environment)
+			rlib * rlib_init_with_environment(struct environment_filter *environment)
 		</para>
 		<para>
 			Create an instance of RLIB.  You will normally pass NULL to init.  However.. at some point we need to better
 			document what the environment_filter does... this is normally used for 3rd part bindings like PHP, PERL, or PYTHON.
+		</para>
+		<para>
+			Returns a pointer to a <emphasis>rlib</emphasis>
+		</para>
+	</sect1>
+	<sect1>
+		<title>rlib_init</title>
+		<para>
+			rlib * rlib_init()
+		</para>
+		<para>
+			calls rlib_init_environment with a NULL pointer
 		</para>
 		<para>
 			Returns a pointer to a <emphasis>rlib</emphasis>
@@ -76,6 +88,14 @@
 		</para>
 	</sect1>
 	<sect1>
+		<title>rlib_set_output_format_from_text</title>
+		<para>
+			rlib_set_output_format(<emphasis>rlib *rlib_ptr</emphasis>, char *name)
+		</para>
+		<para>
+			Type can be one of the following: "pdf", "html", "csv", "txt"
+		</para>
+	</sect1>	<sect1>
 		<title>rlib_execute</title>
 		<para>
 			rlib_execute(<emphasis>rlib *rlib_ptr</emphasis>)
@@ -102,6 +122,24 @@
 		</para>
 		<para>
 			Rlib will send the output out stdout.
+		</para>
+	</sect1>
+	<sect1>
+		<title>rlib_get_output</title>
+		<para>
+			char * rlib_get_output(<emphasis>rlib * rlib_ptr</emphasis>)
+		</para>
+		<para>
+			Returns the output buffer (COULD BE NON NULL TERMINATED STRING)
+		</para>
+	</sect1>
+	<sect1>
+		<title>rlib_get_output_length</title>
+		<para>
+			long rlib_get_output_length(<emphasis>rlib * rlib_ptr</emphasis>)
+		</para>
+		<para>
+			Returns the length of the output buffer
 		</para>
 	</sect1>
 	<sect1>

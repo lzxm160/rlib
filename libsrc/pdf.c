@@ -27,6 +27,8 @@
 struct _private {
 	struct rgb current_color;
 	CPDFdoc *pdf;
+	char *buffer;
+	long length;
 };
 
 static float rlib_pdf_get_string_width(rlib *r, char *text) {
@@ -146,12 +148,12 @@ static void rlib_pdf_begin_text(rlib *r) {
 static void rlib_pdf_finalize_private(rlib *r) {
 	int length;
 	cpdf_finalizeAll(OUTPUT_PRIVATE(r)->pdf);
-	r->bufPDF = cpdf_getBufferForPDF(OUTPUT_PRIVATE(r)->pdf, &length);
-	r->length = length;
+	OUTPUT_PRIVATE(r)->buffer = cpdf_getBufferForPDF(OUTPUT_PRIVATE(r)->pdf, &length);
+	OUTPUT_PRIVATE(r)->length = length;
 }
 
 static void rlib_pdf_spool_private(rlib *r) {
-	ENVIRONMENT(r)->rlib_write_output(r->bufPDF, r->length);
+	ENVIRONMENT(r)->rlib_write_output(OUTPUT_PRIVATE(r)->buffer, OUTPUT_PRIVATE(r)->length);
 	cpdf_close(OUTPUT_PRIVATE(r)->pdf);
 }
 
@@ -172,6 +174,13 @@ static int rlib_pdf_free(rlib *r) {
 	return 0;
 }
 
+static char *rlib_pdf_get_output(rlib *r) {
+	return OUTPUT_PRIVATE(r)->buffer;
+}
+
+static long rlib_pdf_get_output_length(rlib *r) {
+	return OUTPUT_PRIVATE(r)->length;
+}
 
 static void rlib_pdf_stub_line(rlib *r, int backwards) {}
 
@@ -215,5 +224,7 @@ void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r)->rlib_is_single_page = rlib_pdf_is_single_page;
 	OUTPUT(r)->rlib_start_output_section = rlib_pdf_start_output_section;
 	OUTPUT(r)->rlib_end_output_section = rlib_pdf_end_output_section;
+	OUTPUT(r)->rlib_get_output = rlib_pdf_get_output;
+	OUTPUT(r)->rlib_get_output_length = rlib_pdf_get_output_length;
 	OUTPUT(r)->rlib_free = rlib_pdf_free;
 }

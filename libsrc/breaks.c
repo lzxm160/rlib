@@ -23,7 +23,7 @@
 
 #include "rlib.h"
 #include "pcode.h"
-#include "input.h"
+#include "rlib_input.h"
 
 static void rlib_print_break_header_lines(rlib *r, struct report_break *rb, struct report_output_array *roa, int backwards) {
 	int blank = TRUE;
