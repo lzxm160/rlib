@@ -456,12 +456,15 @@ struct rlib_graph_plot {
 	gchar *xml_axis;
 	gchar *xml_field;
 	gchar *xml_label;
+	gchar *xml_side;	
 	struct rlib_value rval_axis;
 	struct rlib_value rval_field;
 	struct rlib_value rval_label;
+	struct rlib_value rval_side;
 	struct rlib_pcode *axis_code;
 	struct rlib_pcode *field_code;	
 	struct rlib_pcode *label_code;	
+	struct rlib_pcode *side_code;
 };
 
 #define RLIB_GRAPH_TYPE_LINE_NORMAL                   1

@@ -51,3 +51,4 @@ int rlib_gd_get_string_height(struct rlib_gd *rgd);
 int rlib_gd_line(struct rlib_gd *rgd, gint x1, gint y1, gint x2, gint y2, struct rlib_rgb *color);
 int rlib_gd_rectangle(struct rlib_gd *rgd, gint x1, gint y1, gint x2, gint y2, struct rlib_rgb *color);
 int rlib_gd_arc(struct rlib_gd *rgd, gint x, gint y, gint radius, gint start_angle, gint end_angle, struct rlib_rgb *color);
+int rlib_gd_set_thickness(struct rlib_gd *rgd, int thickness);

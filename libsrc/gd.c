@@ -86,6 +86,12 @@ int rlib_gd_get_string_height(struct rlib_gd *rgd) {
 	return  gdFontLarge->h;
 }
 
+int rlib_gd_set_thickness(struct rlib_gd *rgd, int thickness) {
+	gdImageSetThickness(rgd->im, thickness);
+	return TRUE;
+}
+
+
 int rlib_gd_line(struct rlib_gd *rgd, gint x1, gint y1, gint x2, gint y2, struct rlib_rgb *color) {
 	gint gd_color;
 	
@@ -127,7 +133,7 @@ int rlib_gd_arc(struct rlib_gd *rgd, gint x, gint y, gint radius, gint start_ang
 	else
 		gd_color = rgd->black;
 
-	gdImageFilledArc(rgd->im, x, y, radius, radius, start_angle, end_angle, gd_color, 0);
+	gdImageFilledArc(rgd->im, x, y, radius, radius, start_angle, end_angle, gd_color, gdArc);
 	return TRUE;
 }
 
@@ -155,6 +161,10 @@ int rlib_gd_get_string_width(struct rlib_gd *rgd, char *text) {
 
 int rlib_gd_get_string_height(struct rlib_gd *rgd) {
 	return 0;
+}
+
+int rlib_gd_set_thickness(struct rlib_gd *rgd, int thickness) {
+	return TRUE;
 }
 
 int rlib_gd_line(struct rlib_gd *rgd, gint x1, gint y1, gint x2, gint y2, struct rlib_rgb *color) {

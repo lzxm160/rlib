@@ -696,7 +696,9 @@ void pdf_graph_plot_line(rlib *r, int iteration, gfloat p1_height, gfloat p1_las
 	}
 	
 	OUTPUT(r)->set_bg_color(r, color->r, color->g, color->b);
+	cpdf_setlinewidth(OUTPUT_PRIVATE(r)->pdf, 1.1);
 	pdf_graph_draw_line(r, left, p1_start + (graph->y_height * p1_height), left+graph->x_tick_width, p2_start + (graph->y_height * p2_height), NULL);
+	cpdf_setlinewidth(OUTPUT_PRIVATE(r)->pdf, 1);
 	OUTPUT(r)->set_bg_color(r, 0, 0, 0);
 }
 

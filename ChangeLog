@@ -1,4 +1,16 @@
 2005-01-06  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/free.c: start of "side" support for Y axis, make line graphs a tad wider for easier readibility
+	* libsrc/gd.c: likewise
+	* libsrc/html.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/rlib_gd.h: likewise
+	* src/examples/php/graph.php: likewise
+	* src/examples/php/graph.xml: likewise
+
+2005-01-06  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/gd.c: compile fixes
 	* libsrc/graphing.c: likewise
 	* libsrc/layout.c: respect suppress in csv output

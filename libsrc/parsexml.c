@@ -355,6 +355,7 @@ static struct rlib_graph_plot * parse_graph_plots(struct rlib_report *report, xm
 	gp->xml_axis = xmlGetProp(cur, (const xmlChar *) "axis");
 	gp->xml_field = xmlGetProp(cur, (const xmlChar *) "field");
 	gp->xml_label = xmlGetProp(cur, (const xmlChar *) "label");
+	gp->xml_side = xmlGetProp(cur, (const xmlChar *) "side");
 	return gp;
 }
 

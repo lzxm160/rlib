@@ -222,6 +222,25 @@
 	$pie_data2[13][0] = "Pudding";
 	$pie_data2[13][1] = "5";
 
+	$sales_data[0][0] = "doy";
+	$sales_data[0][1] = "net";
+	$sales_data[0][2] = "check";
+
+	$sales_data[1][0] = "Mon";
+	$sales_data[1][1] = "8000";
+	$sales_data[1][2] = "5.00";
+
+	$sales_data[2][0] = "Tue";
+	$sales_data[2][1] = "6000";
+	$sales_data[2][2] = "5.50";
+
+	$sales_data[3][0] = "Wed";
+	$sales_data[3][1] = "6500";
+	$sales_data[3][2] = "4.50";
+
+	$sales_data[4][0] = "Thu";
+	$sales_data[4][1] = "5000";
+	$sales_data[4][2] = "7.00";
 
 	$rlib =	rlib_init();
 	rlib_add_datasource_array($rlib, "local_array");
@@ -229,8 +248,9 @@
 	rlib_add_query_as($rlib, "local_array", "line_data", "line_data");
 	rlib_add_query_as($rlib, "local_array", "pie_data", "pie_data");
 	rlib_add_query_as($rlib, "local_array", "pie_data2", "pie_data2");
+	rlib_add_query_as($rlib, "local_array", "sales_data", "sales_data");
 	rlib_add_report($rlib, "graph.xml");
-	rlib_set_output_format_from_text($rlib, "html");
+	rlib_set_output_format_from_text($rlib, "pdf");
 	rlib_execute($rlib);
 	header(rlib_get_content_type($rlib));
 	rlib_spool($rlib);
