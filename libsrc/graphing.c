@@ -38,8 +38,10 @@
 #include "rlib_input.h"
 #include "util.h"
 
-#define MAX_COLOR_POOL 4
-gchar *color_pool[MAX_COLOR_POOL] = {"blue", "yellow", "green", "red"};
+#define MAX_COLOR_POOL 32
+gchar *color_pool[MAX_COLOR_POOL] = {"0x9999ff", "0x993366", "0xffffcc", "0xccffff", "0x660066", "0xff8080", "0x0066cc", "0xccccff", "0x000080", 
+	"0xff00ff", "0xffff00", "0x00ffff", "0x800080", "0x800000", "0x008080", "0x0000ff", "0x00ccff", "0xccffff", "0xccffcc", "0xffff99", "0x99ccff", 
+	"0xff99cc", "0xcc99ff", "0xffcc99", "0x3366ff", "0x33cccc", "0x99cc00", "0xffcc00", "0xff9900", "0xff6600", "0x666699", "0x969696"};
 
 gint determine_graph_type(gchar *type, gchar *subtype) {
 	if(strcmp(type, "line") == 0) {
@@ -96,6 +98,28 @@ gint determine_graph_type(gchar *type, gchar *subtype) {
 	return RLIB_GRAPH_TYPE_ROW_NORMAL;
 }
 
+static void rlib_graph_label_y_axis(rlib *r, gboolean for_real, gint y_ticks, gdouble y_min, gdouble y_max, gdouble y_origin) {
+	gint i;
+	for(i=0;i<y_ticks+1;i++) {
+		gboolean special = FALSE;
+		gdouble val = y_min + (((y_max-y_min)/y_ticks)*i);
+		gchar label[MAXSTRLEN];
+		if((gint)(val * 100.0) % 100 > 0)
+			sprintf(label, "%.02f", val);
+		else if((gint)(val * 10000.0) % 10000 > 0)
+			sprintf(label, "%.04f", val);
+		else
+			sprintf(label, "%.f", val);
+
+		if(val == y_origin)
+			special = TRUE;
+		if(for_real) 
+			OUTPUT(r)->graph_label_y(r, i, label, special);	
+		else
+			OUTPUT(r)->graph_hint_label_y(r, label);	
+	}
+}
+
 #define POSITIVE 1
 #define POSITIVE_AND_NEGATIVE 2
 #define NEGATIVE 3
@@ -110,7 +134,6 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 	gdouble y_max = 0;
 	gint data_plot_count = 0;
 	gint row_count = 0;
-	gint i;
 	gint y_ticks = 10;
 	gfloat tmp;
 	gfloat graph_width=300, graph_height=300;
@@ -155,7 +178,7 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 				
 					} else if(strcmp(axis, "y") == 0) {
 						if(rlib_execute_as_float(r, plot->field_code, &y_value)) {
-							rlib_parsecolor(&color[data_plot_count], color_pool[data_plot_count]);
+							rlib_parsecolor(&color[data_plot_count%MAX_COLOR_POOL], color_pool[data_plot_count%MAX_COLOR_POOL]);
 							data_plot_count++;
 							if(row_count == 0) {
 								y_min = y_value;
@@ -177,13 +200,16 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 				break;
 		}
 	}
-	OUTPUT(r)->graph_do_grid(r);
-	OUTPUT(r)->graph_tick_x(r, row_count);
-	OUTPUT(r)->graph_set_data_plot_count(r, data_plot_count);
 	rlogit("Me have %d rows AND THE MIN IS %f and the MAX IS %f\n", row_count, y_min, y_max);
 	rlib_graph_find_y_range(r, y_min, y_max, &y_min, &y_max, graph_type);
 	y_ticks = rlib_graph_num_ticks(r, y_min, y_max);
 	rlogit("Mike.. We have %d rows AND THE MIN IS %f and the MAX IS %f and ticks is %d\n", row_count, y_min, y_max, y_ticks);
+
+	rlib_graph_label_y_axis(r, FALSE, y_ticks, y_min, y_max, y_origin);
+
+	OUTPUT(r)->graph_do_grid(r);
+	OUTPUT(r)->graph_tick_x(r, row_count);
+	OUTPUT(r)->graph_set_data_plot_count(r, data_plot_count);
 	OUTPUT(r)->graph_tick_y(r, y_ticks);
 	
 	if(y_max >= 0 && y_min >= 0) {
@@ -198,22 +224,7 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 	}
 	OUTPUT(r)->graph_set_limits(r, y_min, y_max, y_origin);
 	
-	for(i=0;i<y_ticks+1;i++) {
-		gboolean special = FALSE;
-		gdouble val = y_min + (((y_max-y_min)/y_ticks)*i);
-		gchar label[MAXSTRLEN];
-		if((gint)(val * 100.0) % 100 > 0)
-			sprintf(label, "%.02f", val);
-		else if((gint)(val * 10000.0) % 10000 > 0)
-			sprintf(label, "%.04f", val);
-		else
-			sprintf(label, "%.f", val);
-
-		if(val == y_origin) {
-			special = TRUE;
-		}
-		OUTPUT(r)->graph_label_y(r, i, label, special);	
-	}
+	rlib_graph_label_y_axis(r, TRUE, y_ticks, y_min, y_max, y_origin);
 
 	row_count = 0;
 

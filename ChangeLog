@@ -1,4 +1,9 @@
 2004-12-03  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/graphing.c: be able to label the y axis and correctly account for space on the left, and better colors
+	* libsrc/pdf.c: likewise
+	* libsrc/rlib.h: likewise
+
+2004-12-03  Bob Doan  <bdoan@sicompos.com>
 	* NEWS: 
 	* configure.in: better detect gd
 	* libsrc/Makefile.am: split stuff into axis.c

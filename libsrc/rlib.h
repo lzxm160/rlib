@@ -716,6 +716,7 @@ struct output_filter {
 	void (*graph_label_x)(rlib *r, int iteration, gchar *label);
 	void (*graph_label_y)(rlib *r, int iteration, gchar *label, gboolean false_x);
 	void (*graph_draw_bar)(rlib *r, int iteration, int plot, gfloat height, struct rlib_rgb *);
+	void (*graph_hint_label_y)(rlib *r, gchar *string);
 	int (*free)(rlib *r);
 };
 
