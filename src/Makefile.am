@@ -31,6 +31,6 @@ bin_PROGRAMS = rlibc
 
 INCLUDES = $(RLIB_CFLAGS) -I${top_srcdir}/libsrc/  
 
-rlibc_SOURCES= rlibc.c rlib.h
+rlibc_SOURCES= rlibc.c
 rlibc_LDADD = -L${top_builddir}/libsrc/ $(RLIB_LIBS) -lr
 

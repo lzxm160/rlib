@@ -200,7 +200,7 @@ static void rlib_pdf_start_new_page(rlib *r) {
 		   cpdf_rotate(OUTPUT_PRIVATE(r)->pdf, -90.0);
 			r->landscape = 1;
 		} else {
-			report->position_bottom[i] = 11-GET_MARGIN(r)->bottom_margin;
+			report->position_bottom[i] = (report->paper->height/RLIB_PDF_DPI)-GET_MARGIN(r)->bottom_margin;
 			cpdf_pageInit(OUTPUT_PRIVATE(r)->pdf, page_number+i, PORTRAIT, paper_type, paper_type); 
 			r->landscape = 0;
 		}

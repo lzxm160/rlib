@@ -69,6 +69,8 @@ gpointer rlib_mysql_real_connect(gpointer input_ptr, gchar *group, gchar *host, 
 	   ) == NULL)
 		return NULL;
 
+	mysql_select_db(mysql,database);
+	
 	INPUT_PRIVATE(input)->mysql = mysql;	
 	return mysql;
 }
