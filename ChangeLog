@@ -1,4 +1,7 @@
 2004-07-26  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/api.c: merge fixes from stable branch
+
+2004-07-26  Bob Doan  <bdoan@sicompos.com>
 	* inputs/mysql/Makefile.am: merge fixes from stable branch, IE content type, a invalid free, compile fixes
 	* inputs/odbc/Makefile.am: likewise
 	* inputs/postgre/Makefile.am: likewise
