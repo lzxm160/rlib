@@ -1,4 +1,7 @@
 2005-03-01  Bob Doan  <bdoan@sicompos.com>
+	* configure.in: don't like w/ rpdf everywehere
+
+2005-03-01  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/Makefile.am: link w/ rpdf even if its not installed
 
 2005-03-01  Michael Roth  <mroth@sicompos.com>
