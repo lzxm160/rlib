@@ -1,4 +1,10 @@
 2004-02-23  Chet Heilman  <cheilman@sicompos.com>
+	* doc/formating.sgm:
+		Documentation for new formatting codes.
+	* doc/symboltable.sgm:
+		Add new functions for data/time manipulation.
+
+2004-02-23  Chet Heilman  <cheilman@sicompos.com>
 
 	* libsrc/api.c: (rlib_execute), (rlib_set_locale),
 	(rlib_set_pdf_conversion), (rlib_version):

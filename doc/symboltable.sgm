@@ -27,6 +27,12 @@
 		<para>
 			expD - expN <emphasis>Returns</emphasis> DATE contains the result of expD - expN of days
 		</para>
+		<para>
+			expD - expD <emphasis>Returns</emphasis> NUMBER containing the number of days differnce in the dates, or
+			the number of seconds difference in the times. If the date portion is valid, the result is
+			the days difference if either of the dates is invalid, and both times are valid,
+			the difference is the seconds difference in the times.
+		</para>
 	</sect1>
 	<sect1>
 		<title>*</title>
@@ -60,6 +66,10 @@
 		<para>
 			expS1 &lt= expS2 <emphasis>Returns</emphasis> NUMBER 1 if true if expS1 is alphebatically less then expS2.. 0 if false
 		</para>
+		<para>
+			expD1 &lt= expD2 <emphasis>Returns</emphasis> NUMBER 1 if true if expD1 is less then expD2.. 0 if false.
+			Both date and time are compared if both have valid components. The dateof and timeof functions can be used to select one or the other.
+		</para>
 	</sect1>	
 	<sect1>
 		<title>&lt</title>
@@ -68,6 +78,10 @@
 		</para>
 		<para>
 			expS1 &lt expS2 <emphasis>Returns</emphasis> NUMBER 1 if true.. 0 if false
+		</para>
+		<para>
+			expD1 &lt expD2 <emphasis>Returns</emphasis> NUMBER 1 if true.. 0 if false
+			Both date and time are compared if both have valid components. The dateof and timeof functions can be used to select one or the other.
 		</para>
 	</sect1>	
 	<sect1>
@@ -78,6 +92,10 @@
 		<para>
 			expS1 &gt= expS2 <emphasis>Returns</emphasis> NUMBER 1 if true.. 0 if false
 		</para>
+		<para>
+			expD1 &gt= expD2 <emphasis>Returns</emphasis> NUMBER 1 if true.. 0 if false
+			Both date and time are compared if both have valid components. The dateof and timeof functions can be used to select one or the other.
+		</para>
 	</sect1>	
 	<sect1>
 		<title>&gt</title>
@@ -86,6 +104,10 @@
 		</para>
 		<para>
 			STRING &gt STRING <emphasis>Returns</emphasis> NUMBER 1 if true.. 0 if false
+		</para>
+		<para>
+			expD1 &gt expD2 <emphasis>Returns</emphasis> NUMBER 1 if true.. 0 if false
+			Both date and time are compared if both have valid components. The dateof and timeof functions can be used to select one or the other.
 		</para>
 	</sect1>	
 	<sect1>
@@ -97,7 +119,8 @@
 			STRING == STRING <emphasis>Returns</emphasis> NUMBER 1 if true.. 0 if false
 		</para>
 		<para>
-			DATE == DATE <emphasis>Returns</emphasis> NUMBER 1 if true.. 0 if false
+			expD1 == expD2 <emphasis>Returns</emphasis> NUMBER 1 if true.. 0 if false
+			Both date and time are compared if both have valid components. The dateof and timeof functions can be used to select one or the other.
 		</para>
 	</sect1>	
 	<sect1>
@@ -109,7 +132,8 @@
 			STRING != STRING <emphasis>Returns</emphasis> NUMBER 1 if true.. 0 if false
 		</para>
 		<para>
-			DATE != DATE <emphasis>Returns</emphasis> NUMBER 1 if true.. 0 if false
+			expD1 != expD2 <emphasis>Returns</emphasis> NUMBER 1 if true.. 0 if false
+			Both date and time are compared if both have valid components. The dateof and timeof functions can be used to select one or the other.
 		</para>
 	</sect1>	
 	<sect1>
@@ -123,9 +147,6 @@
 		<para>
 			STRING &amp;&amp; STRING <emphasis>Returns</emphasis> NUMBER 1 if true.. 0 if false .. True if both strings are not null
 		</para>
-		<para>
-			DATE &amp;&amp; DATE <emphasis>Returns</emphasis> NUMBER 1
-		</para>
 	</sect1>	
 	<sect1>
 		<title>||</title>
@@ -134,9 +155,6 @@
 		</para>
 		<para>
 			STRING || STRING <emphasis>Returns</emphasis> NUMBER 1 if true.. 0 if false . True if at least 1 of the strings is not null
-		</para>
-		<para>
-			DATE || DATE <emphasis>Returns</emphasis> NUMBER 1
 		</para>
 	</sect1>	
 	<sect1>
@@ -482,8 +500,45 @@
 			<emphasis>Returns</emphasis> NUMBER
 		</para>
 	</sect1>
-
-
-
+	<sect1>
+		<title>dateof(expD)</title>
+		<para>
+			A function that converts a datetime to a date only variable.
+			Use this function with comparisons and DATE arithmetic to select
+			only the DATE portion for use in the expression.
+		</para>
+		<para>
+			<emphasis>Returns</emphasis> DATE
+		</para>
+	</sect1>
+	<sect1>
+		<title>timeof(expD)</title>
+		<para>
+			A function that converts a datetime to a time only variable.
+			Use this function with comparisons and TIME arithmetic to select
+			only the TIME portion for use in the expression.
+		</para>
+		<para>
+			<emphasis>Returns</emphasis> DATE
+		</para>
+	</sect1>
+	<sect1>
+		<title>chgdateof(expD1, expD2)</title>
+		<para>
+			Changes the date portion of expD1 to equal that of expD1.
+		</para>
+		<para>
+			<emphasis>Returns</emphasis> DATE
+		</para>
+	</sect1>
+	<sect1>
+		<title>chgtimeof(expD1, expD2)</title>
+		<para>
+			Changes the time portion of expD1 to equal that of expD1.
+		</para>
+		<para>
+			<emphasis>Returns</emphasis> DATE
+		</para>
+	</sect1>
 
 </chapter>
