@@ -364,7 +364,6 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, char *infix) {
 	pcodes = rmalloc(sizeof(struct rlib_pcode));
 	rlib_pcode_init(pcodes);
 	operator_stack_init(&os);
-//	strlwrexceptquoted(infix);
 	rmwhitespacesexceptquoted(infix);
 
 	while(*moving_ptr) {
@@ -429,16 +428,17 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, char *infix) {
 					iif[moving_ptr-save_ptr-1] = '\0';
 					evaulation = iif;
 					while (*iif) {
-						if (*iif == '(') iif = skip_next_closing_paren(iif + 1);
+						if (*iif == '(') 
+							iif = skip_next_closing_paren(iif + 1);
 						if (*iif == ')') {
 							*iif = '\0';
 							break;
 						}
 						if (*iif == ',') {
 							*iif='\0';
-							if(ccount==0)
+							if(ccount == 0)
 								true = iif + 1;
-							else
+							else if(ccount == 1)
 								false = iif + 1;
 							ccount++;
 						}
@@ -644,6 +644,7 @@ struct rlib_value * rlib_execute_pcode(rlib *r, struct rlib_value *rval, struct 
 		return NULL;
 
 	rlib_value_stack_init(&value_stack);
+	
 	execute_pcode(r, code, &value_stack, this_field_value);
 	*rval = *rlib_value_stack_pop(&value_stack);
 	return rval;		

@@ -127,9 +127,9 @@ static void rlib_field_resolve_pcode(rlib *r, struct report_field *rf) {
 
 	rf->align = getalign(rf->xml_align);
 
-//rlogit("DUMPING PCODE FOR [%s]\n", rf->value);
-//rlib_pcode_dump(rf->code,0);	
-//rlogit("\n\n");
+/*rlogit("DUMPING PCODE FOR [%s]\n", rf->value);
+rlib_pcode_dump(rf->code,0);	
+rlogit("\n\n");*/
 }
 
 static void rlib_text_resolve_pcode(rlib *r, struct report_text *rt) {

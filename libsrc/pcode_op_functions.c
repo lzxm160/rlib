@@ -342,6 +342,7 @@ int rlib_pcode_operator_eql(rlib *r, struct rlib_value_stack *vs, struct rlib_va
 		rlib_value_free(v1);
 		rlib_value_free(v2);
 		rlib_value_new_number(&rval_rtn, push);
+		rlib_value_stack_push(vs, &rval_rtn);
 		return TRUE;
 	}
 	if(RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_DATE(v2)) {
@@ -349,7 +350,8 @@ int rlib_pcode_operator_eql(rlib *r, struct rlib_value_stack *vs, struct rlib_va
 			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PERCISION));
 		} else {
 			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, 0));
-		}	
+		}
+		return TRUE;
 	}
 	rlib_value_stack_push(vs, rlib_value_new_error(&rval_rtn));		
 	rlib_pcode_operator_fatal_execption("==", 2, v1, v2, NULL);
@@ -695,9 +697,11 @@ int rlib_pcode_operator_iif(rlib *r, struct rlib_value_stack *vs, struct rlib_va
 				return execute_pcode(r, rif->false, vs, this_field_value);
 			else
 				return execute_pcode(r, rif->true, vs, this_field_value);
+		} else {
+			rlogit("CAN'T COMPARE IIF VALUE [%d]\n", RLIB_VALUE_GET_TYPE(result));
 		}
 	}
-	rlib_pcode_operator_fatal_execption("iif", 2, v1, NULL, NULL);
+	rlib_pcode_operator_fatal_execption("iif", 1, v1, NULL, NULL);
 	return FALSE;
 }
 

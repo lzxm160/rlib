@@ -19,11 +19,11 @@
  */
 
 #define RLIB_VALUE_ERROR	-1
-#define RLIB_VALUE_NONE	0
+#define RLIB_VALUE_NONE		0
 #define RLIB_VALUE_NUMBER	1
 #define RLIB_VALUE_STRING	2
 #define RLIB_VALUE_DATE 	3
-#define RLIB_VALUE_IIF 	100
+#define RLIB_VALUE_IIF 		100
 
 #define RLIB_VALUE_TYPE_NONE(a) ((a)->type = RLIB_VALUE_NONE)
 #define RLIB_VALUE_GET_TYPE(a) (a->type)

@@ -138,6 +138,10 @@ void * postgre_new_result_from_query(void *input_ptr, char *query) {
 	struct rlib_postgre_results *results;
 	PGresult *result;
 	unsigned int count,i;
+	
+	if(input_ptr == NULL)
+		return NULL;
+	
 	result = rlib_postgre_query(INPUT_PRIVATE(input)->conn, query);
 	if(result == NULL)
 		return NULL;

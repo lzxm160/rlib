@@ -1,3 +1,11 @@
+2003-12-15  Bob Doan  <bdoan@sicompos.com>
+	* configure.in: bump
+	* inputs/postgre/postgre.c: crash fix
+	* libsrc/pcode.c: problems w/ == and iif fixed
+	* libsrc/pcode.h: likewise
+	* libsrc/pcode_op_functions.c: likewise
+	* libsrc/resolution.c: likewise
+
 2003-12-12  Bob Doan  <bdoan@sicompos.com>
 	* NEWS: getting ready for a new release
 
