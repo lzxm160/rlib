@@ -56,6 +56,7 @@ struct report_element * parse_line_array(struct rlib_report *rep, xmlDocPtr doc,
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "field"))) {
 			struct report_field *f = rmalloc(sizeof(struct report_field));
 			//utf8_to_8813(rep, f->value, xmlGetProp(cur, (const xmlChar *) "value"));
+			//TODO: we need to utf to 8813 all string values in single quotes
 			strcpy(f->value, xmlGetProp(cur, (const xmlChar *) "value"));
 			f->xml_align = xmlGetProp(cur, (const xmlChar *) "align");
 			f->bgcolor = xmlGetProp(cur, (const xmlChar *) "bgcolor");

@@ -1,3 +1,7 @@
+2003-11-12  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/pcode_op_functions.c: fixed bug with string to date conversions
+	* libsrc/parsexml.c: new TODO
+
 2003-11-11  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/reportgen.c: new rlib_add_resultset_follower function so that there can be more then one main loop
 		query... new navigation functions to play follow the leader, and fixed bug w/ colors

@@ -580,11 +580,14 @@ int rlib_pcode_operator_stod(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	if(RLIB_VALUE_IS_STRING(v1)) {
 		int year, month, day;
 		struct tm tm_date;
+		time_t tmp_time;
 		sscanf(RLIB_VALUE_GET_AS_STRING(v1), "%4d-%2d-%2d", &year, &month, &day);
 		bzero(&tm_date, sizeof(struct tm));
 		tm_date.tm_year = year-1900;
 		tm_date.tm_mon = month-1;
 		tm_date.tm_mday = day;
+		tmp_time = mktime(&tm_date);
+		localtime_r(&tmp_time, &tm_date);		
 		rlib_value_stack_push(vs, rlib_value_new_date(&rval_rtn, &tm_date));
 		return TRUE;
 	}
@@ -709,6 +712,7 @@ int rlib_pcode_operator_stods(rlib *r, struct rlib_value_stack *vs, struct rlib_
 	if(RLIB_VALUE_IS_STRING(v1)) {
 		int year, month, day, hour, min, sec;
 		struct tm tm_date;
+		time_t tmp_time;
 		sscanf(RLIB_VALUE_GET_AS_STRING(v1), "%4d%2d%2d%2d%2d%2d", &year, &month, &day, &hour, &min, &sec);
 		bzero(&tm_date, sizeof(struct tm));
 		tm_date.tm_year = year-1900;
@@ -717,6 +721,8 @@ int rlib_pcode_operator_stods(rlib *r, struct rlib_value_stack *vs, struct rlib_
 		tm_date.tm_hour = hour;
 		tm_date.tm_min = min;
 		tm_date.tm_sec = sec;
+		tmp_time = mktime(&tm_date);
+		localtime_r(&tmp_time, &tm_date);		
 		rlib_value_stack_push(vs, rlib_value_new_date(&rval_rtn, &tm_date));
 		return TRUE;
 	}
