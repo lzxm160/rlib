@@ -87,9 +87,9 @@ struct rlib_pcode_operator rlib_pcode_verbs[] = {
       {"day(", 	4, 0,	TRUE,	OP_DAY,  	TRUE, 	rlib_pcode_operator_day},
       {"upper(", 	6, 0,	TRUE,	OP_UPPER,  	TRUE, 	rlib_pcode_operator_upper},
       {"lower(", 	6, 0,	TRUE,	OP_LOWER,  	TRUE, 	rlib_pcode_operator_lower},
-		{"left(", 	5, 0, 	TRUE, 	OP_LEFT, 	TRUE, 	rlib_pcode_operator_left},
-		{"right(", 	6, 0, 	TRUE, 	OP_LEFT, 	TRUE, 	rlib_pcode_operator_right},
-		{"mid(", 	4, 0, 	TRUE, 	OP_LEFT, 	TRUE, 	rlib_pcode_operator_substring},
+		{"left(", 	5, 0,	TRUE,	OP_LEFT, 	TRUE, 	rlib_pcode_operator_left},
+		{"right(", 	6, 0,	TRUE,	OP_LEFT, 	TRUE, 	rlib_pcode_operator_right},
+		{"mid(", 	4, 0, TRUE,	OP_LEFT, 	TRUE, 	rlib_pcode_operator_substring},
       {"proper(", 7, 0,	TRUE,	OP_PROPER, 	TRUE,		rlib_pcode_operator_proper},
       {"stodt(", 	6, 0,	TRUE,	OP_STODS,  	TRUE, 	rlib_pcode_operator_stodt},
       {"isnull(",	7, 0,	TRUE,	OP_ISNULL, 	TRUE, 	rlib_pcode_operator_isnull},
@@ -101,8 +101,8 @@ struct rlib_pcode_operator rlib_pcode_verbs[] = {
       {"tstod(", 	6, 0,	TRUE,	OP_TSTOD,  	TRUE, 	rlib_pcode_operator_tstod},
       {"dtosf(", 	6, 0,	TRUE,	OP_DTOSF,  	TRUE, 	rlib_pcode_operator_dtosf},
 
-      {"dateof(", 	7, 0,	TRUE,	OP_DATEOF,  	TRUE, 	rlib_pcode_operator_dateof},
-      {"timeof(", 	7, 0,	TRUE,	OP_TIMEOF,  	TRUE, 	rlib_pcode_operator_timeof},
+      {"dateof(", 7, 0,	TRUE,	OP_DATEOF,  	TRUE, 	rlib_pcode_operator_dateof},
+      {"timeof(", 7, 0,	TRUE,	OP_TIMEOF,  	TRUE, 	rlib_pcode_operator_timeof},
 
       {"chgdateof(", 	10, 0,	TRUE,	OP_CHGDATEOF,  	TRUE, 	rlib_pcode_operator_chgdateof},
       {"chgtimeof(", 	10, 0,	TRUE,	OP_CHGTIMEOF,  	TRUE, 	rlib_pcode_operator_chgtimeof},
@@ -116,14 +116,23 @@ struct rlib_pcode_operator rlib_pcode_verbs[] = {
 };
 
 
-struct rlib_pcode_operator * rlib_find_operator(gchar *ptr) {
+struct rlib_operator_stack {
+	gint count;
+	struct rlib_pcode_operator *op[200];
+};
+
+struct rlib_pcode_operator * rlib_find_operator(gchar *ptr, struct rlib_operator_stack *os, struct rlib_pcode *p, int have_operand) {
 	gint len = strlen(ptr);
 	struct rlib_pcode_operator *op;
 	op = rlib_pcode_verbs;
 	while(op && op->tag != NULL) {
 		if(len >= op->taglen) {		
 			if(!strncmp(ptr, op->tag, op->taglen)) {
-				return op;
+				if(op->opnum == OP_SUB) {
+					if(have_operand) 
+						return op;				
+				} else
+					return op;
 			}
 		}
 		op++;
@@ -333,29 +342,25 @@ void rlib_pcode_dump(struct rlib_pcode *p, gint offset) {
 	}
 }
 
-struct operator_stack {
-	gint count;
-	struct rlib_pcode_operator *op[200];
-};
-
-int operator_stack_push(struct operator_stack *os, struct rlib_pcode_operator *op) {
+int operator_stack_push(struct rlib_operator_stack *os, struct rlib_pcode_operator *op) {
+	
 	if(op->tag[0] != ')' && op->tag[0] != ',')
 		os->op[os->count++] = op;
 	return 0;
 }
 
-struct rlib_pcode_operator * operator_stack_pop(struct operator_stack *os) {
+struct rlib_pcode_operator * operator_stack_pop(struct rlib_operator_stack *os) {
 	if(os->count > 0) {
 		return os->op[--os->count];
 	} else
 		return NULL;
 }
 
-void operator_stack_init(struct operator_stack *os) {
+void operator_stack_init(struct rlib_operator_stack *os) {
 	os->count = 0;
 }
 
-gint operator_stack_is_all_less(struct operator_stack *os, struct rlib_pcode_operator *op) {
+gint operator_stack_is_all_less(struct rlib_operator_stack *os, struct rlib_pcode_operator *op) {
 	gint i;
 	if(op->tag[0] == ')' || op->tag[0] == ',')
 		return FALSE;
@@ -369,13 +374,13 @@ gint operator_stack_is_all_less(struct operator_stack *os, struct rlib_pcode_ope
 	for(i=os->count-1;i>=0;i--) {
 		if(os->op[i]->tag[0] == '(' || os->op[i]->is_function == TRUE)
 			break;
-		if(os->op[i]->precedence >= op->precedence ) 
+		if(os->op[i]->precedence > op->precedence ) 
 			return FALSE;
 	}
 	return TRUE;
 }
 
-void popopstack(struct rlib_pcode *p, struct operator_stack *os, struct rlib_pcode_operator *op) {
+void popopstack(struct rlib_pcode *p, struct rlib_operator_stack *os, struct rlib_pcode_operator *op) {
 	struct rlib_pcode_operator *o;
 	struct rlib_pcode_instruction rpi;
 	if(op != NULL && (op->tag[0] == ')' || op->tag[0] == ',')) {
@@ -405,7 +410,7 @@ void popopstack(struct rlib_pcode *p, struct operator_stack *os, struct rlib_pco
 	}
 }
 
-void forcepopstack(struct rlib_pcode *p, struct operator_stack *os) {
+void forcepopstack(struct rlib_pcode *p, struct rlib_operator_stack *os) {
 	struct rlib_pcode_operator *o;
 	struct rlib_pcode_instruction rpi;
 	while((o=operator_stack_pop(os))) {
@@ -414,8 +419,7 @@ void forcepopstack(struct rlib_pcode *p, struct operator_stack *os) {
 	}
 }
 
-
-void smart_add_pcode(struct rlib_pcode *p, struct operator_stack *os, struct rlib_pcode_operator *op) {
+void smart_add_pcode(struct rlib_pcode *p, struct rlib_operator_stack *os, struct rlib_pcode_operator *op) {
 	if(operator_stack_is_all_less(os, op)) {
 		operator_stack_push(os, op);
 	} else {		
@@ -423,7 +427,6 @@ void smart_add_pcode(struct rlib_pcode *p, struct operator_stack *os, struct rli
 		operator_stack_push(os, op);
 	}
 }
-
 
 static gchar *skip_next_closing_paren(gchar *str) {
 	gint ch;
@@ -446,7 +449,7 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, gchar *infix) {
 	gint indate=0;
 	struct rlib_pcode_operator *op;
 	struct rlib_pcode *pcodes;
-	struct operator_stack os;
+	struct rlib_operator_stack os;
 	struct rlib_pcode_instruction rpi;
 
 	if(infix == NULL || infix[0] == '\0' || !strcmp(infix, ""))
@@ -477,7 +480,7 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, gchar *infix) {
 				break;
 		}
 		
-		if(!instr && !indate && (op=rlib_find_operator(moving_ptr))) {
+		if(!instr && !indate && (op=rlib_find_operator(moving_ptr, &os, pcodes, moving_ptr != op_pointer))) {
 			if(moving_ptr != op_pointer) {
 				memcpy(operand, op_pointer, moving_ptr - op_pointer);
 				operand[moving_ptr - op_pointer] = '\0';
@@ -516,8 +519,7 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, gchar *infix) {
 						if(pcount == 0)
 							break;
 					}
-					save_iif = iif = g_malloc(moving_ptr -
-					save_ptr + 1);
+					save_iif = iif = g_malloc(moving_ptr - save_ptr + 1);
 					iif[moving_ptr-save_ptr] = '\0';
 					memcpy(iif, save_ptr, moving_ptr-save_ptr);
 					iif[moving_ptr-save_ptr-1] = '\0';
