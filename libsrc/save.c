@@ -93,7 +93,7 @@ void write_text(gint fd, struct rlib_report_literal *rt) {
 }
 
 void write_line(gint fd, struct rlib_report_lines *rl) {
-	struct rlib_report_element *e;
+	struct rlib_element *e;
 	gint32 type;
 	write_xml_str(fd, rl->bgcolor);
 	write_xml_str(fd, rl->color);
@@ -105,10 +105,10 @@ void write_line(gint fd, struct rlib_report_lines *rl) {
 	for(e=rl->e; e != NULL; e=e->next) {
 		type = e->type;
 		write(fd, &type, sizeof(gint32));
-		if(e->type == REPORT_ELEMENT_FIELD) {
+		if(e->type == RLIB_ELEMENT_FIELD) {
 			struct rlib_report_field *rf = e->data;
 			write_field(fd, rf);
-		} else if(e->type == REPORT_ELEMENT_LITERAL) {
+		} else if(e->type == RLIB_ELEMENT_LITERAL) {
 			struct rlib_report_literal *rt = e->data;
 			write_text(fd, rt);
 		}
@@ -144,7 +144,7 @@ void write_roa(gint fd, struct rlib_report_output_array *roa) {
 	write(fd, &type, sizeof(gint32));
 }
 
-void write_output(gint fd, struct rlib_report_element *e) {
+void write_output(gint fd, struct rlib_element *e) {
 	struct rlib_report_output_array *roa;
 	gint32 type = RLIB_FILE_OUTPUTS;
 	write(fd, &type, sizeof(gint32));
@@ -156,8 +156,8 @@ void write_output(gint fd, struct rlib_report_element *e) {
 	write(fd, &type, sizeof(gint32));
 }
 
-void write_variables(gint fd, struct rlib_report_element *rv) {
-	struct rlib_report_element *e;
+void write_variables(gint fd, struct rlib_element *rv) {
+	struct rlib_element *e;
 	gint32 type = RLIB_FILE_VARIABLES;
 	write(fd, &type, sizeof(gint32));
 
@@ -176,14 +176,14 @@ void write_variables(gint fd, struct rlib_report_element *rv) {
 	write(fd, &type, sizeof(gint32));
 }
 
-void write_breaks(gint fd, struct rlib_report_element *breaks) {
-	struct rlib_report_element *e;
+void write_breaks(gint fd, struct rlib_element *breaks) {
+	struct rlib_element *e;
 	gint32 type = RLIB_FILE_BREAKS;
 	write(fd, &type, sizeof(gint32));
 
 	for(e=breaks; e != NULL; e=e->next) {
 		struct rlib_report_break *rb = e->data;
-		struct rlib_report_element *be;
+		struct rlib_element *be;
 		type = RLIB_FILE_BREAK;
 		write(fd, &type, sizeof(gint32));
 		write_xml_str(fd, rb->name);
@@ -221,7 +221,6 @@ gint save_report(struct rlib_report *rep, gchar *filename) {
 	write_xml_str(fd, rep->xml_top_margin); 
 	write_xml_str(fd, rep->xml_left_margin);
 	write_xml_str(fd, rep->xml_bottom_margin);
-	write_xml_str(fd, rep->xml_paper_type);
 	write_xml_str(fd, rep->xml_pages_accross);
 	write_xml_str(fd, rep->xml_suppress_page_header_first_page);
 	

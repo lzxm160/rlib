@@ -1,3 +1,25 @@
+2004-10-06  Bob Doan  <bdoan@sicompos.com>
+	* bindings/php/array_data_source.c: initial work @ getting parts working
+	* libsrc/Makefile.am: likewise
+	* libsrc/api.c: likewise 
+	* libsrc/breaks.c: likewise
+	* libsrc/csv.c: likewise
+	* libsrc/free.c: likewise
+	* libsrc/html.c: likewise
+	* libsrc/load.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/pcode.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/save.c: likewise
+	* libsrc/txt.c: likewise
+	* src/examples/php/array_test2.xml: likewise
+	* src/examples/php/part_test.php: likewise
+	* src/examples/php/part_test.xml: likewise
+	* src/rlibc.c: likewise
+
 2004-09-03  Bob Doan  <bdoan@sicompos.com>
 	* inputs/mysql/mysql.c: remove debug stuff
 	* libsrc/api.c: nada
@@ -11,7 +33,7 @@
 	* libsrc/reportgen.c: (make_report): Goto first element of query on each mainloop so that the same query may be used again w/o re-query 
 	* src/examples/php/array_test.php:
 
-2004-08-25  Chet Heilman  <set EMAIL_ADDRESS environment variable>
+2004-08-25  Chet Heilman  <cheilman@sicompos.com>
 	* libsrc/datetime.c: (rlib_datetime_valid_date),
 	(rlib_datetime_set_date), (rlib_datetime_format_date):
 	Print invalid DATEs as '' (empty string).

@@ -26,7 +26,7 @@
 #include "pcode.h"
 #include "rlib_input.h"
 
-static void rlib_print_break_header_output(rlib *r, struct rlib_report_break *rb, struct rlib_report_element *e, gint backwards) {
+static void rlib_print_break_header_output(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb, struct rlib_element *e, gint backwards) {
 	gint blank = TRUE;
 	gint suppress = FALSE;
 
@@ -34,7 +34,7 @@ static void rlib_print_break_header_output(rlib *r, struct rlib_report_break *rb
 		return;
 		
 	if(rb->suppressblank) {
-		struct rlib_report_element *be;
+		struct rlib_element *be;
 		suppress = TRUE;
 		for(be = rb->fields; be != NULL; be=be->next) {
 			struct rlib_break_fields *bf = be->data;
@@ -48,33 +48,33 @@ static void rlib_print_break_header_output(rlib *r, struct rlib_report_break *rb
 	if(!suppress || (suppress && !blank)) {
 		rb->didheader = TRUE;
 		if(e != NULL)
-			print_report_output(r, e, backwards);
+			rlib_layout_report_output(r, part, report, e, backwards);
 	} else {
 		rb->didheader = FALSE;
 	}
 }
 
-static void rlib_print_break_footer_output(rlib *r, struct rlib_report_break *rb, struct rlib_report_element *e, gint backwards) {
+static void rlib_print_break_footer_output(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb, struct rlib_element *e, gint backwards) {
 	if(!OUTPUT(r)->do_break)
 		return;
 
 	if(rb->didheader)
-		print_report_output(r, e, backwards);
+		rlib_layout_report_output(r, part, report, e, backwards);
 }
 
-void rlib_force_break_headers(rlib *r) {
-	struct rlib_report_element *e;
+void rlib_force_break_headers(rlib *r, struct rlib_part *part, struct rlib_report *report) {
+	struct rlib_element *e;
 
 	if(!OUTPUT(r)->do_break)
 		return;
 	
-	if(r->reports[r->current_report]->breaks == NULL)
+	if(report->breaks == NULL)
 		return;
 	
-	for(e = r->reports[r->current_report]->breaks; e != NULL; e=e->next) {
+	for(e = report->breaks; e != NULL; e=e->next) {
 		gint dobreak=1;
 		struct rlib_report_break *rb = e->data;
-		struct rlib_report_element *be;
+		struct rlib_element *be;
 		for(be = rb->fields; be != NULL; be=be->next) {
 			struct rlib_break_fields *bf = be->data;
 			if(dobreak && bf->rval == NULL) {
@@ -87,31 +87,31 @@ void rlib_force_break_headers(rlib *r) {
 		}	
 	}
 	
-	for(e = r->reports[r->current_report]->breaks; e != NULL; e=e->next) {
+	for(e = report->breaks; e != NULL; e=e->next) {
 		struct rlib_report_break *rb = e->data;
 		if(rb->headernewpage) {
-			rlib_print_break_header_output(r, rb, rb->header, FALSE);
+			rlib_print_break_header_output(r, part, report, rb, rb->header, FALSE);
 		}
 				
 	}
 }
 
-void rlib_handle_break_headers(rlib *r) {
+void rlib_handle_break_headers(rlib *r, struct rlib_part *part, struct rlib_report *report) {
 	gint icache=0,page,i;
 	gfloat total[RLIB_MAXIMUM_PAGES_ACCROSS];
-	struct rlib_report_element *e;
+	struct rlib_element *e;
 	struct rlib_report_break *cache[100];
 
-	if(r->reports[r->current_report]->breaks == NULL)
+	if(report->breaks == NULL)
 		return;
 	
 	for(i=0;i<RLIB_MAXIMUM_PAGES_ACCROSS;i++) 
 		total[i] = 0;
 
-	for(e = r->reports[r->current_report]->breaks; e != NULL; e=e->next) {
+	for(e = report->breaks; e != NULL; e=e->next) {
 		gint dobreak=1;
 		struct rlib_report_break *rb = e->data;
-		struct rlib_report_element *be;
+		struct rlib_element *be;
 		for(be = rb->fields; be != NULL; be=be->next) {
 			struct rlib_break_fields *bf = be->data;
 			if(dobreak && bf->rval == NULL) {
@@ -129,7 +129,7 @@ void rlib_handle_break_headers(rlib *r) {
 			} else {
 				rb->didheader = TRUE;
 			}
-			for(page=0;page<r->reports[r->current_report]->pages_accross;page++) {
+			for(page=0;page<report->pages_accross;page++) {
 				total[page] += get_outputs_size(r, rb->header, page);
 			}
 		}
@@ -137,26 +137,26 @@ void rlib_handle_break_headers(rlib *r) {
 	}
 	if(icache && OUTPUT(r)->do_break) {	
 		gint allfit = TRUE;
-		for(page=0;page<r->reports[r->current_report]->pages_accross;page++) {
-			if(!will_this_fit(r,total[page], page+1))
+		for(page=0;page<report->pages_accross;page++) {
+			if(!will_this_fit(r, part, report, total[page], page+1))
 				allfit = FALSE;
 		}
 		if(!allfit) {
-			OUTPUT(r)->rlib_end_page(r);
-			rlib_force_break_headers(r);
+			OUTPUT(r)->rlib_end_page(r, part, report);
+			rlib_force_break_headers(r, part, report);
 		} else {
 			for(i=0;i<icache;i++) {
-				rlib_print_break_header_output(r, cache[i], cache[i]->header, FALSE);	
+				rlib_print_break_header_output(r, part, report, cache[i], cache[i]->header, FALSE);	
 			}
 		}
 	}
 }
 
 //TODO: Variables need to resolve the name into a number or something.. like break numbers for more efficient compareseon
-void rlib_reset_variables_on_break(rlib *r, gchar *name) {
-	struct rlib_report_element *e;
+void rlib_reset_variables_on_break(rlib *r, struct rlib_part *part, struct rlib_report *report, gchar *name) {
+	struct rlib_element *e;
 
-	for(e = r->reports[r->current_report]->variables; e != NULL; e=e->next) {
+	for(e = report->variables; e != NULL; e=e->next) {
 		struct rlib_report_variable *rv = e->data;
 		if(rv->resetonbreak != NULL && rv->resetonbreak[0] != '\0' && !strcmp(rv->resetonbreak, name)) {
 			if(rv->type == REPORT_VARIABLE_COUNT) {
@@ -179,11 +179,11 @@ void rlib_reset_variables_on_break(rlib *r, gchar *name) {
 	}
 }
 
-void rlib_break_all_below_in_reverse_order(rlib *r, struct rlib_report_element *e) {
+void rlib_break_all_below_in_reverse_order(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_element *e) {
 	gint count=0,i=0,j=0;
 	gint do_endpage = FALSE;
 	struct rlib_report_break *rb;
-	struct rlib_report_element *xxx, *be;
+	struct rlib_element *xxx, *be;
 	struct rlib_break_fields *bf;
 
 	for(xxx =e; xxx != NULL; xxx=xxx->next)
@@ -200,24 +200,24 @@ void rlib_break_all_below_in_reverse_order(rlib *r, struct rlib_report_element *
 			bf->rval = NULL;
 		}
 		if(OUTPUT(r)->do_break) {
-			rlib_end_page_if_line_wont_fit(r, rb->footer);
+			rlib_end_page_if_line_wont_fit(r, part, report, rb->footer);
 			if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result))
 				rlib_navigate_previous(r, r->current_result);
-			rlib_print_break_footer_output(r, rb, rb->footer, FALSE);
+			rlib_print_break_footer_output(r, part, report, rb, rb->footer, FALSE);
 			if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result))
 				rlib_navigate_next(r, r->current_result);
 		}
 
-		rlib_reset_variables_on_break(r, rb->name);
-		rlib_process_expression_variables(r);
+		rlib_reset_variables_on_break(r, part, report, rb->name);
+		rlib_process_expression_variables(r, report);
 		if(rb->newpage) {
 			do_endpage = TRUE;
 		}
 	}
 	if(do_endpage && OUTPUT(r)->do_break) {
 		if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
-			OUTPUT(r)->rlib_end_page(r);
-			rlib_force_break_headers(r);
+			OUTPUT(r)->rlib_end_page(r, part, report);
+			rlib_force_break_headers(r, part, report);
 		}
 	}
 }
@@ -227,16 +227,16 @@ void rlib_break_all_below_in_reverse_order(rlib *r, struct rlib_report_element *
 	I need to go back down the list and force breaks for everyone.. in reverse order.. ugh
 
 */
-void rlib_handle_break_footers(rlib *r) {
-	struct rlib_report_element *e;
+void rlib_handle_break_footers(rlib *r, struct rlib_part *part, struct rlib_report *report) {
+	struct rlib_element *e;
 	struct rlib_break_fields *bf;
 
-	if(r->reports[r->current_report]->breaks == NULL)
+	if(report->breaks == NULL)
 		return;
-	for(e = r->reports[r->current_report]->breaks; e != NULL; e=e->next) {
+	for(e = report->breaks; e != NULL; e=e->next) {
 		gint dobreak=1;
 		struct rlib_report_break *rb = e->data;
-		struct rlib_report_element *be;
+		struct rlib_element *be;
 		for(be = rb->fields; be != NULL; be=be->next) {
 			struct rlib_value rval_tmp;
 			RLIB_VALUE_TYPE_NONE(&rval_tmp);
@@ -251,7 +251,7 @@ void rlib_handle_break_footers(rlib *r) {
 		}
 		
 		if(dobreak) {
-			rlib_break_all_below_in_reverse_order(r, e);
+			rlib_break_all_below_in_reverse_order(r, part, report, e);
 			break;
 		}
 				

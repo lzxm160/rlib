@@ -24,7 +24,7 @@
 #include <rlib_input.h>
 
 int main(int argc, char **argv) {
-	char *filename;
+/*	char *filename;
 	char buf[MAXSTRLEN];
 	struct rlib_report *rep;
 	if(argc != 2) {
@@ -45,6 +45,6 @@ int main(int argc, char **argv) {
 
 	sprintf(buf, "%s.rlib", filename);
 	save_report(rep, buf);
-
+*/
 	return 0;
 }

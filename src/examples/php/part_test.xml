@@ -1,16 +1,38 @@
 <?xml version="1.0"?>
 <!DOCTYPE report >
-<Part layout="'flow'">
+<Part layout="'flow'" fontSize="14" orientation="landscape">
+	<PageHeader>
+		<Output>
+			<Line fontSize="26">
+				<literal>Part Page Header</literal>
+			</Line>
+			<Line>
+				<literal>I love bacon</literal>
+			</Line>
+			<HorizontalLine size="4" bgcolor="'black'"/>
+			<HorizontalLine size="10" bgcolor="'white'"/>
+		</Output>
+	</PageHeader>		
 	<tr>
-		<td width="33">
-			<report name="'report_a.xml'"/>
-			<report name="'report_d.xml'"/>
+		<td width="47">
+			<load name="array_test.xml"/>
+			<load name="array_test2.xml"/>
 		</td>
-		<td width="33">
-			<report name="'report_b.xml'"/>
-		</td>
-		<td width="33">
-			<report name="'report_c.xml'"/>
+		<td width="5"/>
+		<td width="47">
+			<load name="array_test2.xml"/>
 		</td>
 	</tr>
+	<PageFooter>
+		<Output>
+			<Line>
+				<literal>Page: </literal>	
+				<field value="r.pageno" width="3" align="right"/>
+			</Line>
+			<Line>
+				<literal>Wheeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee: </literal>	
+				<field value="r.pageno" width="3" align="right"/>
+			</Line>
+		</Output>
+	</PageFooter>
 </Part>

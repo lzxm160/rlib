@@ -25,7 +25,7 @@ CPDF_FILES=pdf.c
 endif
 
 lib_LTLIBRARIES = libr.la
-libr_la_SOURCES = parsexml.c reportgen.c api.c resolution.c util.c util.h\
+libr_la_SOURCES = parsexml.c reportgen.c layout.c api.c resolution.c util.c util.h \
 	pcode.c pcode_op_functions.c formatstring.c fxp.c breaks.c $(CPDF_FILES) \
 	html.c txt.c datasource.c csv.c ralloc.c environment.c free.c\
 	navigation.c save.c load.c rlib_input.h pcode.h ralloc.h rlib.h\

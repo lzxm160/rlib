@@ -104,17 +104,17 @@ gint rlib_add_query_as(rlib *r, gchar *input_source, gchar *sql, gchar *name) {
 }
 
 gint rlib_add_report(rlib *r, gchar *name, gchar *mainloop) {
-	if(r->reports_count > (RLIB_MAXIMUM_REPORTS-1)) {
+	if(r->parts_count > (RLIB_MAXIMUM_REPORTS-1)) {
 		return - 1;
 	}
-	r->reportstorun[r->reports_count].name = g_strdup(name);
-	r->reportstorun[r->reports_count].query = g_strdup(mainloop);
-	r->reports_count++;
-	return r->reports_count;
+	r->reportstorun[r->parts_count].name = g_strdup(name);
+	r->reportstorun[r->parts_count].query = g_strdup(mainloop);
+	r->parts_count++;
+	return r->parts_count;
 }
 
 gint rlib_execute(rlib *r) {
-	gint i,j;
+	gint i;
 	char newfile[MAXSTRLEN];
 
 	r->now = time(NULL);
@@ -131,27 +131,18 @@ gint rlib_execute(rlib *r) {
 	LIBXML_TEST_VERSION
 
 	xmlKeepBlanksDefault(0);
-	for(i=0;i<r->reports_count;i++) {
+	for(i=0;i<r->parts_count;i++) {
 		sprintf(newfile, "%s.rlib", r->reportstorun[i].name);
-		if((r->reports[i] = load_report(newfile)) == NULL)
-			r->reports[i] = parse_report_file(r->reportstorun[i].name);
-		r->reports[i]->mainloop_query = -1;
-		if(r->reportstorun[i].query != NULL) {
-			for(j=0;j<r->queries_count;j++) {
-				if(!strcmp(r->queries[j].name, r->reportstorun[i].query)) {
-					r->reports[i]->mainloop_query = j;
-					break;
-				}					
-			}
-		}
+		if((r->parts[i] = load_report(newfile)) == NULL)
+			r->parts[i] = parse_part_file(r->reportstorun[i].name);
 		xmlCleanupParser();		
-		if(r->reports[i] == NULL) {
+		if(r->parts[i] == NULL) {
 			//TODO:FREE REPORT AND ALL ABOVE REPORTS
 			rlogit("Failed to run a Report\n");
 			return -1;
 		}
 	}
-	
+
 	make_report(r);	
 	rlib_finalize(r);
 	return 0;
@@ -351,12 +342,13 @@ void rlib_trap() {
 
 
 void rlib_set_report_output_encoding(rlib *r, int rptnum, const char *encoding) {
-	if ((rptnum >= 0) && (rptnum < r->reports_count)) {
+//TODO: PUT THIS BACK
+/*	if ((rptnum >= 0) && (rptnum < r->parts_count)) {
 		struct rlib_report *rr = r->reports[rptnum];
 
 		rlib_char_encoder_destroy(&rr->output_encoder);
 		rr->output_encoder = rlib_char_encoder_new(encoding, TRUE);
-	}
+	}*/
 }
 
 
@@ -438,7 +430,7 @@ void rlib_set_parameter_encoding(rlib *r, const char *encoding) {
  */
 void rlib_set_encodings(rlib *r, const char *outputencoding, const char *dbencoding, const char *paramencoding) {
 	if (outputencoding && *outputencoding) {
-		r_debug("Setting output encoding to %s", outputencoding);
+		r_debug("Setting output encoding to %s\n", outputencoding);
 		rlib_set_output_encoding(r, outputencoding);
 	}
 	if (dbencoding && *dbencoding) {

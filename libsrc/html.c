@@ -198,7 +198,7 @@ static void rlib_html_draw_cell_background_end(rlib *r) {
 }
 
 
-static void rlib_html_boxurl_start(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url) {
+static void rlib_html_boxurl_start(rlib *r, struct rlib_part *part, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url) {
 	gchar buf[MAXSTRLEN];
 	sprintf(buf, "<a href=\"%s\">", url);
 	print_text(r, buf, FALSE);
@@ -224,20 +224,17 @@ static void rlib_html_set_font_point(rlib *r, gint point) {
 	}
 }
 
-static void rlib_html_start_new_page(rlib *r) {
-	r->reports[r->current_report]->position_bottom[0] = 11-GET_MARGIN(r)->bottom_margin;
+static void rlib_html_start_new_page(rlib *r, struct rlib_part *part) {
+	part->position_bottom[0] = 11-part->bottom_margin;
 }
 
 static void rlib_html_init_end_page(rlib *r) {}
 
-static void rlib_html_end_text(rlib *r) {}
-
 static void rlib_html_init_output(rlib *r) {}
 
-static void rlib_html_start_report(rlib *r) {
-	struct rlib_report *rr = r->reports[r->current_report];
+static void rlib_html_start_report(rlib *r, struct rlib_part *part) {
 	gchar buf[MAXSTRLEN];
-	gint pages_accross = rr->pages_accross;
+	gint pages_accross = part->pages_accross;
 	gint i;
 
 	OUTPUT_PRIVATE(r)->bottom = g_malloc(sizeof(struct _data) * pages_accross);
@@ -262,9 +259,9 @@ static void rlib_html_start_report(rlib *r) {
 	
 }
 
-static void rlib_html_end_report(rlib *r) {
+static void rlib_html_end_report(rlib *r, struct rlib_part *part, struct rlib_report *report) {
 	gint i;
-	gint pages_accross = r->reports[r->current_report]->pages_accross;
+	gint pages_accross = report->pages_accross;
 	gint sofar = OUTPUT_PRIVATE(r)->length;
 	print_text(r, "</pre></td></tr></table>", TRUE);
 
@@ -286,8 +283,6 @@ static void rlib_html_end_report(rlib *r) {
 }
 
 
-static void rlib_html_begin_text(rlib *r) {}
-
 static void rlib_html_finalize_private(rlib *r) {}
 
 static void rlib_html_spool_private(rlib *r) {
@@ -305,9 +300,8 @@ static void rlib_html_end_line(rlib *r, int backwards) {
 static void rlib_html_start_output_section(rlib *r) {}
 static void rlib_html_end_output_section(rlib *r) {}
 
-static void rlib_html_end_page(rlib *r) {
+static void rlib_html_end_page(rlib *r, struct rlib_part *part, struct rlib_report *report) {
 	r->current_line_number = 1;
-	rlib_init_page(r, FALSE);
 }
 
 static int rlib_html_is_single_page(rlib *r) {
@@ -322,7 +316,7 @@ static long rlib_html_get_output_length(rlib *r) {
 	return OUTPUT_PRIVATE(r)->length;
 }
 
-static void rlib_html_set_working_page(rlib *r, gint page) {
+static void rlib_html_set_working_page(rlib *r, struct rlib_part *part, gint page) {
 	OUTPUT_PRIVATE(r)->page_number = page-1;
 }
 
@@ -335,7 +329,7 @@ static gint rlib_html_free(rlib *r) {
 
 void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT(r) = g_malloc(sizeof(struct output_filter));
-	OUTPUT_PRIVATE(r) = g_malloc(sizeof(struct _private));
+	r->o->private = g_malloc(sizeof(struct _private));
 	memset(OUTPUT_PRIVATE(r), 0, sizeof(struct _private));
 
 	OUTPUT_PRIVATE(r)->do_bg = FALSE;
@@ -360,11 +354,9 @@ void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT(r)->rlib_start_new_page = rlib_html_start_new_page;
 	OUTPUT(r)->rlib_end_page = rlib_html_end_page;	
 	OUTPUT(r)->rlib_init_end_page = rlib_html_init_end_page;
-	OUTPUT(r)->rlib_end_text = rlib_html_end_text;
 	OUTPUT(r)->rlib_init_output = rlib_html_init_output;
 	OUTPUT(r)->rlib_start_report = rlib_html_start_report;
 	OUTPUT(r)->rlib_end_report = rlib_html_end_report;
-	OUTPUT(r)->rlib_begin_text = rlib_html_begin_text;
 	OUTPUT(r)->rlib_finalize_private = rlib_html_finalize_private;
 	OUTPUT(r)->rlib_spool_private = rlib_html_spool_private;
 	OUTPUT(r)->rlib_start_line = rlib_html_start_line;

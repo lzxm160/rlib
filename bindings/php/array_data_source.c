@@ -96,6 +96,7 @@ static gchar * rlib_php_array_get_field_value_as_string(gpointer input_ptr, gpoi
 	int which_field = (int)field_ptr -1;
 	if(result->rows <= 1)
 		return "";
+
 	return result->data[(result->current_row*result->cols)+which_field];
 }
 
@@ -144,7 +145,6 @@ void * php_array_new_result_from_query(gpointer input_ptr, gchar *query) {
 	total_size = result->rows*result->cols*sizeof(char *);
 	result->data = emalloc(total_size);
 
-	
 	zend_hash_internal_pointer_reset_ex(ht1, &pos1);
 	while(1) {
 		zend_hash_get_current_data_ex(ht1, &data, &pos1);

@@ -32,6 +32,7 @@
 struct _private {
 	struct rlib_rgb current_color;
 	CPDFdoc *pdf;
+	gchar text_on;
 	gchar *buffer;
 	gint length;
 };
@@ -42,16 +43,34 @@ static gfloat rlib_pdf_get_string_width(rlib *r, gchar *text) {
 }
 
 
-static void rlib_pdf_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *t, gint backwards, gint col) {
+void rlib_pdf_turn_text_off(rlib *r) {
+	if(OUTPUT_PRIVATE(r)->text_on == TRUE) {
+		cpdf_endText(OUTPUT_PRIVATE(r)->pdf);
+		OUTPUT_PRIVATE(r)->text_on = FALSE;
+	}
+}
+
+void rlib_pdf_turn_text_on(rlib *r) {
+	if(OUTPUT_PRIVATE(r)->text_on == FALSE) {
+		cpdf_beginText(OUTPUT_PRIVATE(r)->pdf, 0);
+		OUTPUT_PRIVATE(r)->text_on = TRUE;
+	}
+}
+
+static void rlib_pdf_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *text, gint backwards, gint col) {
 	CPDFdoc *pdf = OUTPUT_PRIVATE(r)->pdf;
+
 #if USEPDFLOCALE
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
+
+		rlib_pdf_turn_text_on(r);
+
 #if DISABLE_UTF8
-		cpdf_text(pdf, left_origin, bottom_origin, 0, t);
+		cpdf_text(pdf, left_origin, bottom_origin, 0, text);
 #else
 	if (!r->current_output_encoder || rlib_char_encoder_isUTF8(r->current_output_encoder)) {
-		gchar *tmp = t;
+		gchar *tmp = text;
 		gchar *buf;
 		glong itemsread;
 		glong itemswritten;
@@ -65,7 +84,7 @@ static void rlib_pdf_print_text(rlib *r, gfloat left_origin, gfloat bottom_origi
 		cpdf_text(pdf, left_origin, bottom_origin, 0, buf);
 		g_free(buf);
 		cpdf_hexStringMode(pdf, NO);
-		r_warning("Using UTF8 output to PDF is not fully supported by CLIBPDF"); 
+		r_warning("Using UTF8 output to PDF is not fully supported by CLIBPDF\n"); 
 	} else {
 		cpdf_text(pdf, left_origin, bottom_origin, 0, t);
 	}
@@ -98,12 +117,11 @@ static void rlib_pdf_drawbox(rlib *r, gfloat left_origin, gfloat bottom_origin, 
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
 	if(!(color->r == 1.0 && color->g == 1.0 && color->b == 1.0)) {
-		cpdf_endText(OUTPUT_PRIVATE(r)->pdf);
+		rlib_pdf_turn_text_off(r);
 		//the -.002 seems to get around decimal percision problems.. but should investigate this a big further	
 		OUTPUT(r)->rlib_set_bg_color(r, color->r, color->g, color->b);
 		cpdf_rect(OUTPUT_PRIVATE(r)->pdf, left_origin, bottom_origin, how_long, how_tall-.002);
 		cpdf_fill(OUTPUT_PRIVATE(r)->pdf);
-		cpdf_beginText(OUTPUT_PRIVATE(r)->pdf, 0);	
 		OUTPUT(r)->rlib_set_bg_color(r, 0, 0, 0);
 	}
 #if USEPDFLOCALE
@@ -126,12 +144,12 @@ struct rlib_rgb *color, gfloat indent, gfloat length) {
 /*
 	What was the guy from ClibPDF Smoking....cpdf_SetActionURL origin is bottom right... /me sighs
 */
-static void rlib_pdf_boxurl_start(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url) {
+static void rlib_pdf_boxurl_start(rlib *r, struct rlib_part *part, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url) {
 #if USEPDFLOCALE
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
-	if(r->landscape) {
-		gfloat new_left = get_page_width(r)-left_origin-how_long;
+	if(part->landscape) {
+		gfloat new_left = rlib_layout_get_page_width(r, part)-left_origin-how_long;
 		gfloat new_bottom = bottom_origin;
 		cpdf_setActionURL(OUTPUT_PRIVATE(r)->pdf, new_bottom, new_left, new_bottom+how_tall, new_left+how_long, url, NULL);
 	} else  {
@@ -154,10 +172,9 @@ gfloat nheight) {
 	gint realtype=JPEG_IMG;
 	if(!strcmp("gif", type))
 		realtype = GIF_IMG;
-	cpdf_endText(OUTPUT_PRIVATE(r)->pdf);
+	rlib_pdf_turn_text_off(r);
 	cpdf_convertUpathToOS(pathbuf, nname);
 	cpdf_importImage(OUTPUT_PRIVATE(r)->pdf, pathbuf, realtype, left_origin, bottom_origin, 0.0, &nwidth, &nheight, &xscale, &yscale, 1);
-	cpdf_beginText(OUTPUT_PRIVATE(r)->pdf, 0);	
 	OUTPUT(r)->rlib_set_bg_color(r, 0, 0, 0);
 #if USEPDFLOCALE
 	setlocale(LC_NUMERIC, tlocale);
@@ -171,20 +188,21 @@ static void rlib_pdf_set_font_point(rlib *r, gint point) {
 	char *encoding;
 	char *fontname;
 	int result;
+
+	if(point == 0)
+		point = 8;
+
 	if(r->current_font_point != point) {
 		if (*r->pdf_fontdir1) { //if one set other is guaranteed to be set
 			cpdf_setFontDirectories(OUTPUT_PRIVATE(r)->pdf, r->pdf_fontdir1, r->pdf_fontdir2);
-//r_debug("Using font directories %s, %s", r->pdf_fontdir1, r->pdf_fontdir1);
 		}
 		encoding = (*r->pdf_encoding)? r->pdf_encoding : NULL;
 		fontname = (*r->pdf_fontname)? r->pdf_fontname : "Courier";
-//r_debug("Fontname %s, encoding %s", fontname, encoding);
 #if DISABLE_UTF8
 		result = cpdf_setFont(OUTPUT_PRIVATE(r)->pdf, fontname, "WinAnsiEncoding", point);
 #else
 		result = cpdf_setFont(OUTPUT_PRIVATE(r)->pdf, fontname, encoding, point);
 #endif
-//r_debug("cpdf_setFont returned %d for f:%s, e:%s", result, fontname, encoding);
 		r->current_font_point = point;
 	}
 #if USEPDFLOCALE
@@ -192,40 +210,38 @@ static void rlib_pdf_set_font_point(rlib *r, gint point) {
 #endif
 }
 	
-static void rlib_pdf_start_new_page(rlib *r) {
+static void rlib_pdf_start_new_page(rlib *r, struct rlib_part *part) {
 #if USEPDFLOCALE
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
-	struct rlib_report *report = r->reports[r->current_report];
 	gint i=0;
-	gint pages_accross = report->pages_accross;
+	gint pages_accross = part->pages_accross;
 	gint page_number = r->current_page_number * pages_accross;
 	gchar paper_type[40];
-	sprintf(paper_type, "0 0 %ld %ld", report->paper->width, report->paper->height);
+	sprintf(paper_type, "0 0 %ld %ld", part->paper->width, part->paper->height);
 	for(i=0;i<pages_accross;i++) {
-		if(report->orientation == RLIB_ORIENTATION_LANDSCAPE) {
-			report->position_bottom[i] = (report->paper->width/RLIB_PDF_DPI)-GET_MARGIN(r)->bottom_margin;
+		if(part->orientation == RLIB_ORIENTATION_LANDSCAPE) {
+			part->position_bottom[i] = (part->paper->width/RLIB_PDF_DPI)-part->bottom_margin;
 			cpdf_pageInit(OUTPUT_PRIVATE(r)->pdf, page_number+i, LANDSCAPE, paper_type, paper_type); 
-			cpdf_translate(OUTPUT_PRIVATE(r)->pdf, 0.0, (report->paper->height/RLIB_PDF_DPI));	
+			cpdf_translate(OUTPUT_PRIVATE(r)->pdf, 0.0, (part->paper->height/RLIB_PDF_DPI));	
 		   cpdf_rotate(OUTPUT_PRIVATE(r)->pdf, -90.0);
-			r->landscape = 1;
+			part->landscape = 1;
 		} else {
-			report->position_bottom[i] = (report->paper->height/RLIB_PDF_DPI)-GET_MARGIN(r)->bottom_margin;
+			part->position_bottom[i] = (part->paper->height/RLIB_PDF_DPI)-part->bottom_margin;
 			cpdf_pageInit(OUTPUT_PRIVATE(r)->pdf, page_number+i, PORTRAIT, paper_type, paper_type); 
-			r->landscape = 0;
+			part->landscape = 0;
 		}
-		cpdf_beginText(OUTPUT_PRIVATE(r)->pdf, 0);	
 	}
 #if USEPDFLOCALE
 	setlocale(LC_NUMERIC, tlocale);
 #endif
 }
 
-static void rlib_pdf_set_working_page(rlib *r, gint page) {
+static void rlib_pdf_set_working_page(rlib *r, struct rlib_part *part, gint page) {
 #if USEPDFLOCALE
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
-	gint pages_accross = r->reports[r->current_report]->pages_accross;
+	gint pages_accross = part->pages_accross;
 	gint page_number = r->current_page_number * pages_accross;
 	page--;
 	cpdf_setCurrentPage(OUTPUT_PRIVATE(r)->pdf, page_number + page);
@@ -235,21 +251,15 @@ static void rlib_pdf_set_working_page(rlib *r, gint page) {
 	setlocale(LC_NUMERIC, tlocale);
 }
 
-static void rlib_pdf_end_text(rlib *r) {
+static void rlib_pdf_set_raw_page(rlib *r, struct rlib_part *part, gint page) {
 #if USEPDFLOCALE
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
-	gint i=0;
-	gint pages_accross = r->reports[r->current_report]->pages_accross;
-	gint page_number = r->current_page_number * pages_accross;
-
-	for(i=0;i<pages_accross;i++) {
-		cpdf_setCurrentPage(OUTPUT_PRIVATE(r)->pdf, page_number+i);
-		cpdf_endText(OUTPUT_PRIVATE(r)->pdf);
-	}
+	cpdf_setCurrentPage(OUTPUT_PRIVATE(r)->pdf, page);
 #if USEPDFLOCALE
 	setlocale(LC_NUMERIC, tlocale);
 #endif
+	setlocale(LC_NUMERIC, tlocale);
 }
 
 
@@ -258,9 +268,9 @@ static void rlib_pdf_init_end_page(rlib *r) {
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
 //TODO: Why is this needed?
+
 	if(r->start_of_new_report == TRUE) {
 		r->start_of_new_report = FALSE;
-		cpdf_endText(OUTPUT_PRIVATE(r)->pdf);
 	}
 #if USEPDFLOCALE
 	setlocale(LC_NUMERIC, tlocale);
@@ -274,22 +284,14 @@ static void rlib_pdf_init_output(rlib *r) {
 	CPDFdoc *pdf;
 	CPDFdocLimits dL = {500, -1, -1, 10000, 10000};
 
-	r_debug("CPDF version %s", cpdf_version() );
+	r_debug("CPDF version %s\n", cpdf_version() );
+
 	pdf = OUTPUT_PRIVATE(r)->pdf = cpdf_open(0, &dL);
 	cpdf_enableCompression(pdf, NO);
 //	cpdf_enableCompression(pdf, YES);
 	cpdf_init(pdf);
+	OUTPUT_PRIVATE(r)->text_on = FALSE;
 	cpdf_setTitle(pdf, "RLIB Report");
-#if USEPDFLOCALE
-	setlocale(LC_NUMERIC, tlocale);
-#endif
-}
-
-static void rlib_pdf_begin_text(rlib *r) {
-#if USEPDFLOCALE
-	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
-#endif
-	cpdf_beginText(OUTPUT_PRIVATE(r)->pdf, 0);	
 #if USEPDFLOCALE
 	setlocale(LC_NUMERIC, tlocale);
 #endif
@@ -300,6 +302,7 @@ static void rlib_pdf_finalize_private(rlib *r) {
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
 	int length;
+	rlib_pdf_turn_text_off(r);
 	cpdf_finalizeAll(OUTPUT_PRIVATE(r)->pdf);
 	OUTPUT_PRIVATE(r)->buffer = cpdf_getBufferForPDF(OUTPUT_PRIVATE(r)->pdf, &length);
 	OUTPUT_PRIVATE(r)->length = length;
@@ -319,14 +322,13 @@ static void rlib_pdf_spool_private(rlib *r) {
 #endif
 }
 
-static void rlib_pdf_end_page(rlib *r) {
+static void rlib_pdf_end_page(rlib *r, struct rlib_part *part, struct rlib_report *report) {
 #if USEPDFLOCALE
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
-	OUTPUT(r)->rlib_end_text(r);
+	rlib_pdf_turn_text_off(r);
 	r->current_page_number++;
 	r->current_line_number = 1;
-	rlib_init_page(r, FALSE);
 #if USEPDFLOCALE
 	setlocale(LC_NUMERIC, tlocale);
 #endif
@@ -356,12 +358,12 @@ static void rlib_pdf_end_output_section(rlib *r) {}
 static void rlib_pdf_start_output_section(rlib *r) {}
 static void rlib_pdf_boxurl_end(rlib *r) {}
 static void rlib_pdf_draw_cell_background_end(rlib *r) {}
-static void rlib_pdf_start_report(rlib *r) {}
-static void rlib_pdf_end_report(rlib *r) {}
+static void rlib_pdf_start_report(rlib *r, struct rlib_part *part) {}
+static void rlib_pdf_end_report(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 
 void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r) = g_malloc(sizeof(struct output_filter));
-	OUTPUT_PRIVATE(r) = g_malloc(sizeof(struct _private));
+	r->o->private = g_malloc(sizeof(struct _private));
 	memset(OUTPUT_PRIVATE(r), 0, sizeof(struct _private));
 
 	OUTPUT(r)->do_align = TRUE;
@@ -382,16 +384,15 @@ void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r)->rlib_start_new_page = rlib_pdf_start_new_page;
 	OUTPUT(r)->rlib_end_page = rlib_pdf_end_page;
 	OUTPUT(r)->rlib_init_end_page = rlib_pdf_init_end_page;
-	OUTPUT(r)->rlib_end_text = rlib_pdf_end_text;
 	OUTPUT(r)->rlib_init_output = rlib_pdf_init_output;
 	OUTPUT(r)->rlib_start_report = rlib_pdf_start_report;
 	OUTPUT(r)->rlib_end_report = rlib_pdf_end_report;
-	OUTPUT(r)->rlib_begin_text = rlib_pdf_begin_text;
 	OUTPUT(r)->rlib_finalize_private = rlib_pdf_finalize_private;
 	OUTPUT(r)->rlib_spool_private = rlib_pdf_spool_private;
 	OUTPUT(r)->rlib_start_line = rlib_pdf_stub_line;
 	OUTPUT(r)->rlib_end_line = rlib_pdf_stub_line;
 	OUTPUT(r)->rlib_set_working_page = rlib_pdf_set_working_page;
+	OUTPUT(r)->rlib_set_raw_page = rlib_pdf_set_raw_page;
 	OUTPUT(r)->rlib_is_single_page = rlib_pdf_is_single_page;
 	OUTPUT(r)->rlib_start_output_section = rlib_pdf_start_output_section;
 	OUTPUT(r)->rlib_end_output_section = rlib_pdf_end_output_section;

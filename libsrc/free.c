@@ -94,7 +94,7 @@ static void rlib_field_free_pcode(rlib *r, struct rlib_report_field *rf) {
 }
 
 static void rlib_free_fields(rlib *r, struct rlib_report_output_array *roa) {
-	struct rlib_report_element *e, *save;
+	struct rlib_element *e, *save;
 	gint j;
 	
 	if(roa == NULL)
@@ -109,9 +109,9 @@ static void rlib_free_fields(rlib *r, struct rlib_report_output_array *roa) {
 			free_pcode(rl->suppress_code);
 			free_pcode(rl->font_size_code);
 			for(; e != NULL; e=e->next) {
-				if(e->type == REPORT_ELEMENT_FIELD) {
+				if(e->type == RLIB_ELEMENT_FIELD) {
 					rlib_field_free_pcode(r, ((struct rlib_report_field *)e->data));
-				} else if(e->type == REPORT_ELEMENT_LITERAL) {
+				} else if(e->type == RLIB_ELEMENT_LITERAL) {
 					rlib_text_free_pcode(r, ((struct rlib_report_literal *)e->data));
 				}
 			}
@@ -137,9 +137,9 @@ static void rlib_break_free_pcode(rlib *r, struct rlib_break_fields *bf) {
 	free_pcode(bf->code);
 }
 
-static void rlib_free_output(rlib *r, struct rlib_report_element *e) {
+static void rlib_free_output(rlib *r, struct rlib_element *e) {
 	struct rlib_report_output_array *roa;
-	struct rlib_report_element *save;
+	struct rlib_element *save;
 	while(e != NULL) {
 		save = e;
 		roa = e->data;
@@ -149,36 +149,34 @@ static void rlib_free_output(rlib *r, struct rlib_report_element *e) {
 	}	
 }
 
-void rlib_free_report(rlib *r, gint which) {
-	struct rlib_report *thisreport = r->reports[which];
-	struct rlib_report_element *e, *prev;
+void rlib_free_report(rlib *r, struct rlib_report *report) {
+	struct rlib_element *e, *prev;
 
-//rlogit("address being freed is: %08lx", (long) thisreport->font_size_code);
-	free_pcode(thisreport->font_size_code);
-	free_pcode(thisreport->orientation_code);
-	free_pcode(thisreport->top_margin_code);
-	free_pcode(thisreport->left_margin_code);
-	free_pcode(thisreport->bottom_margin_code);
-	free_pcode(thisreport->paper_type_code);
-	free_pcode(thisreport->pages_across_code);
-	free_pcode(thisreport->suppress_page_header_first_page_code);
+//rlogit("address being freed is: %08lx", (long) report->font_size_code);
+	free_pcode(report->font_size_code);
+	free_pcode(report->orientation_code);
+	free_pcode(report->top_margin_code);
+	free_pcode(report->left_margin_code);
+	free_pcode(report->bottom_margin_code);
+	free_pcode(report->pages_across_code);
+	free_pcode(report->suppress_page_header_first_page_code);
 	
-	rlib_free_output(r, r->reports[which]->report_header);
-	rlib_free_output(r, r->reports[which]->page_header);
-	rlib_free_output(r, r->reports[which]->page_footer);
-	rlib_free_output(r, r->reports[which]->report_footer);
-	rlib_free_output(r, r->reports[which]->detail.fields);
-	rlib_free_output(r, r->reports[which]->detail.textlines);
-	rlib_free_output(r, r->reports[which]->alternate.nodata);
+	rlib_free_output(r, report->report_header);
+	rlib_free_output(r, report->page_header);
+	rlib_free_output(r, report->page_footer);
+	rlib_free_output(r, report->report_footer);
+	rlib_free_output(r, report->detail.fields);
+	rlib_free_output(r, report->detail.textlines);
+	rlib_free_output(r, report->alternate.nodata);
 
-	g_free(r->reports[r->current_report]->position_top);
-	g_free(r->reports[r->current_report]->position_bottom);
-	g_free(r->reports[r->current_report]->bottom_size);
+	g_free(report->position_top);
+	g_free(report->position_bottom);
+	g_free(report->bottom_size);
 	
-	if(r->reports[which]->breaks != NULL) {
-		for(e = r->reports[which]->breaks; e != NULL; e=e->next) {
+	if(report->breaks != NULL) {
+		for(e = report->breaks; e != NULL; e=e->next) {
 			struct rlib_report_break *rb = e->data;
-			struct rlib_report_element *be;
+			struct rlib_element *be;
 			rlib_free_output(r, rb->header);
 			rlib_free_output(r, rb->footer);
 			for(be = rb->fields; be != NULL; be=be->next) {
@@ -202,9 +200,9 @@ void rlib_free_report(rlib *r, gint which) {
 			g_free(rb);
 		}
 
-		while(r->reports[which]->breaks) {
+		while(report->breaks) {
 			prev = NULL;
-			for(e = r->reports[which]->breaks; e->next != NULL; e=e->next) {
+			for(e = report->breaks; e->next != NULL; e=e->next) {
 				prev = e;
 			}
 			g_free(e);
@@ -217,8 +215,8 @@ void rlib_free_report(rlib *r, gint which) {
 	}	
 
 
-	if(r->reports[which]->variables != NULL) {
-		for(e = r->reports[which]->variables; e != NULL; e=e->next) {
+	if(report->variables != NULL) {
+		for(e = report->variables; e != NULL; e=e->next) {
 			struct rlib_report_variable *rv = e->data;
 			free_pcode(rv->code);
 
@@ -238,9 +236,9 @@ void rlib_free_report(rlib *r, gint which) {
 			g_free(rv);
 		}
 		
-		while(r->reports[which]->variables) {
+		while(report->variables) {
 			prev = NULL;
-			for(e = r->reports[which]->variables; e->next != NULL; e=e->next) {
+			for(e = report->variables; e->next != NULL; e=e->next) {
 				prev = e;
 			}
 			g_free(e);
@@ -255,7 +253,7 @@ void rlib_free_report(rlib *r, gint which) {
 }
 
 void rlib_free_tree(rlib *r) {
-	int i;
+/*	int i;
 	for(i=0;i<r->reports_count;i++) {
 		rlib_free_report(r, i);
 		g_free(r->reportstorun[i].name);
@@ -267,6 +265,7 @@ void rlib_free_tree(rlib *r) {
 		g_free(r->reports[i]);
 		r->reports[i] = NULL;
 	}
+*/
 }
 
 void free_results(rlib *r) {

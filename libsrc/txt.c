@@ -67,14 +67,12 @@ static void rlib_txt_print_text(rlib *r, gfloat left_origin, gfloat bottom_origi
 	print_text(r, text, backwards);
 }
 
-static void rlib_txt_start_new_page(rlib *r) {
-	r->reports[r->current_report]->position_bottom[0] = 11-GET_MARGIN(r)->bottom_margin;
+static void rlib_txt_start_new_page(rlib *r, struct rlib_part *part) {
+	part->position_bottom[0] = 11-part->bottom_margin;
 }
 
 static void rlib_txt_init_end_page(rlib *r) {}
-static void rlib_txt_end_text(rlib *r) {}
 static void rlib_txt_init_output(rlib *r) {}
-static void rlib_txt_begin_text(rlib *r) {}
 static void rlib_txt_finalize_private(rlib *r) {}
 
 static void rlib_txt_spool_private(rlib *r) {
@@ -85,8 +83,8 @@ static void rlib_txt_end_line(rlib *r, int backwards) {
 	print_text(r, "\n", backwards);
 }
 
-static void rlib_txt_start_report(rlib *r) {
-	gint pages_accross = r->reports[r->current_report]->pages_accross;
+static void rlib_txt_start_report(rlib *r, struct rlib_part *part) {
+	gint pages_accross = part->pages_accross;
 	gint i;
 
 	OUTPUT_PRIVATE(r)->bottom = g_malloc(sizeof(struct _data) * pages_accross);
@@ -101,9 +99,9 @@ static void rlib_txt_start_report(rlib *r) {
 	}	
 }
 
-static void rlib_txt_end_report(rlib *r) {
+static void rlib_txt_end_report(rlib *r, struct rlib_part *part, struct rlib_report *report) {
 	gint i;
-	gint pages_accross = r->reports[r->current_report]->pages_accross;
+	gint pages_accross = report->pages_accross;
 	gint sofar = OUTPUT_PRIVATE(r)->length;
 
 	
@@ -124,10 +122,9 @@ static void rlib_txt_end_report(rlib *r) {
 
 }
 
-static void rlib_txt_end_page(rlib *r) {
+static void rlib_txt_end_page(rlib *r, struct rlib_part *part, struct rlib_report *report) {
 	r->current_page_number++;
 	r->current_line_number = 1;
-	rlib_init_page(r, FALSE);
 }
 
 static gint rlib_txt_is_single_page(rlib *r) {
@@ -149,7 +146,7 @@ static long rlib_txt_get_output_length(rlib *r) {
 	return OUTPUT_PRIVATE(r)->length;
 }
 
-static void rlib_txt_set_working_page(rlib *r, int page) {
+static void rlib_txt_set_working_page(rlib *r, struct rlib_part *part, int page) {
 	OUTPUT_PRIVATE(r)->page_number = page-1;
 }
 
@@ -160,7 +157,7 @@ struct rlib_rgb *color, gfloat indent, gfloat length) {}
 static void rlib_txt_draw_cell_background_start(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
 struct rlib_rgb *color) {}
 static void rlib_txt_draw_cell_background_end(rlib *r) {}
-static void rlib_txt_boxurl_start(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url) {}
+static void rlib_txt_boxurl_start(rlib *r, struct rlib_part * part, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url) {}
 static void rlib_txt_boxurl_end(rlib *r) {}
 static void rlib_txt_drawimage(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *nname, gchar *type, gfloat nwidth, gfloat nheight) {}
 static void rlib_txt_set_font_point(rlib *r, gint point) {}
@@ -170,7 +167,7 @@ static void rlib_txt_end_output_section(rlib *r) {}
 
 void rlib_txt_new_output_filter(rlib *r) {
 	OUTPUT(r) = g_malloc(sizeof(struct output_filter));
-	OUTPUT_PRIVATE(r) = g_malloc(sizeof(struct _private));
+	r->o->private = g_malloc(sizeof(struct _private));
 	memset(OUTPUT_PRIVATE(r), 0, sizeof(struct _private));
 	
 	OUTPUT(r)->do_align = TRUE;
@@ -191,11 +188,9 @@ void rlib_txt_new_output_filter(rlib *r) {
 	OUTPUT(r)->rlib_start_new_page = rlib_txt_start_new_page;
 	OUTPUT(r)->rlib_end_page = rlib_txt_end_page;	
 	OUTPUT(r)->rlib_init_end_page = rlib_txt_init_end_page;
-	OUTPUT(r)->rlib_end_text = rlib_txt_end_text;
 	OUTPUT(r)->rlib_init_output = rlib_txt_init_output;
 	OUTPUT(r)->rlib_start_report = rlib_txt_start_report;
 	OUTPUT(r)->rlib_end_report = rlib_txt_end_report;
-	OUTPUT(r)->rlib_begin_text = rlib_txt_begin_text;
 	OUTPUT(r)->rlib_finalize_private = rlib_txt_finalize_private;
 	OUTPUT(r)->rlib_spool_private = rlib_txt_spool_private;
 	OUTPUT(r)->rlib_start_line = rlib_txt_start_line;
