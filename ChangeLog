@@ -1,10 +1,17 @@
 2005-03-18  Bob Doan  <bdoan@sicompos.com>
-	* inputs/mysql/mysql.c: Shannon Weyrick <weyrick@roadsend.com>: get error messages from data source
+
+	reviewed by: <delete if not using a buddy>
+
+	* libsrc/graphing.c: (rlib_graph_label_y_axis):
+
+2005-03-18  Shannon Weyrick <weyrick@roadsend.com>
+	* inputs/mysql/mysql.c: get error messages from data source
 	* inputs/odbc/odbc.c: likewise
 	* inputs/postgre/postgre.c: likewise
 	* libsrc/api.c: likewise
-	* libsrc/rlib_input.h: likewise
-	
+	* libsrc/rlib_input.h: likewise	
+
+2005-03-18  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/graphing.c: Axis labels are MUCH better!
 	* src/examples/php/graph.php: likewise
 

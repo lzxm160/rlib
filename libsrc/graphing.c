@@ -139,22 +139,37 @@ gint determine_graph_type(gchar *type, gchar *subtype) {
 	return RLIB_GRAPH_TYPE_ROW_NORMAL;
 }
 
+/*
+	This is beyond evil but it seems to works.  Someone who understands floats better should really do this
+*/
 static void rlib_graph_label_y_axis(rlib *r, gint side, gboolean for_real, gint y_ticks, gdouble y_min, gdouble y_max, gdouble y_origin) {
 	gint i,j,max=0;
 	gchar format[20];
 	gint max_slen = 0;
 	for(i=0;i<y_ticks+1;i++) {
 		gdouble val = ABS(y_min + (((y_max-y_min)/y_ticks)*i));
-		for(j=6;j>0;j--) {
-			gdouble num = pow(10,j);
-			if((gint)(val * num) % 10 > 0) {
-				if(j > max)
-					max = j;
-					break;
-			}		
+		gchar temp[50];
+		gint slen,count=0, found_dot=FALSE;
+		sprintf(temp, "%.06f", val);
+		slen = strlen(temp);
+		for(j=slen-1;j>0;j--) {
+			if(temp[j] == '0')
+				temp[j] = 0;
+			else
+				break;
 		}
+		slen = strlen(temp);
+		for(j=0;j<slen;j++) {
+			if(found_dot)
+				count++;
+			if(temp[j] == '.')
+				found_dot = TRUE;
+		}
+		
+		if(count > max)
+			max = count;
 	}
-	
+		
 	sprintf(format, "%%.0%df", max);
 
 	for(i=0;i<y_ticks+1;i++) {
