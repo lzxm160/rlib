@@ -37,7 +37,7 @@
 
 #define RLIB_WEB_CONTENT_TYPE_HTML "Content-Type: text/html; charset=%s\n"
 #define RLIB_WEB_CONTENT_TYPE_TEXT "Content-Type: text/plain; charset=%s\n"
-#define RLIB_WEB_CONTENT_TYPE_PDF "Content-Type: application/pdf; \n"
+#define RLIB_WEB_CONTENT_TYPE_PDF "Content-Type: application/pdf\n"
 #define RLIB_WEB_CONTENT_TYPE_CSV "Content-type: application/octet-stream\nContent-Disposition: attachment; filename=report.csv\n"
 
 #define RLIB_NAVIGATE_FIRST 1
@@ -601,6 +601,7 @@ void rlib_init_variables(rlib *r);
 gint rlib_end_page_if_line_wont_fit(rlib *r, struct report_element *e) ;
 gfloat get_outputs_size(rlib *r, struct report_element *e, gint page);
 void rlib_process_variables(rlib *r);
+void rlib_process_expression_variables(rlib *r);
 void rlib_init_page(rlib *r, gchar report_header);
 gint make_report(rlib *r);
 gint rlib_finalize(rlib *r);

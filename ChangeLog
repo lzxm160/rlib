@@ -1,3 +1,11 @@
+2004-07-16  Chet Heilman <cheilman@sicompos.com>
+	* libsrc/breaks.c: (rlib_break_all_below_in_reverse_order):
+		The 'Steve Tilden' fix (not tested).
+	* libsrc/reportgen.c: (rlib_process_expression_variables):
+		same.
+	* libsrc/rlib.h:
+		Remove ';' from content type to make IE happy.
+
 2004-07-15  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/pdf.c: fix compile warnings w/ disable utf8
 	* libsrc/datetime.c: fix problem w/ gcc trying to be smart about double assigning lvalues

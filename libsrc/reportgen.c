@@ -1112,6 +1112,30 @@ void rlib_process_variables(rlib *r) {
 	
 }
 
+
+void rlib_process_expression_variables(rlib *r) {
+	struct report_element *e;
+	for(e = r->reports[r->current_report]->variables; e != NULL; e=e->next) {
+		struct report_variable *rv = e->data;
+		struct rlib_value *count = &RLIB_VARIABLE_CA(rv)->count;
+		struct rlib_value *amount = &RLIB_VARIABLE_CA(rv)->amount;
+		struct rlib_value execute_result, *er = &execute_result;
+		if(rv->code != NULL)
+			 rlib_execute_pcode(r, &execute_result, rv->code, NULL);
+		if(rv->type == REPORT_VARIABLE_EXPRESSION) {
+			if(RLIB_VALUE_IS_NUMBER(er)) {
+				rlib_value_free(amount);
+				rlib_value_new_number(amount, RLIB_VALUE_GET_AS_NUMBER(er));
+			} else if (RLIB_VALUE_IS_STRING(er)) {
+				rlib_value_free(amount);
+				rlib_value_new_string(amount, RLIB_VALUE_GET_AS_STRING(er));
+			} else
+				rlogit("rlib_process_variables EXPECTED TYPE NUMBER OR STRING FOR REPORT_VARIABLE_EXPRESSION\n");
+		}
+	}
+	
+}
+
 static void rlib_evaluate_report_attributes(rlib *r) {
 	struct rlib_report *thisreport = r->reports[r->current_report];
 	gint t;

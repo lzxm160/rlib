@@ -209,7 +209,7 @@ void rlib_break_all_below_in_reverse_order(rlib *r, struct report_element *e) {
 		}
 
 		rlib_reset_variables_on_break(r, rb->name);
-
+		rlib_process_expression_variables(r);
 		if(rb->newpage) {
 			do_endpage = TRUE;
 		}
