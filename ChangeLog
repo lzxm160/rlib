@@ -1,4 +1,7 @@
 2004-01-20  Chet Heilman  <cheilman@sicompos.com>
+	* libsrc/pcode.c: Change name of 'substring' to 'mid'.
+
+2004-01-20  Chet Heilman  <cheilman@sicompos.com>
 	* doc/symboltable.sgm: Update documentation for new functions.
 
 2004-01-19  Chet Heilman  <cheilman@sicompos.com>

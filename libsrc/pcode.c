@@ -80,7 +80,7 @@ struct rlib_pcode_operator rlib_pcode_verbs[] = {
       {"lower(", 	6, 0,	TRUE,	OP_LOWER,  	TRUE, 	rlib_pcode_operator_lower},
 		{"left(", 	5, 0, 	TRUE, 	OP_LEFT, 	TRUE, 	rlib_pcode_operator_left},
 		{"right(", 	6, 0, 	TRUE, 	OP_LEFT, 	TRUE, 	rlib_pcode_operator_right},
-		{"substring(", 	10, 0, 	TRUE, 	OP_LEFT, 	TRUE, 	rlib_pcode_operator_substring},
+		{"mid(", 	4, 0, 	TRUE, 	OP_LEFT, 	TRUE, 	rlib_pcode_operator_substring},
       {"proper(", 7, 0,	TRUE,	OP_PROPER, 	TRUE,		rlib_pcode_operator_proper},
       {"stodt(", 	6, 0,	TRUE,	OP_STODS,  	TRUE, 	rlib_pcode_operator_stods},
       {"isnull(",	7, 0,	TRUE,	OP_ISNULL, 	TRUE, 	rlib_pcode_operator_isnull},
