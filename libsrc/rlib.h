@@ -915,6 +915,8 @@ gint rlib_layout_end_page(rlib *r, struct rlib_part *part, struct rlib_report *r
 void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat left_margin_offset, gfloat top_margin_offset);
 
 /***** PROTOTYPES: axis.c ******************************************************/
-void rlib_graph_find_y_range(rlib *r, gdouble a, gdouble b, gdouble *y_min, gdouble *y_max, gint graph_type);
-gint rlib_graph_num_ticks(rlib *r, gdouble a, gdouble b);
+//void rlib_graph_find_y_range(rlib *r, gdouble a, gdouble b, gdouble *y_min, gdouble *y_max, gint graph_type);
+//gint rlib_graph_num_ticks(rlib *r, gdouble a, gdouble b);
+int adjust_limits(gdouble  dataMin, gdouble dataMax, gint denyMinEqualsAdjMin, gint minTMs, gint maxTMs, 
+	gint* numTms, gdouble* tmi, gdouble* adjMin, gdouble* adjMax);
 

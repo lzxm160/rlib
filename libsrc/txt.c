@@ -171,6 +171,29 @@ static void rlib_txt_end_bold(rlib *r) {}
 static void rlib_txt_start_italics(rlib *r) {}
 static void rlib_txt_end_italics(rlib *r) {}
 
+static void txt_graph_start(rlib *r, gfloat left, gfloat top, gfloat width, gfloat height, gboolean x_axis_labels_are_under_tick) {}
+static void txt_graph_set_limits(rlib *r, gchar side, gdouble min, gdouble max, gdouble origin) {}
+static void txt_graph_title(rlib *r, gchar *title) {}
+static void txt_graph_x_axis_title(rlib *r, gchar *title) {}
+static void txt_graph_y_axis_title(rlib *r, gchar side, gchar *title) {}
+static void txt_graph_do_grid(rlib *r, gboolean just_a_box) {}
+static void txt_graph_tick_x(rlib *r) {}
+static void txt_graph_set_x_iterations(rlib *r, gint iterations) {}
+static void txt_graph_hint_label_x(rlib *r, gchar *label) {}
+static void txt_graph_label_x(rlib *r, gint iteration, gchar *label) {}
+static void txt_graph_tick_y(rlib *r, gint iterations) {}
+static void txt_graph_label_y(rlib *r, gchar side, gint iteration, gchar *label, gboolean false_x) {}
+static void txt_graph_hint_label_y(rlib *r, gchar side, gchar *label) {}
+static void txt_graph_set_data_plot_count(rlib *r, gint count) {}
+static void txt_graph_plot_bar(rlib *r, gchar side, gint iteration, gint plot, gfloat height_percent, struct rlib_rgb *color,gfloat last_height, gboolean divide_iterations) {}
+static void txt_graph_plot_line(rlib *r, gchar side, gint iteration, gfloat p1_height, gfloat p1_last_height, gfloat p2_height, gfloat p2_last_height, struct rlib_rgb * color) {}
+static void txt_graph_plot_pie(rlib *r, gfloat start, gfloat end, gboolean offset, struct rlib_rgb *color) {}
+static void txt_graph_hint_legend(rlib *r, gchar *label) {}
+static void txt_graph_draw_legend(rlib *r) {}
+static void txt_graph_draw_legend_label(rlib *r, gint iteration, gchar *label, struct rlib_rgb *color) {}
+static void txt_graph_finalize(rlib *r) {}
+static void txt_graph_draw_line(rlib *r, gfloat x, gfloat y, gfloat new_x, gfloat new_y, struct rlib_rgb *color) {}
+
 void rlib_txt_new_output_filter(rlib *r) {
 	OUTPUT(r) = g_malloc(sizeof(struct output_filter));
 	r->o->private = g_malloc(sizeof(struct _private));
@@ -217,6 +240,29 @@ void rlib_txt_new_output_filter(rlib *r) {
 	OUTPUT(r)->end_bold = rlib_txt_end_bold;
 	OUTPUT(r)->start_italics = rlib_txt_start_italics;
 	OUTPUT(r)->end_italics = rlib_txt_end_italics;
+
+	OUTPUT(r)->graph_start = txt_graph_start;
+	OUTPUT(r)->graph_set_limits = txt_graph_set_limits;
+	OUTPUT(r)->graph_title = txt_graph_title;
+	OUTPUT(r)->graph_x_axis_title = txt_graph_x_axis_title;
+	OUTPUT(r)->graph_y_axis_title = txt_graph_y_axis_title;
+	OUTPUT(r)->graph_do_grid = txt_graph_do_grid;
+	OUTPUT(r)->graph_tick_x = txt_graph_tick_x;
+	OUTPUT(r)->graph_set_x_iterations = txt_graph_set_x_iterations;
+	OUTPUT(r)->graph_tick_y = txt_graph_tick_y;
+	OUTPUT(r)->graph_hint_label_x = txt_graph_hint_label_x;
+	OUTPUT(r)->graph_label_x = txt_graph_label_x;
+	OUTPUT(r)->graph_label_y = txt_graph_label_y;
+	OUTPUT(r)->graph_draw_line = txt_graph_draw_line;
+	OUTPUT(r)->graph_plot_bar = txt_graph_plot_bar;
+	OUTPUT(r)->graph_plot_line = txt_graph_plot_line;
+	OUTPUT(r)->graph_plot_pie = txt_graph_plot_pie;
+	OUTPUT(r)->graph_set_data_plot_count = txt_graph_set_data_plot_count;
+	OUTPUT(r)->graph_hint_label_y = txt_graph_hint_label_y;
+	OUTPUT(r)->graph_hint_legend = txt_graph_hint_legend;
+	OUTPUT(r)->graph_draw_legend = txt_graph_draw_legend;
+	OUTPUT(r)->graph_draw_legend_label = txt_graph_draw_legend_label;
+	OUTPUT(r)->graph_finalize = txt_graph_finalize;
 
 	OUTPUT(r)->free = rlib_txt_free;  
 }

@@ -42,7 +42,7 @@ struct rlib_gd {
 
 
 /***** PROTOTYPES: gd.c ********************************************************/
-struct rlib_gd * rlib_gd_new(gint width, gint height);
+struct rlib_gd * rlib_gd_new(gint width, gint height, gchar *image_directory);
 int rlib_gd_free(struct rlib_gd *rgd);
 int rlib_gd_spool(struct rlib_gd *rgd);
 int rlib_gd_text(struct rlib_gd *rgd, char *text, int x, int y, int rotate);

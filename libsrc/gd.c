@@ -29,6 +29,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <sys/time.h>
+ #include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include <glib.h>
 
@@ -36,22 +40,39 @@
 #include "rlib.h"
 #include "rlib_gd.h"
 
+static char *unique_file_name(gchar *buf, gchar *image_directory) {
+	struct timeval tv;
+	gint pid = getpid();
+	static gint counter;
 
+	gettimeofday(&tv, NULL);
+	if(image_directory != NULL)
+		sprintf(buf, "%s/RLIB_IMAGE_FILE_%d_%ld_%ld_%d.png", image_directory, pid, tv.tv_sec, tv.tv_usec, counter++);
+	else
+		sprintf(buf, "RLIB_IMAGE_FILE_%d_%ld_%ld_%d.png", pid, tv.tv_sec, tv.tv_usec, counter++);
+	return buf;
+}
 
 
 #ifdef HAVE_GD
-struct rlib_gd * rlib_gd_new(gint width, gint height) {
+struct rlib_gd * rlib_gd_new(gint width, gint height, gchar *image_directory) {
 	struct rlib_gd *rgd = g_malloc(sizeof(struct rlib_gd));
-	gchar *name_used;
 	char file_name[MAXSTRLEN];
 	int fd;
 	rgd->im =  gdImageCreate(width, height);
-	fd = g_file_open_tmp("RLIB_IMAGE_FILE_XXXXXX", &name_used, NULL);
-	if(fd > 0)
+	
+	while(1) {
+		unique_file_name(file_name, image_directory);
+		fd = open(file_name, O_RDONLY, 0);
+		if(fd < 0) {
+			fd = open(file_name, O_CREAT, 0666);
+			close(fd);
+			break;
+		}
 		close(fd);
-	sprintf(file_name, "%s.png", name_used);
+	}
+
 	rgd->file_name = g_strdup(file_name);
-	g_free(name_used);
 	rgd->white = gdImageColorAllocate(rgd->im, 255, 255, 255);	
 	rgd->black = gdImageColorAllocate(rgd->im, 0, 0, 0);	
 	gdImageFilledRectangle(rgd->im, 0, 0, width, height, rgd->white);
@@ -59,7 +80,6 @@ struct rlib_gd * rlib_gd_new(gint width, gint height) {
 
 	return rgd;
 }
-
 
 int rlib_gd_spool(struct rlib_gd *rgd) {
 	FILE *out;
@@ -147,7 +167,7 @@ int rlib_gd_free(struct rlib_gd *rgd) {
 
 #else
 
-struct rlib_gd * rlib_gd_new(gint width, gint height) {
+struct rlib_gd * rlib_gd_new(gint width, gint height, gchar *image_directory) {
 	return NULL;
 }
 

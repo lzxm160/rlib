@@ -165,6 +165,7 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 	gfloat y_value_try_max[2];
 	gfloat y_value_try_min[2];
 	gfloat col_sum = 0;
+	gdouble tmi;
 	gfloat running_col_sum = 0;
 	gdouble y_min[2] = {0,0};
 	gdouble y_max[2] = {0,0};
@@ -172,7 +173,7 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 	gint data_plot_count = 0;
 	gint plot_count = 0;
 	gint row_count = 0;
-	gint y_ticks = 10;
+	gint y_ticks = 10, fake_y_ticks;
 	gint i = 0;
 	gboolean have_right_side = FALSE;
 	gint side = RLIB_SIDE_LEFT;
@@ -318,11 +319,9 @@ void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfl
 		y_max[RLIB_SIDE_LEFT] = y_max[RLIB_SIDE_RIGHT] = 100;
 		y_ticks = 10;
 	} else {
-		rlib_graph_find_y_range(r, y_min[RLIB_SIDE_LEFT], y_max[RLIB_SIDE_LEFT], &y_min[RLIB_SIDE_LEFT], &y_max[RLIB_SIDE_LEFT], graph_type);
-		y_ticks = rlib_graph_num_ticks(r, y_min[RLIB_SIDE_LEFT], y_max[RLIB_SIDE_LEFT]);
+		adjust_limits(y_min[RLIB_SIDE_LEFT], y_max[RLIB_SIDE_LEFT], is_row_graph(graph_type), 5, 11, &y_ticks, &tmi, &y_min[RLIB_SIDE_LEFT], &y_max[RLIB_SIDE_LEFT]);
 		if(have_right_side)
-			rlib_graph_find_y_range(r, y_min[RLIB_SIDE_RIGHT], y_max[RLIB_SIDE_RIGHT], &y_min[RLIB_SIDE_RIGHT], &y_max[RLIB_SIDE_RIGHT], graph_type);
-
+			adjust_limits(y_min[RLIB_SIDE_RIGHT], y_max[RLIB_SIDE_RIGHT], is_row_graph(graph_type), 2, y_ticks, &fake_y_ticks, &tmi, &y_min[RLIB_SIDE_RIGHT], &y_max[RLIB_SIDE_RIGHT]);
 	}
 
 	rlib_graph_label_y_axis(r, RLIB_SIDE_LEFT, FALSE, y_ticks, y_min[RLIB_SIDE_LEFT], y_max[RLIB_SIDE_LEFT], y_origin[RLIB_SIDE_LEFT]);

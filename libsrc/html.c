@@ -433,7 +433,7 @@ static void html_graph_start(rlib *r, gfloat left, gfloat top, gfloat width, gfl
 	
 	bzero(graph, sizeof(struct _graph));
 	
-	OUTPUT_PRIVATE(r)->rgd = rlib_gd_new(width, height);
+	OUTPUT_PRIVATE(r)->rgd = rlib_gd_new(width, height,  g_hash_table_lookup(r->output_paramaters, "html_image_directory"));
 
 	sprintf(buf, "<img src=\"%s\" width=\"%f\" height=\"%f\">", OUTPUT_PRIVATE(r)->rgd->file_name, width, height);
 	print_text(r, buf, FALSE);

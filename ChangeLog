@@ -1,4 +1,15 @@
 2005-01-12  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/axis.c: new changes from Mike Ibison
+	* libsrc/csv.c: don't crash on csv and txt output w/ graphing
+	* libsrc/gd.c: likewise
+	* libsrc/graphing.c: likewise
+	* libsrc/html.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/rlib_gd.h: likewise
+	* libsrc/txt.c:  likewise
+	* src/examples/php/graph.php: likewise
+
+2005-01-12  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/free.c: add support for double Y axis
 	* libsrc/graphing.c: likewise
 	* libsrc/html.c: likewise
