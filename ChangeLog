@@ -1,3 +1,9 @@
+2003-12-04  Bob Doan  <bdoan@sicompos.com>
+	* configure.in: 1.1.6
+	* libsrc/fxp.c: gcc 3.3.2 compile fixes
+	* libsrc/reportgen.c: likewise
+	* libsrc/util.c: likewise
+
 2003-12-03  Bob Doan  <bdoan@sicompos.com>
 	* NEWS: new news (1.1.5 released)
 	* libsrc/parsexml.c: surpress Hr's

@@ -877,7 +877,6 @@ int make_report(rlib *r) {
 				int page;
 				int output_count = 0;
 				rlib_process_variables(r);
-
 				rlib_handle_break_headers(r);
 			
 				if(rlib_end_page_if_line_wont_fit(r, r->reports[r->current_report]->detail.fields))

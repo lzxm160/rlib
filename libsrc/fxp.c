@@ -46,7 +46,7 @@ long long rlib_fxp_div( long long num, long long denom, int places) {
 	long long result = 0l;
 
 	if( denom != 0L) {
-		if( (llabs(denom)&0xFC00000000000000) ) {
+		if( (llabs(denom)&0xFC00000000000000LL) ) {
 			num >>= 4;
 			denom >>= 4;
 		}
