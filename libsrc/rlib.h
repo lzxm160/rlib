@@ -130,7 +130,7 @@ double trunc(double x);
 #define RLIB_SIGNAL_REPORT_ITERATION 3
 #define RLIB_SIGNAL_PART_ITERATION   4
 
-#define RLIB_SIGNALS 4
+#define RLIB_SIGNALS 5
 
 #define RLIB_SIDE_LEFT  0
 #define RLIB_SIDE_RIGHT 1

@@ -1,3 +1,8 @@
+2005-02-02  Michael Roth  <mroth@sicompos.com>
+
+	* libsrc/reportgen.c: (rlib_layout_report): move signal up one
+	* libsrc/rlib.h: define correct number of signals
+
 2005-02-01  Bob Doan  <bdoan@sicompos.com>
 	* Makefile.am: Change (c) Date to 2005, Ability to have images on lines, REPORT_START signal
 	* bindings/php/array_data_source.c: likewise

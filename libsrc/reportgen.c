@@ -502,9 +502,10 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 		r->current_result = 0;
 	}
 
+	rlib_emit_signal(r, RLIB_SIGNAL_REPORT_START);
+
 	rlib_resolve_report_fields(r, part, report);
 
-	rlib_emit_signal(r, RLIB_SIGNAL_REPORT_START);
 
 
 	for(iterations=0;iterations<report->iterations;iterations++) {
