@@ -36,6 +36,7 @@
 	$data[5][4] = "Dude";
 
 	$rlib =	rlib_init();
+	rlib_version();
 	rlib_add_datasource_array($rlib, "local_array");
 	rlib_add_query_as($rlib, "local_array", "data", "data");
 	rlib_add_report($rlib, "array.xml");

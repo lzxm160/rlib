@@ -1,3 +1,45 @@
+2005-02-28  Bob Doan  <set EMAIL_ADDRESS environment variable>
+
+	reviewed by: <delete if not using a buddy>
+
+	* Makefile.am:
+	* bindings/php/php.c: (ZEND_FUNCTION):
+	* configure.in:
+	* libsrc/Makefile.am:
+	* libsrc/api.c: (rlib_get_content_type_as_text), (rlib_version):
+	* libsrc/pdf.c: (pdf_get_string_width), (pdf_turn_text_off),
+	(pdf_turn_text_on), (pdf_print_text), (pdf_set_fg_color),
+	(pdf_drawbox), (pdf_start_boxurl), (pdf_line_image),
+	(pdf_set_font_point_actual), (pdf_start_new_page),
+	(pdf_set_working_page), (pdf_init_output), (pdf_finalize_private),
+	(pdf_spool_private), (pdf_graph_draw_line), (pdf_graph_plot_bar),
+	(pdf_graph_plot_line), (pdf_graph_plot_pie),
+	(pdf_graph_draw_legend_label):
+	* libsrc/reportgen.c: (rlib_make_report):
+	* rpdf/Makefile.am:
+	* rpdf/rpdf.c: (obj_printf), (rpdf_object_append),
+	(rpdf_stream_new), (rpdf_stream_append), (rpdf_out_string),
+	(rpdf_out_binary), (rpdf_finalize_objects), (rpdf_finalize_xref),
+	(rpdf_stream_font_destroyer), (rpdf_object_destroyer),
+	(rpdf_make_page_stream), (rpdf_make_page_images),
+	(rpdf_make_page_image_obj), (rpdf_make_page_annot_obj),
+	(rpdf_make_page_annot_list), (rpdf_make_page_fonts_stream),
+	(rpdf_make_fonts_stream), (rpdf_number_fonts),
+	(rpdf_finalize_page_stream), (rpdf_string_destroyer), (rpdf_new),
+	(rpdf_finalize), (rpdf_set_title), (rpdf_set_subject),
+	(rpdf_set_author), (rpdf_set_keywords), (rpdf_set_creator),
+	(rpdf_translate), (rpdf_rotate), (rpdf_new_page), (rpdf_set_page),
+	(rpdf_set_font), (rpdf_set_font_size), (rpdf_text_callback),
+	(rpdf_text), (stream_read_byte), (stream_read_two_bytes),
+	(jpeg_get_marker), (jpeg_skip_section), (jpeg_process_SOFn),
+	(rpdf_image), (rpdf_link), (rpdf_moveto), (rpdf_set_line_width),
+	(rpdf_lineto), (rpdf_closepath), (rpdf_stroke), (rpdf_rect),
+	(rpdf_fill), (rpdf_setrgbcolor), (rpdf_text_width), (rpdf_arc),
+	(rpdf_get_buffer), (rpdf_free):
+	* rpdf/rpdf.h:
+	* src/examples/php/array.php:
+	* src/examples/php/graph.php:
+
 2005-02-28  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/php.c: fix rlib_version() call crash
 	* libsrc/layout.c: get correct height of line all the time (from parts if we hae to)

@@ -1,12 +1,12 @@
-## Makefile.am for RLIB
+## libsrc/Makefile.am for RLIB
 
 ## Copyright (c) 2003-2005 SICOM Systems Inc (bdoan@sicompos.com)
-## RLIB is free software; you can redistribute it and/or modify
+## rlib is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 2, or (at your option)
 ## any later version.
 
-## RLIB is distributed in the hope that it will be useful,
+## rlib is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
@@ -20,8 +20,16 @@
 ##
 ## Process this file with automake to produce Makefile.in
 
-EXTRA_DIST = AUTHORS CVS HACKING install-sh README rlib.pc.in doc
-SUBDIRS = rpdf libsrc inputs bindings src tests 
+lib_LTLIBRARIES = librpdf.la
+librpdf_la_SOURCES = rpdf.c rpdf.h 
 
-pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = rlib.pc
+librpdf_la_LIBADD = $(RPDF_LIBS) 
+
+INCLUDES = $(RPDF_CFLAGS)
+
+include_HEADERS = rpdf.h
+
+librpdf_la_LDFLAGS = -release $(RLIB_VERSION)
+
+
+includedir=$(prefix)/include/rlib

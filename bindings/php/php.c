@@ -501,7 +501,7 @@ ZEND_FUNCTION(rlib_set_locale) {
 
 ZEND_FUNCTION(rlib_version) {
 	gchar *ver = rlib_version();
-	RETURN_STRING(e_strdup(ver), TRUE);
+	RETURN_STRING(estrdup(ver), TRUE);
 }
 
 ZEND_FUNCTION(rlib_set_datasource_encoding) {

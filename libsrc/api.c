@@ -186,12 +186,10 @@ gint rlib_execute(rlib *r) {
 
 gchar * rlib_get_content_type_as_text(rlib *r) {
 	static char buf[256];
-#ifdef HAVE_LIBCPDF	
 	if(r->format == RLIB_CONTENT_TYPE_PDF) {
 		sprintf(buf, "Content-Type: application/pdf\nContent-Length: %ld%c", OUTPUT(r)->get_output_length(r), 10);
 		return buf;
 	}
-#endif
 	if(r->format == RLIB_CONTENT_TYPE_CSV) {
 		return RLIB_WEB_CONTENT_TYPE_CSV;
 	} else {
@@ -480,7 +478,7 @@ void rlib_set_encodings(rlib *r, const char *outputencoding, const char *dbencod
 
 
 #ifdef VERSION
-gchar *cpdf_version(void);
+gchar *rpdf_version(void);
 gchar *rlib_version(void) {
 #if 0
 #if DISABLE_UTF8
@@ -488,7 +486,7 @@ gchar *charset="8859-1";
 #else
 gchar *charset="UTF8";
 #endif
-r_debug("rlib_version: version=[%s], CHARSET=%s, CPDF=%s", VERSION, charset, cpdf_version());
+r_debug("rlib_version: version=[%s], CHARSET=%s, RPDF=%s", VERSION, charset, rpdf_version());
 #endif
 	return VERSION;
 }

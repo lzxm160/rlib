@@ -375,27 +375,18 @@ if test x$enable_warningfun = xyes; then
 fi
 AC_SUBST(RLIB_WARNINGS)
 
-AC_ARG_ENABLE(cpdf,              [  --disable-cpdf         disable cpdf output],,enable_cpdf=yes)
-CPDF_LIBS=""
-if test x$enable_cpdf = xyes; then
-	AC_CHECK_HEADER([cpdflib.h],
-		[AC_DEFINE([HAVE_CPDFLIB_H], [], [CPDF Header])],
-		[AC_MSG_ERROR([You must have cpdflib properly installed in order for rlib to work.. missing cpdflib.h])])
-	AC_CHECK_LIB(cpdf, cpdf_init, [], [AC_MSG_ERROR([You must have cpdflib properly installed in order for rlib to work.. missing libcpdf.so])])
-	CPDF_LIBS="-lcpdf"
-fi
-
-AC_SUBST(CPDF_LIBS)
-AM_CONDITIONAL(ENABLE_CPDF, test x$enable_cpdf = xyes)
-
 AC_CHECK_HEADER([monetary.h],
 	[AC_DEFINE([RLIB_HAVE_MONETARY_H], [], [Money])], [])
 
-
 RLIB_CFLAGS="$LIBXML_CFLAGS $LIBGLIB_CFLAGS $LIBGMODULE_CFLAGS $MYSQL_CFLAGS $POSTGRE_CFLAGS $ODBC_CFLAGS $PHP_CFLAGS $PYTHON_CFLAGS $JAVA_CFLAGS $PERL_CFLAGS $RLIB_WARNINGS $GD_CFLAGS"
-RLIB_LIBS="$LIBXML_LIBS $LIBGLIB_LIBS $LIBGMODULE_LIBS $MYSQL_LIBS $POSTGRE_LIBS $ODBC_LIBS $ICONVLIBS $CPDF_LIBS $GD_LDFLAGS $GD_LIBS $GD_LINK"
+RLIB_LIBS="$LIBXML_LIBS $LIBGLIB_LIBS $LIBGMODULE_LIBS $MYSQL_LIBS $POSTGRE_LIBS $ODBC_LIBS $ICONVLIBS $GD_LDFLAGS $GD_LIBS $GD_LINK -lrpdf "
 AC_SUBST(RLIB_CFLAGS)
 AC_SUBST(RLIB_LIBS)
+
+RPDF_CFLAGS="$LIBGLIB_CFLAGS $LIBGMODULE_CFLAGS"
+RPDF_LIBS="$LIBGLIB_LIBS $LIBGMODULE_LIBS"
+AC_SUBST(RPDF_CFLAGS)
+AC_SUBST(RPDF_LIBS)
 
 dnl Checks for header files.
 AC_HEADER_STDC
@@ -422,6 +413,7 @@ AM_CONFIG_HEADER(config.h)
 AC_OUTPUT([
 Makefile
 rlib.pc
+rpdf/Makefile
 libsrc/Makefile
 src/Makefile
 src/examples/Makefile
@@ -460,13 +452,13 @@ rlib-$VERSION:
     ODBC:                    ${enable_odbc}
 
    OUTPUTS:
-    PDF:                     ${enable_cpdf}
+    PDF:                     Always (Say Hello to RPDF)
     HTML:                    Always
     CSV:                     Always
     TEXT:                    Always
 
    GRAPHING:
-    PDF:                     ${enable_cpdf}
+    PDF:                     Always
     HTML:                    ${enable_gd}
 	 
    BINDINGS:
@@ -479,7 +471,7 @@ rlib-$VERSION:
     PERL:                    ${enable_perl}
      PERL entension dir:     ${PERL_EXTENSION_DIR}
 
-   Music:                    Snow Patrol
+   Music:                    Snow Patrol / Virgin Radio
 	
    Having Problems:          rlib-users@lists.sf.net 	
    Want to contribute:       rlib-devel@lists.sf.net	

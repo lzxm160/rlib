@@ -20,21 +20,18 @@
 ##
 ## Process this file with automake to produce Makefile.in
 
-if ENABLE_CPDF
-CPDF_FILES=pdf.c
-endif
 
 lib_LTLIBRARIES = libr.la
 libr_la_SOURCES = parsexml.c reportgen.c layout.c graphing.c api.c resolution.c \
 	util.c util.h pcode.c pcode_op_functions.c formatstring.c fxp.c gd.c breaks.c \
-	$(CPDF_FILES) html.c txt.c datasource.c csv.c ralloc.c environment.c free.c\
+	pdf.c html.c txt.c datasource.c csv.c ralloc.c environment.c free.c\
 	navigation.c save.c load.c axis.c rlib_input.h pcode.h ralloc.h rlib.h\
 	containers.h containers.c charencoder.c charencoder.h rlib_gd.h \
 	datetime.c datetime.h value.c value.h 
 
-libr_la_LIBADD = $(RLIB_LIBS) 
+libr_la_LIBADD = $(RLIB_LIBS) -lrpdf
 
-INCLUDES = $(RLIB_CFLAGS)
+INCLUDES = $(RLIB_CFLAGS) -I../rpdf
 
 include_HEADERS = rlib.h rlib_input.h containers.h charencoder.h datetime.h\
 	util.h value.h

@@ -43,9 +43,7 @@ struct _rlib_format_table {
 	gchar name[64];
 	gint number;
 } rlib_fomat_table[] =  {
-#ifdef HAVE_LIBCPDF	
 	{ "PDF", RLIB_FORMAT_PDF},
-#endif	
 	{ "HTML", RLIB_FORMAT_HTML},
 	{ "TXT", RLIB_FORMAT_TXT},
 	{ "CSV", RLIB_FORMAT_CSV},
@@ -723,10 +721,8 @@ gint rlib_make_report(rlib *r) {
 		rlib_txt_new_output_filter(r);
 	else if(r->format == RLIB_FORMAT_CSV)
 		rlib_csv_new_output_filter(r);
-#ifdef HAVE_LIBCPDF
 	else
 		rlib_pdf_new_output_filter(r);
-#endif
 	r->current_font_point = -1;
 
 	OUTPUT(r)->set_fg_color(r, -1, -1, -1);
