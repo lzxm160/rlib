@@ -109,7 +109,7 @@ static void really_print_text(rlib *r, gchar *text) {
 
 static void rlib_csv_end_line(rlib *r, gint backwards) {}
 static void rlib_csv_start_report(rlib *r, struct rlib_part *part) {}
-static void rlib_csv_end_report(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void rlib_csv_end_report(rlib *r, struct rlib_part *part) {}
 
 static void rlib_csv_start_output_section(rlib *r) {
 	gint i;
@@ -173,6 +173,7 @@ void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT(r)->do_align = FALSE;	
 	OUTPUT(r)->do_break = FALSE;	
 	OUTPUT(r)->do_grouptext = FALSE;
+	OUTPUT(r)->paginate = FALSE;
 
 	OUTPUT(r)->get_string_width = rlib_csv_get_string_width;
 	OUTPUT(r)->print_text = rlib_csv_print_text;

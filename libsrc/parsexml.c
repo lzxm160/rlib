@@ -413,9 +413,9 @@ static void parse_report(struct rlib_part *part, struct rlib_report *report, xml
 	report->xml_bottom_margin = xmlGetProp(cur, (const xmlChar *) "bottomMargin");
 	report->xml_height = xmlGetProp(cur, (const xmlChar *) "height");
 
-	if(xmlGetProp(cur, (const xmlChar *) "paperType") != NULL)
+	if(xmlGetProp(cur, (const xmlChar *) "paperType") != NULL && part->xml_paper_type == NULL)
 		part->xml_paper_type = xmlGetProp(cur, (const xmlChar *) "paperType");
-	report->xml_pages_accross = xmlGetProp(cur, (const xmlChar *) "pagesAcross");
+	report->xml_pages_across = xmlGetProp(cur, (const xmlChar *) "pagesAcross");
 	report->xml_suppress_page_header_first_page = xmlGetProp(cur, (const xmlChar *) "suppressPageHeaderFirstPage");
 	
 	cur = cur->xmlChildrenNode;
@@ -528,7 +528,7 @@ static void parse_part(struct rlib_part *part, xmlDocPtr doc, xmlNsPtr ns, xmlNo
 		return;
 
 	part->xml_name = xmlGetProp(cur, (const xmlChar *) "name");
-	part->xml_pages_accross = xmlGetProp(cur, (const xmlChar *) "pages_accross");
+	part->xml_pages_across = xmlGetProp(cur, (const xmlChar *) "pages_across");
 	part->xml_font_size = xmlGetProp(cur, (const xmlChar *) "fontSize");
 	part->xml_orientation = xmlGetProp(cur, (const xmlChar *) "orientation");
 	part->xml_top_margin = xmlGetProp(cur, (const xmlChar *) "top_margin");
@@ -586,7 +586,7 @@ void dump_part_tr(struct rlib_element *e_tr) {
 }
 
 void dump_part(struct rlib_part *part) {
-	rlogit("Name: [%s] Pages Accross [%s]\n ", part->xml_name, part->xml_pages_accross);
+	rlogit("Name: [%s] Pages Across [%s]\n ", part->xml_name, part->xml_pages_across);
 	dump_part_tr(part->tr_elements);
 	rlogit("DONE!\n");
 }
@@ -651,6 +651,11 @@ struct rlib_part * parse_part_file(gchar *filename) {
 		part_element->data = report;
 		part_element->type = RLIB_ELEMENT_REPORT;
 		parse_report(part, report, doc, ns, cur);
+		part->page_header = report->page_header;
+		part->page_footer = report->page_footer;
+		report->page_header = NULL;
+		report->page_footer = NULL;
+		part->xml_pages_across = report->xml_pages_across;
 		found = TRUE;
 	}
 	

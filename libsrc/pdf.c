@@ -217,11 +217,11 @@ static void rlib_pdf_start_new_page(rlib *r, struct rlib_part *part) {
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
 	gint i=0;
-	gint pages_accross = part->pages_accross;
-	gint page_number = r->current_page_number * pages_accross;
+	gint pages_across = part->pages_across;
+	gint page_number = r->current_page_number * pages_across;
 	gchar paper_type[40];
 	sprintf(paper_type, "0 0 %ld %ld", part->paper->width, part->paper->height);
-	for(i=0;i<pages_accross;i++) {
+	for(i=0;i<pages_across;i++) {
 		if(part->orientation == RLIB_ORIENTATION_LANDSCAPE) {
 			part->position_bottom[i] = (part->paper->width/RLIB_PDF_DPI)-part->bottom_margin;
 			cpdf_pageInit(OUTPUT_PRIVATE(r)->pdf, page_number+i, LANDSCAPE, paper_type, paper_type); 
@@ -243,8 +243,8 @@ static void rlib_pdf_set_working_page(rlib *r, struct rlib_part *part, gint page
 #if USEPDFLOCALE
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
-	gint pages_accross = part->pages_accross;
-	gint page_number = r->current_page_number * pages_accross;
+	gint pages_across = part->pages_across;
+	gint page_number = r->current_page_number * pages_across;
 	page--;
 	cpdf_setCurrentPage(OUTPUT_PRIVATE(r)->pdf, page_number + page - OUTPUT_PRIVATE(r)->page_diff);
 	OUTPUT_PRIVATE(r)->current_page = page_number + page - OUTPUT_PRIVATE(r)->page_diff;
@@ -327,14 +327,17 @@ static void rlib_pdf_spool_private(rlib *r) {
 }
 
 static void rlib_pdf_end_page(rlib *r, struct rlib_part *part) {
-	rlib_pdf_turn_text_off(r);
+	int i;
+	for(i=0;i<part->pages_across;i++) {
+		rlib_pdf_set_working_page(r, part, i+1);
+		rlib_pdf_turn_text_off(r);
+	}
 	r->current_page_number++;
 	r->current_line_number = 1;
 }
 
 static void rlib_pdf_end_page_again(rlib *r, struct rlib_part *part, struct rlib_report *report) {
 	rlib_pdf_turn_text_off(r);
-//	rlib_pdf_turn_text_on(r);
 }
 
 static int rlib_pdf_is_single_page(rlib *r) {
@@ -356,13 +359,18 @@ static long rlib_pdf_get_output_length(rlib *r) {
 }
 
 static void rlib_pdf_stub_line(rlib *r, int backwards) {}
-
 static void rlib_pdf_end_output_section(rlib *r) {}
 static void rlib_pdf_start_output_section(rlib *r) {}
 static void rlib_pdf_boxurl_end(rlib *r) {}
 static void rlib_pdf_draw_cell_background_end(rlib *r) {}
 static void rlib_pdf_start_report(rlib *r, struct rlib_part *part) {}
-static void rlib_pdf_end_report(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void rlib_pdf_end_report(rlib *r, struct rlib_part *part) {}
+static void rlib_pdf_start_table(rlib *r) {}
+static void rlib_pdf_end_table(rlib *r) {}
+static void rlib_pdf_start_tr(rlib *r) {}
+static void rlib_pdf_end_tr(rlib *r) {}
+static void rlib_pdf_start_td(rlib *r, int width) {}
+static void rlib_pdf_end_td(rlib *r) {}
 
 void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r) = g_malloc(sizeof(struct output_filter));
@@ -372,6 +380,7 @@ void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r)->do_align = TRUE;
 	OUTPUT(r)->do_break = TRUE;
 	OUTPUT(r)->do_grouptext = TRUE;	
+	OUTPUT(r)->paginate = TRUE;
 
 	OUTPUT(r)->get_string_width = rlib_pdf_get_string_width;
 	OUTPUT(r)->print_text = rlib_pdf_print_text;
@@ -402,5 +411,11 @@ void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r)->end_output_section = rlib_pdf_end_output_section;
 	OUTPUT(r)->get_output = rlib_pdf_get_output;
 	OUTPUT(r)->get_output_length = rlib_pdf_get_output_length;
+	OUTPUT(r)->start_table = rlib_pdf_start_table;
+	OUTPUT(r)->end_table = rlib_pdf_end_table;
+	OUTPUT(r)->start_tr = rlib_pdf_start_tr;
+	OUTPUT(r)->end_tr = rlib_pdf_end_tr;
+	OUTPUT(r)->start_td = rlib_pdf_start_td;
+	OUTPUT(r)->end_td = rlib_pdf_end_td;
 	OUTPUT(r)->free = rlib_pdf_free;
 }

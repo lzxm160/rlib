@@ -1,3 +1,21 @@
+2004-10-11  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/breaks.c: make pages across work again and HTML output work again
+	* libsrc/csv.c: likewise
+	* libsrc/html.c: likewise
+	* libsrc/layout.c: likewise
+	* libsrc/load.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/save.c: likewise
+	* libsrc/txt.c: likewise
+	* src/examples/php/fixed_part_test.php: likewise
+	* src/examples/php/flow_part_test.php: likewise
+	* src/examples/php/pages_across.php: likewise
+	* src/examples/php/pages_across.xml: likewise
+
 2004-10-10  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/api.c: more work on parts
 	* libsrc/breaks.c: likewise

@@ -98,14 +98,14 @@ void rlib_force_break_headers(rlib *r, struct rlib_part *part, struct rlib_repor
 
 void rlib_handle_break_headers(rlib *r, struct rlib_part *part, struct rlib_report *report) {
 	gint icache=0,page,i;
-	gfloat total[RLIB_MAXIMUM_PAGES_ACCROSS];
+	gfloat total[RLIB_MAXIMUM_PAGES_ACROSS];
 	struct rlib_element *e;
 	struct rlib_report_break *cache[100];
 
 	if(report->breaks == NULL)
 		return;
 	
-	for(i=0;i<RLIB_MAXIMUM_PAGES_ACCROSS;i++) 
+	for(i=0;i<RLIB_MAXIMUM_PAGES_ACROSS;i++) 
 		total[i] = 0;
 
 	for(e = report->breaks; e != NULL; e=e->next) {
@@ -129,7 +129,7 @@ void rlib_handle_break_headers(rlib *r, struct rlib_part *part, struct rlib_repo
 			} else {
 				rb->didheader = TRUE;
 			}
-			for(page=0;page<report->pages_accross;page++) {
+			for(page=0;page<report->pages_across;page++) {
 				total[page] += get_outputs_size(r, rb->header, page);
 			}
 		}
@@ -137,7 +137,7 @@ void rlib_handle_break_headers(rlib *r, struct rlib_part *part, struct rlib_repo
 	}
 	if(icache && OUTPUT(r)->do_break) {	
 		gint allfit = TRUE;
-		for(page=0;page<report->pages_accross;page++) {
+		for(page=0;page<report->pages_across;page++) {
 			if(!will_this_fit(r, part, report, total[page], page+1))
 				allfit = FALSE;
 		}

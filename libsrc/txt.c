@@ -84,12 +84,12 @@ static void rlib_txt_end_line(rlib *r, int backwards) {
 }
 
 static void rlib_txt_start_report(rlib *r, struct rlib_part *part) {
-	gint pages_accross = part->pages_accross;
+	gint pages_across = part->pages_across;
 	gint i;
 
-	OUTPUT_PRIVATE(r)->bottom = g_malloc(sizeof(struct _data) * pages_accross);
-	OUTPUT_PRIVATE(r)->top = g_malloc(sizeof(struct _data) * pages_accross);
-	for(i=0;i<pages_accross;i++) {
+	OUTPUT_PRIVATE(r)->bottom = g_malloc(sizeof(struct _data) * pages_across);
+	OUTPUT_PRIVATE(r)->top = g_malloc(sizeof(struct _data) * pages_across);
+	for(i=0;i<pages_across;i++) {
 		OUTPUT_PRIVATE(r)->top[i].data = NULL;
 		OUTPUT_PRIVATE(r)->top[i].size = 0;
 		OUTPUT_PRIVATE(r)->top[i].total_size = 0;
@@ -99,13 +99,13 @@ static void rlib_txt_start_report(rlib *r, struct rlib_part *part) {
 	}	
 }
 
-static void rlib_txt_end_report(rlib *r, struct rlib_part *part, struct rlib_report *report) {
+static void rlib_txt_end_report(rlib *r, struct rlib_part *part) {
 	gint i;
-	gint pages_accross = report->pages_accross;
+	gint pages_across = part->pages_across;
 	gint sofar = OUTPUT_PRIVATE(r)->length;
 
 	
-	for(i=0;i<pages_accross;i++) {
+	for(i=0;i<pages_across;i++) {
 		OUTPUT_PRIVATE(r)->both = g_realloc(OUTPUT_PRIVATE(r)->both, sofar + OUTPUT_PRIVATE(r)->top[i].size + OUTPUT_PRIVATE(r)->bottom[i].size);
 		memcpy(OUTPUT_PRIVATE(r)->both + sofar , OUTPUT_PRIVATE(r)->top[i].data, OUTPUT_PRIVATE(r)->top[i].size);
 		memcpy(OUTPUT_PRIVATE(r)->both + sofar + OUTPUT_PRIVATE(r)->top[i].size, OUTPUT_PRIVATE(r)->bottom[i].data, OUTPUT_PRIVATE(r)->bottom[i].size);
@@ -113,7 +113,7 @@ static void rlib_txt_end_report(rlib *r, struct rlib_part *part, struct rlib_rep
 	}
 	OUTPUT_PRIVATE(r)->length += sofar;
 
-	for(i=0;i<pages_accross;i++) {
+	for(i=0;i<pages_across;i++) {
 		g_free(OUTPUT_PRIVATE(r)->top[i].data);
 		g_free(OUTPUT_PRIVATE(r)->bottom[i].data);
 	}
@@ -173,7 +173,8 @@ void rlib_txt_new_output_filter(rlib *r) {
 	OUTPUT(r)->do_align = TRUE;
 	OUTPUT(r)->do_break = TRUE;
 	OUTPUT(r)->do_grouptext = FALSE;	
-
+	OUTPUT(r)->paginate = FALSE;
+	
 	OUTPUT(r)->get_string_width = rlib_txt_get_string_width;
 	OUTPUT(r)->print_text = rlib_txt_print_text;
 	OUTPUT(r)->set_fg_color = rlib_txt_set_fg_color;

@@ -364,7 +364,7 @@ struct rlib_part * load_report(gchar *filename) {
 	rep->xml_top_margin = read_xml_str(&ptr);
 	rep->xml_left_margin = read_xml_str(&ptr);
 	rep->xml_bottom_margin = read_xml_str(&ptr);
-	rep->xml_pages_accross = read_xml_str(&ptr);
+	rep->xml_pages_across = read_xml_str(&ptr);
 	rep->xml_suppress_page_header_first_page = read_xml_str(&ptr);
 
 	rep->report_header = read_output(&ptr);

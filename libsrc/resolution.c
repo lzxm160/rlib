@@ -259,15 +259,15 @@ void rlib_resolve_report_fields(rlib *r, struct rlib_report *report) {
 	report->left_margin_code = rlib_infix_to_pcode(r, report, report->xml_left_margin);
 	report->bottom_margin = RLIB_DEFAULT_BOTTOM_MARGIN;
 	report->bottom_margin_code = rlib_infix_to_pcode(r, report, report->xml_bottom_margin);
-	report->pages_accross = 1;
-	report->pages_across_code = rlib_infix_to_pcode(r, report, report->xml_pages_accross);
+	report->pages_across = 1;
+	report->pages_across_code = rlib_infix_to_pcode(r, report, report->xml_pages_across);
 	report->suppress_page_header_first_page = FALSE;
 	report->suppress_page_header_first_page_code = rlib_infix_to_pcode(r, report, report->xml_suppress_page_header_first_page);
 	report->height_code = rlib_infix_to_pcode(r, report, report->xml_height);
 		
-	report->position_top = g_malloc(report->pages_accross * sizeof(float));
-	report->position_bottom = g_malloc(report->pages_accross * sizeof(float));
-	report->bottom_size = g_malloc(report->pages_accross * sizeof(float));
+	report->position_top = g_malloc(report->pages_across * sizeof(float));
+	report->position_bottom = g_malloc(report->pages_across * sizeof(float));
+	report->bottom_size = g_malloc(report->pages_across * sizeof(float));
 
 	rlib_resolve_outputs(r, report, report->report_header);
 	rlib_resolve_outputs(r, report, report->page_header);
@@ -335,13 +335,13 @@ void rlib_resolve_part_fields(rlib *r, struct rlib_part *part) {
 	part->bottom_margin_code = rlib_infix_to_pcode(r, NULL, part->xml_bottom_margin);
 	part->paper = rlib_layout_get_paper(r, RLIB_PAPER_LETTER);
 	part->paper_type_code = rlib_infix_to_pcode(r, NULL, part->xml_paper_type);
-	part->pages_accross = 1;
-	part->pages_across_code = rlib_infix_to_pcode(r, NULL, part->xml_pages_accross);
+	part->pages_across = 1;
+	part->pages_across_code = rlib_infix_to_pcode(r, NULL, part->xml_pages_across);
 
 		
-	part->position_top = g_malloc(part->pages_accross * sizeof(float));
-	part->position_bottom = g_malloc(part->pages_accross * sizeof(float));
-	part->bottom_size = g_malloc(part->pages_accross * sizeof(float));
+	part->position_top = g_malloc(part->pages_across * sizeof(float));
+	part->position_bottom = g_malloc(part->pages_across * sizeof(float));
+	part->bottom_size = g_malloc(part->pages_across * sizeof(float));
 
 	rlib_resolve_part_tr(r, part, part->tr_elements);
 	rlib_resolve_outputs(r, NULL, part->page_header);

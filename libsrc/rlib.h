@@ -72,7 +72,7 @@ long long int llabs(long long int j);
 #define RLIB_CONTENT_TYPE_TXT		3
 #define RLIB_CONTENT_TYPE_CSV		4
 
-#define RLIB_MAXIMUM_PAGES_ACCROSS	100
+#define RLIB_MAXIMUM_PAGES_ACROSS	100
 
 #define RLIB_ELEMENT_LITERAL 1
 #define RLIB_ELEMENT_FIELD   2
@@ -383,7 +383,7 @@ struct rlib_part_tr {
 
 struct rlib_part {
 	xmlChar *xml_name;
-	xmlChar *xml_pages_accross;
+	xmlChar *xml_pages_across;
 	xmlChar *xml_orientation;
 	xmlChar *xml_top_margin;
 	xmlChar *xml_left_margin;
@@ -393,14 +393,13 @@ struct rlib_part {
 
 	struct rlib_element *tr_elements;
 	struct rlib_pcode *name_code;
-	struct rlib_pcode *pages_accross_code;
+	struct rlib_pcode *pages_across_code;
 	struct rlib_pcode *orientation_code;
 	struct rlib_pcode *top_margin_code;
 	struct rlib_pcode *left_margin_code;
 	struct rlib_pcode *bottom_margin_code;
 	struct rlib_pcode *paper_type_code;
 	struct rlib_pcode *font_size_code;
-	struct rlib_pcode *pages_across_code;
 
 	struct rlib_element *page_header;
 	struct rlib_element *page_footer;
@@ -408,7 +407,7 @@ struct rlib_part {
 	struct rlib_paper *paper;
 	gint orientation;
 	gint font_size;
-	gint pages_accross;
+	gint pages_across;
 	gfloat *position_top;
 	gfloat *position_bottom;
 	gfloat *bottom_size;
@@ -427,7 +426,7 @@ struct rlib_report {
 	xmlChar *xml_top_margin;
 	xmlChar *xml_left_margin;
 	xmlChar *xml_bottom_margin;
-	xmlChar *xml_pages_accross;
+	xmlChar *xml_pages_across;
 	xmlChar *xml_suppress_page_header_first_page;
 	xmlChar *xml_height;
 	
@@ -448,7 +447,7 @@ struct rlib_report {
 	gfloat bottom_margin;
 	gfloat left_margin;
 	gfloat page_width;
-	gint pages_accross;
+	gint pages_across;
 	gint suppress_page_header_first_page;
 	
 	struct rlib_element *report_header;
@@ -567,6 +566,7 @@ struct output_filter {
 	gint do_align;
 	gint do_break;
 	gint do_grouptext;
+	gint paginate;
 	gfloat	(*get_string_width)(rlib *, char *);
 	void (*print_text)(rlib *, float, float, char *, int, int);
 	void (*set_fg_color)(rlib *, float, float, float);
@@ -586,7 +586,7 @@ struct output_filter {
 	void (*set_working_page)(rlib *, struct rlib_part *, int);
 	void (*set_raw_page)(rlib *, struct rlib_part *, int);
 	void (*start_report)(rlib *, struct rlib_part *);
-	void (*end_report)(rlib *, struct rlib_part *, struct rlib_report *);
+	void (*end_report)(rlib *, struct rlib_part *);
 	void (*finalize_private)(rlib *);
 	void (*spool_private)(rlib *);
 	void (*start_line)(rlib *, int);
@@ -596,6 +596,12 @@ struct output_filter {
 	void (*end_output_section)(rlib *);
 	char *(*get_output)(rlib *);
 	long (*get_output_length)(rlib *);
+	void (*start_table)(rlib *);
+	void (*end_table)(rlib *);
+	void (*start_tr)(rlib *);
+	void (*end_tr)(rlib *);
+	void (*start_td)(rlib *, int width);
+	void (*end_td)(rlib *);
 	int (*free)(rlib *r);
 };
 

@@ -662,7 +662,7 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 	return output_count;
 }	
 
-static gint rlib_layout_report_outputs_accross_pages(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_element *report_outputs, gint backwards) {
+static gint rlib_layout_report_outputs_across_pages(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_element *report_outputs, gint backwards) {
 	struct rlib_report_output_array *roa;
 	gint page;
 	gint i;
@@ -674,7 +674,7 @@ static gint rlib_layout_report_outputs_accross_pages(rlib *r, struct rlib_part *
 			OUTPUT(r)->set_working_page(r, part, roa->page);
 			output_count += rlib_layout_report_output_array(r, part, report, roa, backwards, roa->page);
 		} else {
-			for(i=0;i<part->pages_accross;i++) {
+			for(i=0;i<part->pages_across;i++) {
 				OUTPUT(r)->set_working_page(r, part, i+1);
 				output_count = rlib_layout_report_output_array(r, part, report, roa, backwards, i+1);			
 			}
@@ -686,7 +686,7 @@ static gint rlib_layout_report_outputs_accross_pages(rlib *r, struct rlib_part *
 gint rlib_layout_report_output(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_element *e, gint backwards) {
 	gint output_count = 0;
 	OUTPUT(r)->start_output_section(r);
-	output_count = rlib_layout_report_outputs_accross_pages(r, part, report, e, backwards);
+	output_count = rlib_layout_report_outputs_across_pages(r, part, report, e, backwards);
 	OUTPUT(r)->end_output_section(r);
 	return output_count;
 }
@@ -699,10 +699,10 @@ gint rlib_layout_report_output_with_break_headers(rlib *r, struct rlib_part *par
 	if(report->breaks != NULL) {
 		for(e = report->breaks; e != NULL; e=e->next) {
 			struct rlib_report_break *rb = e->data;
-			output_count += rlib_layout_report_outputs_accross_pages(r, part, report, rb->header, FALSE);
+			output_count += rlib_layout_report_outputs_across_pages(r, part, report, rb->header, FALSE);
 		}		
 	}
-	rlib_layout_report_outputs_accross_pages(r, part, report, report->detail.fields, FALSE);
+	rlib_layout_report_outputs_across_pages(r, part, report, report->detail.fields, FALSE);
 	OUTPUT(r)->end_output_section(r);
 	return output_count;
 }
@@ -719,7 +719,7 @@ gfloat rlib_layout_get_page_width(rlib *r, struct rlib_part *part) {
 void rlib_layout_report_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {
 	gint i;
 	if(report->report_footer != NULL) {
-		for(i=0;i<report->pages_accross;i++)
+		for(i=0;i<report->pages_across;i++)
 			rlib_end_page_if_line_wont_fit(r, part, report, report->report_footer);
 		rlib_layout_report_output(r, part, report, report->report_footer, FALSE);
 	}
@@ -732,7 +732,7 @@ void rlib_layout_init_report_page(rlib *r, struct rlib_part *part, struct rlib_r
 
 void rlib_layout_init_part_page(rlib *r, struct rlib_part *part) {
 	gint i;
-	for(i=0;i<part->pages_accross;i++) {
+	for(i=0;i<part->pages_across;i++) {
 		part->position_top[i] = part->top_margin;
 		part->bottom_size[i] = get_outputs_size(r, part->page_footer, i);
 		part->position_bottom[i] -= part->bottom_size[i];
@@ -743,12 +743,12 @@ void rlib_layout_init_part_page(rlib *r, struct rlib_part *part) {
 	
 	rlib_layout_report_output(r, part, NULL, part->page_header, FALSE);
 
-	for(i=0; i<part->pages_accross; i++)
+	for(i=0; i<part->pages_across; i++)
 		part->position_bottom[i] -= part->bottom_size[i];
 
 	rlib_layout_report_output(r, part, NULL, part->page_footer, TRUE);
 
-	for(i=0; i<part->pages_accross; i++)
+	for(i=0; i<part->pages_across; i++)
 		part->position_bottom[i] -= part->bottom_size[i];
 
 	OUTPUT(r)->init_end_page(r);

@@ -152,20 +152,20 @@ gint calc_memo_lines(struct rlib_report_lines *rl) {
 void rlib_handle_page_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {
 	gint i;
 
-	for(i=0; i < report->pages_accross; i++) {
+	for(i=0; i < report->pages_across; i++) {
 		report->bottom_size[i] = get_outputs_size(r, report->page_footer, i);
 		report->position_bottom[i] -= report->bottom_size[i];
 	}
 
 	rlib_layout_report_output(r, part, report, report->page_footer, TRUE);
 	
-	for(i=0; i<report->pages_accross; i++)
+	for(i=0; i<report->pages_across; i++)
 		report->position_bottom[i] -= report->bottom_size[i];
 }
 
 /*void rlib_init_page(rlib *r, struct rlib_part *part, struct rlib_report *report, gchar report_header) {
 	gint i;
-	for(i=0;i<report->pages_accross;i++)
+	for(i=0;i<report->pages_across;i++)
 		report->position_top[i] = report->top_margin;
 	r->current_font_point = -1;
 	OUTPUT(r)->start_new_page(r, part);
@@ -216,7 +216,6 @@ gfloat get_outputs_size(rlib *r, struct rlib_element *e, gint page) {
 gint will_this_fit(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat total, gint page) {
 	if(OUTPUT(r)->is_single_page(r))
 		return TRUE;
-//r_error("CHECKING FOR A FIT [%f] > [%f]\n", report->position_top[page-1]+total > report->position_bottom[page-1]);
 	if(report->position_top[page-1]+total > report->position_bottom[page-1])
 		return FALSE;
 	else
@@ -241,7 +240,7 @@ gint will_outputs_fit(rlib *r, struct rlib_part *part, struct rlib_report *repor
 
 void rlib_set_report_from_part(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat top_margin_offset) {
 	gint i;
-	for(i=0;i<report->pages_accross;i++) {
+	for(i=0;i<report->pages_across;i++) {
 		report->position_top[i] = part->position_top[0] + top_margin_offset;
 		report->bottom_size[i] = part->bottom_size[0];
 		report->position_bottom[i] = part->position_bottom[0];
@@ -251,7 +250,7 @@ void rlib_set_report_from_part(rlib *r, struct rlib_part *part, struct rlib_repo
 
 gint rlib_end_page_if_line_wont_fit(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_element *e) {
 	gint i, fits=TRUE;	
-	for(i=0;i<report->pages_accross;i++) {
+	for(i=0;i<report->pages_across;i++) {
 		if(!will_outputs_fit(r,part, report, e, i+1))
 			fits=FALSE;
 	}
@@ -373,7 +372,7 @@ static void rlib_evaluate_report_attributes(rlib *r, struct rlib_report *report)
 	if (rlib_execute_as_int(r, report->bottom_margin_code, &t))
 		report->bottom_margin = t;
 	if (rlib_execute_as_int(r, report->pages_across_code, &t))
-		report->pages_accross = t;
+		report->pages_across = t;
 	if (rlib_execute_as_int(r, report->suppress_page_header_first_page_code, &t))
 		report->suppress_page_header_first_page = t;
 }
@@ -432,7 +431,7 @@ static void rlib_evaluate_part_attributes(rlib *r, struct rlib_part *part) {
 	if (rlib_execute_as_int(r, part->bottom_margin_code, &t))
 		part->bottom_margin = t;
 	if (rlib_execute_as_int(r, part->pages_across_code, &t))
-		part->pages_accross = t;
+		part->pages_across = t;
 	if (rlib_execute_as_string(r, part->paper_type_code, buf, MAXSTRLEN)) {
 		struct rlib_paper *paper = rlib_layout_get_paper_by_name(r, buf);
 		if(paper != NULL)
@@ -489,7 +488,6 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 
 	if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
 		while (1) {
-			gint page;
 			gint output_count = 0;
 
 			if(!processed_variables) {
@@ -500,8 +498,7 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 			rlib_handle_break_headers(r, part, report);
 
 			if(rlib_end_page_if_line_wont_fit(r, part, report, report->detail.fields))
-				for (page = 0; page < report->pages_accross; page++)
-					rlib_force_break_headers(r, part, report);
+				rlib_force_break_headers(r, part, report);
 
 			if(OUTPUT(r)->do_break)
 				output_count = rlib_layout_report_output(r, part, report, report->detail.fields, FALSE);
@@ -528,7 +525,7 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 	if(at_least > 0) {
 		gfloat used = (report->position_bottom[0]-origional_position_top)-(report->position_bottom[0]-report->position_top[0]);
 		if(used < at_least) {
-			for(i=0;i<report->pages_accross;i++)
+			for(i=0;i<report->pages_across;i++)
 				report->position_top[i] += (at_least-used);
 		}
 	}
@@ -553,6 +550,8 @@ void rlib_layout_part_td(rlib *r, struct rlib_part *part, struct rlib_element *e
 
 		if(!rlib_execute_as_int(r, td->width_code, &width))
 			width = 100;
+		OUTPUT(r)->start_td(r, width);
+
 
 		rlogit("    TD %d\n", width);
 		for(td_contents=td->e;td_contents != NULL;td_contents=td_contents->next) {
@@ -577,6 +576,7 @@ void rlib_layout_part_td(rlib *r, struct rlib_part *part, struct rlib_element *e
 			}
 		}
 		running_left_margin += (((gfloat)width/100) * paper_width);
+		OUTPUT(r)->end_td(r);
 	}	
 }
 
@@ -594,14 +594,14 @@ void rlib_layout_part_tr(rlib *r, struct rlib_part *part, struct rlib_element *e
 		gint newpage; 
 
 		if(rlib_execute_as_boolean(r, tr->newpage_code, &newpage)) {
-			if(newpage) {
-rlogit("NEW PAGE!!!\n");
+			if(newpage && OUTPUT(r)->paginate) {
 				OUTPUT(r)->end_page(r, part);
 				rlib_layout_init_part_page(r, part);
 				bzero(&rrp, sizeof(rrp));
 			}
 		}
 		
+		OUTPUT(r)->start_tr(r);
 		save_page_number = r->current_page_number;
 		
 		if(rrp.position_top > 0)
@@ -616,10 +616,10 @@ rlogit("NEW PAGE!!!\n");
 		bzero(&rrp, sizeof(rrp));
 
 		rlib_layout_part_td(r, part, tr->e, save_page_number, save_position_top, &rrp);
+		OUTPUT(r)->end_tr(r);
 		
 	}	
 }
-
 
 gint make_report(rlib *r) {
 	gint i = 0;
@@ -651,15 +651,17 @@ gint make_report(rlib *r) {
 	for(i=0;i<r->parts_count;i++) {
 		struct rlib_part *part = r->parts[i];
 
-		OUTPUT(r)->start_report(r, part);
 		rlib_resolve_part_fields(r, part);
 		rlib_evaluate_part_attributes(r, part);
+		OUTPUT(r)->start_report(r, part);
+		OUTPUT(r)->start_table(r);
 		if(part->font_size != -1)
 			r->font_point = part->font_size;
 
 		rlib_layout_init_part_page(r, part);
 		rlib_layout_part_tr(r, part, part->tr_elements);
-		
+		OUTPUT(r)->end_table(r);
+		OUTPUT(r)->end_report(r, part);
 	}
 	
 	
@@ -704,7 +706,7 @@ gint make_report(rlib *r) {
 					rlib_handle_break_headers(r);
 
 					if(rlib_end_page_if_line_wont_fit(r, rr->detail.fields))
-						for (page = 0; page < rr->pages_accross; page++)
+						for (page = 0; page < rr->pages_across; page++)
 							rlib_force_break_headers(r);
 
 					if(OUTPUT(r)->do_break)

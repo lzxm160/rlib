@@ -221,7 +221,7 @@ gint save_report(struct rlib_report *rep, gchar *filename) {
 	write_xml_str(fd, rep->xml_top_margin); 
 	write_xml_str(fd, rep->xml_left_margin);
 	write_xml_str(fd, rep->xml_bottom_margin);
-	write_xml_str(fd, rep->xml_pages_accross);
+	write_xml_str(fd, rep->xml_pages_across);
 	write_xml_str(fd, rep->xml_suppress_page_header_first_page);
 	
 	write_output(fd, rep->report_header);

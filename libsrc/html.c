@@ -228,18 +228,15 @@ static void rlib_html_start_new_page(rlib *r, struct rlib_part *part) {
 	part->position_bottom[0] = 11-part->bottom_margin;
 }
 
-static void rlib_html_init_end_page(rlib *r) {}
-
-static void rlib_html_init_output(rlib *r) {}
 
 static void rlib_html_start_report(rlib *r, struct rlib_part *part) {
 	gchar buf[MAXSTRLEN];
-	gint pages_accross = part->pages_accross;
+	gint pages_across = part->pages_across;
 	gint i;
 
-	OUTPUT_PRIVATE(r)->bottom = g_malloc(sizeof(struct _data) * pages_accross);
-	OUTPUT_PRIVATE(r)->top = g_malloc(sizeof(struct _data) * pages_accross);
-	for(i=0;i<pages_accross;i++) {
+	OUTPUT_PRIVATE(r)->bottom = g_malloc(sizeof(struct _data) * pages_across);
+	OUTPUT_PRIVATE(r)->top = g_malloc(sizeof(struct _data) * pages_across);
+	for(i=0;i<pages_across;i++) {
 		OUTPUT_PRIVATE(r)->top[i].data = NULL;
 		OUTPUT_PRIVATE(r)->top[i].size = 0;
 		OUTPUT_PRIVATE(r)->top[i].total_size = 0;
@@ -250,7 +247,7 @@ static void rlib_html_start_report(rlib *r, struct rlib_part *part) {
 //	<meta http-equiv=\"content-type\" content=\"text/html; charset=%s\"><style type=\"text/css\">\n", output_encoding);
 	sprintf(buf, "<head>\n<style type=\"text/css\">\n");
 	print_text(r, buf, FALSE);
-	sprintf(buf, "pre { margin:0; padding:0; margin-top:0; margin-bottom:0; font-size: %dpt;}\n", r->font_point);
+	sprintf(buf, "pre { margin:0; padding:0; margin-top:0; margin-bottom:0;}\n");
 	print_text(r, buf, FALSE);
 	print_text(r, "DIV { position: absolute; left: 0; }\n", FALSE);
 	print_text(r, "TABLE { border: 0; cellspacing: 0; cellpadding: 0; width: 100%; }\n", FALSE);
@@ -259,21 +256,38 @@ static void rlib_html_start_report(rlib *r, struct rlib_part *part) {
 	
 }
 
-static void rlib_html_end_report(rlib *r, struct rlib_part *part, struct rlib_report *report) {
+static void rlib_html_end_report(rlib *r, struct rlib_part *part) {
 	gint i;
-	gint pages_accross = report->pages_accross;
+	gint pages_across = part->pages_across;
 	gint sofar = OUTPUT_PRIVATE(r)->length;
+	gchar *str1 = "<table><tr>";
+	gchar *str2 = "<td nowrap><pre>";
+	gchar *str3 = "</td>";
+	gchar *str4 = "</tr></table>";
 	print_text(r, "</pre></td></tr></table>", TRUE);
 
-	for(i=0;i<pages_accross;i++) {
+	OUTPUT_PRIVATE(r)->both = g_realloc(OUTPUT_PRIVATE(r)->both, sofar + 11);
+	memcpy(OUTPUT_PRIVATE(r)->both + sofar , str1, 11);
+	sofar += 11;
+	for(i=0;i<pages_across;i++) {
+		OUTPUT_PRIVATE(r)->both = g_realloc(OUTPUT_PRIVATE(r)->both, sofar + 16);
+		memcpy(OUTPUT_PRIVATE(r)->both + sofar, str2, 16);
+		sofar += 16;
+
 		OUTPUT_PRIVATE(r)->both = g_realloc(OUTPUT_PRIVATE(r)->both, sofar + OUTPUT_PRIVATE(r)->top[i].size + OUTPUT_PRIVATE(r)->bottom[i].size);
 		memcpy(OUTPUT_PRIVATE(r)->both + sofar , OUTPUT_PRIVATE(r)->top[i].data, OUTPUT_PRIVATE(r)->top[i].size);
 		memcpy(OUTPUT_PRIVATE(r)->both + sofar + OUTPUT_PRIVATE(r)->top[i].size, OUTPUT_PRIVATE(r)->bottom[i].data, OUTPUT_PRIVATE(r)->bottom[i].size);
 		sofar += OUTPUT_PRIVATE(r)->top[i].size + OUTPUT_PRIVATE(r)->bottom[i].size;	
+		OUTPUT_PRIVATE(r)->both = g_realloc(OUTPUT_PRIVATE(r)->both, sofar + 5);
+		memcpy(OUTPUT_PRIVATE(r)->both + sofar, str3, 5);
+		sofar += 5;
 	}
+	OUTPUT_PRIVATE(r)->both = g_realloc(OUTPUT_PRIVATE(r)->both, sofar + 13);
+	memcpy(OUTPUT_PRIVATE(r)->both + sofar, str4, 13);
+	sofar += 13;
 	OUTPUT_PRIVATE(r)->length = sofar;
 
-	for(i=0;i<pages_accross;i++) {
+	for(i=0;i<pages_across;i++) {
 		g_free(OUTPUT_PRIVATE(r)->top[i].data);
 		g_free(OUTPUT_PRIVATE(r)->bottom[i].data);
 	}
@@ -281,9 +295,6 @@ static void rlib_html_end_report(rlib *r, struct rlib_part *part, struct rlib_re
 	g_free(OUTPUT_PRIVATE(r)->top);
 	g_free(OUTPUT_PRIVATE(r)->bottom);
 }
-
-
-static void rlib_html_finalize_private(rlib *r) {}
 
 static void rlib_html_spool_private(rlib *r) {
 	ENVIRONMENT(r)->rlib_write_output(OUTPUT_PRIVATE(r)->both, OUTPUT_PRIVATE(r)->length);
@@ -296,9 +307,6 @@ static void rlib_html_start_line(rlib *r, int backwards) {
 static void rlib_html_end_line(rlib *r, int backwards) {
 	print_text(r, "\n", backwards);
 }
-
-static void rlib_html_start_output_section(rlib *r) {}
-static void rlib_html_end_output_section(rlib *r) {}
 
 static void rlib_html_end_page(rlib *r, struct rlib_part *part) {
 	r->current_line_number = 1;
@@ -320,6 +328,40 @@ static void rlib_html_set_working_page(rlib *r, struct rlib_part *part, gint pag
 	OUTPUT_PRIVATE(r)->page_number = page-1;
 }
 
+static void rlib_html_start_table(rlib *r) {
+//	print_text(r, "<table>", FALSE);
+}
+
+static void rlib_html_end_table(rlib *r) {
+//	print_text(r, "</table>", FALSE);
+}
+
+static void rlib_html_start_tr(rlib *r) {
+	print_text(r, "<table><tr> <!-- REAL TR -->", FALSE);
+}
+
+static void rlib_html_end_tr(rlib *r) {
+	print_text(r, "</tr></table>", FALSE);
+}
+
+static void rlib_html_start_td(rlib *r, int width) {
+	char buf[50];
+	sprintf(buf, "<td width=\"%d%%\" valign=\"top\"><pre> <!-- REAL TD -->", width);
+	print_text(r, buf, FALSE);
+}
+
+static void rlib_html_end_td(rlib *r) {
+	print_text(r, "</td>", FALSE);
+}
+
+
+static void rlib_html_init_end_page(rlib *r) {}
+static void rlib_html_init_output(rlib *r) {}
+static void rlib_html_finalize_private(rlib *r) {}
+static void rlib_html_start_output_section(rlib *r) {}
+static void rlib_html_end_output_section(rlib *r) {}
+static void rlib_html_set_raw_page(rlib *r, struct rlib_part *part, gint page) {}
+
 static gint rlib_html_free(rlib *r) {
 	g_free(OUTPUT_PRIVATE(r)->both);
 	g_free(OUTPUT_PRIVATE(r));
@@ -339,6 +381,7 @@ void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT(r)->do_align = TRUE;
 	OUTPUT(r)->do_break = TRUE;
 	OUTPUT(r)->do_grouptext = FALSE;	
+	OUTPUT(r)->paginate = FALSE;
 	
 	OUTPUT(r)->get_string_width = rlib_html_get_string_width;
 	OUTPUT(r)->print_text = rlib_html_print_text;
@@ -367,5 +410,14 @@ void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT(r)->get_output = rlib_html_get_output;
 	OUTPUT(r)->get_output_length = rlib_html_get_output_length;
 	OUTPUT(r)->set_working_page = rlib_html_set_working_page; 
+	OUTPUT(r)->set_raw_page = rlib_html_set_raw_page; 
+	OUTPUT(r)->start_table = rlib_html_start_table; 
+	OUTPUT(r)->end_table = rlib_html_end_table; 
+	OUTPUT(r)->start_tr = rlib_html_start_tr; 
+	OUTPUT(r)->end_tr = rlib_html_end_tr; 
+	OUTPUT(r)->start_td = rlib_html_start_td; 
+	OUTPUT(r)->end_td = rlib_html_end_td; 
+
+
 	OUTPUT(r)->free = rlib_html_free;
 }
