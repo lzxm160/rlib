@@ -1,3 +1,10 @@
+2004-07-29  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/pcode.c: fix semi MAJOR expression compile problem
+	   round(1.0*100/60) did not work!!
+		make expressions like -5-2 work
+	* libsrc/pcode_op_functions.c: fix round operator
+	* libsrc/resolution.c: ditto
+
 2004-07-29  Michael Roth  <mroth@sicompos.com>
 	* libsrc/api.c: compile fixes
 	* libsrc/parsexml.c: likewise

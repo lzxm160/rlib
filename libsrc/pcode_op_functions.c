@@ -739,8 +739,9 @@ gint rlib_pcode_operator_round(rlib *r, struct rlib_value_stack *vs, struct rlib
 		if(dec > 0) {
 			result -= dec;
 			if(dec > (5 * RLIB_DECIMAL_PRECISION / 10))
-				result = result * RLIB_DECIMAL_PRECISION;
+				result += RLIB_DECIMAL_PRECISION;
 		}
+		
 		rlib_value_free(v1);
 		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, result));
 		return TRUE;
