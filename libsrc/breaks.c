@@ -142,7 +142,7 @@ void rlib_handle_break_headers(rlib *r, struct rlib_part *part, struct rlib_repo
 				allfit = FALSE;
 		}
 		if(!allfit) {
-			OUTPUT(r)->rlib_end_page(r, part, report);
+			OUTPUT(r)->end_page(r, part, report);
 			rlib_force_break_headers(r, part, report);
 		} else {
 			for(i=0;i<icache;i++) {
@@ -216,7 +216,7 @@ void rlib_break_all_below_in_reverse_order(rlib *r, struct rlib_part *part, stru
 	}
 	if(do_endpage && OUTPUT(r)->do_break) {
 		if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
-			OUTPUT(r)->rlib_end_page(r, part, report);
+			OUTPUT(r)->end_page(r, part, report);
 			rlib_force_break_headers(r, part, report);
 		}
 	}

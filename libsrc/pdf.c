@@ -27,14 +27,16 @@
 
 #define PDFLOCALE	"en_US"
 #define USEPDFLOCALE	1
-
+#define MAX_PDF_PAGES 500
 
 struct _private {
 	struct rlib_rgb current_color;
 	CPDFdoc *pdf;
-	gchar text_on;
+	gchar text_on[MAX_PDF_PAGES];
 	gchar *buffer;
 	gint length;
+	gint page_diff;
+	gint current_page;
 };
 
 
@@ -44,16 +46,16 @@ static gfloat rlib_pdf_get_string_width(rlib *r, gchar *text) {
 
 
 void rlib_pdf_turn_text_off(rlib *r) {
-	if(OUTPUT_PRIVATE(r)->text_on == TRUE) {
+	if(OUTPUT_PRIVATE(r)->text_on[OUTPUT_PRIVATE(r)->current_page] == TRUE) {
 		cpdf_endText(OUTPUT_PRIVATE(r)->pdf);
-		OUTPUT_PRIVATE(r)->text_on = FALSE;
+		OUTPUT_PRIVATE(r)->text_on[OUTPUT_PRIVATE(r)->current_page] = FALSE;
 	}
 }
 
 void rlib_pdf_turn_text_on(rlib *r) {
-	if(OUTPUT_PRIVATE(r)->text_on == FALSE) {
+	if(OUTPUT_PRIVATE(r)->text_on[OUTPUT_PRIVATE(r)->current_page] == FALSE) {
 		cpdf_beginText(OUTPUT_PRIVATE(r)->pdf, 0);
-		OUTPUT_PRIVATE(r)->text_on = TRUE;
+		OUTPUT_PRIVATE(r)->text_on[OUTPUT_PRIVATE(r)->current_page] = TRUE;
 	}
 }
 
@@ -119,10 +121,10 @@ static void rlib_pdf_drawbox(rlib *r, gfloat left_origin, gfloat bottom_origin, 
 	if(!(color->r == 1.0 && color->g == 1.0 && color->b == 1.0)) {
 		rlib_pdf_turn_text_off(r);
 		//the -.002 seems to get around decimal percision problems.. but should investigate this a big further	
-		OUTPUT(r)->rlib_set_bg_color(r, color->r, color->g, color->b);
+		OUTPUT(r)->set_bg_color(r, color->r, color->g, color->b);
 		cpdf_rect(OUTPUT_PRIVATE(r)->pdf, left_origin, bottom_origin, how_long, how_tall-.002);
 		cpdf_fill(OUTPUT_PRIVATE(r)->pdf);
-		OUTPUT(r)->rlib_set_bg_color(r, 0, 0, 0);
+		OUTPUT(r)->set_bg_color(r, 0, 0, 0);
 	}
 #if USEPDFLOCALE
 	setlocale(LC_NUMERIC, tlocale);
@@ -175,7 +177,7 @@ gfloat nheight) {
 	rlib_pdf_turn_text_off(r);
 	cpdf_convertUpathToOS(pathbuf, nname);
 	cpdf_importImage(OUTPUT_PRIVATE(r)->pdf, pathbuf, realtype, left_origin, bottom_origin, 0.0, &nwidth, &nheight, &xscale, &yscale, 1);
-	OUTPUT(r)->rlib_set_bg_color(r, 0, 0, 0);
+	OUTPUT(r)->set_bg_color(r, 0, 0, 0);
 #if USEPDFLOCALE
 	setlocale(LC_NUMERIC, tlocale);
 #endif
@@ -244,7 +246,8 @@ static void rlib_pdf_set_working_page(rlib *r, struct rlib_part *part, gint page
 	gint pages_accross = part->pages_accross;
 	gint page_number = r->current_page_number * pages_accross;
 	page--;
-	cpdf_setCurrentPage(OUTPUT_PRIVATE(r)->pdf, page_number + page);
+	cpdf_setCurrentPage(OUTPUT_PRIVATE(r)->pdf, page_number + page - OUTPUT_PRIVATE(r)->page_diff);
+	OUTPUT_PRIVATE(r)->current_page = page_number + page - OUTPUT_PRIVATE(r)->page_diff;
 #if USEPDFLOCALE
 	setlocale(LC_NUMERIC, tlocale);
 #endif
@@ -255,7 +258,8 @@ static void rlib_pdf_set_raw_page(rlib *r, struct rlib_part *part, gint page) {
 #if USEPDFLOCALE
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
-	cpdf_setCurrentPage(OUTPUT_PRIVATE(r)->pdf, page);
+	OUTPUT_PRIVATE(r)->page_diff = r->current_page_number - page;
+//	cpdf_setCurrentPage(OUTPUT_PRIVATE(r)->pdf, page);
 #if USEPDFLOCALE
 	setlocale(LC_NUMERIC, tlocale);
 #endif
@@ -282,7 +286,7 @@ static void rlib_pdf_init_output(rlib *r) {
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
 	CPDFdoc *pdf;
-	CPDFdocLimits dL = {500, -1, -1, 10000, 10000};
+	CPDFdocLimits dL = {MAX_PDF_PAGES, -1, -1, 10000, 10000};
 
 	r_debug("CPDF version %s\n", cpdf_version() );
 
@@ -290,7 +294,7 @@ static void rlib_pdf_init_output(rlib *r) {
 	cpdf_enableCompression(pdf, NO);
 //	cpdf_enableCompression(pdf, YES);
 	cpdf_init(pdf);
-	OUTPUT_PRIVATE(r)->text_on = FALSE;
+//	OUTPUT_PRIVATE(r)->text_on[OUTPUT_PRIVATE(r)->current_page] = FALSE;
 	cpdf_setTitle(pdf, "RLIB Report");
 #if USEPDFLOCALE
 	setlocale(LC_NUMERIC, tlocale);
@@ -323,15 +327,14 @@ static void rlib_pdf_spool_private(rlib *r) {
 }
 
 static void rlib_pdf_end_page(rlib *r, struct rlib_part *part, struct rlib_report *report) {
-#if USEPDFLOCALE
-	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
-#endif
 	rlib_pdf_turn_text_off(r);
 	r->current_page_number++;
 	r->current_line_number = 1;
-#if USEPDFLOCALE
-	setlocale(LC_NUMERIC, tlocale);
-#endif
+}
+
+static void rlib_pdf_end_page_again(rlib *r, struct rlib_part *part, struct rlib_report *report) {
+	rlib_pdf_turn_text_off(r);
+//	rlib_pdf_turn_text_on(r);
 }
 
 static int rlib_pdf_is_single_page(rlib *r) {
@@ -370,33 +373,34 @@ void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r)->do_break = TRUE;
 	OUTPUT(r)->do_grouptext = TRUE;	
 
-	OUTPUT(r)->rlib_get_string_width = rlib_pdf_get_string_width;
-	OUTPUT(r)->rlib_print_text = rlib_pdf_print_text;
-	OUTPUT(r)->rlib_set_fg_color = rlib_pdf_set_fg_color;
-	OUTPUT(r)->rlib_set_bg_color = rlib_pdf_set_fg_color;
-	OUTPUT(r)->rlib_draw_cell_background_start = rlib_pdf_drawbox;
-	OUTPUT(r)->rlib_draw_cell_background_end = rlib_pdf_draw_cell_background_end;
-	OUTPUT(r)->rlib_hr = rlib_pdf_hr;
-	OUTPUT(r)->rlib_boxurl_start = rlib_pdf_boxurl_start;
-	OUTPUT(r)->rlib_boxurl_end = rlib_pdf_boxurl_end;
-	OUTPUT(r)->rlib_drawimage = rlib_pdf_drawimage;
-	OUTPUT(r)->rlib_set_font_point = rlib_pdf_set_font_point;
-	OUTPUT(r)->rlib_start_new_page = rlib_pdf_start_new_page;
-	OUTPUT(r)->rlib_end_page = rlib_pdf_end_page;
-	OUTPUT(r)->rlib_init_end_page = rlib_pdf_init_end_page;
-	OUTPUT(r)->rlib_init_output = rlib_pdf_init_output;
-	OUTPUT(r)->rlib_start_report = rlib_pdf_start_report;
-	OUTPUT(r)->rlib_end_report = rlib_pdf_end_report;
-	OUTPUT(r)->rlib_finalize_private = rlib_pdf_finalize_private;
-	OUTPUT(r)->rlib_spool_private = rlib_pdf_spool_private;
-	OUTPUT(r)->rlib_start_line = rlib_pdf_stub_line;
-	OUTPUT(r)->rlib_end_line = rlib_pdf_stub_line;
-	OUTPUT(r)->rlib_set_working_page = rlib_pdf_set_working_page;
-	OUTPUT(r)->rlib_set_raw_page = rlib_pdf_set_raw_page;
-	OUTPUT(r)->rlib_is_single_page = rlib_pdf_is_single_page;
-	OUTPUT(r)->rlib_start_output_section = rlib_pdf_start_output_section;
-	OUTPUT(r)->rlib_end_output_section = rlib_pdf_end_output_section;
-	OUTPUT(r)->rlib_get_output = rlib_pdf_get_output;
-	OUTPUT(r)->rlib_get_output_length = rlib_pdf_get_output_length;
-	OUTPUT(r)->rlib_free = rlib_pdf_free;
+	OUTPUT(r)->get_string_width = rlib_pdf_get_string_width;
+	OUTPUT(r)->print_text = rlib_pdf_print_text;
+	OUTPUT(r)->set_fg_color = rlib_pdf_set_fg_color;
+	OUTPUT(r)->set_bg_color = rlib_pdf_set_fg_color;
+	OUTPUT(r)->draw_cell_background_start = rlib_pdf_drawbox;
+	OUTPUT(r)->draw_cell_background_end = rlib_pdf_draw_cell_background_end;
+	OUTPUT(r)->hr = rlib_pdf_hr;
+	OUTPUT(r)->boxurl_start = rlib_pdf_boxurl_start;
+	OUTPUT(r)->boxurl_end = rlib_pdf_boxurl_end;
+	OUTPUT(r)->drawimage = rlib_pdf_drawimage;
+	OUTPUT(r)->set_font_point = rlib_pdf_set_font_point;
+	OUTPUT(r)->start_new_page = rlib_pdf_start_new_page;
+	OUTPUT(r)->end_page = rlib_pdf_end_page;
+	OUTPUT(r)->end_page_again = rlib_pdf_end_page_again;
+	OUTPUT(r)->init_end_page = rlib_pdf_init_end_page;
+	OUTPUT(r)->init_output = rlib_pdf_init_output;
+	OUTPUT(r)->start_report = rlib_pdf_start_report;
+	OUTPUT(r)->end_report = rlib_pdf_end_report;
+	OUTPUT(r)->finalize_private = rlib_pdf_finalize_private;
+	OUTPUT(r)->spool_private = rlib_pdf_spool_private;
+	OUTPUT(r)->start_line = rlib_pdf_stub_line;
+	OUTPUT(r)->end_line = rlib_pdf_stub_line;
+	OUTPUT(r)->set_working_page = rlib_pdf_set_working_page;
+	OUTPUT(r)->set_raw_page = rlib_pdf_set_raw_page;
+	OUTPUT(r)->is_single_page = rlib_pdf_is_single_page;
+	OUTPUT(r)->start_output_section = rlib_pdf_start_output_section;
+	OUTPUT(r)->end_output_section = rlib_pdf_end_output_section;
+	OUTPUT(r)->get_output = rlib_pdf_get_output;
+	OUTPUT(r)->get_output_length = rlib_pdf_get_output_length;
+	OUTPUT(r)->free = rlib_pdf_free;
 }

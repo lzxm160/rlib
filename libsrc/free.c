@@ -299,7 +299,7 @@ gint rlib_free(rlib *r) {
 		rlib_hashtable_destroy(r->htParameters);
 	}
 	
-	OUTPUT(r)->rlib_free(r);
+	OUTPUT(r)->free(r);
 	
 	ENVIRONMENT(r)->free(r);
 				

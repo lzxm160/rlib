@@ -1,3 +1,16 @@
+2004-10-09  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/api.c: flow parts for PDF are working nice
+	* libsrc/breaks.c: likewise
+	* libsrc/csv.c: likewise
+	* libsrc/free.c: likewise
+	* libsrc/html.c: likewise
+	* libsrc/layout.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/txt.c: likewise
+	* src/examples/php/part_test.xml: likewise
+
 2004-10-06  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/layout.c: initital add
 

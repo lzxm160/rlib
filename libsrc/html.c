@@ -145,7 +145,7 @@ static void rlib_html_print_text(rlib *r, gfloat left_origin, gfloat bottom_orig
 	print_text(r, text, backwards);
 	
 	if(did_fg || did_fp) {
-		OUTPUT(r)->rlib_set_fg_color(r, 0, 0, 0);
+		OUTPUT(r)->set_fg_color(r, 0, 0, 0);
 		print_text(r, "</font>", backwards);
 	}
 }
@@ -184,13 +184,13 @@ struct rlib_rgb *color, gfloat indent, gfloat length) {
 
 static void rlib_html_draw_cell_background_start(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
 struct rlib_rgb *color) {
-	OUTPUT(r)->rlib_set_bg_color(r, color->r, color->g, color->b);
+	OUTPUT(r)->set_bg_color(r, color->r, color->g, color->b);
 	OUTPUT_PRIVATE(r)->do_bg = TRUE;
 }
 
 static void rlib_html_draw_cell_background_end(rlib *r) {
 	if(OUTPUT_PRIVATE(r)->did_bg) {
-		OUTPUT(r)->rlib_set_bg_color(r, 0, 0, 0);
+		OUTPUT(r)->set_bg_color(r, 0, 0, 0);
 		print_text(r, "</span>", OUTPUT_PRIVATE(r)->bg_backwards);
 		OUTPUT_PRIVATE(r)->do_bg = FALSE;
 	}
@@ -340,32 +340,32 @@ void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT(r)->do_break = TRUE;
 	OUTPUT(r)->do_grouptext = FALSE;	
 	
-	OUTPUT(r)->rlib_get_string_width = rlib_html_get_string_width;
-	OUTPUT(r)->rlib_print_text = rlib_html_print_text;
-	OUTPUT(r)->rlib_set_fg_color = rlib_html_set_fg_color;
-	OUTPUT(r)->rlib_set_bg_color = rlib_html_set_bg_color;
-	OUTPUT(r)->rlib_hr = rlib_html_hr;
-	OUTPUT(r)->rlib_draw_cell_background_start = rlib_html_draw_cell_background_start;
-	OUTPUT(r)->rlib_draw_cell_background_end = rlib_html_draw_cell_background_end;
-	OUTPUT(r)->rlib_boxurl_start = rlib_html_boxurl_start;
-	OUTPUT(r)->rlib_boxurl_end = rlib_html_boxurl_end;
-	OUTPUT(r)->rlib_drawimage = rlib_html_drawimage;
-	OUTPUT(r)->rlib_set_font_point = rlib_html_set_font_point;
-	OUTPUT(r)->rlib_start_new_page = rlib_html_start_new_page;
-	OUTPUT(r)->rlib_end_page = rlib_html_end_page;	
-	OUTPUT(r)->rlib_init_end_page = rlib_html_init_end_page;
-	OUTPUT(r)->rlib_init_output = rlib_html_init_output;
-	OUTPUT(r)->rlib_start_report = rlib_html_start_report;
-	OUTPUT(r)->rlib_end_report = rlib_html_end_report;
-	OUTPUT(r)->rlib_finalize_private = rlib_html_finalize_private;
-	OUTPUT(r)->rlib_spool_private = rlib_html_spool_private;
-	OUTPUT(r)->rlib_start_line = rlib_html_start_line;
-	OUTPUT(r)->rlib_end_line = rlib_html_end_line;
-	OUTPUT(r)->rlib_is_single_page = rlib_html_is_single_page;
-	OUTPUT(r)->rlib_start_output_section = rlib_html_start_output_section;	
-	OUTPUT(r)->rlib_end_output_section = rlib_html_end_output_section;	
-	OUTPUT(r)->rlib_get_output = rlib_html_get_output;
-	OUTPUT(r)->rlib_get_output_length = rlib_html_get_output_length;
-	OUTPUT(r)->rlib_set_working_page = rlib_html_set_working_page;	
-	OUTPUT(r)->rlib_free = rlib_html_free;
+	OUTPUT(r)->get_string_width = rlib_html_get_string_width;
+	OUTPUT(r)->print_text = rlib_html_print_text;
+	OUTPUT(r)->set_fg_color = rlib_html_set_fg_color;
+	OUTPUT(r)->set_bg_color = rlib_html_set_bg_color;
+	OUTPUT(r)->hr = rlib_html_hr;
+	OUTPUT(r)->draw_cell_background_start = rlib_html_draw_cell_background_start;
+	OUTPUT(r)->draw_cell_background_end = rlib_html_draw_cell_background_end;
+	OUTPUT(r)->boxurl_start = rlib_html_boxurl_start;
+	OUTPUT(r)->boxurl_end = rlib_html_boxurl_end;
+	OUTPUT(r)->drawimage = rlib_html_drawimage;
+	OUTPUT(r)->set_font_point = rlib_html_set_font_point;
+	OUTPUT(r)->start_new_page = rlib_html_start_new_page;
+	OUTPUT(r)->end_page = rlib_html_end_page;  
+	OUTPUT(r)->init_end_page = rlib_html_init_end_page;
+	OUTPUT(r)->init_output = rlib_html_init_output;
+	OUTPUT(r)->start_report = rlib_html_start_report;
+	OUTPUT(r)->end_report = rlib_html_end_report;
+	OUTPUT(r)->finalize_private = rlib_html_finalize_private;
+	OUTPUT(r)->spool_private = rlib_html_spool_private;
+	OUTPUT(r)->start_line = rlib_html_start_line;
+	OUTPUT(r)->end_line = rlib_html_end_line;
+	OUTPUT(r)->is_single_page = rlib_html_is_single_page;
+	OUTPUT(r)->start_output_section = rlib_html_start_output_section;  
+	OUTPUT(r)->end_output_section = rlib_html_end_output_section;   
+	OUTPUT(r)->get_output = rlib_html_get_output;
+	OUTPUT(r)->get_output_length = rlib_html_get_output_length;
+	OUTPUT(r)->set_working_page = rlib_html_set_working_page; 
+	OUTPUT(r)->free = rlib_html_free;
 }

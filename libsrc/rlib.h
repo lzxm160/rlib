@@ -433,6 +433,7 @@ struct rlib_report {
 	gfloat *bottom_size;
 
 	gint main_loop_query;
+	gint raw_page_number;
 
 	gint orientation;
 	gint font_size;
@@ -490,6 +491,7 @@ struct rlib_resultset_followers {
 
 struct rlib {
 	gint current_page_number;
+	gint total_pages_allocated;
 	gint current_line_number;
 	gint detail_line_count;
 	gint start_of_new_report;
@@ -557,35 +559,36 @@ struct output_filter {
 	gint do_align;
 	gint do_break;
 	gint do_grouptext;
-	gfloat	(*rlib_get_string_width)(rlib *, char *);
-	void (*rlib_print_text)(rlib *, float, float, char *, int, int);
-	void (*rlib_set_fg_color)(rlib *, float, float, float);
-	void (*rlib_set_bg_color)(rlib *, float, float, float);
-	void (*rlib_hr)(rlib *, int, float, float, float, float, struct rlib_rgb *, float, float);
-	void (*rlib_draw_cell_background_start)(rlib *, float, float, float, float, struct rlib_rgb *);
-	void (*rlib_draw_cell_background_end)(rlib *);
-	void (*rlib_boxurl_start)(rlib *, struct rlib_part *part, float, float, float, float, char *);
-	void (*rlib_boxurl_end)(rlib *);
-	void (*rlib_drawimage)(rlib *, float, float, char *, char *, float, float);
-	void (*rlib_set_font_point)(rlib *, int);
-	void (*rlib_start_new_page)(rlib *, struct rlib_part *);
-	void (*rlib_end_page)(rlib *, struct rlib_part *, struct rlib_report *);
-	void (*rlib_init_end_page)(rlib *);
-	void (*rlib_init_output)(rlib *);
-	void (*rlib_set_working_page)(rlib *, struct rlib_part *, int);
-	void (*rlib_set_raw_page)(rlib *, struct rlib_part *, int);
-	void (*rlib_start_report)(rlib *, struct rlib_part *);
-	void (*rlib_end_report)(rlib *, struct rlib_part *, struct rlib_report *);
-	void (*rlib_finalize_private)(rlib *);
-	void (*rlib_spool_private)(rlib *);
-	void (*rlib_start_line)(rlib *, int);
-	void (*rlib_end_line)(rlib *, int);
-	int (*rlib_is_single_page)(rlib *);
-	void (*rlib_start_output_section)(rlib *);
-	void (*rlib_end_output_section)(rlib *);
-	char *(*rlib_get_output)(rlib *);
-	long (*rlib_get_output_length)(rlib *);
-	int (*rlib_free)(rlib *r);
+	gfloat	(*get_string_width)(rlib *, char *);
+	void (*print_text)(rlib *, float, float, char *, int, int);
+	void (*set_fg_color)(rlib *, float, float, float);
+	void (*set_bg_color)(rlib *, float, float, float);
+	void (*hr)(rlib *, int, float, float, float, float, struct rlib_rgb *, float, float);
+	void (*draw_cell_background_start)(rlib *, float, float, float, float, struct rlib_rgb *);
+	void (*draw_cell_background_end)(rlib *);
+	void (*boxurl_start)(rlib *, struct rlib_part *part, float, float, float, float, char *);
+	void (*boxurl_end)(rlib *);
+	void (*drawimage)(rlib *, float, float, char *, char *, float, float);
+	void (*set_font_point)(rlib *, int);
+	void (*start_new_page)(rlib *, struct rlib_part *);
+	void (*end_page)(rlib *, struct rlib_part *, struct rlib_report *);
+	void (*end_page_again)(rlib *, struct rlib_part *, struct rlib_report *);
+	void (*init_end_page)(rlib *);
+	void (*init_output)(rlib *);
+	void (*set_working_page)(rlib *, struct rlib_part *, int);
+	void (*set_raw_page)(rlib *, struct rlib_part *, int);
+	void (*start_report)(rlib *, struct rlib_part *);
+	void (*end_report)(rlib *, struct rlib_part *, struct rlib_report *);
+	void (*finalize_private)(rlib *);
+	void (*spool_private)(rlib *);
+	void (*start_line)(rlib *, int);
+	void (*end_line)(rlib *, int);
+	int (*is_single_page)(rlib *);
+	void (*start_output_section)(rlib *);
+	void (*end_output_section)(rlib *);
+	char *(*get_output)(rlib *);
+	long (*get_output_length)(rlib *);
+	int (*free)(rlib *r);
 };
 
 /***** PROTOTYPES: breaks.c ***************************************************/

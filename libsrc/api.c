@@ -153,7 +153,7 @@ gchar * rlib_get_content_type_as_text(rlib *r) {
 	static char buf[256];
 #ifdef HAVE_LIBCPDF	
 	if(r->format == RLIB_CONTENT_TYPE_PDF) {
-		sprintf(buf, "Content-Type: application/pdf\nContent-Length: %ld%c", OUTPUT(r)->rlib_get_output_length(r), 10);
+		sprintf(buf, "Content-Type: application/pdf\nContent-Length: %ld%c", OUTPUT(r)->get_output_length(r), 10);
 		return buf;
 	}
 #endif
@@ -176,7 +176,7 @@ gchar * rlib_get_content_type_as_text(rlib *r) {
 }
 
 gint rlib_spool(rlib *r) {
-	OUTPUT(r)->rlib_spool_private(r);
+	OUTPUT(r)->spool_private(r);
 	return 0;
 }
 
@@ -237,11 +237,11 @@ gint rlib_set_output_format_from_text(rlib *r, gchar *name) {
 }
 
 gchar *rlib_get_output(rlib *r) {
-	return OUTPUT(r)->rlib_get_output(r);
+	return OUTPUT(r)->get_output(r);
 }
 
 gint rlib_get_output_length(rlib *r) {
-	return OUTPUT(r)->rlib_get_output_length(r);
+	return OUTPUT(r)->get_output_length(r);
 }
 
 /**

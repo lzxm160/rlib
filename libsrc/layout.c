@@ -44,16 +44,14 @@ gfloat rlib_layout_get_page_width(rlib *r, struct rlib_part *part) {
 
 void rlib_layout_init_part_page(rlib *r, struct rlib_part *part) {
 	gint i;
-
-r_error("rlib_layout_init_part_page!!!!!!!!!!\n");
 	for(i=0;i<part->pages_accross;i++) {
 		part->position_top[i] = part->top_margin;
 		part->bottom_size[i] = get_outputs_size(r, part->page_footer, i);
 		part->position_bottom[i] -= part->bottom_size[i];
 	}		
 	r->current_font_point = -1;
-	OUTPUT(r)->rlib_start_new_page(r, part);
-	OUTPUT(r)->rlib_set_font_point(r, r->font_point);
+	OUTPUT(r)->start_new_page(r, part);
+	OUTPUT(r)->set_font_point(r, r->font_point);
 	
 	rlib_layout_report_output(r, part, NULL, part->page_header, FALSE);
 
@@ -62,5 +60,8 @@ r_error("rlib_layout_init_part_page!!!!!!!!!!\n");
 
 	rlib_layout_report_output(r, part, NULL, part->page_footer, TRUE);
 
-	OUTPUT(r)->rlib_init_end_page(r);
+	for(i=0; i<part->pages_accross; i++)
+		part->position_bottom[i] -= part->bottom_size[i];
+
+	OUTPUT(r)->init_end_page(r);
 }

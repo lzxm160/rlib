@@ -23,6 +23,24 @@
 			<load name="array_test2.xml"/>
 		</td>
 	</tr>
+	<tr>
+		<td width="47">
+			<load name="array_test.xml"/>
+		</td>
+		<td width="5"/>
+		<td width="47">
+			<load name="array_test.xml"/>
+		</td>
+	</tr>
+	<tr>
+		<td width="47">
+			<load name="array_test2.xml"/>
+		</td>
+		<td width="5"/>
+		<td width="47">
+			<load name="array_test2.xml"/>
+		</td>
+	</tr>
 	<PageFooter>
 		<Output>
 			<Line>
