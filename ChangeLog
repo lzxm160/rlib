@@ -1,3 +1,7 @@
+2004-06-21  Chet Heilman <cheilman@sicompos.com>
+	* libsrc/pcode.c: (rlib_str_to_long_long):
+		Fix numeric conversion so '-' works when the integer value is 0.
+
 2004-05-18  Bob Doan  <bdoan@sicompos.com>
 	* NEWS: release time
 
