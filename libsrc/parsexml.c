@@ -342,8 +342,7 @@ struct report * parse_report_file(char *filename) {
 			ret->report_footer = parse_report_element(doc, ns, cur);
 		}
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "Detail"))) {
-			ret->detail = rmalloc(sizeof(struct report_detail));
-			parse_detail(doc, ns, cur, ret->detail);
+			parse_detail(doc, ns, cur, &ret->detail);
 		}
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "Breaks"))) {
 			ret->breaks = parseReportBreaks(doc, ns, cur);

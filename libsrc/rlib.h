@@ -271,7 +271,7 @@ struct report {
 	
 	struct report_output_array *report_header;
 	struct report_output_array *page_header;
-	struct report_detail *detail;
+	struct report_detail detail;
 	struct report_output_array *page_footer;
 	struct report_output_array *report_footer;
 	struct report_element *variables;
@@ -329,6 +329,7 @@ struct output_filter {
 	void (*rlib_init_end_page)(rlib *);
 	void (*rlib_end_text)(rlib *);
 	void (*rlib_init_output)(rlib *);
+	void (*rlib_init_output_report)(rlib *);
 	void (*rlib_begin_text)(rlib *);
 	void (*rlib_finalize_private)(rlib *);
 	void (*rlib_spool_private)(rlib *);

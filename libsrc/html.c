@@ -227,11 +227,18 @@ static void rlib_html_start_new_page(rlib *r) {
 
 static void rlib_html_init_end_page(rlib *r) {}
 
-static void rlib_html_end_text(rlib *r) {}
+static void rlib_html_end_text(rlib *r) {
+	print_text(r, "</pre></td></tr></table>", FALSE);
+}
 
 static void rlib_html_init_output(rlib *r) {
 	char buf[MAXSTRLEN];
-	print_text(r, "<html><head><style type=\"text/css\">", FALSE);
+	print_text(r, "<head>", FALSE);	
+}
+
+static void rlib_html_init_output_report(rlib *r) {
+	char buf[MAXSTRLEN];
+	print_text(r, "<head><style type=\"text/css\">", FALSE);
 	sprintf(buf, "pre { margin:0; padding:0; margin-top:0; margin-bottom:0; font-size: %dpt;}\n", r->font_point);
 	print_text(r, buf, FALSE);
 	print_text(r, "DIV { position: absolute; left: 0; }\n", FALSE);
@@ -240,7 +247,6 @@ static void rlib_html_init_output(rlib *r) {
 	print_text(r, "<body><table><tr><td><pre>", FALSE);
 	
 }
-
 static void rlib_html_begin_text(rlib *r) {}
 
 static void rlib_html_finalize_private(rlib *r) {
@@ -304,6 +310,7 @@ void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT(r)->rlib_init_end_page = rlib_html_init_end_page;
 	OUTPUT(r)->rlib_end_text = rlib_html_end_text;
 	OUTPUT(r)->rlib_init_output = rlib_html_init_output;
+	OUTPUT(r)->rlib_init_output_report = rlib_html_init_output_report;
 	OUTPUT(r)->rlib_begin_text = rlib_html_begin_text;
 	OUTPUT(r)->rlib_finalize_private = rlib_html_finalize_private;
 	OUTPUT(r)->rlib_spool_private = rlib_html_spool_private;

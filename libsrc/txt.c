@@ -116,6 +116,7 @@ static void rlib_txt_end_line(rlib *r, int backwards) {
 
 static void rlib_txt_start_output_section(rlib *r) {}
 static void rlib_txt_end_output_section(rlib *r) {}
+static void rlib_txt_init_output_report(rlib *r) {}
 
 static void rlib_txt_end_page(rlib *r) {
 	r->current_page_number++;
@@ -157,6 +158,7 @@ void rlib_txt_new_output_filter(rlib *r) {
 	OUTPUT(r)->rlib_init_end_page = rlib_txt_init_end_page;
 	OUTPUT(r)->rlib_end_text = rlib_txt_end_text;
 	OUTPUT(r)->rlib_init_output = rlib_txt_init_output;
+	OUTPUT(r)->rlib_init_output_report = rlib_txt_init_output_report;
 	OUTPUT(r)->rlib_begin_text = rlib_txt_begin_text;
 	OUTPUT(r)->rlib_finalize_private = rlib_txt_finalize_private;
 	OUTPUT(r)->rlib_spool_private = rlib_txt_spool_private;

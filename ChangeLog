@@ -1,0 +1,9 @@
+2003-10-04  Bob Doan  <bdoan@sicompos.com>
+
+	* libsrc/csv.c: new init_page_report function needed for more accuare output
+	* libsrc/html.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/txt.c: likewise
+	* libsrc/reportgen.c: likewise, a little less mallocing going on
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise

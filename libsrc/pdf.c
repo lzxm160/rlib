@@ -167,13 +167,13 @@ static int rlib_pdf_is_single_page(rlib *r) {
 	return FALSE;
 }
 
-static void rlib_pdf_stub_line(rlib *r, int backwards) {
-}
+static void rlib_pdf_stub_line(rlib *r, int backwards) {}
 
 static void rlib_pdf_end_output_section(rlib *r) {}
 static void rlib_pdf_start_output_section(rlib *r) {}
 static void rlib_pdf_boxurl_end(rlib *r) {}
 static void rlib_pdf_draw_cell_background_end(rlib *r) {}
+static void rlib_pdf_init_output_report(rlib *r) {}
 
 void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r) = rmalloc(sizeof(struct output_filter));
@@ -199,6 +199,7 @@ void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r)->rlib_init_end_page = rlib_pdf_init_end_page;
 	OUTPUT(r)->rlib_end_text = rlib_pdf_end_text;
 	OUTPUT(r)->rlib_init_output = rlib_pdf_init_output;
+	OUTPUT(r)->rlib_init_output_report = rlib_pdf_init_output_report;
 	OUTPUT(r)->rlib_begin_text = rlib_pdf_begin_text;
 	OUTPUT(r)->rlib_finalize_private = rlib_pdf_finalize_private;
 	OUTPUT(r)->rlib_spool_private = rlib_pdf_spool_private;

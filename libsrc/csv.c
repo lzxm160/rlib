@@ -121,6 +121,7 @@ static void really_print_text(rlib *r, char *text) {
 }
 
 static void rlib_csv_end_line(rlib *r, int backwards) {}
+static void rlib_csv_init_output_report(rlib *r) {}
 
 static void rlib_csv_start_output_section(rlib *r) {
 	int i;
@@ -182,6 +183,7 @@ void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT(r)->rlib_init_end_page = rlib_csv_init_end_page;
 	OUTPUT(r)->rlib_end_text = rlib_csv_end_text;
 	OUTPUT(r)->rlib_init_output = rlib_csv_init_output;
+	OUTPUT(r)->rlib_init_output_report = rlib_csv_init_output_report;
 	OUTPUT(r)->rlib_begin_text = rlib_csv_begin_text;
 	OUTPUT(r)->rlib_finalize_private = rlib_csv_finalize_private;
 	OUTPUT(r)->rlib_spool_private = rlib_csv_spool_private;

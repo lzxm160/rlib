@@ -481,8 +481,7 @@ void hack_print_detail_lines(rlib *r) {
 			print_detail_line_private(r, rb->header, FALSE);
 		}		
 	}
-	if(r->reports[r->current_report]->detail != NULL)
-		print_detail_line_private(r, r->reports[r->current_report]->detail->fields, FALSE);
+	print_detail_line_private(r, r->reports[r->current_report]->detail.fields, FALSE);
 	OUTPUT(r)->rlib_end_output_section(r);
 }
 
@@ -494,8 +493,7 @@ void rlib_init_page(rlib *r, char report_header) {
 		print_detail_line(r, r->reports[r->current_report]->report_header, FALSE);	
 	
 	print_detail_line(r, r->reports[r->current_report]->page_header, FALSE);
-	if(r->reports[r->current_report]->detail != NULL)
-		print_detail_line(r, r->reports[r->current_report]->detail->textlines, FALSE);		
+	print_detail_line(r, r->reports[r->current_report]->detail.textlines, FALSE);		
 	print_detail_line(r, r->reports[r->current_report]->page_footer, TRUE);
 
 	OUTPUT(r)->rlib_init_end_page(r);
@@ -530,7 +528,8 @@ int will_this_fit(rlib *r, float total) {
 int will_line_fit(rlib *r, struct report_output_array *roa) {
 	if(OUTPUT(r)->rlib_is_single_page(r))
 		return TRUE;
-		
+	if(roa == NULL)
+		return TRUE;
 	return will_this_fit(r, get_output_size(r, roa));
 }
 
@@ -671,7 +670,7 @@ int make_report(rlib *r) {
 		rlib_resolve_fields(r);
 		if(r->reports[r->current_report]->fontsize != -1)
 			r->font_point = r->reports[r->current_report]->fontsize;
-			
+		OUTPUT(r)->rlib_init_output_report(r);
 		rlib_init_variables(r);
 		rlib_init_page(r, TRUE);		
 		OUTPUT(r)->rlib_begin_text(r);
@@ -679,16 +678,13 @@ int make_report(rlib *r) {
 			MYSQL_ROW temp=NULL;
 			rlib_handle_break_headers(r);
 			
-			if(r->reports[r->current_report]->detail != NULL) {
-				if(!will_line_fit(r, r->reports[r->current_report]->detail->fields)) {
-					OUTPUT(r)->rlib_end_page(r);
-					rlib_force_break_headers(r);
-				}
+			if(!will_line_fit(r, r->reports[r->current_report]->detail.fields)) {
+				OUTPUT(r)->rlib_end_page(r);
+				rlib_force_break_headers(r);
 			}
 			rlib_process_variables(r);
 			if(OUTPUT(r)->do_break) {
-				if(r->reports[r->current_report]->detail != NULL)
-					print_detail_line(r, r->reports[r->current_report]->detail->fields, FALSE);
+				print_detail_line(r, r->reports[r->current_report]->detail.fields, FALSE);
 			} else
 				hack_print_detail_lines(r);
 
@@ -697,7 +693,6 @@ int make_report(rlib *r) {
 			last = temp;
 			temp = INPUT(r)->fetch_row(INPUT(r), r->current_result);
 			INPUT(r)->set_last_row_pointer(INPUT(r), r->current_result, INPUT(r)->get_row_pointer(INPUT(r), r->current_result));
-debugf("IS ROW NULL [%d]\n", temp == NULL);
 			if(temp == NULL) {
 				INPUT(r)->set_row_pointer(INPUT(r), r->current_result, temp);
 				rlib_handle_break_footers(r);
