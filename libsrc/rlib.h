@@ -436,7 +436,7 @@ int rlib_resolve_rlib_variable(rlib *r, char *name);
 char * rlib_resolve_memory_variable(rlib *r, char *name);
 char * rlib_resolve_field_value(rlib *r, struct rlib_resultset_field *rf);
 int rlib_lookup_result(rlib *r, char *name);
-int rlib_resolve_resultset_field(rlib *r, char *name, void *rtn_field, int *rtn_resultset);
+int rlib_resolve_resultset_field(rlib *r, char *name, void **rtn_field, int *rtn_resultset);
 struct report_variable *rlib_resolve_variable(rlib *r, char *name);
 void rlib_resolve_fields(rlib *r);
 

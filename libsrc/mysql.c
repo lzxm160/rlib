@@ -19,6 +19,7 @@
  */
  
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <mysql.h>
  
@@ -41,17 +42,16 @@ struct rlib_mysql_results {
 	MYSQL_ROW save_row;
 	MYSQL_ROW last_row;
 	int didprevious;
+	int *fields;
 };
 
-//	struct rlib_mysql_results results[RLIB_MAXIMUM_QUERIES]; 
 struct _private {
-	MYSQL *mysql;	
+	MYSQL *mysql;
 };
 
 void * rlib_mysql_real_connect(void * woot, char *host, char *user, char *password, char *database) {
 	struct input_filter *input = woot;
 	MYSQL *mysql;
-	
 
 	mysql = mysql_init(NULL);
 
@@ -62,6 +62,7 @@ void * rlib_mysql_real_connect(void * woot, char *host, char *user, char *passwo
 	if (mysql_select_db(mysql,database)) {
 		return NULL;
 	}
+
 	INPUT_PRIVATE(input)->mysql = mysql;	
 	return mysql;
 }
@@ -77,7 +78,6 @@ static int rlib_mysql_input_close(void *woot) {
 static MYSQL_RES * rlib_mysql_query(MYSQL *mysql, char *query) {
 	MYSQL_RES *result = NULL;
 	int rtn;
-	
 	rtn = mysql_query(mysql, query);
 	if(rtn == 0) {
 		result = mysql_store_result(mysql);
@@ -149,31 +149,30 @@ static int rlib_mysql_last(void *input_ptr, void *result_ptr) {
 
 static char * rlib_mysql_get_field_value_as_string(void *input_ptr, void *result_ptr, void *field_ptr) {
 	struct rlib_mysql_results *result = result_ptr;
-	long field = *(long *)field_ptr;
+	long field = (long)field_ptr;
 	return result->this_row[field];
 }
 
 static void * rlib_mysql_resolve_field_pointer(void *input_ptr, void *result_ptr, char *name) {
-	struct rlib_mysql_results *result = result_ptr;
-	long rtn;
+	struct rlib_mysql_results *results = result_ptr;
 	int x=0;
 	MYSQL_FIELD *field;
-	mysql_field_seek(result->result, 0);
+	mysql_field_seek(results->result, 0);
 	
-	while((field = mysql_fetch_field(result->result))) {
+	while((field = mysql_fetch_field(results->result))) {
 		if(!strcmp(field->name, name)) {
-			rtn = x;
-			return (void *)rtn;
+			return (void *)results->fields[x];
 		}
 		x++;
 	}
 	return NULL;
 }
 
-void * mysql_new_result_from_query(void *woot, char *query) {
-	struct input_filter *input = woot;
-	MYSQL_RES *result;
+void * mysql_new_result_from_query(void *input_ptr, char *query) {
+	struct input_filter *input = input_ptr;
 	struct rlib_mysql_results *results;
+	MYSQL_RES *result;
+	unsigned int count,i;
 	result = rlib_mysql_query(INPUT_PRIVATE(input)->mysql, query);
 	if(result == NULL)
 		return NULL;
@@ -181,12 +180,18 @@ void * mysql_new_result_from_query(void *woot, char *query) {
 		results = rmalloc(sizeof(struct rlib_mysql_results));
 		results->result = result;
 	}
+	count = mysql_field_count(INPUT_PRIVATE(input)->mysql);
+	results->fields = rmalloc(sizeof(int) * count);
+	for(i=0;i<count;i++) {
+		results->fields[i] = i;
+	}
 	return results;
 }
 
 static void rlib_mysql_rlib_free_result(void *input_ptr, void *result_ptr) {
 	struct rlib_mysql_results *result = result_ptr;
 	mysql_free_result(result->result);
+	rfree(result->fields);
 }
 
 static int rlib_mysql_free_input_filter(void *woot) {

@@ -68,7 +68,7 @@ int rlib_lookup_result(rlib *r, char *name) {
 }
 
 
-int rlib_resolve_resultset_field(rlib *r, char *name, void *rtn_field, int *rtn_resultset) {
+int rlib_resolve_resultset_field(rlib *r, char *name, void **rtn_field, int *rtn_resultset) {
 	int resultset=0;
 	int found = FALSE;
 	char *right_side = NULL, *result_name = NULL;
@@ -91,10 +91,11 @@ int rlib_resolve_resultset_field(rlib *r, char *name, void *rtn_field, int *rtn_
 		}
 		rfree(result_name);
 	}
-	rtn_field = INPUT(r)->resolve_field_pointer(INPUT(r), r->results[resultset].result, name);
+	*rtn_field = INPUT(r)->resolve_field_pointer(INPUT(r), r->results[resultset].result, name);
 	
-	if(rtn_field != NULL)
+	if(*rtn_field != NULL)
 		found = TRUE;
+		
 	*rtn_resultset = resultset;
 	return found;
 }

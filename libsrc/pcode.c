@@ -155,7 +155,7 @@ int rvalcmp(struct rlib_value *v1, struct rlib_value *v2) {
 
 struct rlib_pcode_operand * rlib_new_operand(rlib *r, char *str) {
 	int resultset;
-	void *field;
+	void *field=NULL;
 	char *memresult;
 	struct rlib_pcode_operand *o;
 	struct report_variable *rv;
