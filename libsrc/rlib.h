@@ -466,6 +466,8 @@ int rlib_postgre_report(char *connstr, char *xmlfilename, char *sqlquery, char *
 int rlib_add_resultset_follower(rlib *r, char *leader, char *follower);
 int rlib_add_parameter(rlib *r, const char *name, const char *value);
 int rlib_set_locale(rlib *r, char *locale);
+void rlib_trap(void); //For internals debugging only
+
 
 /***** PROTOTYPES: parsexml.c *************************************************/
 struct rlib_report * parse_report_file(char *filename);

@@ -1,3 +1,9 @@
+2003-12-03  Chet Heilman <cheilman@sicompos.com>
+	* libsrc/api.c: (rlib_trap): A debugging aid for internal use only
+	* libsrc/pcode.c: (skip_next_closing_paren), (rlib_infix_to_pcode):
+	Corrected nested parenthesis parsing in iif statements.
+	* libsrc/rlib.h: added prototype for rlib_trap.
+
 2003-12-02  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/api.c: fix problem w/ pcode order of operations
 	* libsrc/parsexml.c:  likewise

@@ -221,6 +221,15 @@ int rlib_set_locale(rlib *r, char *locale) {
 }
 
 
+/**
+ * put calls to this where you want to debug, then just set a breakpoint here.
+ */
+void rlib_trap() {
+	return;
+}
+
+
+
 #if HAVE_MYSQL
 int rlib_mysql_report(char *hostname, char *username, char *password, char *database, char *xmlfilename, char *sqlquery, char *outputformat) {
 	rlib *r;

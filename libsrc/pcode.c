@@ -334,6 +334,16 @@ void smart_add_pcode(struct rlib_pcode *p, struct operator_stack *os, struct rli
 }
 
 
+static char *skip_next_closing_paren(register char *str) {
+	register int ch;
+	
+	while ((ch = *str) && (ch != ')')) 
+		if (ch == '(') str = skip_next_closing_paren(str + 1);
+		else ++str;
+	return (ch == ')')? str + 1 : str;
+}
+
+
 struct rlib_pcode * rlib_infix_to_pcode(rlib *r, char *infix) {
 	char *moving_ptr = infix;
 	char *op_pointer = infix;
@@ -418,24 +428,22 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, char *infix) {
 					memcpy(iif, save_ptr, moving_ptr-save_ptr);
 					iif[moving_ptr-save_ptr-1] = '\0';
 					evaulation = iif;
-					pcount=0;
-					while(*iif) {
-						if(*iif == '(')
-							pcount++;
-						if(*iif == ')')
-							pcount--;
-						if(*iif == ',' && pcount==0) {
+					while (*iif) {
+						if (*iif == '(') iif = skip_next_closing_paren(iif + 1);
+						if (*iif == ')') {
+							*iif = '\0';
+							break;
+						}
+						if (*iif == ',') {
 							*iif='\0';
-							iif++;
 							if(ccount==0)
-								true = iif;
+								true = iif + 1;
 							else
-								false = iif;
+								false = iif + 1;
 							ccount++;
 						}
 						iif++;
 					}
-	
 					rpif = rmalloc(sizeof(struct rlib_pcode_if));
 					rpif->evaulation = rlib_infix_to_pcode(r, evaulation);			
 					rpif->true = rlib_infix_to_pcode(r, true);			
