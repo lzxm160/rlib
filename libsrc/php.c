@@ -21,6 +21,7 @@
 #include <php.h>
 
 #include "rlib.h"
+#include "rlib_php.h"
 
 /*
 	here we define the PHP interface to rlib.  always assume no access to this source when making methods
@@ -30,6 +31,7 @@
 
 /* declaration of functions to be exported */
 ZEND_FUNCTION(rlib_init);
+ZEND_FUNCTION(rlib_add_datasource_mysql);
 ZEND_FUNCTION(rlib_add_query_as);
 ZEND_FUNCTION(rlib_add_report);
 ZEND_FUNCTION(rlib_set_output_format);
@@ -46,6 +48,7 @@ static int le_link;
 zend_function_entry rlib_functions[] =
 {
 	 ZEND_FE(rlib_init, NULL)
+	 ZEND_FE(rlib_add_datasource_mysql, NULL)
 	 ZEND_FE(rlib_add_query_as, NULL)
 	 ZEND_FE(rlib_add_report, NULL)
 	 ZEND_FE(rlib_set_output_format, NULL)
@@ -93,29 +96,36 @@ ZEND_FUNCTION(rlib_init) {
 	rlib_inout_pass *rip;
 	long resource_id;
 	
-	initSignals();
 	rip = emalloc(sizeof(rlib_inout_pass));
 	bzero(rip, sizeof(rlib_inout_pass));
 	
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ssss", 
-		&rip->database_host, &sql_host_length, 
-		&rip->database_user, &sql_user_length, 
-		&rip->database_password, &sql_password_length, 
-		&rip->database_database, &sql_database_length) == FAILURE) {
-		return;
-	}
-	
 	rip->content_type = RLIB_CONTENT_TYPE_ERROR;
-	rip->format = RLIB_FORMAT_PDF;
+
+	rip->r = rlib_init();
 	
 	resource_id = ZEND_REGISTER_RESOURCE(return_value, rip, le_link);
 	RETURN_RESOURCE(resource_id);
 }
 
-/*
-	Adds A Query to the query queue with a name.  This will be passed to rlib for later execution.
-	The plan is RLIB will only execuite queries as it needs to.
-*/
+ZEND_FUNCTION(rlib_add_datasource_mysql) {
+	zval *z_rip = NULL;
+	long sql_host_length, sql_user_length, sql_password_length, sql_database_length;
+	char *database_host, *database_user, *database_password, *database_database;
+	rlib_inout_pass *rip;
+	int id = -1;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rssss", &z_rip,
+		&database_host, &sql_host_length, 
+		&database_user, &sql_user_length, 
+		&database_password, &sql_password_length, 
+		&database_database, &sql_database_length) == FAILURE) {
+		return;
+	}
+	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);
+	
+	rlib_add_datasource_mysql(rip->r, database_host, database_user, database_password, database_database);
+}
+
 ZEND_FUNCTION(rlib_add_query_as) {
 	zval *z_rip = NULL;
 	long whatever;
@@ -129,20 +139,10 @@ ZEND_FUNCTION(rlib_add_query_as) {
 	
 	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
 
-	if(rip->queries_count > (RLIB_MAXIMUM_QUERIES-1)) {
-		zend_error(E_ERROR, "MAXIMUM QUERIES REACHED, STOP ADDING SO MANY!");
-		return;
-	}
-
-	rip->queries[rip->queries_count].sql = estrdup(sql);
-	rip->queries[rip->queries_count].name = estrdup(name);
-	rip->queries_count++;
+	rlib_add_query_as(rip->r, estrdup(sql), estrdup(name));
 }
 
 
-/*
-	Adds A Report to the report queue.  This will be passed to rlib for later execution.
-*/
 ZEND_FUNCTION(rlib_add_report) {
 	zval *z_rip = NULL;
 	long whatever, mainloop_count;
@@ -156,23 +156,13 @@ ZEND_FUNCTION(rlib_add_report) {
 	
 	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
 
-	if(rip->reports_count > (RLIB_MAXIMUM_REPORTS-1)) {
-		zend_error(E_ERROR, "MAXIMUM REPORTS REACHED, STOP ADDING SO MANY!");
-		return;
-	}
-
-	rip->reports[rip->reports_count].name = estrdup(name);
 	if(mainloop_count > 0)
-		rip->reports[rip->reports_count].query = estrdup(mainloop);
+		rlib_add_report(rip->r, estrdup(name), estrdup(mainloop));
 	else
-		rip->reports[rip->reports_count].query = NULL;
-	rip->reports_count++;
+		rlib_add_report(rip->r, estrdup(name), NULL);
+		
 }
 
-/*
-	Set The Output Format
-	PDF, HTML, TXT, CSV, XML
-*/
 ZEND_FUNCTION(rlib_set_output_format) {
 	zval *z_rip = NULL;
 	long whatever;
@@ -186,11 +176,6 @@ ZEND_FUNCTION(rlib_set_output_format) {
 	
 	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
 
-	if(rip->queries_count > (RLIB_MAXIMUM_QUERIES-1)) {
-		zend_error(E_ERROR, "MAXIMUM QUERIES REACHED, STOP ADDING SO MANY!");
-		return;
-	}
-	
 	if(!strcasecmp(name, "PDF"))
 		rip->format = RLIB_FORMAT_PDF;
 	else if(!strcasecmp(name, "HTML"))
@@ -205,11 +190,6 @@ ZEND_FUNCTION(rlib_set_output_format) {
 		zend_error(E_ERROR, "Valid Formats are PDF, HTML, TXT, CSV, or XML");
 }
 
-
-
-/*
-	Locked and loaded.. go do something useful
-*/
 ZEND_FUNCTION(rlib_execute) {
 	zval *z_rip = NULL;
 	rlib_inout_pass *rip;
@@ -220,7 +200,7 @@ ZEND_FUNCTION(rlib_execute) {
 	}
 	
 	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
-	rip->r = rlib_init(rip);
+	rlib_execute(rip->r);
 	if(rip->r == NULL) {
 		zend_error(E_ERROR, "Could not load engine.. check logs");
 	} else {
@@ -231,9 +211,6 @@ ZEND_FUNCTION(rlib_execute) {
 	}
 }
 
-/*
-	If all is well send the report out
-*/
 ZEND_FUNCTION(rlib_spool) {
 	zval *z_rip = NULL;
 	rlib_inout_pass *rip;
@@ -254,7 +231,6 @@ ZEND_FUNCTION(rlib_spool) {
 	rlib_input_close(rip->r);
 
 }
-
 
 ZEND_FUNCTION(rlib_finalize) {
 	zval *z_rip = NULL;
@@ -279,15 +255,10 @@ ZEND_FUNCTION(rlib_finalize) {
 	}
 }
 
-/*
-	RLIB needs to determine the content type.. cause we can't set it ahead of time.. like if there is an error
-	and the content-type is PDF.. we could not make a useful error message with out a lot of work
-*/
 #define CONTENT_TYPE_HTML "Content-Type: text/html\n"
 #define CONTENT_TYPE_TEXT "Content-Type: text/plain\n"
 #define CONTENT_TYPE_PDF "Content-Type: application/pdf"
 #define CONTENT_TYPE_CSV "Content-type: application/octet-stream\nContent-Disposition: attachment; filename=report.csv\n"
-
 
 ZEND_FUNCTION(rlib_get_content_type) {
 	zval *z_rip = NULL;
@@ -315,7 +286,6 @@ ZEND_FUNCTION(rlib_get_content_type) {
 		sprintf(buf, "%sContent-Length: %ld%c", buf, rip->r->length, 10);		
 	} else if(rip->content_type == RLIB_CONTENT_TYPE_CSV) {
 		sprintf(buf, "%s", CONTENT_TYPE_CSV);
-//		sprintf(buf, "%sContent-Length: %ld%c", buf, rip->r->length, 10);		
 	}
 
 	RETURN_STRING(buf, TRUE);

@@ -24,63 +24,78 @@
 #include "ralloc.h"
 #include "rlib.h"
 
-/*
-	We need to connect to the SQL server, run the quereries, and parse
-	the xml fileds.. if any of that goes wrong we are screwed and wee
-	need to tell the user that
-*/
-
-/*
-	Accepts Stuff from the PHP side of things and returns a struct rlib
-	if things work out.......  All this is done before the main loop
-*/
-rlib * rlib_init(rlib_inout_pass *rip) {
-	int i,j;
-	void *mysql;
+rlib * rlib_init() {
 	rlib *r;
 	
 	setlocale (LC_NUMERIC, "en_US");
+	init_signals();
 
 	r = rmalloc(sizeof(rlib));
 	bzero(r, sizeof(rlib));
 
 	r->input = rlib_mysql_new_input_filter();
-	mysql = INPUT(r)->rlib_input_connect(INPUT(r), rip->database_host, rip->database_user, rip->database_password, rip->database_database);
+
+	return r;
+}
+
+int rlib_add_datasource_mysql(rlib *r, char *database_host, char *database_user, char *database_password, char *database_database) {
+	void *mysql;
+
+	mysql = INPUT(r)->rlib_input_connect(INPUT(r), database_host, database_user, database_password, database_database);
 
 	if(mysql == NULL) {
-		debugf("Could not connect to MYSQL\n");
-		return NULL;
+		debugf("ERROR: Could not connect to MYSQL\n");
+		return -1;
+	}
+}
+
+int rlib_add_query_as(rlib *r, char *sql, char *name) {
+	if(r->queries_count > (RLIB_MAXIMUM_QUERIES-1)) {
+		return -1;
 	}
 
-	if(rip->queries_count <= 0) {
-		debugf("You need to specify at least one query\n");
-		return NULL;
-	}
+	r->queries[r->queries_count].sql = sql;
+	r->queries[r->queries_count].name = name;
+	r->queries_count++;
+	return r->queries_count;
+}
 
-	if(rip->reports_count <= 0) {
-		debugf("You need to specify at least one report\n");
-		return NULL;
+int rlib_add_report(rlib *r, char *name, char *mainloop) {
+	if(r->reports_count > (RLIB_MAXIMUM_REPORTS-1)) {
+		return - 1;
 	}
 	
-	for(i=0;i<rip->queries_count;i++) {
-		INPUT(r)->query_and_set_result(INPUT(r), i, rip->queries[i].sql);
+	r->reportstorun[r->reports_count].name = name;
+	r->reportstorun[r->reports_count].query = mainloop;
+	r->reports_count++;
+	return r->reports_count;
+}
+
+int rlib_execute(rlib *r) {
+	int i,j;
+	void *mysql;
+
+	for(i=0;i<r->queries_count;i++) {
+		INPUT(r)->query_and_set_result(INPUT(r), i, r->queries[i].sql);
 		if(INPUT(r)->get_result_pointer(INPUT(r), i) == NULL) {
 			rfree(r);
 			debugf("Failed To Run A Query!\n");			
-			return NULL;
+			return -1;
 		}
-		INPUT(r)->set_query_result_name(INPUT(r), i, rip->queries[i].name);
+		INPUT(r)->set_query_result_name(INPUT(r), i, r->queries[i].name);
 	}
-	r->results_count = rip->queries_count;
+//TODO: this is stupid
+	r->results_count = r->queries_count;
 
 	LIBXML_TEST_VERSION
+
 	xmlKeepBlanksDefault(0);
-	for(i=0;i<rip->reports_count;i++) {
-		r->reports[i] = parse_report_file(rip->reports[i].name);
+	for(i=0;i<r->reports_count;i++) {
+		r->reports[i] = parse_report_file(r->reportstorun[i].name);
 		r->reports[i]->mainloop_query = -1;
-		if(rip->reports[i].query != NULL) {
-			for(j=0;j<rip->queries_count;j++) {
-				if(!strcmp(rip->queries[j].name, rip->reports[i].query)) {
+		if(r->reportstorun[i].query != NULL) {
+			for(j=0;j<r->queries_count;j++) {
+				if(!strcmp(r->queries[j].name, r->reportstorun[i].query)) {
 					r->reports[i]->mainloop_query = j;
 					break;
 				}					
@@ -90,11 +105,9 @@ rlib * rlib_init(rlib_inout_pass *rip) {
 		if(r->reports[i] == NULL) {
 			//TODO:FREE REPORT AND ALL ABOVE REPORTS
 			debugf("Failed to run a Report\n");
-			return NULL;
+			return -1;
 		}
 	}
-	r->reports_count = rip->reports_count;
 	
-	rip->content_type = RLIB_CONTENT_TYPE_PDF;
-	return r;
+	return 0;
 }

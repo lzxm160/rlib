@@ -279,6 +279,16 @@ struct report {
 	int mainloop_query;
 };
 
+struct rlib_queries {
+	char *sql;
+	char *name;
+};
+
+struct rip_reports {
+	char *name;
+	char *query;
+};
+
 struct rlib {
 	long length;
 	char *bufPDF;
@@ -292,8 +302,15 @@ struct rlib {
 	
 	int font_point;
 	int landscape;
-	
+
 	int current_font_point;
+
+	struct rlib_queries queries[RLIB_MAXIMUM_QUERIES];
+	int queries_count;
+	int mainloop_queries_count;
+	struct rip_reports reportstorun[RLIB_MAXIMUM_REPORTS];
+//	int reports_count;
+
 
 	int results_count;
 	struct report *reports[RLIB_MAXIMUM_REPORTS];
@@ -340,32 +357,6 @@ struct output_filter {
 	void (*rlib_end_output_section)(rlib *);
 };
 
-struct rlib_queries {
-	char *sql;
-	char *name;
-};
-
-struct rip_reports {
-	char *name;
-	char *query;
-};
-
-struct rlib_inout_pass {
-	char *database_host;
-	char *database_user;
-	char *database_password;
-	char *database_database;
-	struct rlib_queries queries[RLIB_MAXIMUM_QUERIES];
-	int queries_count;
-	int mainloop_queries_count;
-	struct rip_reports reports[RLIB_MAXIMUM_REPORTS];
-	int reports_count;
-	int content_type;
-	int format;
-	rlib *r;
-};
-typedef struct rlib_inout_pass rlib_inout_pass;
-
 
 /***** PROTOTYPES: breaks.c ***************************************************/
 void rlib_force_break_headers(rlib *r);
@@ -384,7 +375,10 @@ long long fxp_mul(long long a, long long b, long long factor);
 long long fxp_div( long long num, long long denom, int places);
 
 /***** PROTOTYPES: init.c *****************************************************/
-rlib * rlib_init(rlib_inout_pass *rip);
+rlib * rlib_init();
+int rlib_add_datasource_mysql(rlib *r, char *database_host, char *database_user, char *database_password, char *database_database);
+int rlib_add_query_as(rlib *r, char *sql, char *name);
+int rlib_add_report(rlib *r, char *name, char *mainloop);
 
 /***** PROTOTYPES: parsexml.c *************************************************/
 struct report_element * parseLineArray(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur);
@@ -445,7 +439,7 @@ char *strupr (char *s);
 char *strlwr (char *s);
 char *strproper (char *s);
 int daysinmonth(int year, int month);
-void initSignals();
+void init_signals();
 
 /***** PROTOTYPES: pdf.c ******************************************************/
 void rlib_pdf_new_output_filter(rlib *r);

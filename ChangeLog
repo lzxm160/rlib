@@ -1,5 +1,13 @@
-2003-10-04  Bob Doan  <bdoan@sicompos.com>
+2003-10-14  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/Makefile.am: New api for getting at databases
+	Also took all important logic out of php.c and put init into rlib core
+	* libsrc/init.c: likewise
+	* libsrc/php.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/util.c: likewise
+	* libsrc/rlib_php.h: likewise
 
+2003-10-04  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/csv.c: new init_page_report function needed for more accuare output
 	* libsrc/html.c: likewise
 	* libsrc/pdf.c: likewise

@@ -45,9 +45,9 @@ static void myFaultHandler (int signum, siginfo_t *si, void *aptr) {
 	exit (5); //THEORETICALLY IN THEORY THIS WILL NEVER GET CALLED... but lets play it safe
 }
 
-void initSignals() {
+void init_signals() {
 	struct sigaction sa;
-
+	bzero(&sa, sizeof(struct sigaction));
 	sa.sa_handler = (void(*)(int))myFaultHandler;
 	sigaction (SIGILL, &sa, NULL);
 	sigaction (SIGBUS, &sa, NULL);
