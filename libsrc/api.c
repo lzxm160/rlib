@@ -87,8 +87,6 @@ int rlib_execute(rlib *r) {
 		}
 		r->results[i].name =  r->queries[i].name;
 	}
-//TODO: this is stupid
-	r->results_count = r->queries_count;
 
 	LIBXML_TEST_VERSION
 
@@ -111,7 +109,7 @@ int rlib_execute(rlib *r) {
 			return -1;
 		}
 	}
-
+	
 	make_report(r);	
 	rlib_finalize(r);
 	return 0;
@@ -135,6 +133,39 @@ int rlib_spool(rlib *r) {
 
 int rlib_set_output_format(rlib *r, int format) {
 	r->format = format;
+	return 0;
+}
+
+int rlib_add_resultset_follower(rlib *r, char *leader, char *follower) {
+	int ptr_leader = -1, ptr_follower = -1;
+	int i, x;
+
+	if(r->resultset_followers_count > (RLIB_MAXIMUM_FOLLOWERS-1)) {
+		return -1;
+	}
+
+	for(x=0;x<r->queries_count;x++) {
+		if(!strcmp(r->queries[x].name, leader))
+			ptr_leader = x;
+		if(!strcmp(r->queries[x].name, follower))
+			ptr_follower = x;
+	}
+	
+	if(ptr_leader == -1) {
+		rlogit("rlib_add_resultset_follower: Could not find leader!\n");
+		return -1;
+	}
+	if(ptr_follower == -1) {
+		rlogit("rlib_add_resultset_follower: Could not find follower!\n");
+		return -1;
+	}
+	if(ptr_follower == ptr_leader) {
+		rlogit("rlib_add_resultset_follower: Followes can't be leaders ;)!\n");
+		return -1;
+	}
+	r->followers[r->resultset_followers_count].leader = ptr_leader;	
+	r->followers[r->resultset_followers_count++].follower = ptr_follower;	
+
 	return 0;
 }
 

@@ -58,7 +58,7 @@ char * rlib_resolve_field_value(rlib *r, struct rlib_resultset_field *rf) {
 
 int rlib_lookup_result(rlib *r, char *name) {
 	int i;
-	for(i=0;i<r->results_count;i++) {
+	for(i=0;i<r->queries_count;i++) {
 		if(!strcmp(r->results[i].name, name))
 			return i;
 	}

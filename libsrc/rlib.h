@@ -26,6 +26,10 @@
 #define RLIB_WEB_CONTENT_TYPE_PDF "Content-Type: application/pdf\n"
 #define RLIB_WEB_CONTENT_TYPE_CSV "Content-type: application/octet-stream\nContent-Disposition: attachment; filename=report.csv\n"
 
+#define RLIB_NAVIGATE_FIRST 1
+#define RLIB_NAVIGATE_NEXT 2
+#define RLIB_NAVIGATE_PREVIOUS 3
+#define RLIB_NAVIGATE_LAST 4
 
 //man 3 llabs says the prototype is in stdlib.. no it aint!
 long long int llabs(long long int j);
@@ -321,6 +325,12 @@ struct input_filters {
 	struct input_filter *input;
 };
 
+#define RLIB_MAXIMUM_FOLLOWERS	10
+struct rlib_resultset_followers {
+	int leader;
+	int follower;
+};
+
 struct rlib {
 	float position_top;
 	float position_bottom;
@@ -336,17 +346,19 @@ struct rlib {
 	int current_font_point;
 
 	struct rlib_queries queries[RLIB_MAXIMUM_QUERIES];
-	int queries_count;
-	int mainloop_queries_count;
-	struct rip_reports reportstorun[RLIB_MAXIMUM_REPORTS];
 
-	int results_count;
+	int mainloop_queries_count;
+	int queries_count;
+	struct rip_reports reportstorun[RLIB_MAXIMUM_REPORTS];
 	struct rlib_results results[RLIB_MAXIMUM_QUERIES];
 	
 	struct rlib_report *reports[RLIB_MAXIMUM_REPORTS];
 	int reports_count;
 	int current_report;
 	int current_result;
+	
+	int resultset_followers_count;
+	struct rlib_resultset_followers followers[RLIB_MAXIMUM_FOLLOWERS];
 
 	int format;
 	int inputs_count;
@@ -438,7 +450,7 @@ char *rlib_get_output(rlib *r);
 long rlib_get_output_length(rlib *r);
 int rlib_mysql_report(char *hostname, char *username, char *password, char *database, char *xmlfilename, char *sqlquery, char *outputformat);
 int rlib_postgre_report(char *connstr, char *xmlfilename, char *sqlquery, char *outputformat);
-
+int rlib_add_resultset_follower(rlib *r, char *leader, char *follower);
 /***** PROTOTYPES: parsexml.c *************************************************/
 struct rlib_report * parse_report_file(char *filename);
 
@@ -489,6 +501,12 @@ char *strproper (char *s);
 int daysinmonth(int year, int month);
 void init_signals();
 void make_more_space_if_necessary(char **str, int *size, int *total_size, int len);
+
+/***** PROTOTYPES: navigation.c ***********************************************/
+int rlib_navigate_next(rlib *r, int resultset_num);
+int rlib_navigate_first(rlib *r, int resultset_num);
+int rlib_navigate_previous(rlib *r, int resultset_num);
+int rlib_navigate_last(rlib *r, int resultset_num);
 
 /***** PROTOTYPES: environment.c **********************************************/
 void rlib_new_c_environment(rlib *r);

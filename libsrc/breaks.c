@@ -185,11 +185,11 @@ void rlib_break_all_below_in_reverse_order(rlib *r, struct report_element *e) {
 	Fun little hack so break lines reflect the correct value.. not the next row
 */
 
-		INPUT(r, r->current_result)->previous(INPUT(r, r->current_result), r->results[r->current_result].result);
+		rlib_navigate_previous(r, r->current_result);
 		
 		rlib_print_break_footer_lines(r, rb, rb->footer, FALSE);
 
-		INPUT(r, r->current_result)->next(INPUT(r, r->current_result), r->results[r->current_result].result);
+		rlib_navigate_next(r, r->current_result);
 
 		rlib_reset_variables_on_break(r, rb->name);
 

@@ -38,6 +38,7 @@ ZEND_FUNCTION(rlib_add_datasource_mysql);
 ZEND_FUNCTION(rlib_add_datasource_postgre);
 #endif
 ZEND_FUNCTION(rlib_add_query_as);
+ZEND_FUNCTION(rlib_add_resultset_follower);
 ZEND_FUNCTION(rlib_add_report);
 ZEND_FUNCTION(rlib_set_output_format_from_text);
 ZEND_FUNCTION(rlib_execute);
@@ -60,6 +61,7 @@ zend_function_entry rlib_functions[] =
 	 ZEND_FE(rlib_add_datasource_postgre, NULL)
 #endif
 	 ZEND_FE(rlib_add_query_as, NULL)
+	 ZEND_FE(rlib_add_resultset_follower, NULL)
 	 ZEND_FE(rlib_add_report, NULL)
 	 ZEND_FE(rlib_set_output_format_from_text, NULL)
 	 ZEND_FE(rlib_execute, NULL)
@@ -179,6 +181,21 @@ ZEND_FUNCTION(rlib_add_query_as) {
 	rlib_add_query_as(rip->r, estrdup(datasource_name), estrdup(sql), estrdup(name));
 }
 
+ZEND_FUNCTION(rlib_add_resultset_follower) {
+	zval *z_rip = NULL;
+	long whatever;
+	char *leader, *follower;
+	rlib_inout_pass *rip;
+	int id = -1;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss", &z_rip, &leader, &whatever, &follower, &whatever) == FAILURE) {
+		return;
+	}
+	
+	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
+
+	rlib_add_resultset_follower(rip->r, estrdup(leader), estrdup(follower));
+}
 
 ZEND_FUNCTION(rlib_add_report) {
 	zval *z_rip = NULL;

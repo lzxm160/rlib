@@ -207,15 +207,15 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 			if(rf->link_code != NULL)	
 				rlib_execute_pcode(r, &extra_data[i].rval_link, rf->link_code, NULL);
 
-			if(rl->color_code != NULL)
-				extra_data[i].rval_color = line_rval_color;
-			else if(rf->color_code != NULL)	
+			if(rf->color_code != NULL)	
 				rlib_execute_pcode(r, &extra_data[i].rval_color, rf->color_code, NULL);
+			else if(rl->color_code != NULL)
+				extra_data[i].rval_color = line_rval_color;
 
-			if(rl->bgcolor_code != NULL)
-				extra_data[i].rval_bgcolor = line_rval_bgcolor;
-			else if(rf->bgcolor_code != NULL)
+			if(rf->bgcolor_code != NULL)
 				rlib_execute_pcode(r, &extra_data[i].rval_bgcolor, rf->bgcolor_code, NULL);
+			else if(rl->bgcolor_code != NULL)
+				extra_data[i].rval_bgcolor = line_rval_bgcolor;
 
 			rlib_format_string(r, rf, &extra_data[i].rval_code, buf);
 			align_text(r, extra_data[i].formatted_string, MAXSTRLEN, buf, rf->align, rf->width);
@@ -228,15 +228,15 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 			char buf[MAXSTRLEN];
 			rt = e->data;
 
-			if(rl->color_code != NULL)
-				extra_data[i].rval_color = line_rval_color;
-			else if(rt->color_code != NULL)	
+			if(rt->color_code != NULL)	
 				rlib_execute_pcode(r, &extra_data[i].rval_color, rt->color_code, NULL);
+			else if(rl->color_code != NULL)
+				extra_data[i].rval_color = line_rval_color;
 
-			if(rl->bgcolor_code != NULL)
-				extra_data[i].rval_bgcolor = line_rval_bgcolor;
-			else if(rt->bgcolor_code != NULL)
+			if(rt->bgcolor_code != NULL)
 				rlib_execute_pcode(r, &extra_data[i].rval_bgcolor, rt->bgcolor_code, NULL);
+			else if(rl->bgcolor_code != NULL)
+				extra_data[i].rval_bgcolor = line_rval_bgcolor;
 
 
 			if(rt->value == NULL)
@@ -629,7 +629,7 @@ void rlib_print_report_footer(rlib *r) {
 
 int rlib_fetch_first_rows(rlib *r) {
 	int i;
-	for(i=0;i<r->results_count;i++)
+	for(i=0;i<r->queries_count;i++)
 		INPUT(r,i)->first(INPUT(r,i), r->results[i].result);
 	return 0;
 }
@@ -770,8 +770,8 @@ int make_report(rlib *r) {
 				r->detail_line_count++;
 				i++;
 
-				if(INPUT(r, r->current_result)->next(INPUT(r, r->current_result), r->results[r->current_result].result) == FALSE) {
-					INPUT(r, r->current_result)->last(INPUT(r, r->current_result), r->results[r->current_result].result);
+				if(rlib_navigate_next(r, r->current_result) == FALSE) {
+					rlib_navigate_last(r, r->current_result);
 					rlib_handle_break_footers(r);
 					break;
 				} 
@@ -780,7 +780,7 @@ int make_report(rlib *r) {
 			}
 		}
 
-		INPUT(r, r->current_result)->last(INPUT(r, r->current_result), r->results[r->current_result].result);
+		rlib_navigate_last(r, r->current_result);
 
 		rlib_print_report_footer(r);
 	

@@ -1,3 +1,14 @@
+2003-11-11  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/reportgen.c: new rlib_add_resultset_follower function so that there can be more then one main loop
+		query... new navigation functions to play follow the leader, and fixed bug w/ colors
+	* libsrc/Makefile.am: likewise
+	* libsrc/api.c: likewise
+	* libsrc/breaks.c: likewise (new)
+	* libsrc/navigation.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+	* bindings/php/php.c: likewise
+
 2003-11-10  Bob Doan  <bdoan@sicompos.com>
 	* configure.in: bump version to 1.1.4
 	* inputs/postgre/postgre.c: better connection checks
