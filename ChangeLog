@@ -1,4 +1,8 @@
 2004-02-24  Chet Heilman  <cheilman@sicompos.com>
+	* doc/symboltable.sgm:
+		Add new function definitions.
+		
+2004-02-24  Chet Heilman  <cheilman@sicompos.com>
 	* libsrc/formatstring.c: (format_money), (format_number),
 	(rlib_string_sprintf), (rlib_format_string):
 		Make some functions public.

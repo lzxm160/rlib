@@ -13,7 +13,9 @@
 			expN1 + expN2 <emphasis>Returns</emphasis> NUMBER containing the result of expN1 plus expN2
 		</para>
 		<para>
-			expD + expN or expN + expD <emphasis>Returns</emphasis> DATE contains the result of expD + expN days
+			expD + expN or expN + expD <emphasis>Returns</emphasis> DATE contains the result of expD + expN seconds or days.
+			If both datetimes have valid time, the result is expressed in SECONDS.
+			Otherwise the result returned is in DAYS.
 		</para>
 		<para>
 			expS1 + expS2 <emphasis>Returns</emphasis> STRING containing the result of the concatination of expS1 and expS2
@@ -25,13 +27,14 @@
 			expN1 - expN2 <emphasis>Returns</emphasis> NUMBER contain the result of expN1 minus expN2
 		</para>
 		<para>
-			expD - expN <emphasis>Returns</emphasis> DATE contains the result of expD - expN of days
+			expD - expN <emphasis>Returns</emphasis> if DATE contains a valid time portion then the result is expD - expN SECS.
+			Otherwise it returns expD - expN DAYS. 
 		</para>
 		<para>
-			expD - expD <emphasis>Returns</emphasis> NUMBER containing the number of days differnce in the dates, or
-			the number of seconds difference in the times. If the date portion is valid, the result is
-			the days difference if either of the dates is invalid, and both times are valid,
-			the difference is the seconds difference in the times.
+			expD - expD <emphasis>Returns</emphasis> NUMBER containing the number of SECONDS or DAYS differnce in the dates.
+			If the time portion is valid, the result is the number of SECONDS difference.
+			If both times and both dates are valid the seconds count will include the difference in the days.
+			Otherwise if the date portions are valid it returns the number of DAYS difference.
 		</para>
 	</sect1>
 	<sect1>
@@ -456,9 +459,32 @@
 	<sect1>
 		<title>dtosf(expD, expS)</title>
 		<para>
+			<emphasis>DEPRECATED! This function may be removed in future versions of RLIB.</emphasis>
+			Please use the 'format' function instead.			
+		</para>
+		<para>
 			Convert date expD to string using the specified format
 		expS. expS uses the formatting controls listed below and can be used 
 		to display either the date or time of the DATE variable.
+		</para>
+		<para>
+			<emphasis>Returns</emphasis> STRING
+		</para>
+	</sect1>
+	<sect1>
+		<title>format(expX, expS)</title>
+		<para>
+			Formats the passed expX (may be expD, expS or expN) using the expS parameter as a format string.
+			Format strings <emphasis> must </emphasis> be in the new '!' format. 
+		</para>
+		<para>
+			This function will format the passed variable using the passed format string.
+			Character strings may be formatted using the format symbol '!!'.
+			Errors will be generated if the type for the format string does not match the variable type.
+			format headers are: '!!' for strings, '!@' for datetimes, '!#' for numbers and '!$' for currency.
+		</para>
+		<para>
+			For example: "format('xyx', '!!%6s')" prints '   xyz'.
 		</para>
 		<para>
 			<emphasis>Returns</emphasis> STRING
@@ -525,7 +551,7 @@
 	<sect1>
 		<title>chgdateof(expD1, expD2)</title>
 		<para>
-			Changes the date portion of expD1 to equal that of expD1.
+			Changes the date portion of expD1 to equal that of expD2.
 		</para>
 		<para>
 			<emphasis>Returns</emphasis> DATE
@@ -534,11 +560,37 @@
 	<sect1>
 		<title>chgtimeof(expD1, expD2)</title>
 		<para>
-			Changes the time portion of expD1 to equal that of expD1.
+			Changes the time portion of expD1 to equal that of expD2.
 		</para>
 		<para>
 			<emphasis>Returns</emphasis> DATE
 		</para>
 	</sect1>
 
+	<sect1>
+		<title>gettimeinsecs(expD)</title>
+		<para>
+			Returns the time portion of the datetime variable as the number of seconds past 00:00:00
+		</para>
+		<para>
+			<emphasis>Returns</emphasis> NUMBER
+		</para>
+		<para>
+			This function in conjunction with settimeinsecs can be used to perform mathematical calculations on time.
+		</para>
+	</sect1>
+	<sect1>
+		<title>settimeinsecs(expD, expN)</title>
+		<para>
+			Returns a datetime with the time portion of the datetime changed to a value obtained by adding expN seconds to 00:00:00.
+			For example: "settimeinsecs(expD, (gettimeinsecs(expD) / 3600) * 3600)"
+			returns a datetime that has been truncated to an even hour value.
+		</para>
+		<para>
+			<emphasis>Returns</emphasis> DATE
+		</para>
+		<para>
+			see settimeinsecs function for details and example.
+		</para>
+	</sect1>
 </chapter>
