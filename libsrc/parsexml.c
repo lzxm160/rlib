@@ -632,7 +632,6 @@ void dump_part_tr(gpointer data, gpointer user_data) {
 }
 
 void dump_part(struct rlib_part *part) {
-	rlogit("Name: [%s] Pages Across [%s]\n ", part->xml_name, part->xml_pages_across);
 	g_slist_foreach(part->part_rows, dump_part_tr, NULL);
 }
 
@@ -646,7 +645,7 @@ struct rlib_part * parse_part_file(rlib *r, gchar *filename, gchar type) {
 
 #if DISABLE_UTF8
 	cd = iconv_open(ICONV_ISO, "UTF-8");
-	cd = (void *)-1;
+//	cd = (void *)-1;
 #endif
 
 	if(type == RLIB_REPORT_TYPE_BUFFER) 

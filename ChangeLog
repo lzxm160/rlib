@@ -1,3 +1,6 @@
+2005-03-02  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/parsexml.c: don't make iconv pointer -1 right after we open UTF-8 (Makes Spanish Work Again)
+
 2005-03-01  Bob Doan  <bdoan@sicompos.com>
 	* configure.in: don't like w/ rpdf everywehere
 
