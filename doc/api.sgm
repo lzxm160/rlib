@@ -86,40 +86,19 @@
 			Here is a example.
 		</para>
 		<para>
-			dl ("rlib/libr.so");
-		</para>
-		<para>
-			$query = "SELECT * FROM plu";
-		</para>
-		<para>
-			$rlib =	rlib_init("localhost", "user", "password", "database");
-		</para>
-		<para>
-			$format = "PDF";
-		</para>
-		<para>
-			rlib_add_query_as($rlib, $query, "topline");
-		</para>
-		<para>
-			rlib_add_query_as($rlib, "select name from report_names where report_id = 12", "header");
-		</para>
-		<para>
-			rlib_add_report($rlib, "report_plu.xml");
-		</para>
-		<para>
-			rlib_set_output_format($rlib, $format);
-		</para>
-		<para>
-			rlib_execute($rlib);
-		</para>
-		<para>
-			rlib_finalize($rlib);
-		</para>
-		<para>
-			header(rlib_get_content_type($rlib));
-		</para>
-		<para>
-			rlib_spool($rlib);			
+			<programlisting>
+dl ("libr.so");
+$query = "SELECT * FROM plu";
+$rlib =	rlib_init("localhost", "user", "password", "database");
+$format = "PDF";
+rlib_add_query_as($rlib, $query, "topline");
+rlib_add_report($rlib, "report.xml");
+rlib_set_output_format($rlib, $format);
+rlib_execute($rlib);
+rlib_finalize($rlib);
+header(rlib_get_content_type($rlib));
+rlib_spool($rlib);			
+			</programlisting>
 		</para>
 	</sect1>
 </chapter>
