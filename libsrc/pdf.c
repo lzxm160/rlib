@@ -248,7 +248,6 @@ static void pdf_start_new_page(rlib *r, struct rlib_part *part) {
 	gint i=0;
 	gint pages_across = part->pages_across;
 	gchar paper_type[40];
-//r_error("NEW PAGE %d\n", );			
 	r->current_page_number++;
 	
 	sprintf(paper_type, "0 0 %ld %ld", part->paper->width, part->paper->height);
@@ -275,10 +274,10 @@ static void pdf_set_working_page(rlib *r, struct rlib_part *part, gint page) {
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
 	gint pages_across = part->pages_across;
-	gint page_number = r->current_page_number * pages_across;
-	page--;
+	gint page_number = (r->current_page_number-1) * pages_across;
 	
-	rpdf_set_page(OUTPUT_PRIVATE(r)->pdf, page_number + page - OUTPUT_PRIVATE(r)->page_diff - 1);
+	rpdf_set_page(OUTPUT_PRIVATE(r)->pdf, page_number + page - OUTPUT_PRIVATE(r)->page_diff);
+
 	OUTPUT_PRIVATE(r)->current_page = page_number + page - OUTPUT_PRIVATE(r)->page_diff;
 #if USEPDFLOCALE
 	setlocale(LC_NUMERIC, tlocale);
@@ -352,7 +351,7 @@ static void pdf_spool_private(rlib *r) {
 static void pdf_end_page(rlib *r, struct rlib_part *part) {
 	int i;
 	for(i=0;i<part->pages_across;i++)
-		pdf_set_working_page(r, part, i+1);
+		pdf_set_working_page(r, part, i);
 //	r->current_page_number++;
 	r->current_line_number = 1;
 }

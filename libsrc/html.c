@@ -454,7 +454,7 @@ static long rlib_html_get_output_length(rlib *r) {
 }
 
 static void rlib_html_set_working_page(rlib *r, struct rlib_part *part, gint page) {
-	OUTPUT_PRIVATE(r)->page_number = page-1;
+	OUTPUT_PRIVATE(r)->page_number = page;
 }
 
 static void rlib_html_start_tr(rlib *r) {

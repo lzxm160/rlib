@@ -219,7 +219,7 @@ static long rlib_txt_get_output_length(rlib *r) {
 }
 
 static void rlib_txt_set_working_page(rlib *r, struct rlib_part *part, int page) {
-	OUTPUT_PRIVATE(r)->page_number = page-1;
+	OUTPUT_PRIVATE(r)->page_number = page;
 }
 
 static void rlib_txt_set_fg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {}

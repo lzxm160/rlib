@@ -239,8 +239,8 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	gint *goodIncs = goodIncs_normal;
 	gint numGoodIncs = numGoodIncs_normal;
 	gint left_axis_decimal_hint=-1, right_axis_decimal_hint=-1;
-	left_margin_offset += part->left_margin;
 	gboolean disabled, tmp_disabled;
+	left_margin_offset += part->left_margin;
 
 		
 	if(rlib_execute_as_float(r, graph->width_code, &tmp))

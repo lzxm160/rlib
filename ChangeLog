@@ -1,3 +1,12 @@
+2005-03-31  Bob Doan  <bdoan@sicompos.com>
+	* configure.in: keep track of pages correctly
+	* libsrc/graphing.c: likewise
+	* libsrc/html.c:  likewise
+	* libsrc/layout.c:  likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/txt.c:  likewise
+	* rpdf/rpdf.c:  likewise
+
 2005-03-30  Bob Doan  <bdoan@sicompos.com>
 	* rpdf/rpdf.c: Correct support set current page
 	* rpdf/test.c: and test it

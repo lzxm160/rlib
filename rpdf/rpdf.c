@@ -625,7 +625,7 @@ gboolean rpdf_new_page(struct rpdf *pdf, gint paper, gint orientation) {
 	pdf->page_contents = g_realloc(pdf->page_contents, sizeof(gpointer) * pdf->page_count);
 	pdf->page_contents[pdf->page_count-1] = NULL;
 
-	pdf->page_info = g_realloc(pdf->page_info, sizeof(gpointer) * pdf->page_count);
+	pdf->page_info = g_realloc(pdf->page_info, 4 * pdf->page_count);
 	page_info = pdf->page_info[pdf->page_count-1] = g_new0(struct rpdf_page_info, 1);
 	page_info->paper = &rpdf_paper[paper-1];
 	page_info->orientation = orientation;
@@ -635,8 +635,7 @@ gboolean rpdf_new_page(struct rpdf *pdf, gint paper, gint orientation) {
 }
 
 gboolean rpdf_set_page(struct rpdf *pdf, gint page) {
-	page--;
-	if(page < 0 || page > pdf->page_count)
+	if(page < 0 || page >= pdf->page_count)
 		return FALSE;
 	pdf->current_page = page;
 	return TRUE;
@@ -650,7 +649,6 @@ gboolean rpdf_set_font(struct rpdf *pdf, gchar *font, gchar *encoding, gdouble s
 	struct rpdf_page_info *page_info = pdf->page_info[pdf->current_page];
 	struct rpdf_stream *real_stream;
 	gchar *both;
-	
 	while(rpdf_fonts[i].name[0] != 0) {
 		if(strcmp(rpdf_fonts[i].name, font) == 0) {
 			found = TRUE;
@@ -1009,6 +1007,7 @@ gboolean rpdf_setrgbcolor(struct rpdf *pdf, gdouble r, gdouble g, gdouble b) {
 gdouble rpdf_text_width(struct rpdf *pdf, gchar *text) {
 	gint slen,i;
 	gdouble width = 0.0;
+
 	struct rpdf_page_info *page_info = pdf->page_info[pdf->current_page];
 	
 	if(text == NULL)

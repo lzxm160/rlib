@@ -458,7 +458,7 @@ rlib-$VERSION:
     PERL:                    ${enable_perl}
      PERL entension dir:     ${perl_where}
 
-   Music:                    Snow Patrol / Virgin Radio	
+   Music:                    Steve Miller Band / Virgin Radio	
    Having Problems:          rlib-users@lists.sf.net 	
    Want to contribute:       rlib-devel@lists.sf.net	
 "
