@@ -1,3 +1,8 @@
+2004-10-20  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/layout.c: default part should inherit report orientation
+	* libsrc/parsexml.c: likewise
+	* libsrc/reportgen.c: likewise
+
 2004-10-19  Bob Doan  <bdoan@sicompos.com>
 	* inputs/mysql/mysql.c: td->pd tr->pr parts now have a report header, report concatination works again, nodata works again
 	* libsrc/breaks.c: likewise

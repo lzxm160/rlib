@@ -821,6 +821,8 @@ gint rlib_layout_end_page(rlib *r, struct rlib_part *part, struct rlib_report *r
 		OUTPUT(r)->set_raw_page(r, part, report->raw_page_number);
 	} else {
 		OUTPUT(r)->end_page(r, part);
+		if(report->font_size != -1)
+			r->font_point = report->font_size;		
 		rlib_layout_init_part_page(r, part, FALSE);
 		report->raw_page_number++;
 	}

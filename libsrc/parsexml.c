@@ -686,6 +686,7 @@ struct rlib_part * parse_part_file(gchar *filename, gchar type) {
 		part->xml_top_margin = report->xml_top_margin;
 		part->xml_bottom_margin = report->xml_bottom_margin;
 		part->xml_font_size = report->xml_font_size;
+		part->xml_orientation = report->xml_orientation;
 		report->is_the_only_report = TRUE;		
 		report->xml_left_margin = NULL;
 		report->xml_top_margin = NULL;

@@ -479,6 +479,9 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 	rlib_layout_init_report_page(r, part, report);
 	r->detail_line_count = 0;
 
+	if(report->font_size != -1)
+		r->font_point = report->font_size;
+
 	if(INPUT(r,r->current_result)->first(INPUT(r,r->current_result), r->results[r->current_result].result) == FALSE) {
 		rlib_layout_report_output(r, part, report, report->alternate.nodata, FALSE);	
 	} else {
