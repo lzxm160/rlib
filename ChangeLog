@@ -1,3 +1,13 @@
+2004-12-03  Bob Doan  <bdoan@sicompos.com>
+	* NEWS: 
+	* configure.in: better detect gd
+	* libsrc/Makefile.am: split stuff into axis.c
+	* libsrc/axis.c: split out from graphing
+	* libsrc/graphing.c: likewise
+	* libsrc/pdf.c: be able to rotate text
+	* libsrc/rlib.h: new api
+	* src/examples/php/graph.php: values
+
 2004-12-02  Bob Doan  <bdoan@sicompos.com>
 	* bindings/python/python.c: initial graphing support / code cleanup / use more glib stuff
 	* configure.in: likewise

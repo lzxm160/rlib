@@ -91,7 +91,7 @@ void pdf_turn_text_on(rlib *r) {
 	}
 }
 
-static void pdf_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *text, gint backwards, gint col) {
+static void pdf_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *text, gfloat orientation) {
 	CPDFdoc *pdf = OUTPUT_PRIVATE(r)->pdf;
 
 #if USEPDFLOCALE
@@ -100,11 +100,17 @@ static void pdf_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, gc
 
 	pdf_turn_text_on(r);
 
-	cpdf_text(pdf, left_origin, bottom_origin, 0, text);
+	cpdf_text(pdf, left_origin, bottom_origin, orientation, text);
 
 #if USEPDFLOCALE
 	setlocale(LC_NUMERIC, tlocale);
 #endif
+
+
+}
+
+static void pdf_print_text_API(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *text, gint backwards, gint col) {
+	pdf_print_text(r, left_origin, bottom_origin, text, 0); 
 }
 
 
@@ -465,7 +471,7 @@ static void pdf_graph_title(rlib *r, gchar *title) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
 	gfloat title_width = pdf_get_string_width(r, title);
 	graph->title_height = RLIB_GET_LINE(r->current_font_point);
-	pdf_print_text(r, graph->left + ((graph->width-title_width)/2.0), graph->top-graph->title_height, title, FALSE, 0);
+	pdf_print_text(r, graph->left + ((graph->width-title_width)/2.0), graph->top-graph->title_height, title, 0);
 }
 
 static void pdf_graph_x_axis_title(rlib *r, gchar *title) {
@@ -475,14 +481,24 @@ static void pdf_graph_x_axis_title(rlib *r, gchar *title) {
 	else {
 		gfloat title_width = pdf_get_string_width(r, title);
 		graph->height_offset = RLIB_GET_LINE(r->current_font_point);
-		pdf_print_text(r, graph->left + ((graph->width-title_width)/2.0), graph->bottom+(graph->height_offset/2.0), title, FALSE, 0);
+		pdf_print_text(r, graph->left + ((graph->width-title_width)/2.0), graph->bottom+(graph->height_offset/2.0), title, 0);
 		graph->height_offset *= 1.5;
 	}
 }
 
 static void pdf_graph_y_axis_title(rlib *r, gchar *title) {
-/*	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
+	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
 	gfloat title_width = pdf_get_string_width(r, title);
+	if(title[0] == 0) {
+	
+	
+	} else {
+		pdf_print_text(r, graph->left+pdf_get_string_width(r, "W"), graph->bottom+((graph->height - title_width)/2.0), title,  90);
+	
+	}
+
+/*	
+	
 	graph->title_height = RLIB_GET_LINE(r->current_font_point);
 	pdf_print_text(r, graph->left + ((graph->width-title_width)/2.0), graph->top-graph->title_height, title, FALSE, 0);*/
 }
@@ -535,7 +551,7 @@ static void pdf_graph_label_x(rlib *r, gint iteration, gchar *label) {
 	gfloat string_width = pdf_get_string_width(r, label);
 	if(string_width < white_space)
 		left += (white_space - string_width) / 2;
-	pdf_print_text(r, left, graph->y_start - RLIB_GET_LINE(r->current_font_point), label, FALSE, 0);
+	pdf_print_text(r, left, graph->y_start - RLIB_GET_LINE(r->current_font_point), label, 0);
 }
 
 static void pdf_graph_tick_y(rlib *r, gint iterations) {
@@ -562,7 +578,7 @@ static void pdf_graph_label_y(rlib *r, gint iteration, gchar *label, gboolean fa
 //	if(false_x) {
 //		graph->non_standard_x_start = graph->y_start + (white_space * iteration);
 //	}
-	pdf_print_text(r, graph->left, top, label, FALSE, 0);
+	pdf_print_text(r, graph->left, top, label, 0);
 }
 
 static void pdf_graph_draw_bar(rlib *r, gint iteration, gint plot, gfloat height_percent, struct rlib_rgb *color) {
@@ -613,7 +629,7 @@ void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r)->paginate = TRUE;
 
 	OUTPUT(r)->get_string_width = pdf_get_string_width;
-	OUTPUT(r)->print_text = pdf_print_text;
+	OUTPUT(r)->print_text = pdf_print_text_API;
 	OUTPUT(r)->set_fg_color = pdf_set_fg_color;
 	OUTPUT(r)->set_bg_color = pdf_set_fg_color;
 	OUTPUT(r)->start_draw_cell_background = pdf_drawbox;

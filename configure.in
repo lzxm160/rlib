@@ -175,7 +175,7 @@ if test x$enable_gd = xyes; then
 	else
 		AC_DEFINE(HAVE_GD,1,[Build with GD support])
 		GD_CFLAGS=`$GD_CONFIG --includes`
-		GD_LIBS=`$GD_CONFIG --libs`
+		GD_LIBS=`$GD_CONFIG --ldflags` `$GD_CONFIG --libs`
 	fi
 fi
 AC_SUBST(GD_CFLAGS)

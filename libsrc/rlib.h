@@ -463,9 +463,9 @@ struct rlib_graph_plot {
 #define RLIB_GRAPH_TYPE_AREA_NORMAL                   4
 #define RLIB_GRAPH_TYPE_AREA_STACKED                  5
 #define RLIB_GRAPH_TYPE_AREA_PERCENT                  6
-#define RLIB_GRAPH_TYPE_COLUMN_NORMAL                  7
-#define RLIB_GRAPH_TYPE_COLUMN_STACKED                 8
-#define RLIB_GRAPH_TYPE_COLUMN_PERCENT                 9
+#define RLIB_GRAPH_TYPE_COLUMN_NORMAL                 7
+#define RLIB_GRAPH_TYPE_COLUMN_STACKED                8
+#define RLIB_GRAPH_TYPE_COLUMN_PERCENT                9
 #define RLIB_GRAPH_TYPE_ROW_NORMAL                   10
 #define RLIB_GRAPH_TYPE_ROW_STACKED                  11
 #define RLIB_GRAPH_TYPE_ROW_PERCENT                  12
@@ -880,3 +880,7 @@ gint rlib_layout_end_page(rlib *r, struct rlib_part *part, struct rlib_report *r
 
 /***** PROTOTYPES: graphing.c **************************************************/
 void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat left_margin_offset, gfloat top_margin_offset);
+
+/***** PROTOTYPES: axis.c ******************************************************/
+void rlib_graph_find_y_range(rlib *r, gdouble a, gdouble b, gdouble *y_min, gdouble *y_max, gint graph_type);
+gint rlib_graph_num_ticks(rlib *r, gdouble a, gdouble b);
