@@ -331,7 +331,6 @@ void rlib_resolve_fields(rlib *r) {
 	}
 }
 
-
 gchar * rlib_resolve_memory_variable(rlib *r, gchar *name) {
 	if(strlen(name) >= 3 && name[0] == 'm' && name[1] == '.') {
 		if (r->htParameters) {

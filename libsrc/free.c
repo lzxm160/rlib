@@ -233,7 +233,10 @@ void rlib_free_tree(rlib *r) {
 	int i;
 	for(i=0;i<r->reports_count;i++) {
 		rlib_free_report(r, i);
-		xmlFreeDoc(r->reports[i]->doc);
+		if(r->reports[i]->doc != NULL)
+			xmlFreeDoc(r->reports[i]->doc);
+		else
+			g_free(r->reports[i]->contents);
 		g_free(r->reports[i]);
 		r->reports[i] = NULL;
 	}

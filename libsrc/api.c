@@ -78,6 +78,7 @@ gint rlib_add_report(rlib *r, gchar *name, gchar *mainloop) {
 
 gint rlib_execute(rlib *r) {
 	gint i,j;
+	char newfile[MAXSTRLEN];
 
 	for(i=0;i<r->queries_count;i++) {
 		r->results[i].input = r->queries[i].input;
@@ -93,7 +94,9 @@ gint rlib_execute(rlib *r) {
 
 	xmlKeepBlanksDefault(0);
 	for(i=0;i<r->reports_count;i++) {
-		r->reports[i] = parse_report_file(r->reportstorun[i].name);
+		sprintf(newfile, "%s.rlib", r->reportstorun[i].name);
+		if((r->reports[i] = load_report(newfile)) == NULL)
+			r->reports[i] = parse_report_file(r->reportstorun[i].name);
 		r->reports[i]->mainloop_query = -1;
 		if(r->reportstorun[i].query != NULL) {
 			for(j=0;j<r->queries_count;j++) {

@@ -375,12 +375,9 @@ struct rlib_report * parse_report_file(gchar *filename) {
 		return(NULL);
 	}
 	
-	ret->report_header = NULL;
-
 	bzero(ret, sizeof(struct rlib_report));
-
 	ret->doc = doc;
-	
+	ret->contents = NULL;
 	ret->cd = iconv_open("ISO8859-1", "UTF-8");
 
 	while ( cur && xmlIsBlankNode ( cur ) ) {

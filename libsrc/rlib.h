@@ -77,6 +77,16 @@ long long int llabs(long long int j);
 #define DEFAULT_LEFT_MARGIN	.2
 #define DEFAULT_TOP_MARGIN 	.2
 
+#define RLIB_FILE_XML_STR		400
+#define RLIB_FILE_OUTPUTS		500
+#define RLIB_FILE_ROA 			600
+#define RLIB_FILE_LINE 			700
+#define RLIB_FILE_VARIABLES	800
+#define RLIB_FILE_VARIABLE		850
+#define RLIB_FILE_BREAKS 		900
+#define RLIB_FILE_BREAK 		950
+#define RLIB_FILE_BREAK_FIELD	975
+
 struct rgb {
 	gfloat r;
 	gfloat g;
@@ -289,6 +299,7 @@ struct report_variable {
 
 struct rlib_report {
 	xmlDocPtr doc;
+	gchar *contents;
 	xmlChar *xml_font_size;
 	xmlChar *xml_orientation;
 	xmlChar *xml_top_margin;
@@ -475,6 +486,7 @@ void rlib_trap(void); //For internals debugging only
 
 /***** PROTOTYPES: parsexml.c *************************************************/
 struct rlib_report * parse_report_file(gchar *filename);
+struct report_output * report_output_new(gint type, gpointer data);
 
 /***** PROTOTYPES: pcode.c ****************************************************/
 struct rlib_value * rlib_execute_pcode(rlib *r, struct rlib_value *rval, struct rlib_pcode *code, struct rlib_value *this_field_value);
@@ -572,4 +584,7 @@ gpointer rlib_postgre_new_input_filter();
 gpointer rlib_postgre_connect(gpointer input_ptr, gchar *conn);
 
 /***** PROTOTYPES: save.c *****************************************************/
-int save_report(struct rlib_report *rep, char *filename);
+gint save_report(struct rlib_report *rep, char *filename);
+
+/***** PROTOTYPES: load.c *****************************************************/
+struct rlib_report * load_report(gchar *filename);
