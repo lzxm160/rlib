@@ -26,12 +26,14 @@
 #include <ctype.h>
 #include <stdarg.h>
 #include <time.h>
+#include "config.h"
+#ifndef RLIB_WIN32
 #include <sys/resource.h>
+#endif
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#include "config.h"
 #include "rlib.h"
 
 struct packet {

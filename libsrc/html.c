@@ -444,7 +444,7 @@ static void html_graph_start(rlib *r, gfloat left, gfloat top, gfloat width, gfl
 	char buf[MAXSTRLEN];
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
 	
-	bzero(graph, sizeof(struct _graph));
+	memset(graph, 0, sizeof(struct _graph));
 	
 	OUTPUT_PRIVATE(r)->rgd = rlib_gd_new(width, height,  g_hash_table_lookup(r->output_parameters, "html_image_directory"));
 

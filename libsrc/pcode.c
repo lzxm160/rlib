@@ -26,9 +26,12 @@
 #include <math.h>
 #include <time.h>
 #include <ctype.h>
-#include <langinfo.h>
-
 #include "config.h"
+
+#ifndef RLIB_WIN32
+#include <langinfo.h>
+#endif
+
 #include "rlib.h"
 #include "pcode.h"
 
@@ -186,7 +189,11 @@ gint64 rlib_str_to_long_long(gchar *str) {
 	
 	if(str == NULL)
 		return 0;
+#ifdef RLIB_WIN32
+	temp = ".";
+#else
 	temp = nl_langinfo(RADIXCHAR);
+#endif
 	if (!temp || r_bytecount(temp) != 1) {
 		r_warning("nl_langinfo returned %s as DECIMAL_POINT", temp);
 	} else {

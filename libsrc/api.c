@@ -28,7 +28,11 @@
 #include <unistd.h>
 #include <string.h>
 #include <locale.h>
+#include "config.h"
+
+#ifndef RLIB_WIN32
 #include <langinfo.h>
+#endif
 
 #include "config.h"
 #include "rlib.h"
@@ -61,7 +65,11 @@ rlib * rlib_init_with_environment(struct environment_filter *environment) {
 		rlib_new_c_environment(r);
 	else
 		ENVIRONMENT(r) = environment;
+#ifdef RLIB_WIN32
+	lc_encoding = NULL;
+#else
 	lc_encoding = nl_langinfo(CODESET);
+#endif
 	if (lc_encoding != NULL) {
 		rlib_set_encodings(r, lc_encoding, lc_encoding, lc_encoding);
 	}

@@ -28,7 +28,11 @@
  
 #include <stdlib.h>
 #include <string.h>
+#include "config.h"
+
+#ifndef RLIB_WIN32
 #include <langinfo.h>
+#endif
 
 #include "config.h"
 #include "rlib.h"
@@ -634,7 +638,7 @@ static void rlib_layout_part_tr(rlib *r, struct rlib_part *part) {
 	struct rlib_report_position rrp;
 	char buf[MAXSTRLEN];
 	GSList *element;
-	bzero(&rrp, sizeof(rrp));
+	memset(&rrp, 0, sizeof(rrp));
 
 	for(element = part->part_rows;element != NULL;element = g_slist_next(element)) {
 		struct rlib_part_tr *tr = element->data;
@@ -646,7 +650,7 @@ static void rlib_layout_part_tr(rlib *r, struct rlib_part *part) {
 			if(newpage && OUTPUT(r)->paginate) {
 				OUTPUT(r)->end_page(r, part);
 				rlib_layout_init_part_page(r, part, FALSE);
-				bzero(&rrp, sizeof(rrp));
+				memset(&rrp, 0, sizeof(rrp));
 			}
 		}
 		
@@ -660,7 +664,7 @@ static void rlib_layout_part_tr(rlib *r, struct rlib_part *part) {
 		if(rlib_execute_as_string(r, tr->layout_code, buf, MAXSTRLEN) && strcmp(buf, "fixed") == 0)
 			tr->layout = RLIB_LAYOUT_FIXED;
 
-		bzero(&rrp, sizeof(rrp));
+		memset(&rrp, 0, sizeof(rrp));
 
 		rlib_layout_part_td(r, part, tr->part_deviations, save_page_number, save_position_top, &rrp);
 		OUTPUT(r)->end_tr(r);

@@ -28,7 +28,11 @@
  
 #include <stdlib.h>
 #include <string.h>
+#include "config.h"
+
+#ifndef RLIB_WIN32
 #include <langinfo.h>
+#endif
 
 #include "config.h"
 #include "rlib.h"

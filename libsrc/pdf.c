@@ -395,7 +395,7 @@ static void pdf_start_td(rlib *r, struct rlib_part *part, gfloat left_margin, gf
 		real_width = ((part->paper->width/RLIB_PDF_DPI) - (part->left_margin*2)) * ((gfloat)width/100);
 	}
 	
-	bzero(&color, sizeof(struct rlib_rgb));
+	memset(&color, 0, sizeof(struct rlib_rgb));
 	
 	if(border_color == NULL)
 		border_color = &color;
@@ -447,7 +447,7 @@ static void pdf_graph_draw_line(rlib *r, gfloat x, gfloat y, gfloat new_x, gfloa
 }
 
 static void pdf_graph_start(rlib *r, gfloat left, gfloat top, gfloat width, gfloat height, gboolean x_axis_labels_are_under_tick) {
-	bzero(&OUTPUT_PRIVATE(r)->graph, sizeof(struct _graph));
+	memset(&OUTPUT_PRIVATE(r)->graph, 0, sizeof(struct _graph));
 	
 	width /= RLIB_PDF_DPI;
 	height /= RLIB_PDF_DPI;

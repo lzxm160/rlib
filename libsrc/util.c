@@ -25,12 +25,12 @@
 #include <ctype.h>
 #include <stdarg.h>
 #include <time.h>
+#include "config.h"
+#ifndef RLIB_WIN32
 #include <sys/resource.h>
-
+#endif
 #include <locale.h>
 
-
-#include "config.h"
 #include "rlib.h"
 
 //man 3 llabs says the prototype is in stdlib.. no it aint!
@@ -69,7 +69,9 @@ int locale_codes[] = {
 	LC_ALL,
 	LC_COLLATE,
 	LC_CTYPE,
+#ifndef RLIB_WIN32
 	LC_MESSAGES,
+#endif
 	LC_MONETARY,
 	LC_NUMERIC,
 	LC_TIME,
@@ -82,7 +84,7 @@ int locale_codes[] = {
 	-1
 };
 
-
+#ifndef RLIB_WIN32
 #ifdef ENABLE_CRASH
 static void myFaultHandler (gint signum, siginfo_t *si, gpointer aptr) {
 	struct rlimit rlim;
@@ -95,11 +97,12 @@ static void myFaultHandler (gint signum, siginfo_t *si, gpointer aptr) {
 	exit (5); //THEORETICALLY IN THEORY THIS WILL NEVER GET CALLED... but lets play it safe
 }
 #endif
-
+#endif
 
 static gint useMyHandler = TRUE;
 
 void init_signals() {
+#ifndef RLIB_WIN32
 #ifdef ENABLE_CRASH
 	struct sigaction sa;
 	if (useMyHandler) {
@@ -113,6 +116,7 @@ void init_signals() {
 		sigaction (SIGTRAP, &sa, NULL);
 		signal (SIGQUIT, SIG_DFL);
 	}
+#endif
 #endif
 }
 

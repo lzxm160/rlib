@@ -30,10 +30,12 @@
 #include <unistd.h>
 #include <string.h>
 #include <locale.h>
+#include "config.h"
+#ifndef RLIB_WIN32
 #include <langinfo.h>
+#endif
 #include <errno.h>
 
-#include "config.h"
 #include "rlib.h"
 #include "rlib_input.h"
 

@@ -25,9 +25,11 @@
 #include <ctype.h>
 #include <math.h>
 #include <time.h>
-#include <langinfo.h>
-
 #include "config.h"
+
+#ifndef RLIB_WIN32
+#include <langinfo.h>
+#endif
 
 #ifdef RLIB_HAVE_MONETARY_H 
 #include <monetary.h>
@@ -42,16 +44,14 @@
 * Formats numbers in money format using locale parameters and moneyformat codes
 */
 gint format_money(gchar *dest, gint max, const gchar *moneyformat, gint64 x) { 
-	gdouble d = ((gdouble) x) / RLIB_DECIMAL_PRECISION;
 	gint result;
-
+#ifdef RLIB_WIN32
+	result = 0;
+	dest[0] = 0;
+#else
+	gdouble d = ((gdouble) x) / RLIB_DECIMAL_PRECISION;
 	result = strfmon(dest, max - 1, moneyformat, d);
-#if 0
-//	if (result < 0) {
-		r_error("Format Money [%s], max=%d, amount=%f, result=[%s] charset=%s", 
-			moneyformat, max, d, dest, nl_langinfo(CODESET));
-	//}
-#endif
+#endif	
 	return (result >= 0)? strlen(dest) : 0;
 }
 
