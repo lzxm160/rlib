@@ -1,5 +1,14 @@
-2005-03-18  Mike Roth  <mroth@sicompos.com>
+2005-03-18  Bob Doan  <bdoan@sicompos.com>
+	* inputs/mysql/mysql.c: Shannon Weyrick <weyrick@roadsend.com>: get error messages from data source
+	* inputs/odbc/odbc.c: likewise
+	* inputs/postgre/postgre.c: likewise
+	* libsrc/api.c: likewise
+	* libsrc/rlib_input.h: likewise
+	
+	* libsrc/graphing.c: Axis labels are MUCH better!
+	* src/examples/php/graph.php: likewise
 
+2005-03-18  Mike Roth  <mroth@sicompos.com>
 	* doc/Makefile:
 	* libsrc/graphing.c: (rlib_graph): add + 1 to left side y_max
 

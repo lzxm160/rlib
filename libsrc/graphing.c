@@ -139,19 +139,39 @@ gint determine_graph_type(gchar *type, gchar *subtype) {
 	return RLIB_GRAPH_TYPE_ROW_NORMAL;
 }
 
-
 static void rlib_graph_label_y_axis(rlib *r, gint side, gboolean for_real, gint y_ticks, gdouble y_min, gdouble y_max, gdouble y_origin) {
-	gint i;
+	gint i,j,max=0;
+	gchar format[20];
+	gint max_slen = 0;
+	for(i=0;i<y_ticks+1;i++) {
+		gdouble val = ABS(y_min + (((y_max-y_min)/y_ticks)*i));
+		for(j=6;j>0;j--) {
+			gdouble num = pow(10,j);
+			if((gint)(val * num) % 10 > 0) {
+				if(j > max)
+					max = j;
+					break;
+			}		
+		}
+	}
+	
+	sprintf(format, "%%.0%df", max);
+
+	for(i=0;i<y_ticks+1;i++) {
+		gdouble val = y_min + (((y_max-y_min)/y_ticks)*i);
+		gchar label[MAXSTRLEN];		
+		sprintf(label, format, val);
+		if(strlen(label) > max_slen)
+			max_slen = strlen(label);
+	}
+	
+	sprintf(format, "%%%d.0%df", max_slen-max, max);
+
 	for(i=0;i<y_ticks+1;i++) {
 		gboolean special = FALSE;
 		gdouble val = y_min + (((y_max-y_min)/y_ticks)*i);
-		gchar label[MAXSTRLEN];
-		if((gint)(val * 100.0) % 100 > 0)
-			sprintf(label, "%.02f", val);
-		else if((gint)(val * 10000.0) % 10000 > 0)
-			sprintf(label, "%.04f", val);
-		else
-			sprintf(label, "%.f", val);
+		gchar label[MAXSTRLEN];		
+		sprintf(label, format, val);
 
 		if(val == y_origin)
 			special = TRUE;
@@ -254,9 +274,6 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 		}
 	}
 
-/*	if(row_count <= 1)
-		return 0;*/
-	
 	rlib_fetch_first_rows(r);
 	row_count = 0;
 	OUTPUT(r)->graph_start(r, left_margin_offset, rlib_layout_get_next_line_by_font_point(r, part, part->position_top[0]+(*top_margin_offset), 0), graph_width, graph_height, should_label_under_tick);
@@ -348,10 +365,10 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 		}
 	}
 
-	if(y_min[RLIB_SIDE_LEFT]> 1 || y_min[RLIB_SIDE_LEFT] < 1)
-		y_min[RLIB_SIDE_LEFT] = (long)y_min[RLIB_SIDE_LEFT];
+	if((y_min[RLIB_SIDE_LEFT]> 1 || y_min[RLIB_SIDE_LEFT] < 1) && y_min[RLIB_SIDE_LEFT] != (gint)y_min[RLIB_SIDE_LEFT])
+		y_min[RLIB_SIDE_LEFT] = (long)y_min[RLIB_SIDE_LEFT]-1;
 		
-	if(y_max[RLIB_SIDE_LEFT] > 1 || y_max[RLIB_SIDE_LEFT] < 1)
+	if((y_max[RLIB_SIDE_LEFT] > 1 || y_max[RLIB_SIDE_LEFT] < 1) && y_max[RLIB_SIDE_LEFT] != (gint)y_max[RLIB_SIDE_LEFT])
 		y_max[RLIB_SIDE_LEFT] = (long)y_max[RLIB_SIDE_LEFT]+1;
 
 	if(is_percent_graph(graph_type) || is_pie_graph(graph_type)) {

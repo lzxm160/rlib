@@ -211,6 +211,11 @@ static gint rlib_mysql_free_input_filter(gpointer input_ptr) {
 	return 0;
 }
 
+static const gchar* rlib_mysql_get_error(gpointer input_ptr) {
+	struct input_filter *input = input_ptr;
+	return mysql_error(INPUT_PRIVATE(input)->mysql);
+}
+
 gpointer rlib_mysql_new_input_filter() {
 	struct input_filter *input;
 	
@@ -223,6 +228,7 @@ gpointer rlib_mysql_new_input_filter() {
 	input->previous = rlib_mysql_previous;
 	input->last = rlib_mysql_last;
 	input->isdone = rlib_mysql_isdone;
+	input->get_error = rlib_mysql_get_error;
 	input->new_result_from_query = mysql_new_result_from_query;
 	input->get_field_value_as_string = rlib_mysql_get_field_value_as_string;
 

@@ -173,6 +173,10 @@ static gint rlib_postgre_free_input_filter(gpointer input_ptr) {
 	return 0;
 }
 
+static const gchar * rlib_postgre_get_error(gpointer input_ptr) {
+	return "No error information";
+}
+
 gpointer rlib_postgre_new_input_filter() {
 	struct input_filter *input;
 	
@@ -187,6 +191,7 @@ gpointer rlib_postgre_new_input_filter() {
 	input->isdone = rlib_postgre_isdone;
 	input->new_result_from_query = postgre_new_result_from_query;
 	input->get_field_value_as_string = rlib_postgre_get_field_value_as_string;
+	input->get_error = rlib_postgre_get_error;
 
 	input->resolve_field_pointer = rlib_postgre_resolve_field_pointer;
 

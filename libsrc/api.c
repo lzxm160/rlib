@@ -157,7 +157,7 @@ static gint rlib_execute_queries(rlib *r) {
 		r->results[i].next_failed = FALSE;
 		r->results[i].navigation_failed = FALSE;
 		if(r->results[i].result == NULL) {
-			rlogit("Failed To Run A Query [%s]\n", r->queries[i].sql);
+			rlogit("Failed To Run A Query [%s]: %s\n", r->queries[i].sql, INPUT(r,i)->get_error(INPUT(r,i)));
 			return FALSE;
 		}
 		r->results[i].name =  r->queries[i].name;
