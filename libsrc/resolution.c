@@ -244,65 +244,73 @@ struct report_variable *rlib_resolve_variable(rlib *r, gchar *name) {
 	return NULL;
 }
 
+
+int is_true_str(const gchar *str) {
+	if (str == NULL) return FALSE;
+	return (!strcasecmp(str, "yes") || !strcasecmp(str, "true"))? TRUE : FALSE;
+}
+
+
+
 void rlib_resolve_fields(rlib *r) {
 	struct report_element *e;
-	if(r->reports[r->current_report]->xml_top_margin == NULL)
-		r->reports[r->current_report]->top_margin = DEFAULT_TOP_MARGIN;
-	else
-		r->reports[r->current_report]->top_margin = atof(r->reports[r->current_report]->xml_top_margin);
+	struct rlib_report *thisreport = r->reports[r->current_report];
 
-	if(r->reports[r->current_report]->xml_orientation == NULL)
-		r->reports[r->current_report]->orientation = RLIB_ORIENTATION_PORTRAIT;
-	else if(!strcmp(r->reports[r->current_report]->xml_orientation, "landscape"))
-		r->reports[r->current_report]->orientation = RLIB_ORIENTATION_LANDSCAPE;
+	if(thisreport->xml_top_margin == NULL)
+		thisreport->top_margin = DEFAULT_TOP_MARGIN;
 	else
-		r->reports[r->current_report]->orientation = RLIB_ORIENTATION_PORTRAIT;
+		thisreport->top_margin = atof(thisreport->xml_top_margin);
+
+	if(thisreport->xml_orientation == NULL)
+		thisreport->orientation = RLIB_ORIENTATION_PORTRAIT;
+	else if(!strcmp(thisreport->xml_orientation, "landscape"))
+		thisreport->orientation = RLIB_ORIENTATION_LANDSCAPE;
+	else
+		thisreport->orientation = RLIB_ORIENTATION_PORTRAIT;
 	
 	
-	if(r->reports[r->current_report]->xml_font_size == NULL)
-		r->reports[r->current_report]->font_size = -1;
+	if(thisreport->xml_font_size == NULL)
+		thisreport->font_size = -1;
 	else
-		r->reports[r->current_report]->font_size = atol(r->reports[r->current_report]->xml_font_size);
+		thisreport->font_size = atol(thisreport->xml_font_size);
 
-	if(r->reports[r->current_report]->xml_top_margin == NULL)
-		r->reports[r->current_report]->top_margin = DEFAULT_TOP_MARGIN;
+	if(thisreport->xml_top_margin == NULL)
+		thisreport->top_margin = DEFAULT_TOP_MARGIN;
 	else
-		r->reports[r->current_report]->top_margin = atof(r->reports[r->current_report]->xml_top_margin);
+		thisreport->top_margin = atof(thisreport->xml_top_margin);
 
-	if(r->reports[r->current_report]->xml_left_margin == NULL)
-		r->reports[r->current_report]->left_margin = DEFAULT_LEFT_MARGIN;
+	if(thisreport->xml_left_margin == NULL)
+		thisreport->left_margin = DEFAULT_LEFT_MARGIN;
 	else
-		r->reports[r->current_report]->left_margin = atof(r->reports[r->current_report]->xml_left_margin);
+		thisreport->left_margin = atof(thisreport->xml_left_margin);
 
-	if(r->reports[r->current_report]->xml_bottom_margin == NULL)
-		r->reports[r->current_report]->bottom_margin = DEFAULT_BOTTOM_MARGIN;
+	if(thisreport->xml_bottom_margin == NULL)
+		thisreport->bottom_margin = DEFAULT_BOTTOM_MARGIN;
 	else
-		r->reports[r->current_report]->bottom_margin = atof(r->reports[r->current_report]->xml_bottom_margin);
+		thisreport->bottom_margin = atof(thisreport->xml_bottom_margin);
 
-	if(r->reports[r->current_report]->xml_pages_accross == NULL)
-		r->reports[r->current_report]->pages_accross = 1;
+	if(thisreport->xml_pages_accross == NULL)
+		thisreport->pages_accross = 1;
 	else
-		r->reports[r->current_report]->pages_accross = atol(r->reports[r->current_report]->xml_pages_accross);
+		thisreport->pages_accross = atol(thisreport->xml_pages_accross);
 
-	r->reports[r->current_report]->suppress_page_header_first_page = FALSE;
-	if(r->reports[r->current_report]->xml_suppress_page_header_first_page != NULL &&
-		!strcmp(r->reports[r->current_report]->xml_suppress_page_header_first_page, "yes"))
-		r->reports[r->current_report]->suppress_page_header_first_page = TRUE;
+	thisreport->suppress_page_header_first_page = 
+				is_true_str(thisreport->xml_suppress_page_header_first_page);
 		
-	r->reports[r->current_report]->position_top = g_malloc(r->reports[r->current_report]->pages_accross * sizeof(float));
-	r->reports[r->current_report]->position_bottom = g_malloc(r->reports[r->current_report]->pages_accross * sizeof(float));
-	r->reports[r->current_report]->bottom_size = g_malloc(r->reports[r->current_report]->pages_accross * sizeof(float));
+	thisreport->position_top = g_malloc(thisreport->pages_accross * sizeof(float));
+	thisreport->position_bottom = g_malloc(thisreport->pages_accross * sizeof(float));
+	thisreport->bottom_size = g_malloc(thisreport->pages_accross * sizeof(float));
 
-	rlib_resolve_outputs(r, r->reports[r->current_report]->report_header);
-	rlib_resolve_outputs(r, r->reports[r->current_report]->page_header);
-	rlib_resolve_outputs(r, r->reports[r->current_report]->page_footer);
-	rlib_resolve_outputs(r, r->reports[r->current_report]->report_footer);
+	rlib_resolve_outputs(r, thisreport->report_header);
+	rlib_resolve_outputs(r, thisreport->page_header);
+	rlib_resolve_outputs(r, thisreport->page_footer);
+	rlib_resolve_outputs(r, thisreport->report_footer);
 
-	rlib_resolve_outputs(r, r->reports[r->current_report]->detail.fields);
-	rlib_resolve_outputs(r, r->reports[r->current_report]->detail.textlines);
+	rlib_resolve_outputs(r, thisreport->detail.fields);
+	rlib_resolve_outputs(r, thisreport->detail.textlines);
 
-	if(r->reports[r->current_report]->breaks != NULL) {
-		for(e = r->reports[r->current_report]->breaks; e != NULL; e=e->next) {
+	if(thisreport->breaks != NULL) {
+		for(e = thisreport->breaks; e != NULL; e=e->next) {
 			struct report_break *rb = e->data;
 			struct report_element *be;
 			rlib_resolve_outputs(r, rb->header);
@@ -310,12 +318,9 @@ void rlib_resolve_fields(rlib *r) {
 			rb->newpage = FALSE;
 			rb->headernewpage = FALSE;
 			rb->suppressblank = FALSE;
-			if(rb->xml_newpage != NULL && rb->xml_newpage[0] != '\0' && !strcmp(rb->xml_newpage, "yes"))
-				rb->newpage = TRUE;
-			if(rb->xml_headernewpage != NULL && rb->xml_headernewpage[0] != '\0' && !strcmp(rb->xml_headernewpage, "yes"))
-				rb->headernewpage = TRUE;
-			if(rb->xml_suppressblank != NULL && rb->xml_suppressblank[0] != '\0' && !strcmp(rb->xml_suppressblank, "yes"))
-				rb->suppressblank = TRUE;
+			rb->newpage = is_true_str(rb->xml_newpage);
+			rb->headernewpage = is_true_str(rb->xml_headernewpage);
+			rb->suppressblank = is_true_str(rb->xml_suppressblank);
 			for(be = rb->fields; be != NULL; be=be->next) {
 				struct break_fields *bf = be->data;
 				rlib_break_resolve_pcode(r, bf);
@@ -323,8 +328,8 @@ void rlib_resolve_fields(rlib *r) {
 		}
 	}
 	
-	if(r->reports[r->current_report]->variables != NULL) {
-		for(e = r->reports[r->current_report]->variables; e != NULL; e=e->next) {
+	if(thisreport->variables != NULL) {
+		for(e = thisreport->variables; e != NULL; e=e->next) {
 			struct report_variable *rv = e->data;
 			rlib_variable_resolve_pcode(r, rv);
 		}

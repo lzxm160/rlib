@@ -1,4 +1,9 @@
 2004-01-08  Chet Heilman <cheilman@sicompos.com>
+	* libsrc/resolution.c: (is_true_str), (rlib_resolve_fields):
+	fixup constant usages of yes/no so they behave as though they 
+	are expressions. Some slight code tightening.
+
+2004-01-08  Chet Heilman <cheilman@sicompos.com>
 
 	* libsrc/pcode.c: (rlib_new_operand), (rlib_operand_get_value):
 	Added constants, true, false, yes, no. 
