@@ -134,7 +134,7 @@ gint64 rlib_str_to_long_long(gchar *str) {
 		right = atoll(other_side);
 		len = strlen(other_side);
 	}
-	foo = (left * RLIB_DECIMAL_PERCISION) + (right*(RLIB_DECIMAL_PERCISION/tentothe(len)));
+	foo = (left * RLIB_DECIMAL_PRECISION) + (right*(RLIB_DECIMAL_PRECISION/tentothe(len)));
 	return foo;
 }
 
@@ -213,6 +213,7 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, gchar *str) {
 	}
 	return o;
 }
+
 
 void rlib_pcode_dump(struct rlib_pcode *p, gint offset) {
 	gint i,j;
@@ -602,15 +603,15 @@ struct rlib_value *this_field_value) {
 	} else if(o->type == OPERAND_RLIB_VARIABLE) {
 		gint type = ((long)o->value);
 		if(type == RLIB_RLIB_VARIABLE_PAGENO) {
-			gint64 pageno = (long long)r->current_page_number*RLIB_DECIMAL_PERCISION;
+			gint64 pageno = (long long)r->current_page_number*RLIB_DECIMAL_PRECISION;
 			return rlib_value_new_number(rval, pageno);
 		} else if(type == RLIB_RLIB_VARIABLE_VALUE) {
 			return this_field_value;
 		} else if(type == RLIB_RLIB_VARIABLE_LINENO) {
-			gint64 cln = (long long)r->current_line_number*RLIB_DECIMAL_PERCISION;
+			gint64 cln = (long long)r->current_line_number*RLIB_DECIMAL_PRECISION;
 			return rlib_value_new_number(rval, cln);				
 		} else if(type == RLIB_RLIB_VARIABLE_DETAILCNT) {
-			gint64 dcnt = (long long)r->detail_line_count * RLIB_DECIMAL_PERCISION;
+			gint64 dcnt = (long long)r->detail_line_count * RLIB_DECIMAL_PRECISION;
 			return rlib_value_new_number(rval, dcnt);				
 		}
 	} else if(o->type == OPERAND_VARIABLE) {
@@ -633,7 +634,7 @@ struct rlib_value *this_field_value) {
 		} else if(rv->type == REPORT_VARIABLE_SUM) {
 			val = RLIB_VALUE_GET_AS_NUMBER(amount);
 		} else if(rv->type == REPORT_VARIABLE_AVERAGE) {
-			val = rlib_fxp_div(RLIB_VALUE_GET_AS_NUMBER(amount), RLIB_VALUE_GET_AS_NUMBER(count), RLIB_FXP_PERCISION);
+			val = rlib_fxp_div(RLIB_VALUE_GET_AS_NUMBER(amount), RLIB_VALUE_GET_AS_NUMBER(count), RLIB_FXP_PRECISION);
 		} else if(rv->type == REPORT_VARIABLE_LOWEST) {
 			val = RLIB_VALUE_GET_AS_NUMBER(amount);
 		} else if(rv->type == REPORT_VARIABLE_HIGHEST) {

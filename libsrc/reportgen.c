@@ -418,6 +418,7 @@ void find_stuff_in_common(rlib *r, struct rlib_line_extra_data *extra_data, gint
 	}
 }
 
+
 static gint rlib_check_is_not_suppressed(rlib *r, struct rlib_pcode *code) {
 	struct rlib_value suppress;
 	gint result = TRUE;
@@ -426,17 +427,18 @@ static gint rlib_check_is_not_suppressed(rlib *r, struct rlib_pcode *code) {
 		rlib_execute_pcode(r, &suppress, code, NULL);
 
 		if(!RLIB_VALUE_IS_NONE((&suppress))) {
-			if(!RLIB_VALUE_IS_NUMBER((&suppress))) {
-				rlogit("RLIB ENCOUNTERED AN ERROR PROCESSING SURPRESS... VALUE WAS NOT OF TYPE NUMBER\n");
-			} else {
+			if(RLIB_VALUE_IS_NUMBER((&suppress))) {
 				if (RLIB_VALUE_GET_AS_NUMBER((&suppress)))
 					result = FALSE;
+			} else {
+				rlogit("RLIB ENCOUNTERED AN ERROR PROCESSING SURPRESS... VALUE WAS NOT OF TYPE NUMBER\n");
 			}	
 			rlib_value_free(&suppress);
 		}
 	}
 	return result;
 }
+
 
 #if 0
 /**
@@ -900,7 +902,7 @@ void rlib_process_variables(rlib *r) {
 		if(rv->code != NULL)
 			 rlib_execute_pcode(r, &execute_result, rv->code, NULL);
 		if(rv->type == REPORT_VARIABLE_COUNT) {
-			RLIB_VALUE_GET_AS_NUMBER(count) += RLIB_DECIMAL_PERCISION;
+			RLIB_VALUE_GET_AS_NUMBER(count) += RLIB_DECIMAL_PRECISION;
 		} else if(rv->type == REPORT_VARIABLE_EXPRESSION) {
 			if(RLIB_VALUE_IS_NUMBER(er))
 				RLIB_VALUE_GET_AS_NUMBER(amount) = RLIB_VALUE_GET_AS_NUMBER(er);
@@ -915,7 +917,7 @@ void rlib_process_variables(rlib *r) {
 			else
 				rlogit("rlib_process_variables EXPECTED TYPE NUMBER FOR REPORT_VARIABLE_SUM\n");
 		} else if(rv->type == REPORT_VARIABLE_AVERAGE) {
-			RLIB_VALUE_GET_AS_NUMBER(count) += RLIB_DECIMAL_PERCISION;
+			RLIB_VALUE_GET_AS_NUMBER(count) += RLIB_DECIMAL_PRECISION;
 			if(RLIB_VALUE_IS_NUMBER(er))
 				RLIB_VALUE_GET_AS_NUMBER(amount) += RLIB_VALUE_GET_AS_NUMBER(er);
 			else

@@ -80,7 +80,7 @@ gint rlib_number_sprintf(gchar *dest, gchar *fmtstr, const struct rlib_value *rv
 		gchar right_holding[20];
 		gint ptr=0;
 		gint64 left, right;
-		left = RLIB_VALUE_GET_AS_NUMBER(rval) / RLIB_DECIMAL_PERCISION;
+		left = RLIB_VALUE_GET_AS_NUMBER(rval) / RLIB_DECIMAL_PRECISION;
 		if(special_format)
 			left = llabs(left);
 		fleft[ptr++]='%';
@@ -112,7 +112,7 @@ gint rlib_number_sprintf(gchar *dest, gchar *fmtstr, const struct rlib_value *rv
 				dest[strlen(left_holding)] = '\0';
 			}
 				
-			right = llabs(RLIB_VALUE_GET_AS_NUMBER(rval)) % RLIB_DECIMAL_PERCISION;
+			right = llabs(RLIB_VALUE_GET_AS_NUMBER(rval)) % RLIB_DECIMAL_PRECISION;
 			fright[ptr++]='%';
 			if(right_padzero)
 				fright[ptr++]='0';
@@ -124,7 +124,7 @@ gint rlib_number_sprintf(gchar *dest, gchar *fmtstr, const struct rlib_value *rv
 				fright[ptr++] = 'd';
 				fright[ptr++] = '\0';
 			}
-			right /= tentothe(RLIB_FXP_PERCISION-right_pad);
+			right /= tentothe(RLIB_FXP_PRECISION-right_pad);
 			sprintf(right_holding, fright, right);
 			dest[strlen(left_holding)] = '.';
 			strcpy((dest+strlen(left_holding))+1, right_holding);

@@ -1,3 +1,32 @@
+2004-01-09  Chet Heilman <cheilman@sicompos.com>
+	* libsrc/formatstring.c: (rlib_number_sprintf):
+	Changed all PERCISIONs to PRECISIONs.
+	* libsrc/free.c: (rlib_hr_free_pcode), (rlib_text_free_pcode),
+	(rlib_field_free_pcode), (rlib_free_fields), (rlib_free_report):
+	Free code, if any, in all newly added attribute code variables.
+	* libsrc/pcode.c: (rlib_str_to_long_long),
+	(rlib_operand_get_value):
+	Changed all PERCISIONs to PRECISIONs.
+	* libsrc/pcode.h:
+	Changed all PERCISIONs to PRECISIONs.
+	* libsrc/pcode_op_functions.c: (rlib_pcode_operator_pow),
+	(rlib_pcode_operator_lte), (rlib_pcode_operator_lt),
+	(rlib_pcode_operator_gte), (rlib_pcode_operator_gt),
+	(rlib_pcode_operator_eql), (rlib_pcode_operator_noteql),
+	(rlib_pcode_operator_and), (rlib_pcode_operator_or),
+	(rlib_pcode_operator_ceil), (rlib_pcode_operator_floor),
+	(rlib_pcode_operator_round), (rlib_pcode_operator_sin),
+	(rlib_pcode_operator_cos), (rlib_pcode_operator_ln),
+	(rlib_pcode_operator_exp), (rlib_pcode_operator_atan),
+	(rlib_pcode_operator_sqrt), (rlib_pcode_operator_fxpval):
+	Changed all PERCISIONs to PRECISIONs.
+	* libsrc/reportgen.c: (rlib_check_is_not_suppressed),
+	(rlib_process_variables):
+	Changed all PERCISIONs to PRECISIONs.
+	* libsrc/rlib.h:
+	Changed all PERCISIONs to PRECISIONs.
+	Added variables to structs to hold code for all attributes.
+
 2004-01-08  Chet Heilman <cheilman@sicompos.com>
 	* libsrc/resolution.c: (is_true_str), (rlib_resolve_fields):
 	fixup constant usages of yes/no so they behave as though they 

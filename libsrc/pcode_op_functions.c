@@ -187,7 +187,7 @@ gint rlib_pcode_operator_pow(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	if(v1 != NULL && v2 != NULL) {
 		if(RLIB_VALUE_IS_NUMBER(v1) && RLIB_VALUE_IS_NUMBER(v2)) {
 			gint64 result = pow(RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v2)), RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v1)));
-			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, result*RLIB_DECIMAL_PERCISION));
+			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, result*RLIB_DECIMAL_PRECISION));
 			return TRUE;
 		}
 	}
@@ -203,7 +203,7 @@ gint rlib_pcode_operator_lte(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	if(v1 != NULL && v2 != NULL) {
 		if(RLIB_VALUE_IS_NUMBER(v1) && RLIB_VALUE_IS_NUMBER(v2)) {
 			if(RLIB_VALUE_GET_AS_NUMBER(v2) <= RLIB_VALUE_GET_AS_NUMBER(v1))	{
-				rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PERCISION));
+				rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
 			} else {
 				rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, 0));
 			}
@@ -213,7 +213,7 @@ gint rlib_pcode_operator_lte(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 			if(strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) <= 0) {
 				rlib_value_free(v1);
 				rlib_value_free(v2);
-				rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PERCISION));
+				rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
 			} else {
 				rlib_value_free(v1);
 				rlib_value_free(v2);
@@ -234,7 +234,7 @@ gint rlib_pcode_operator_lt(rlib *r, struct rlib_value_stack *vs, struct rlib_va
 	if(v1 != NULL && v2 != NULL) {
 		if(RLIB_VALUE_IS_NUMBER(v1) && RLIB_VALUE_IS_NUMBER(v2)) {
 			if(RLIB_VALUE_GET_AS_NUMBER(v2) < RLIB_VALUE_GET_AS_NUMBER(v1))	{
-				rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PERCISION));
+				rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
 			} else {
 				rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, 0));
 			}
@@ -244,7 +244,7 @@ gint rlib_pcode_operator_lt(rlib *r, struct rlib_value_stack *vs, struct rlib_va
 			if(strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) < 0) {
 				rlib_value_free(v1);
 				rlib_value_free(v2);
-				rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PERCISION));
+				rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
 			} else {
 				rlib_value_free(v1);
 				rlib_value_free(v2);
@@ -264,7 +264,7 @@ gint rlib_pcode_operator_gte(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	v2 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1) && RLIB_VALUE_IS_NUMBER(v2)) {
 		if(RLIB_VALUE_GET_AS_NUMBER(v2) >= RLIB_VALUE_GET_AS_NUMBER(v1))	{
-			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PERCISION));
+			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
 		} else {
 			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, 0));
 		}
@@ -274,7 +274,7 @@ gint rlib_pcode_operator_gte(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 		if(strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) >= 0) {
 			rlib_value_free(v1);
 			rlib_value_free(v2);
-			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PERCISION));
+			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
 		} else {
 			rlib_value_free(v1);
 			rlib_value_free(v2);
@@ -293,7 +293,7 @@ gint rlib_pcode_operator_gt(rlib *r, struct rlib_value_stack *vs, struct rlib_va
 	v2 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1) && RLIB_VALUE_IS_NUMBER(v2)) {
 		if(RLIB_VALUE_GET_AS_NUMBER(v2) > RLIB_VALUE_GET_AS_NUMBER(v1))	{
-			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PERCISION));
+			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
 		} else {
 			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, 0));
 		}
@@ -303,7 +303,7 @@ gint rlib_pcode_operator_gt(rlib *r, struct rlib_value_stack *vs, struct rlib_va
 		if(strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) > 0) {
 			rlib_value_free(v1);
 			rlib_value_free(v2);
-			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PERCISION));
+			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
 		} else {
 			rlib_value_free(v1);
 			rlib_value_free(v2);
@@ -322,7 +322,7 @@ gint rlib_pcode_operator_eql(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	v2 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1) && RLIB_VALUE_IS_NUMBER(v2)) {
 		if(RLIB_VALUE_GET_AS_NUMBER(v2) == RLIB_VALUE_GET_AS_NUMBER(v1))	{
-			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PERCISION));
+			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
 		} else {
 			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, 0));
 		}
@@ -331,11 +331,11 @@ gint rlib_pcode_operator_eql(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	if(RLIB_VALUE_IS_STRING(v1) && RLIB_VALUE_IS_STRING(v2)) {
 		gint64 push;
 		if(RLIB_VALUE_GET_AS_STRING(v2) == NULL && RLIB_VALUE_GET_AS_STRING(v1) == NULL)
-			push = RLIB_DECIMAL_PERCISION;
+			push = RLIB_DECIMAL_PRECISION;
 		if(RLIB_VALUE_GET_AS_STRING(v2) == NULL || RLIB_VALUE_GET_AS_STRING(v1) == NULL)
 			push = 0;
 		if(strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) == 0) {
-			push = RLIB_DECIMAL_PERCISION;
+			push = RLIB_DECIMAL_PRECISION;
 		} else {
 			push = 0;
 		}
@@ -347,7 +347,7 @@ gint rlib_pcode_operator_eql(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	}
 	if(RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_DATE(v2)) {
 		if(memcmp(&RLIB_VALUE_GET_AS_DATE(v2), &RLIB_VALUE_GET_AS_DATE(v1), sizeof(struct tm)) == 0) {
-			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PERCISION));
+			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
 		} else {
 			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, 0));
 		}
@@ -364,7 +364,7 @@ gint rlib_pcode_operator_noteql(rlib *r, struct rlib_value_stack *vs, struct rli
 	v2 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1) && RLIB_VALUE_IS_NUMBER(v2)) {
 		if(RLIB_VALUE_GET_AS_NUMBER(v2) != RLIB_VALUE_GET_AS_NUMBER(v1))	{
-			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PERCISION));
+			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
 		} else {
 			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, 0));
 		}
@@ -374,7 +374,7 @@ gint rlib_pcode_operator_noteql(rlib *r, struct rlib_value_stack *vs, struct rli
 		if(strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) != 0) {
 			rlib_value_free(v1);
 			rlib_value_free(v2);
-			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PERCISION));
+			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
 		} else {
 			rlib_value_free(v1);
 			rlib_value_free(v2);
@@ -384,7 +384,7 @@ gint rlib_pcode_operator_noteql(rlib *r, struct rlib_value_stack *vs, struct rli
 	}
 	if(RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_DATE(v2)) {
 		if(memcmp(&RLIB_VALUE_GET_AS_DATE(v2), &RLIB_VALUE_GET_AS_DATE(v1), sizeof(struct tm)) != 0) {
-			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PERCISION));
+			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
 		} else {
 			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, 0));
 		}	
@@ -400,7 +400,7 @@ gint rlib_pcode_operator_and(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	v2 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1) && RLIB_VALUE_IS_NUMBER(v2)) {
 		if(RLIB_VALUE_GET_AS_NUMBER(v2) && RLIB_VALUE_GET_AS_NUMBER(v1))	{
-			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PERCISION));
+			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
 		} else {
 			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, 0));
 		}
@@ -410,7 +410,7 @@ gint rlib_pcode_operator_and(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 		if(RLIB_VALUE_GET_AS_STRING(v2) && RLIB_VALUE_GET_AS_STRING(v1)) {
 			rlib_value_free(v1);
 			rlib_value_free(v2);
-			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PERCISION));
+			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
 		} else {
 			rlib_value_free(v1);
 			rlib_value_free(v2);
@@ -419,7 +419,7 @@ gint rlib_pcode_operator_and(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 		return TRUE;
 	}
 	if(RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_DATE(v2)) {
-		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PERCISION));
+		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
 	}
 	rlib_value_stack_push(vs, rlib_value_new_error(&rval_rtn));		
 	rlib_pcode_operator_fatal_execption("==", 2, v1, v2, NULL);
@@ -432,7 +432,7 @@ gint rlib_pcode_operator_or(rlib *r, struct rlib_value_stack *vs, struct rlib_va
 	v2 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1) && RLIB_VALUE_IS_NUMBER(v2)) {
 		if(RLIB_VALUE_GET_AS_NUMBER(v2) || RLIB_VALUE_GET_AS_NUMBER(v1))	{
-			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PERCISION));
+			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
 		} else {
 			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, 0));
 		}
@@ -442,7 +442,7 @@ gint rlib_pcode_operator_or(rlib *r, struct rlib_value_stack *vs, struct rlib_va
 		if(RLIB_VALUE_GET_AS_STRING(v2) || RLIB_VALUE_GET_AS_STRING(v1)) {
 			rlib_value_free(v1);
 			rlib_value_free(v2);
-			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PERCISION));
+			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
 		} else {
 			rlib_value_free(v1);
 			rlib_value_free(v2);
@@ -451,7 +451,7 @@ gint rlib_pcode_operator_or(rlib *r, struct rlib_value_stack *vs, struct rlib_va
 		return TRUE;
 	}
 	if(RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_DATE(v2)) {
-		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PERCISION));
+		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
 	}
 	rlib_value_stack_push(vs, rlib_value_new_error(&rval_rtn));		
 	rlib_pcode_operator_fatal_execption("==", 2, v1, v2, NULL);
@@ -476,8 +476,8 @@ gint rlib_pcode_operator_ceil(rlib *r, struct rlib_value_stack *vs, struct rlib_
  	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1)) {
-		gint64 dec = RLIB_VALUE_GET_AS_NUMBER(v1) % RLIB_DECIMAL_PERCISION;
-		gint64 result = RLIB_VALUE_GET_AS_NUMBER(v1) - dec + RLIB_DECIMAL_PERCISION;
+		gint64 dec = RLIB_VALUE_GET_AS_NUMBER(v1) % RLIB_DECIMAL_PRECISION;
+		gint64 result = RLIB_VALUE_GET_AS_NUMBER(v1) - dec + RLIB_DECIMAL_PRECISION;
 		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, result));
 		return TRUE;
 	}
@@ -490,8 +490,8 @@ gint rlib_pcode_operator_floor(rlib *r, struct rlib_value_stack *vs, struct rlib
  	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1)) {
-		gint64 dec = RLIB_VALUE_GET_AS_NUMBER(v1) % RLIB_DECIMAL_PERCISION;
-		gint64 result = RLIB_VALUE_GET_AS_NUMBER(v1) - dec - RLIB_DECIMAL_PERCISION;
+		gint64 dec = RLIB_VALUE_GET_AS_NUMBER(v1) % RLIB_DECIMAL_PRECISION;
+		gint64 result = RLIB_VALUE_GET_AS_NUMBER(v1) - dec - RLIB_DECIMAL_PRECISION;
 		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, result));
 		return TRUE;
 	}
@@ -504,12 +504,12 @@ gint rlib_pcode_operator_round(rlib *r, struct rlib_value_stack *vs, struct rlib
  	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1)) {
-		gint64 dec = RLIB_VALUE_GET_AS_NUMBER(v1) % RLIB_DECIMAL_PERCISION;
+		gint64 dec = RLIB_VALUE_GET_AS_NUMBER(v1) % RLIB_DECIMAL_PRECISION;
 		gint64 result = RLIB_VALUE_GET_AS_NUMBER(v1);
 		if(dec > 0) {
 			result -= dec;
-			if(dec > (5 * RLIB_DECIMAL_PERCISION / 10))
-				result = result * RLIB_DECIMAL_PERCISION;
+			if(dec > (5 * RLIB_DECIMAL_PRECISION / 10))
+				result = result * RLIB_DECIMAL_PRECISION;
 		}
 		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, result));
 		return TRUE;
@@ -523,8 +523,8 @@ gint rlib_pcode_operator_sin(rlib *r, struct rlib_value_stack *vs, struct rlib_v
  	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1)) {
-		gdouble num = (double)RLIB_VALUE_GET_AS_NUMBER(v1) / (double)RLIB_DECIMAL_PERCISION;
-		gint64 result = sin(num)*RLIB_DECIMAL_PERCISION;
+		gdouble num = (double)RLIB_VALUE_GET_AS_NUMBER(v1) / (double)RLIB_DECIMAL_PRECISION;
+		gint64 result = sin(num)*RLIB_DECIMAL_PRECISION;
 		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, result));
 		return TRUE;
 	}
@@ -537,8 +537,8 @@ gint rlib_pcode_operator_cos(rlib *r, struct rlib_value_stack *vs, struct rlib_v
  	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1)) {
-		gdouble num = (double)RLIB_VALUE_GET_AS_NUMBER(v1) / (double)RLIB_DECIMAL_PERCISION;
-		gint64 result = cos(num)*RLIB_DECIMAL_PERCISION;
+		gdouble num = (double)RLIB_VALUE_GET_AS_NUMBER(v1) / (double)RLIB_DECIMAL_PRECISION;
+		gint64 result = cos(num)*RLIB_DECIMAL_PRECISION;
 		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, result));
 		return TRUE;
 	}
@@ -551,8 +551,8 @@ gint rlib_pcode_operator_ln(rlib *r, struct rlib_value_stack *vs, struct rlib_va
  	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1)) {
-		gdouble num = (double)RLIB_VALUE_GET_AS_NUMBER(v1) / (double)RLIB_DECIMAL_PERCISION;
-		gint64 result = log(num)*RLIB_DECIMAL_PERCISION;
+		gdouble num = (double)RLIB_VALUE_GET_AS_NUMBER(v1) / (double)RLIB_DECIMAL_PRECISION;
+		gint64 result = log(num)*RLIB_DECIMAL_PRECISION;
 		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, result));
 		return TRUE;
 	}
@@ -565,8 +565,8 @@ gint rlib_pcode_operator_exp(rlib *r, struct rlib_value_stack *vs, struct rlib_v
  	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1)) {
-		gdouble num = (double)RLIB_VALUE_GET_AS_NUMBER(v1) / (double)RLIB_DECIMAL_PERCISION;
-		gint64 result = exp(num)*RLIB_DECIMAL_PERCISION;
+		gdouble num = (double)RLIB_VALUE_GET_AS_NUMBER(v1) / (double)RLIB_DECIMAL_PRECISION;
+		gint64 result = exp(num)*RLIB_DECIMAL_PRECISION;
 		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, result));
 		return TRUE;
 	}
@@ -579,8 +579,8 @@ gint rlib_pcode_operator_atan(rlib *r, struct rlib_value_stack *vs, struct rlib_
  	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1)) {
-		gdouble num = (double)RLIB_VALUE_GET_AS_NUMBER(v1) / (double)RLIB_DECIMAL_PERCISION;
-		gint64 result = atan(num)*RLIB_DECIMAL_PERCISION;
+		gdouble num = (double)RLIB_VALUE_GET_AS_NUMBER(v1) / (double)RLIB_DECIMAL_PRECISION;
+		gint64 result = atan(num)*RLIB_DECIMAL_PRECISION;
 		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, result));
 		return TRUE;
 	}
@@ -593,8 +593,8 @@ gint rlib_pcode_operator_sqrt(rlib *r, struct rlib_value_stack *vs, struct rlib_
  	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1)) {
-		gdouble num = (double)RLIB_VALUE_GET_AS_NUMBER(v1) / (double)RLIB_DECIMAL_PERCISION;
-		gint64 result = sqrt(num)*RLIB_DECIMAL_PERCISION;
+		gdouble num = (double)RLIB_VALUE_GET_AS_NUMBER(v1) / (double)RLIB_DECIMAL_PRECISION;
+		gint64 result = sqrt(num)*RLIB_DECIMAL_PRECISION;
 		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, result));
 		return TRUE;
 	}
@@ -611,7 +611,7 @@ gint rlib_pcode_operator_fxpval(rlib *r, struct rlib_value_stack *vs, struct rli
 		gint64 result = atoll(RLIB_VALUE_GET_AS_STRING(v2));
 		gint64 decplaces = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v1));
 		rlib_value_free(v2);
-		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, result*(RLIB_DECIMAL_PERCISION/tentothe(decplaces))));
+		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, result*(RLIB_DECIMAL_PRECISION/tentothe(decplaces))));
 		return TRUE;
 	}
 	rlib_value_stack_push(vs, rlib_value_new_error(&rval_rtn));		

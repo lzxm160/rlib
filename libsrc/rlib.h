@@ -126,6 +126,8 @@ struct report_literal {
 	struct rlib_pcode *color_code;
 	struct rlib_pcode *bgcolor_code;
 	struct rlib_pcode *col_code;
+	struct rlib_pcode *width_code;
+	struct rlib_pcode *align_code;
 };
 
 struct rlib_resultset_field {
@@ -184,7 +186,10 @@ struct report_field {
 	struct rlib_pcode *col_code;
 	struct rlib_pcode *wrapchars_code;
 	struct rlib_pcode *maxlines_code;
-	
+
+	struct rlib_pcode *width_code;
+	struct rlib_pcode *align_code;
+		
 	struct rlib_value *rval;
 };
 
@@ -216,7 +221,12 @@ struct report_horizontal_line {
 	gfloat realsize;
 	gint realindent;
 	gint reallength;
+
 	struct rlib_pcode *bgcolor_code;
+	struct rlib_pcode *size_code;
+	struct rlib_pcode *indent_code;
+	struct rlib_pcode *length_code;
+	struct rlib_pcode *font_size_code;
 	struct rlib_pcode *suppress_code;
 };
 
@@ -238,10 +248,14 @@ struct report_lines {
 	xmlChar *color;
 	xmlChar *font_size;
 	xmlChar *suppress;
+
 	gint font_point;
+
 	struct rlib_pcode *bgcolor_code;
 	struct rlib_pcode *color_code;
 	struct rlib_pcode *suppress_code;
+	struct rlib_pcode *font_size_code;
+	
 	struct report_element *e;
 };
 
@@ -257,13 +271,19 @@ struct report_break {
 	xmlChar *xml_newpage;
 	xmlChar *xml_headernewpage;
 	xmlChar *xml_suppressblank;
+
 	gint didheader;
 	gint newpage;
 	gint headernewpage;
 	gint suppressblank;
+
 	struct report_element *header;
 	struct report_element *fields;
 	struct report_element *footer;
+	
+	struct rlib_pcode *newpage_code;
+	struct rlib_pcode *headernewpage_code;
+	struct rlib_pcode *suppressblank_code;
 };
 
 struct report_detail {
@@ -329,6 +349,14 @@ struct rlib_report {
 	struct report_element *breaks;
 	gint mainloop_query;
 	iconv_t cd;
+
+	struct rlib_pcode *font_size_code;
+	struct rlib_pcode *orientation_code;
+	struct rlib_pcode *top_margin_code;
+	struct rlib_pcode *left_margin_code;
+	struct rlib_pcode *bottom_margin_code;
+	struct rlib_pcode *pages_across_code;
+	struct rlib_pcode *suppress_page_header_first_page_code;
 };
 
 struct rlib_queries {

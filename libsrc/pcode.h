@@ -39,11 +39,11 @@
 #define RLIB_VALUE_GET_AS_DATE(a) (a->date_value)
 #define RLIB_VALUE_GET_AS_IIF(a) ((struct rlib_pcode_if *)a->iif_value)
 
-#define RLIB_FXP_MUL(a, b) rlib_fxp_mul(a, b, RLIB_DECIMAL_PERCISION)
-#define RLIB_FXP_DIV(num, denom) rlib_fxp_div(num, denom, RLIB_FXP_PERCISION)
+#define RLIB_FXP_MUL(a, b) rlib_fxp_mul(a, b, RLIB_DECIMAL_PRECISION)
+#define RLIB_FXP_DIV(num, denom) rlib_fxp_div(num, denom, RLIB_FXP_PRECISION)
 
-#define RLIB_FXP_TO_NORMAL_LONG_LONG(a) (a/RLIB_DECIMAL_PERCISION)
-#define LONG_TO_FXP_NUMBER(a) ((a)*RLIB_DECIMAL_PERCISION)
+#define RLIB_FXP_TO_NORMAL_LONG_LONG(a) (a/RLIB_DECIMAL_PRECISION)
+#define LONG_TO_FXP_NUMBER(a) ((a)*RLIB_DECIMAL_PRECISION)
 
 #define OP_ADD		1
 #define OP_SUB 	2
@@ -146,8 +146,8 @@ struct rlib_pcode_operand {
 	void *value;
 };
 
-#define RLIB_DECIMAL_PERCISION	10000000
-#define RLIB_FXP_PERCISION 7
+#define RLIB_DECIMAL_PRECISION	10000000
+#define RLIB_FXP_PRECISION 7
 
 int execute_pcode(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
 struct rlib_value * rlib_value_stack_pop(struct rlib_value_stack *vs);
