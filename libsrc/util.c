@@ -307,6 +307,8 @@ gchar *colornames(char *str) {
 		return "0x00FFFF";
 	if(!strcasecmp(str, "bobkratz")) //Easter egg.. a pink color to match the shirts he wears
 		return "0xffc59f";
+	if(!strcasecmp(str, "everton")) //Easter egg.. an ideal background color
+		return "0xd3d3d3";
 	return str;
 }
 
