@@ -47,6 +47,7 @@ static void print_text(rlib *r, char *text, int backwards) {
 	char *str_ptr;
 	int text_size = strlen(text);
 	int *size = NULL;
+
 	if(backwards) {
 		make_more_space_if_necessary(&OUTPUT_PRIVATE(r)->bottom[OUTPUT_PRIVATE(r)->page_number].data, 
 			&OUTPUT_PRIVATE(r)->bottom[OUTPUT_PRIVATE(r)->page_number].size, 
@@ -222,9 +223,7 @@ static void rlib_html_start_new_page(rlib *r) {
 
 static void rlib_html_init_end_page(rlib *r) {}
 
-static void rlib_html_end_text(rlib *r) {
-	print_text(r, "</pre></td></tr></table>", FALSE);
-}
+static void rlib_html_end_text(rlib *r) {}
 
 static void rlib_html_init_output(rlib *r) {}
 
@@ -258,6 +257,9 @@ static void rlib_html_end_report(rlib *r) {
 	int i;
 	int pages_accross = r->reports[r->current_report]->pages_accross;
 	int sofar = OUTPUT_PRIVATE(r)->length;
+
+	print_text(r, "</pre></td></tr></table>", FALSE);
+
 	for(i=0;i<pages_accross;i++) {
 		OUTPUT_PRIVATE(r)->both = rrealloc(OUTPUT_PRIVATE(r)->both, sofar + OUTPUT_PRIVATE(r)->top[i].size + OUTPUT_PRIVATE(r)->bottom[i].size);
 		memcpy(OUTPUT_PRIVATE(r)->both + sofar , OUTPUT_PRIVATE(r)->top[i].data, OUTPUT_PRIVATE(r)->top[i].size);

@@ -1,4 +1,7 @@
 2003-12-01  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/html.c: fix crashing bug
+
+2003-12-01  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/php.c: new function rlib_set_locale
 	* inputs/postgre/postgre.c: possible bug w/ breaking fixed
 	* libsrc/api.c: new function rlib_set_locale
