@@ -1,3 +1,13 @@
+2004-01-08  Chet Heilman <cheilman@sicompos.com>
+
+	* libsrc/pcode.c: (rlib_new_operand), (rlib_operand_get_value):
+	Added constants, true, false, yes, no. 
+	Added ability to have string values in Variables.
+	Changed suppress to use a BOOLEAN value (0, not 0) instead of the 
+	strings 'yes' and 'no'.
+	* libsrc/reportgen.c: (rlib_check_is_not_suppressed),
+	(rlib_process_variables): Same.
+
 2004-01-07  Chet Heilman <cheilman@sicompos.com>
 	* libsrc/api.c: (rlib_dump_profile_stdout), (rlib_dump_profile): 
 	Incorporate changes from Heri Steuer. dropped the_fp variation and

@@ -420,27 +420,22 @@ void find_stuff_in_common(rlib *r, struct rlib_line_extra_data *extra_data, gint
 
 static gint rlib_check_is_not_suppressed(rlib *r, struct rlib_pcode *code) {
 	struct rlib_value suppress;
-
+	gint result = TRUE;
+	
 	if(code != NULL) {
 		rlib_execute_pcode(r, &suppress, code, NULL);
 
 		if(!RLIB_VALUE_IS_NONE((&suppress))) {
-			if(!RLIB_VALUE_IS_STRING((&suppress))) {
-				rlogit("RLIB ENCOUNTERED AN ERROR PROCESSING SURPRESS... VALUE WAS NOT OF TYPE STRING\n");
+			if(!RLIB_VALUE_IS_NUMBER((&suppress))) {
+				rlogit("RLIB ENCOUNTERED AN ERROR PROCESSING SURPRESS... VALUE WAS NOT OF TYPE NUMBER\n");
 			} else {
-				gchar *value = RLIB_VALUE_GET_AS_STRING((&suppress));
-				if(value != NULL) {
-					if(strcasecmp(value, "yes") == 0) {
-						rlib_value_free(&suppress);
-						return FALSE;
-					}
-				}
-				rlib_value_free(&suppress);
+				if (RLIB_VALUE_GET_AS_NUMBER((&suppress)))
+					result = FALSE;
 			}	
+			rlib_value_free(&suppress);
 		}
 	}
-	
-	return TRUE;
+	return result;
 }
 
 #if 0
@@ -909,8 +904,11 @@ void rlib_process_variables(rlib *r) {
 		} else if(rv->type == REPORT_VARIABLE_EXPRESSION) {
 			if(RLIB_VALUE_IS_NUMBER(er))
 				RLIB_VALUE_GET_AS_NUMBER(amount) = RLIB_VALUE_GET_AS_NUMBER(er);
-			else
-				rlogit("rlib_process_variables EXPECTED TYPE NUMBER FOR REPORT_VARIABLE_EXPRESSION\n");
+			else if (RLIB_VALUE_IS_STRING(er)) {
+				RLIB_VALUE_GET_AS_STRING(amount) = g_strdup(RLIB_VALUE_GET_AS_STRING(er));
+				amount->type = RLIB_VALUE_STRING;
+			} else
+				rlogit("rlib_process_variables EXPECTED TYPE NUMBER OR STRING FOR REPORT_VARIABLE_EXPRESSION\n");
 		} else if(rv->type == REPORT_VARIABLE_SUM) {
 			if(RLIB_VALUE_IS_NUMBER(er))
 				RLIB_VALUE_GET_AS_NUMBER(amount) += RLIB_VALUE_GET_AS_NUMBER(er);

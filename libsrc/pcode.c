@@ -22,6 +22,7 @@
 #include <string.h>
 #include <math.h>
 #include <time.h>
+#include <ctype.h>
 
 #include "rlib.h"
 #include "pcode.h"
@@ -171,7 +172,17 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, gchar *str) {
 		struct tm *tm_date = g_malloc(sizeof(struct tm));
 		str++;
 		o->type = OPERAND_DATE;
-		o->value = stod(tm_date, str);				
+		o->value = stod(tm_date, str);
+	} else if (!strcasecmp(str, "yes") || !strcasecmp(str, "true")) {
+		gint64 *newnum = g_malloc(sizeof(long long));
+		o->type = OPERAND_NUMBER;
+		*newnum = !0;
+		o->value = newnum;
+	} else if (!strcasecmp(str, "no") || !strcasecmp(str, "false")) {
+		gint64 *newnum = g_malloc(sizeof(long long));
+		o->type = OPERAND_NUMBER;
+		*newnum = 0;
+		o->value = newnum;
 	} else if((rv = rlib_resolve_variable(r, str))) {
 		o->type = OPERAND_VARIABLE;
 		o->value = rv;
@@ -187,13 +198,19 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, gchar *str) {
 		rf->field = field;
 		o->type = OPERAND_FIELD;
 		o->value = rf;		
-	} else {
+	} else if (isdigit(*str) || (*str == '-') || (*str == '+')) {
 		gint64 *newnum = g_malloc(sizeof(long long));
 		o->type = OPERAND_NUMBER;
 		*newnum = rlib_str_to_long_long(str);
 		o->value = newnum;
+	} else {
+		gchar *err = "BAD_OPERAND";
+		gchar *newstr = g_malloc(strlen(err)+1);
+		strcpy(newstr, err);
+		o->type = OPERAND_STRING;
+		o->value = newstr;
+		rlogit("Unrecognized operand: [%s]\n", str);
 	}
-
 	return o;
 }
 
@@ -570,6 +587,8 @@ struct rlib_value * rlib_value_new_error(struct rlib_value *rval) {
 */
 struct rlib_value *rlib_operand_get_value(rlib *r, struct rlib_value *rval, struct rlib_pcode_operand *o, 
 struct rlib_value *this_field_value) {
+	struct report_variable *rv = NULL;
+
 	if(o->type == OPERAND_NUMBER) {
 		return rlib_value_new(rval, RLIB_VALUE_NUMBER, FALSE, o->value);
 	} else if(o->type == OPERAND_STRING) {
@@ -596,13 +615,21 @@ struct rlib_value *this_field_value) {
 		}
 	} else if(o->type == OPERAND_VARIABLE) {
 		gint64 val = 0;
-		struct report_variable *rv = o->value;
-		struct rlib_value *count = &RLIB_VARIABLE_CA(rv)->count;
-		struct rlib_value *amount = &RLIB_VARIABLE_CA(rv)->amount;
+		struct rlib_value *count;
+		struct rlib_value *amount;
+
+		rv = o->value;
+		count = &RLIB_VARIABLE_CA(rv)->count;
+		amount = &RLIB_VARIABLE_CA(rv)->amount;
 		if(rv->type == REPORT_VARIABLE_COUNT) {
 			val = RLIB_VALUE_GET_AS_NUMBER(count);
 		} else if(rv->type == REPORT_VARIABLE_EXPRESSION) {
-			val = RLIB_VALUE_GET_AS_NUMBER(amount);
+			if (RLIB_VALUE_IS_STRING(amount)) {
+				gchar *strval = RLIB_VALUE_GET_AS_STRING(amount);
+				return rlib_value_new(rval, RLIB_VALUE_STRING, TRUE, strval);
+			} else {
+				val = RLIB_VALUE_GET_AS_NUMBER(amount);
+			}
 		} else if(rv->type == REPORT_VARIABLE_SUM) {
 			val = RLIB_VALUE_GET_AS_NUMBER(amount);
 		} else if(rv->type == REPORT_VARIABLE_AVERAGE) {
