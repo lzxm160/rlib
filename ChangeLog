@@ -1,3 +1,8 @@
+2004-10-28  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/resolution.c: figure out pages across earlier to prevent later memory corruption
+	* libsrc/layout.c:  move things around
+	* libsrc/pcode.c: check for NULL stack push
+
 2004-10-22  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/formatstring.c: don't crash on NULL format string
 

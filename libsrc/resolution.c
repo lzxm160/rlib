@@ -255,7 +255,7 @@ int is_true_str(const gchar *str) {
 
 void rlib_resolve_report_fields(rlib *r, struct rlib_report *report) {
 	struct rlib_element *e;
-
+	gfloat f;
 	report->orientation = RLIB_ORIENTATION_PORTRAIT;
 	report->orientation_code = rlib_infix_to_pcode(r, report, report->xml_orientation);
 	report->font_size = -1;
@@ -271,6 +271,10 @@ void rlib_resolve_report_fields(rlib *r, struct rlib_report *report) {
 	report->suppress_page_header_first_page = FALSE;
 	report->suppress_page_header_first_page_code = rlib_infix_to_pcode(r, report, report->xml_suppress_page_header_first_page);
 	report->height_code = rlib_infix_to_pcode(r, report, report->xml_height);
+
+	if (rlib_execute_as_float(r, report->pages_across_code, &f))
+		report->pages_across = f;
+
 		
 	report->position_top = g_malloc(report->pages_across * sizeof(float));
 	report->position_bottom = g_malloc(report->pages_across * sizeof(float));
@@ -333,6 +337,7 @@ void rlib_resolve_part_tr(rlib *r, struct rlib_part *part, struct rlib_element *
 }
 
 void rlib_resolve_part_fields(rlib *r, struct rlib_part *part) {
+	gfloat f;
 	part->orientation = RLIB_ORIENTATION_PORTRAIT;
 	part->orientation_code = rlib_infix_to_pcode(r, NULL, part->xml_orientation);
 	part->font_size = -1;
@@ -348,6 +353,8 @@ void rlib_resolve_part_fields(rlib *r, struct rlib_part *part) {
 	part->pages_across = 1;
 	part->pages_across_code = rlib_infix_to_pcode(r, NULL, part->xml_pages_across);
 
+	if (rlib_execute_as_float(r, part->pages_across_code, &f))
+		part->pages_across = f;
 		
 	part->position_top = g_malloc(part->pages_across * sizeof(float));
 	part->position_bottom = g_malloc(part->pages_across * sizeof(float));

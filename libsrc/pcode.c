@@ -301,6 +301,7 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, struct rlib_report *report
 
 void rlib_pcode_dump(struct rlib_pcode *p, gint offset) {
 	gint i,j;
+	rlogit("DUMPING PCODE IT HAS %d ELEMENTS\n", p->count);
 	for(i=0;i<p->count;i++) {
 		for(j=0;j<offset*5;j++)
 			rlogit(" ");
@@ -597,6 +598,11 @@ void rlib_value_stack_init(struct rlib_value_stack *vs) {
 gint rlib_value_stack_push(struct rlib_value_stack *vs, struct rlib_value *value) {
 	if(vs->count == 99)
 		return FALSE;
+	if(value == NULL) {
+		r_error("PCODE EXECUTION ERROR.. TRIED TO *PUSH* A NULL VALUE.. CHECK YOUR EXPRESSION!\n");
+		return FALSE;
+	}
+		
 	vs->values[vs->count++] = *value;
 	return TRUE;
 }
