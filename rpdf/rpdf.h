@@ -23,6 +23,8 @@
  * for the RLIB library functions.
  */
 
+#include <glib.h>
+
 #define RPDF_DPI 72.0
 #define RPDF_MAX_CHARS 256
 

@@ -19,14 +19,8 @@
  * 
  * $Id$s
  *
- * This module implements the C language API (Application Programming Interface)
- * for the RLIB library functions.
  */
 
-/*
-	JPEG Stuff from: The Independent JPEG Group's JPEG software
-	TODO: Include README And stuff from jpeg 
-*/
 #include <stdlib.h>
 #include <stdio.h>
 

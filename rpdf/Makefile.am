@@ -31,5 +31,9 @@ include_HEADERS = rpdf.h
 
 librpdf_la_LDFLAGS = -release $(RLIB_VERSION)
 
-
 includedir=$(prefix)/include/rlib
+
+noinst_PROGRAMS = test
+
+test_SOURCES= test.c
+test_LDADD = -lrpdf
