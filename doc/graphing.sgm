@@ -1,0 +1,298 @@
+<chapter label="5" id="graphing">
+	<title>Graphing</title>
+	<sect1>
+	<title>Overview</title>
+		<para>
+		Rlib support for graphing is enabled via the <emphasis>Graph</emphasis> entity.  Graphs are defined by,	among other parameters, <emphasis>type</emphasis> and <emphasis>subtype</emphasis>. Multiple plot entities (lines,bars, etc.) are distinguished by unique colors from a pre-determined color set. 
+		</para>
+		<para>
+		The following is a list of supported types with corresponding sub-types: 
+	<itemizedlist>
+    	<listitem override=bullet>
+	<para>Line</para>
+	<para>type="'line'"</para>
+    	<para>
+		Sub-Types:
+		<itemizedlist>
+    			<listitem override=bullet>
+     			<para>
+			subtype="'normal'"
+     			</para>
+     			<para>
+			Normal: Standard line graph.
+     			</para>
+    			</listitem>
+    			<listitem override=bullet>
+     			<para>
+			subtype="'percent'"
+     			</para>
+     			<para>
+			Percent: The data points are presented as a percentage of the total. 	
+     			</para>
+    			</listitem>
+    			<listitem override=bullet>
+     			<para>
+			subtype="'stacked'"
+     			</para>
+     			<para>
+			Stacked: Similiar to the Percent graph except the Stacked Plot presents each data point as a proportion of the total.
+     			</para>
+    			</listitem>
+		</itemizedlist>
+     	</para>
+    	</listitem>
+
+    	<listitem override=bullet>
+	<para>Row (Bar)</para>
+	<para>type="'row'"</para>
+     	<para>
+	 	Sub-Types:
+		<itemizedlist>
+                        <listitem override=bullet>
+     			<para>
+			subtype="'normal'"
+     			</para>
+                        <para>
+                        Normal: Standard Bar Chart.
+                        </para>
+                        </listitem>
+                        <listitem override=bullet>
+     			<para>
+			subtype="'percent'"
+     			</para>
+                        <para>
+			Percent: The data points are presented as a percentage of the total. 	
+                        </para>
+                        </listitem>
+                        <listitem override=bullet>
+     			<para>
+			subtype="'stacked'"
+     			</para>
+                        <para>
+			Stacked: Similiar to the Percent graph except the Stacked Plot presents each data point as a proportion of the total.
+                        </para>
+                        </listitem>
+                </itemizedlist>
+     	</para>
+    	</listitem>
+
+    	<listitem override=bullet>
+	<para>Pie</para>
+	<para>type="'pie'"</para>
+     	<para>
+	 	Sub-Types:	
+		<itemizedlist>
+                        <listitem override=bullet>
+     			<para>
+			subtype="'normal'"
+     			</para>
+                        <para>
+                        Normal: Stanard Pie Chart.
+                        </para>
+                        </listitem>
+                        <listitem override=bullet>
+     			<para>
+			subtype="'offset'"
+     			</para>
+                        <para>
+                        Offset: Pieces of the "pie" are not connected to each other.
+                        </para>
+                        </listitem>
+                </itemizedlist>
+     	</para>
+    	</listitem>
+	</itemizedlist>
+	</para>
+	<para>
+	For both Line and Bar type charts, Double Y-Axis plots (the ability to use different scales for the left and right Y-Axis) are available.  
+	</para>
+	</sect1>
+	<sect1>
+		<title>Creating Graphs</title>
+		<para>
+		Graphs are created through the use of the &lt;Graph&gt; and &lt;Plot&gt; tags.  The &lt;Graph&gt; tags define the graph itself and &lt;Plot&gt; tag defines the data for the graph.
+		</para>
+		<para>
+		&lt;Graph param1 param2 ... paramN  &gt; 
+		</para>
+			<para>
+			&lt;Plot param1 param2 ... paramN /&gt; 
+			</para>
+			<para>
+				.
+			</para>
+			<para>
+				.
+			</para>
+			<para>
+			&lt;Plot param1 param2 ... paramN /&gt; 
+			</para>
+		<para>
+		&lt;/Graph&gt; 
+		</para>
+	</sect1>
+
+	<sect1>
+	<title>Graph Parameters</title>
+	<para>
+		<emphasis>&lt;Graph type="'row'" subtype="'normal'" width="370" height="250" title="'This is the title !!!'" x_axis_title="'X-Axis Label'" y_axis_title="'Y-Axis Label'"  y_axis_title_right="'Right Hand Y-Axis Label'" &gt; </emphasis>
+	</para>
+	<para>
+	The following parameters define the Graph:
+	</para>
+		<sect2>
+		<title>type</title>
+		<para>
+		Sets the graph type. This is a <emphasis>required</emphasis> parameter.
+		</para>
+		<para>
+		Usage: type="'row'"	
+		</para>
+		</sect2>
+
+		<sect2>
+		<title>subtype</title>
+		<para>
+		Sets the graph sub-type. This is a <emphasis>required</emphasis> parameter.
+		</para>
+		<para>
+		Usage: subtype="'normal'"	
+		</para>
+		</sect2>
+
+		<sect2>
+		<title>width</title>
+		<para>
+		Sets the graph width. This is a <emphasis>required</emphasis> parameter.
+		</para>
+		<para>
+		Usage: width="370"	
+		</para>
+		</sect2>
+
+		<sect2>
+		<title>height</title>
+		<para>
+		Sets the graph height. This is a <emphasis>required</emphasis> parameter.
+		</para>
+		<para>
+		Usage: height="250"	
+		</para>
+		</sect2>
+
+		<sect2>
+		<title>title</title>
+		<para>
+		Sets the graph title. This is an <emphasis>optional</emphasis> parameter.
+		</para>
+		<para>
+		Usage: title="'This is a title'"	
+		</para>
+		</sect2>
+
+		<sect2>
+		<title>x\_axis\_title</title>
+		<para>
+		Labels the x-axis. This is an <emphasis>optional</emphasis> parameter.
+		</para>
+		<para>
+		Usage: title="'This the X-Axis'"	
+		</para>
+		</sect2>
+
+		<sect2>
+		<title>y\_axis\_title</title>
+		<para>
+		Labels the y-axis. This is an <emphasis>optional</emphasis> parameter.
+		</para>
+		<para>
+		Usage: title="'This the Y-Axis'"	
+		</para>
+		</sect2>
+
+		<sect2>
+		<title>y\_axis\_title_right</title>
+		<para>
+		Labels the right hand side y-axis. This is an <emphasis>optional</emphasis> parameter.
+		</para>
+		<para>
+		Usage: title="'This the right hand Y-Axis'"	
+		</para>
+		</sect2>
+
+
+	</sect1>
+
+	<sect1>
+	<title>Plot Parameters</title>
+	<para>
+	<emphasis>&lt;Plot axis="'y'" field="val(sales)" label="'Sales Data" side="'left'" /&gt; </emphasis>
+	</para>
+	<para>
+	The data input to a graph is the result of a valid data source.  The following parameters define the Graph's data:
+	</para>
+		<sect2>
+		<title>axis</title>
+		<para>
+		Defines the data for the specified <emphasis>axis</emphasis>.  
+			<itemizedlist>
+                        <listitem override=bullet>
+                        <para>
+			 x and y are the only valid choices.
+                        </para>
+                        </listitem>
+
+                        <listitem override=bullet>
+                        <para>
+			Only one X-Axis &lt;Plot /&gt; tag may be defined.
+                        </para>
+                        </listitem>
+
+                        <listitem override=bullet>
+                        <para>
+			Multiple Y-Axis &lt;Plot /&gt; tags may be defined.
+                        </para>
+                        </listitem>
+			</itemizedlist>
+
+		</para>
+		<para>
+		This is a <emphasis>required</emphasis> parameter.
+		</para>
+		<para>
+		Usage: axis="'x'"	
+		</para>
+		</sect2>
+
+		<sect2>
+		<title>field</title>
+		<para>
+		Defines the data set to be plot on the indicated axis. Inputs must be a numerical data type.  This is an <emphasis>required</emphasis> parameter.
+		</para>
+		<para>
+		Usage: field="val(sales)"	
+		</para>
+		</sect2>
+
+		<sect2>
+		<title>label</title>
+		<para>
+		Defines the label to be used on the Graph legend.  This is an <emphasis>optional</emphasis> parameter.
+		</para>
+		<para>
+		Usage: label="'SALES'"	
+		</para>
+		</sect2>
+
+		<sect2>
+		<title>side</title>
+		<para>
+		Defines which side the y-axis data set belongs.  Valid choices are left or right (Default is left).  This is an <emphasis>optional</emphasis> parameter.  Required when using double Y-Axis plots. 
+		</para>
+		<para>
+		Usage: side="'left'"	
+		</para>
+		</sect2>
+		
+	</sect1>
+</chapter>

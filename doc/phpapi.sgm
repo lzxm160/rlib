@@ -1,4 +1,4 @@
-<chapter label="5" id="api">
+<chapter label="7" id="api">
 	<title>PHP API</title>
 	<sect1>
 		<title>rlib_init</title>

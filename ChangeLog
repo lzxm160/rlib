@@ -1,3 +1,12 @@
+2005-03-01  Michael Roth  <mroth@sicompos.com>
+
+	* doc/Makefile: Add graphing
+	* doc/book.sgm: Add graphing
+	* doc/capi.sgm: Re-number Chapters
+	* doc/examples.sgm: Re-number Chapters
+	* doc/graphing.sgm: new
+	* doc/phpapi.sgm: Re-number Chapters
+
 2005-02-28  Bob Doan  <set EMAIL_ADDRESS environment variable>
 
 	reviewed by: <delete if not using a buddy>

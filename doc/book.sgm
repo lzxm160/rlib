@@ -4,6 +4,7 @@
 <!ENTITY basictraining SYSTEM "basictraining.sgm">
 <!ENTITY symboltable SYSTEM "symboltable.sgm">
 <!ENTITY formating SYSTEM "formating.sgm">
+<!ENTITY graphing SYSTEM "graphing.sgm">
 <!ENTITY capi SYSTEM "capi.sgm">
 <!ENTITY phpapi SYSTEM "phpapi.sgm">
 <!ENTITY examples SYSTEM "examples.sgm">
@@ -43,6 +44,7 @@
 	&basictraining;
 	&symboltable;
 	&formating;
+	&graphing;
 	&capi;
 	&phpapi;
 	&examples;

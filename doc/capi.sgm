@@ -1,4 +1,4 @@
-<chapter label="5" id="capi">
+<chapter label="6" id="capi">
 	<title>C API</title>
 	<sect1>
 		<title>rlib_init_with_environment</title>
