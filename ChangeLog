@@ -1,3 +1,6 @@
+2004-10-22  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/formatstring.c: don't crash on NULL format string
+
 2004-10-22  Michael Roth  <mroth@sicompos.com>
 
 	* libsrc/html.c: (rlib_html_hr): if HorizontalLine size=0, don't output

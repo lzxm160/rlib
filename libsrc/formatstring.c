@@ -171,7 +171,10 @@ gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value
 		if(RLIB_VALUE_IS_NUMBER(rval)) {
 			sprintf(buf, "%lld", RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(rval)));
 		} else if(RLIB_VALUE_IS_STRING(rval)) {
-			sprintf(buf, "%s", RLIB_VALUE_GET_AS_STRING(rval));
+			if(RLIB_VALUE_GET_AS_STRING(rval) == NULL)
+				buf[0] = 0;
+			else
+				sprintf(buf, "%s", RLIB_VALUE_GET_AS_STRING(rval));
 		} else if(RLIB_VALUE_IS_DATE(rval))  {
 			struct rlib_datetime *dt = &RLIB_VALUE_GET_AS_DATE(rval);
 			rlib_datetime_format(dt, buf, 100, "%m/%d/%Y");
