@@ -73,6 +73,7 @@ rlib * rlib_init_with_environment(struct environment_filter *environment) {
 	make_all_locales_utf8();
 #endif
 //	strcpy(r->pdf_encoding, "WinAnsiEncoding");
+	r->did_execute = FALSE;
 	return r;
 }
 
@@ -159,8 +160,13 @@ static gint rlib_execute_queries(rlib *r) {
 gint rlib_execute(rlib *r) {
 	gint i;
 	char newfile[MAXSTRLEN];
-
 	r->now = time(NULL);
+
+	if(r->queries_count < 1) {
+		r_error("No queries added to report\n");
+		return -1;      
+	}
+
 	rlib_execute_queries(r);
 
 	LIBXML_TEST_VERSION
@@ -181,36 +187,43 @@ gint rlib_execute(rlib *r) {
 	rlib_resolve_followers(r);
 	rlib_make_report(r);	
 	rlib_finalize(r);
+	r->did_execute = TRUE;
 	return 0;
 }
 
 gchar * rlib_get_content_type_as_text(rlib *r) {
 	static char buf[256];
-	if(r->format == RLIB_CONTENT_TYPE_PDF) {
-		sprintf(buf, "Content-Type: application/pdf\nContent-Length: %ld%c", OUTPUT(r)->get_output_length(r), 10);
-		return buf;
-	}
-	if(r->format == RLIB_CONTENT_TYPE_CSV) {
-		return RLIB_WEB_CONTENT_TYPE_CSV;
-	} else {
-		const char *charset = (r->current_output_encoder)? 
-					rlib_char_encoder_get_name(r->current_output_encoder)
-					: "UTF-8";
-		if(r->format == RLIB_CONTENT_TYPE_HTML) {
-			g_snprintf(buf, sizeof(buf), RLIB_WEB_CONTENT_TYPE_HTML, charset);
+	
+	if(r->did_execute == TRUE) {
+		if(r->format == RLIB_CONTENT_TYPE_PDF) {
+			sprintf(buf, "Content-Type: application/pdf\nContent-Length: %ld%c", OUTPUT(r)->get_output_length(r), 10);
 			return buf;
+		}
+		if(r->format == RLIB_CONTENT_TYPE_CSV) {
+			return RLIB_WEB_CONTENT_TYPE_CSV;
 		} else {
-			g_snprintf(buf, sizeof(buf), RLIB_WEB_CONTENT_TYPE_TEXT, charset);
-			return buf;
+			const char *charset = (r->current_output_encoder)? 
+						rlib_char_encoder_get_name(r->current_output_encoder)
+						: "UTF-8";
+			if(r->format == RLIB_CONTENT_TYPE_HTML) {
+				g_snprintf(buf, sizeof(buf), RLIB_WEB_CONTENT_TYPE_HTML, charset);
+				return buf;
+			} else {
+				g_snprintf(buf, sizeof(buf), RLIB_WEB_CONTENT_TYPE_TEXT, charset);
+				return buf;
+			}
 		}
 	}
 	r_error("Content type code unknown");
-	return "Oops!!!";
+	return "UNNOWN";
 }
 
 gint rlib_spool(rlib *r) {
-	OUTPUT(r)->spool_private(r);
-	return 0;
+	if(r->did_execute == TRUE) {
+		OUTPUT(r)->spool_private(r);
+		return 0;
+	}
+	return -1;
 }
 
 gint rlib_set_output_format(rlib *r, int format) {

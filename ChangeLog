@@ -1,3 +1,10 @@
+2005-03-04  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/api.c: Fix/ Prevent crashes in a bunch of different places
+	* libsrc/free.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/pcode.c: likewise
+	* libsrc/rlib.h: likewise
+
 2005-03-02  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/parsexml.c: don't make iconv pointer -1 right after we open UTF-8 (Makes Spanish Work Again)
 

@@ -225,29 +225,31 @@ void rlib_free_report(rlib *r, struct rlib_report *report) {
 
 	}	
 
-
 	if(report->variables != NULL) {
 		for(e = report->variables; e != NULL; e=e->next) {
 			struct rlib_report_variable *rv = e->data;
+
 			rlib_pcode_free(rv->code);
 
-			if(rv->type == RLIB_REPORT_VARIABLE_EXPRESSION) {
-				rlib_value_free(&RLIB_VARIABLE_CA(rv)->amount);
-				g_free(RLIB_VARIABLE_CA(rv));
-			} else if(rv->type == RLIB_REPORT_VARIABLE_COUNT)
-				g_free(RLIB_VARIABLE_CA(rv));
-			else if(rv->type == RLIB_REPORT_VARIABLE_SUM)
-				g_free(RLIB_VARIABLE_CA(rv));
-			else if(rv->type == RLIB_REPORT_VARIABLE_AVERAGE)
-				g_free(RLIB_VARIABLE_CA(rv));
-			else if(rv->type == RLIB_REPORT_VARIABLE_LOWEST)
-				g_free(RLIB_VARIABLE_CA(rv));
-			else if(rv->type == RLIB_REPORT_VARIABLE_HIGHEST)
-				g_free(RLIB_VARIABLE_CA(rv));
+			if(rv->data != NULL) {
+				if(rv->type == RLIB_REPORT_VARIABLE_EXPRESSION) {
+					rlib_value_free(&RLIB_VARIABLE_CA(rv)->amount);
+					g_free(RLIB_VARIABLE_CA(rv));
+				} else if(rv->type == RLIB_REPORT_VARIABLE_COUNT)
+					g_free(RLIB_VARIABLE_CA(rv));
+				else if(rv->type == RLIB_REPORT_VARIABLE_SUM)
+					g_free(RLIB_VARIABLE_CA(rv));
+				else if(rv->type == RLIB_REPORT_VARIABLE_AVERAGE)
+					g_free(RLIB_VARIABLE_CA(rv));
+				else if(rv->type == RLIB_REPORT_VARIABLE_LOWEST)
+					g_free(RLIB_VARIABLE_CA(rv));
+				else if(rv->type == RLIB_REPORT_VARIABLE_HIGHEST)
+					g_free(RLIB_VARIABLE_CA(rv));
+			}
 			g_free(rv);
 		}
 		
-		while(report->variables) {
+/*		while(report->variables) {
 			prev = NULL;
 			for(e = report->variables; e->next != NULL; e=e->next) {
 				prev = e;
@@ -257,7 +259,7 @@ void rlib_free_report(rlib *r, struct rlib_report *report) {
 				prev->next = NULL;
 			else
 				break;
-		}
+		}*/
 	}
 }
 
@@ -314,11 +316,13 @@ void rlib_free_part(rlib *r, struct rlib_part *part) {
 
 void rlib_free_tree(rlib *r) {
 	int i;
-	for(i=0;i<r->parts_count;i++) {
-		struct rlib_part *part = r->parts[i];
-		rlib_free_part(r, part);
-		g_free(r->reportstorun[i].name);
-		r->parts[i] = NULL;
+	if(r->queries_count > 0) {
+		for(i=0;i<r->parts_count;i++) {
+			struct rlib_part *part = r->parts[i];
+			rlib_free_part(r, part);
+			g_free(r->reportstorun[i].name);
+			r->parts[i] = NULL;
+		}
 	}
 }
 
@@ -369,12 +373,14 @@ gint rlib_free(rlib *r) {
 	if (r->htParameters) {
 		rlib_hashtable_destroy(r->htParameters);
 	}
-	
-	OUTPUT(r)->free(r);
+
+	if(r->did_execute) {
+		OUTPUT(r)->free(r);
+		ENVIRONMENT(r)->free(r);
+	}
 	g_hash_table_freeze(r->outut_paramaters);
 	g_hash_table_freeze(r->input_metadata);
 	rlib_free_follower(r);
-	ENVIRONMENT(r)->free(r);
 				
 	g_free(r);
 	return 0;

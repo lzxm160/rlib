@@ -787,10 +787,5 @@ static struct rlib_report * parse_report_file(rlib *r, gchar *filename, gchar *q
 	}
 
 	
-#if DISABLE_UTF8
-	if((long)cd != -1)
-		iconv_close(cd);
-#endif	
-
 	return report;
 }

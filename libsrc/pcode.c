@@ -291,7 +291,7 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, struct rlib_part *part, st
 		o->type = OPERAND_NUMBER;
 		*newnum = RLIB_ORIENTATION_PORTRAIT * RLIB_DECIMAL_PRECISION;
 		o->value = newnum;
-	} else if (isdigit(*str) || (*str == '-') || (*str == '+')) {
+	} else if (isdigit(*str) || (*str == '-') || (*str == '+') || (*str == '.')) {
 		gint64 *newnum = g_malloc(sizeof(long long));
 		o->type = OPERAND_NUMBER;
 		*newnum = rlib_str_to_long_long(str);
@@ -676,7 +676,6 @@ struct rlib_value * rlib_value_dup_contents(struct rlib_value *rval) {
 	return rval;
 }
 
-
 gint rlib_value_free(struct rlib_value *rval) {
 	if(rval == NULL)
 		return FALSE;
@@ -707,7 +706,6 @@ struct rlib_value * rlib_value_new_error(struct rlib_value *rval) {
 	return rlib_value_new(rval, RLIB_VALUE_ERROR, FALSE, NULL);
 }
 #endif
-
 
 /*
 	The RLIB SYMBOL TABLE is a bit commplicated because of all the datasources and internal variables
