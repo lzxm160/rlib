@@ -1,3 +1,8 @@
+2004-12-08  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/pcode_op_functions.c: don't crash on NULL values
+	* libsrc/util.c: likewise
+	* libsrc/util.h: likewise
+
 2004-12-03  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/graphing.c: be able to label the y axis and correctly account for space on the left, and better colors
 	* libsrc/pdf.c: likewise

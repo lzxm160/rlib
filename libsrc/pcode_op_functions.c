@@ -855,7 +855,7 @@ gint rlib_pcode_operator_fxpval(rlib *r, struct rlib_value_stack *vs, struct rli
 	v1 = rlib_value_stack_pop(vs);
 	v2 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1) && RLIB_VALUE_IS_STRING(v2)) {
-		gint64 result = atoll(RLIB_VALUE_GET_AS_STRING(v2));
+		gint64 result = rlib_safe_atoll(RLIB_VALUE_GET_AS_STRING(v2));
 		gint64 decplaces = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v1));
 		rlib_value_free(v1);
 		rlib_value_free(v2);

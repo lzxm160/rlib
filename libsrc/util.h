@@ -65,6 +65,7 @@ gint daysinmonth(gint year, gint month);
 void init_signals(void);
 void make_more_space_if_necessary(gchar **str, gint *size, gint *total_size, gint len);
 gchar *str2hex(const gchar *str);
+long long rlib_safe_atoll(char *str);
 
 #if DISABLE_UTF8
 #define r_charcount(s) (strlen(s))

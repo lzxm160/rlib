@@ -449,3 +449,9 @@ gchar *str2hex(const gchar *str) {
 	*ptr = '\0';
 	return result;
 }
+
+long long rlib_safe_atoll(char *str) {
+	if(str == NULL)
+		return 0;
+	return atoll(str);
+}
