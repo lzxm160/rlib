@@ -1,4 +1,9 @@
 2005-01-12  Bob Doan  <bdoan@sicompos.com>
+	* configure.in: make it compile in cygwin
+	* libsrc/formatstring.c: likewise
+	* libsrc/util.c: likewise
+
+2005-01-12  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/axis.c: new changes from Mike Ibison
 	* libsrc/csv.c: don't crash on csv and txt output w/ graphing
 	* libsrc/gd.c: likewise

@@ -61,6 +61,10 @@ gint64 llabs(gint64 j);
 #define LC_IDENTIFICATION 12
 #endif
 
+#ifndef SIGIOT
+#define SIGIOT SIGABRT
+#endif		
+
 int locale_codes[] = {
 	LC_ALL,
 	LC_COLLATE,

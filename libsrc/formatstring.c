@@ -26,7 +26,10 @@
 #include <math.h>
 #include <time.h>
 #include <langinfo.h>
-#include <monetary.h>
+
+#ifdef HAVE_MONETARY_H
+	#include <monetary.h>
+#endif
 
 #include "config.h"
 #include "rlib.h"
