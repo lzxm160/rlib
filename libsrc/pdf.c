@@ -708,28 +708,22 @@ static void pdf_graph_plot_pie(rlib *r, gfloat start, gfloat end, gboolean offse
 	gfloat y = graph->y_start + (graph->y_height / 2);
 	gfloat radius = 0;
 	gfloat offset_factor = 0;
+	gfloat rads;
+	
 	if(graph->x_width < graph->y_height)
 		radius = graph->x_width / 2;
 	else
 		radius = graph->y_height /2 ;
 
-	offset_factor = radius * .05;
+	if(offset)
+		offset_factor = radius * .1;
+	else	
+		offset_factor = radius *.01;
 
-	if(offset) {
-		if(start_angle >= 180) {
-			y -= offset_factor;
-		} else {
-			y += offset_factor;
-		}
-		
-		if((start_angle >= 0 && start_angle < 90) || (start_angle >= 270)) {
-			x += offset_factor;			
-		} else {
-			x -= offset_factor;
-		}
-		
-		radius -= offset_factor;
-	}
+	rads = (((start_angle+end_angle)/2.0))*3.1415927/180.0;
+	x += offset_factor * cosf(rads);
+	y += offset_factor * sinf(rads);
+	radius -= offset_factor;
 
 	pdf_turn_text_off(r);
 	OUTPUT(r)->set_bg_color(r, color->r, color->g, color->b);

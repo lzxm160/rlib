@@ -1,4 +1,8 @@
 2005-01-03  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/pdf.c: make offset graph work (Thanks Mike Ibison!)
+	* src/examples/php/graph.php: data...
+
+2005-01-03  Bob Doan  <bdoan@sicompos.com>
 	* configure.in: Better checks for gd
 	* libsrc/Makefile.am: likewise
 	* libsrc/gd.c: likewise
