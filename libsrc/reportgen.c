@@ -276,14 +276,14 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 		
 		extra_data[i].found_color = FALSE;
 		if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_color))) {
-			char *colorstring;
+			char *colorstring ;
 			if(!RLIB_VALUE_IS_STRING((&extra_data[i].rval_color))) {
 				rlogit("RLIB ENCOUNTERED AN ERROR PROCESSING THE COLOR FOR THIS VALUE [%s].. COLOR VALUE WAS NOT OF TYPE STRING\n", text);
 			} else {
 				char *idx;
 				colorstring = RLIB_VALUE_GET_AS_STRING((&extra_data[i].rval_color));
 				if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_code)) && RLIB_VALUE_IS_NUMBER((&extra_data[i].rval_code)) && index(colorstring, ':')) {
-					colorstring = rstrdup(colorstring);
+//					colorstring = rstrdup(colorstring);
 					idx = index(colorstring, ':');
 					if(RLIB_VALUE_GET_AS_NUMBER((&extra_data[i].rval_code)) >= 0)
 						idx[0] = '\0';

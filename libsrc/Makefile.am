@@ -32,4 +32,7 @@ INCLUDES = $(LIBXML_CFLAGS)
 
 include_HEADERS = rlib.h input.h
 
+libr_la_LDFLAGS = -release $(RLIB_VERSION)
+
+
 includedir=$(prefix)/include/rlib

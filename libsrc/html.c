@@ -51,7 +51,7 @@ static void make_more_space_if_necessary(char **str, int *size, int *total_size,
 static void print_text(rlib *r, char *text, int backwards) {
 	char *str_ptr;
 	int text_size = strlen(text);
-	int *size;
+	int *size = NULL;
 
 	if(backwards) {
 		make_more_space_if_necessary(&OUTPUT_PRIVATE(r)->bottom, &OUTPUT_PRIVATE(r)->bottom_size, 
@@ -252,8 +252,8 @@ static void rlib_html_finalize_private(rlib *r) {
 }
 
 static void rlib_html_spool_private(rlib *r) {
-	ENVIRONMENT(r)->rlib_write_output(OUTPUT_PRIVATE(r)->top, strlen(OUTPUT_PRIVATE(r)->top));
-	ENVIRONMENT(r)->rlib_write_output(OUTPUT_PRIVATE(r)->bottom, strlen(OUTPUT_PRIVATE(r)->bottom));
+	ENVIRONMENT(r)->rlib_write_output(OUTPUT_PRIVATE(r)->top, OUTPUT_PRIVATE(r)->top_size);
+	ENVIRONMENT(r)->rlib_write_output(OUTPUT_PRIVATE(r)->bottom, OUTPUT_PRIVATE(r)->bottom_size);
 }
 
 static void rlib_html_start_line(rlib *r, int backwards) {
@@ -278,6 +278,8 @@ static int rlib_html_is_single_page(rlib *r) {
 }
 
 static int rlib_html_free(rlib *r) {
+	rfree(OUTPUT_PRIVATE(r)->top);
+	rfree(OUTPUT_PRIVATE(r)->bottom);
 	rfree(OUTPUT_PRIVATE(r));
 	rfree(OUTPUT(r));
 	return 0;

@@ -1,3 +1,17 @@
+2003-10-23  Bob Doan  <bdoan@sicompos.com>
+	* bindings/php/Makefile.am: version numbers
+	* configure.in: likewise
+	* inputs/mysql/Makefile.am: likewise
+	* inputs/postgre/Makefile.am: likewise
+	* libsrc/Makefile.am: likewise
+	* libsrc/csv.c: free more stuff
+	* libsrc/free.c: likewise
+	* libsrc/html.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/txt.c: likewise
+	* tests/Makefile.am: new test
+	* tests/test3.c: likewise
+
 2003-10-22  Bob Doan  <bdoan@sicompos.com>
 	* configure.in: clean up configure so it REALLY tests for MYSQL, PHP, and POSTGRE correctly
 	* libsrc/Makefile.am: likewise

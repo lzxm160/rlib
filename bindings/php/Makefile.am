@@ -23,5 +23,5 @@ lib_LTLIBRARIES = libr-php.la
 libr_php_la_SOURCES = environment.c php.c rlib_php.h
 libr_php_la_LIBADD = -L${top_srcdir}/libsrc/ -lr $(MYSQL_LIBS) $(LIBXML_LIBS) 
 INCLUDES = -I${top_srcdir}/libsrc/ $(MYSQL_CFLAGS) $(PHP_CFLAGS) $(LIBXML_CFLAGS)
-
+libr_php_la_LDFLAGS = -release $(RLIB_VERSION)
 libdir = $(PHP_EXTENSION_DIR)

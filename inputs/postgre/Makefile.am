@@ -27,4 +27,6 @@ libr_postgre_la_LIBADD = $(POSTGRE_LIBS)
 
 INCLUDES = $(POSTGRE_CFLAGS) -I${top_srcdir}/libsrc/
 
+libr_postgre_la_LDFLAGS = -release $(RLIB_VERSION)
+
 includedir=$(prefix)/include/rlib

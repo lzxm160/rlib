@@ -27,4 +27,6 @@ libr_mysql_la_LIBADD = $(MYSQL_LIBS)
 
 INCLUDES = $(MYSQL_CFLAGS) -I${top_srcdir}/libsrc/
 
+libr_mysql_la_LDFLAGS = -release $(RLIB_VERSION)
+
 includedir=$(prefix)/include/rlib

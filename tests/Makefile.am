@@ -21,7 +21,7 @@
 ## Process this file with automake to produce Makefile.in
 
 if HAVE_MYSQL
-MYSQL_INPUT=test1
+MYSQL_INPUT=test1 test3
 endif
 
 if HAVE_POSTGRE
@@ -39,3 +39,6 @@ test1_LDADD = -L${top_srcdir}/libsrc/ $(MYSQL_LIBS) $(POSTGRE_LIBS) $(LIBXML_LIB
 
 test2_SOURCES= test2.c
 test2_LDADD = -L${top_srcdir}/libsrc/ $(MYSQL_LIBS) $(POSTGRE_LIBS) $(LIBXML_LIBS) -lcpdf -lr
+
+test3_SOURCES= test3.c
+test3_LDADD = -L${top_srcdir}/libsrc/ $(MYSQL_LIBS) $(POSTGRE_LIBS) $(LIBXML_LIBS) -lcpdf -lr

@@ -128,6 +128,8 @@ static int rlib_txt_is_single_page(rlib *r) {
 }
 
 static int rlib_txt_free(rlib *r) {
+	rfree(OUTPUT_PRIVATE(r)->top);
+	rfree(OUTPUT_PRIVATE(r)->bottom);
 	rfree(OUTPUT_PRIVATE(r));
 	rfree(OUTPUT(r));
 	return 0;

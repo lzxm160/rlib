@@ -118,14 +118,97 @@ static void rlib_free_fields(rlib *r, struct report_output_array *roa) {
 	rfree(roa);
 }
 
+
+static void rlib_break_free_pcode(rlib *r, struct break_fields *bf) {
+	free_pcode(bf->code);
+}
+
 void rlib_free_report(rlib *r, int which) {
+	struct report_element *e, *prev;
+
 	rlib_free_fields(r, r->reports[which]->report_header);
 	rlib_free_fields(r, r->reports[which]->page_header);
 	rlib_free_fields(r, r->reports[which]->page_footer);
 	rlib_free_fields(r, r->reports[which]->report_footer);
 	rlib_free_fields(r, r->reports[which]->detail.fields);
 	rlib_free_fields(r, r->reports[which]->detail.textlines);
+	
+	if(r->reports[which]->breaks != NULL) {
+		for(e = r->reports[which]->breaks; e != NULL; e=e->next) {
+			struct report_break *rb = e->data;
+			struct report_element *be;
+			rlib_free_fields(r, rb->header);
+			rlib_free_fields(r, rb->footer);
+			for(be = rb->fields; be != NULL; be=be->next) {
+				struct break_fields *bf = be->data;
+				rlib_break_free_pcode(r, bf);
+				rfree(bf);
+			}
+			
+			while(rb->fields) {
+				prev = NULL;
+				for(be = rb->fields; be->next != NULL; be=be->next) {
+					prev = be;
+				}
+				rfree(be);
+				if(prev != NULL)
+					prev->next = NULL;
+				else
+					break;
+			}
+			
+			rfree(rb);
+		}
 
+		while(r->reports[which]->breaks) {
+			prev = NULL;
+			for(e = r->reports[which]->breaks; e->next != NULL; e=e->next) {
+				prev = e;
+			}
+			rfree(e);
+			if(prev != NULL)
+				prev->next = NULL;
+			else
+				break;
+		}
+
+	}	
+
+
+	if(r->reports[which]->variables != NULL) {
+		for(e = r->reports[which]->variables; e != NULL; e=e->next) {
+			struct report_variable *rv = e->data;
+			free_pcode(rv->code);
+
+			if(rv->type == REPORT_VARIABLE_EXPRESSION)
+				rfree(RLIB_VARIABLE_CA(rv));
+			else if(rv->type == REPORT_VARIABLE_COUNT)
+				rfree(RLIB_VARIABLE_CA(rv));
+			else if(rv->type == REPORT_VARIABLE_SUM)
+				rfree(RLIB_VARIABLE_CA(rv));
+			else if(rv->type == REPORT_VARIABLE_AVERAGE)
+				rfree(RLIB_VARIABLE_CA(rv));
+			else if(rv->type == REPORT_VARIABLE_LOWEST)
+				rfree(RLIB_VARIABLE_CA(rv));
+			else if(rv->type == REPORT_VARIABLE_HIGHEST)
+				rfree(RLIB_VARIABLE_CA(rv));
+			rfree(rv);
+		}
+		
+		while(r->reports[which]->variables) {
+			prev = NULL;
+			for(e = r->reports[which]->variables; e->next != NULL; e=e->next) {
+				prev = e;
+			}
+			rfree(e);
+			if(prev != NULL)
+				prev->next = NULL;
+			else
+				break;
+		}
+	}
+
+	
 }
 
 void rlib_free_tree(rlib *r) {
