@@ -1,4 +1,7 @@
 2004-07-26  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/api.c: Put a content length out w/ PDF to make SOME versions of IE happier 
+
+2004-07-26  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/reportgen.c: don't cast lvals on mallocs to make newer gcc's happy
 	* libsrc/rlib.h: likewise
 

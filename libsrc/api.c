@@ -163,7 +163,8 @@ gchar * rlib_get_content_type_as_text(rlib *r) {
 	static char buf[256];
 #ifdef HAVE_LIBCPDF	
 	if(r->format == RLIB_CONTENT_TYPE_PDF)
-		return RLIB_WEB_CONTENT_TYPE_PDF;
+		sprintf(buf, "Content-Type: application/pdf\nContent-Length: %d%c", OUTPUT(r)->rlib_get_output_length, 10);
+		return buf;
 #endif
 	if(r->format == RLIB_CONTENT_TYPE_CSV) {
 		return RLIB_WEB_CONTENT_TYPE_CSV;
