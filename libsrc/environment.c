@@ -20,6 +20,7 @@
 
 #include <unistd.h>
 
+#include "config.h"
 #include "rlib.h"
 
 static gchar * rlib_c_resolve_memory_variable(gchar *name) {

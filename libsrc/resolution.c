@@ -20,8 +20,8 @@
  
 #include <string.h>
 #include <ctype.h>
-#include <config.h>
 
+#include "config.h"
 #include "rlib.h"
 #include "pcode.h"
 #include "rlib_input.h"

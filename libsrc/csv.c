@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "config.h"
 #include "rlib.h"
 
 #define MAX_COL	100

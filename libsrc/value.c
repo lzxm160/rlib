@@ -24,9 +24,10 @@
  */
 #include <stdlib.h>
 #include <string.h>
-#include "util.h"
-
 #include <value.h>
+
+#include "config.h"
+#include "util.h"
 
 
 //--- string functions ---

@@ -28,6 +28,7 @@
 #include <ctype.h>
 #include <langinfo.h>
 
+#include "config.h"
 #include "rlib.h"
 #include "pcode.h"
 

@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #include <glib.h>
 
+#include "config.h"
+
 #define DIV0(a,b) ((b) == 0 ? 0 : ((a)/(b)))
 #define MOD0(a,b) ((b) == 0 ? 0 : ((a)%(b)))
 

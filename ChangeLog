@@ -1,4 +1,33 @@
 2004-06-28  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/Makefile.am: fix typo
+	* libsrc/api.c: include config.h in c files.. not .h's
+	* libsrc/breaks.c: likewise
+	* libsrc/charencoder.c: likewise
+	* libsrc/containers.c: likewise
+	* libsrc/csv.c: likewise
+	* libsrc/datasource.c: likewise
+	* libsrc/datetime.c: likewise
+	* libsrc/environment.c: likewise
+	* libsrc/formatstring.c: likewise
+	* libsrc/free.c: likewise
+	* libsrc/fxp.c: likewise
+	* libsrc/html.c: likewise
+	* libsrc/load.c: likewise
+	* libsrc/navigation.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/pcode.c: likewise
+	* libsrc/pcode_op_functions.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/ralloc.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/save.c: likewise
+	* libsrc/txt.c: likewise
+	* libsrc/util.c: likewise
+	* libsrc/util.h: likewise
+	* libsrc/value.c: likewise
+
+2004-06-28  Bob Doan  <bdoan@sicompos.com>
 	* configure.in: Fix utf8 problems and be able to disable cpdf
 	* libsrc/Makefile.am: likewise
 	* libsrc/api.c: likewise

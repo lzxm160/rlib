@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "config.h"
 #include "rlib.h"
 
 struct _data {

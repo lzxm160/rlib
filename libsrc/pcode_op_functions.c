@@ -24,7 +24,7 @@
 #include <time.h>
 #include <ctype.h>
 
-
+#include "config.h"
 #include "rlib.h"
 #include "datetime.h"
 #include "pcode.h"

@@ -22,6 +22,7 @@
 #include <string.h>
 #include <gmodule.h>
 
+#include "config.h"
 #include "rlib.h"
 #include "rlib_input.h"
 

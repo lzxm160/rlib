@@ -19,9 +19,10 @@
  */
 #include <locale.h>
 #include <string.h>
-#include <cpdflib.h>
-#include <config.h>
 
+#include <cpdflib.h>
+
+#include "config.h"
 #include "rlib.h"
 
 #define PDFLOCALE	"en_US"

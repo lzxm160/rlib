@@ -28,6 +28,7 @@
 #include <langinfo.h>
 #include <monetary.h>
 
+#include "config.h"
 #include "rlib.h"
 #include "pcode.h"
 

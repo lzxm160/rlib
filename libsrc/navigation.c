@@ -20,6 +20,7 @@
 
 #include <string.h>
 
+#include "config.h"
 #include "rlib.h"
 #include "rlib_input.h"
 

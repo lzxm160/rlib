@@ -30,7 +30,7 @@
 #include <string.h>
 #include <langinfo.h>
 
-#include <config.h>
+#include "config.h"
 #include "rlib.h"
 #include "pcode.h"
 #include "rlib_input.h"

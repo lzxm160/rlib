@@ -23,7 +23,6 @@
  * for the RLIB library functions.
  */
 
-#include <config.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

@@ -25,7 +25,6 @@
 #define RLIBUTIL_H
 
 #include <glib.h>
-#include <config.h>
 
 struct rgb {
 	gfloat r;

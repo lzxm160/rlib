@@ -20,9 +20,9 @@
  
 #include <stdlib.h>
 #include <string.h>
-
 #include <glib.h>
 
+#include "config.h"
 #include "ralloc.h"
 
 

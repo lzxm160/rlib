@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <dlfcn.h>
 
+#include "config.h"
 #include "rlib.h"
 #include "pcode.h"
 #include "rlib_input.h"

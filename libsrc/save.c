@@ -18,7 +18,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h> 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -32,6 +31,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
  
+#include "config.h"
 #include "rlib.h"
 
 struct packet {

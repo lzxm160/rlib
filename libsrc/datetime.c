@@ -22,7 +22,8 @@
 #include <time.h>
 #include <string.h>
 
-#include <util.h>
+#include "config.h"
+#include "util.h"
 #include "datetime.h"
  
 #define RLIB_DATETIME_SECSPERDAY (60 * 60 * 24)

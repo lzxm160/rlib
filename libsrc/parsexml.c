@@ -18,7 +18,6 @@
  * Boston, MA 02111-1307, USA.
  */
  
-#include <config.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -27,8 +26,8 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/xinclude.h>
 
+#include "config.h"
 #include "rlib.h"
-
 
 void safestrncpy(gchar *dest, gchar *str, int n) {
 	if (!dest) return;

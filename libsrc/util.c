@@ -17,7 +17,6 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include <config.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,12 +29,8 @@
 
 #include <locale.h>
 
-#if 0
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#endif
 
+#include "config.h"
 #include "rlib.h"
 
 //man 3 llabs says the prototype is in stdlib.. no it aint!
