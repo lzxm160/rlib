@@ -187,11 +187,12 @@ struct rlib_rgb *color, gfloat indent, gfloat length) {
 	gchar color_str[40];
 	get_html_color(color_str, color);
 	
-	sprintf(buf,"<td height=\"%d\" bgcolor=\"%s\"></td>", (int)how_tall, color_str);
-	
-	print_text(r, "<table><tr>", backwards);
-	print_text(r, buf, backwards);
-	print_text(r, "</tr></table>", backwards);
+	if( how_tall > 0 ) { 
+		sprintf(buf,"<td height=\"%d\" bgcolor=\"%s\"></td>", (int)how_tall, color_str);
+		print_text(r, "<table><tr>", backwards);
+		print_text(r, buf, backwards);
+		print_text(r, "</tr></table>", backwards);
+	}
 }
 
 static void rlib_html_start_draw_cell_background(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 

@@ -1,3 +1,7 @@
+2004-10-22  Michael Roth  <mroth@sicompos.com>
+
+	* libsrc/html.c: (rlib_html_hr): if HorizontalLine size=0, don't output
+
 2004-10-20  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/layout.c: default part should inherit report orientation
 	* libsrc/parsexml.c: likewise
