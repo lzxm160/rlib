@@ -1,3 +1,7 @@
+2005-02-09  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/reportgen.c: Lay out nodata correctly
+	* src/examples/php/images.php: nada
+
 2005-02-08  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/graphing.c: fix colors
 	* libsrc/html.c: fix location of second y axis
@@ -21,11 +25,9 @@
 	* src/examples/php/graph.xml: Debug Example
 
 2005-02-04  Michael Roth  <mroth@sicompos.com>
-
 	* libsrc/graphing.c: (rlib_graph): line size by font
 
 2005-02-03  Michael Roth  <mroth@sicompos.com>
-
 	* bindings/php/php.c: (ZEND_FUNCTION): Spelling paramater -> parameter
 	* libsrc/api.c: (rlib_init_with_environment),
 	(rlib_set_output_parameter): Spelling paramater -> parameter
