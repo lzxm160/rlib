@@ -490,7 +490,7 @@ gint64 rlib_fxp_mul(gint64 a, gint64 b, gint64 factor);
 gint64 rlib_fxp_div(gint64 num, gint64 denom, gint places);
 
 /***** PROTOTYPES: api.c ******************************************************/
-rlib * rlib_init();
+rlib * rlib_init(void);
 rlib * rlib_init_with_environment(struct environment_filter *environment);
 gint rlib_add_query_as(rlib *r, gchar *input_name, gchar *sql, gchar *name);
 gint rlib_add_report(rlib *r, gchar *name, gchar *mainloop);
@@ -507,7 +507,7 @@ gint rlib_postgre_report(gchar *connstr, gchar *xmlfilename, gchar *sqlquery, gc
 gint rlib_add_resultset_follower(rlib *r, gchar *leader, gchar *follower);
 gint rlib_add_parameter(rlib *r, const gchar *name, const gchar *value);
 gint rlib_set_locale(rlib *r, gchar *locale);
-void rlib_init_profiler();
+void rlib_init_profiler(void);
 void rlib_dump_profile(gint profilenum, const gchar *filename);
 void rlib_trap(void); //For internals debugging only
 
@@ -569,7 +569,7 @@ gchar *strupr (gchar *s);
 gchar *strlwr (gchar *s);
 gchar *strproper (gchar *s);
 gint daysinmonth(gint year, gint month);
-void init_signals();
+void init_signals(void);
 void make_more_space_if_necessary(gchar **str, gint *size, gint *total_size, gint len);
 
 /***** PROTOTYPES: navigation.c ***********************************************/
@@ -597,7 +597,7 @@ void rlib_txt_new_output_filter(rlib *r);
 void rlib_csv_new_output_filter(rlib *r);
 
 /***** PROTOTYPES: mysql.c ****************************************************/
-gpointer rlib_mysql_new_input_filter();
+gpointer rlib_mysql_new_input_filter(void);
 gpointer rlib_mysql_real_connect(gpointer input_ptr, gchar *host, gchar *user, gchar *password, gchar *database);
 
 /***** PROTOTYPES: datasource.c ***********************************************/
@@ -608,7 +608,7 @@ gint rlib_add_datasource_postgre(rlib *r, gchar *input_name, gchar *conn);
 gint rlib_add_datasource_odbc(rlib *r, gchar *input_name, gchar *source, gchar *user, gchar *password);
 
 /***** PROTOTYPES: postgre.c **************************************************/
-gpointer rlib_postgre_new_input_filter();
+gpointer rlib_postgre_new_input_filter(void);
 gpointer rlib_postgre_connect(gpointer input_ptr, gchar *conn);
 
 /***** PROTOTYPES: save.c *****************************************************/

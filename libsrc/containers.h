@@ -30,8 +30,8 @@ typedef struct rlib_hashtable rlib_hashtable;
 typedef rlib_hashtable * rlib_hashtable_ptr;
 
 
-rlib_hashtable_ptr rlib_hashtable_new_copyboth();
-rlib_hashtable_ptr rlib_hashtable_new();
+rlib_hashtable_ptr rlib_hashtable_new_copyboth(void);
+rlib_hashtable_ptr rlib_hashtable_new(void);
 void rlib_hashtable_destroy(rlib_hashtable_ptr ht);
 void rlib_hashtable_insert(rlib_hashtable_ptr ht, gpointer key, gpointer val);
 gpointer rlib_hashtable_lookup(rlib_hashtable_ptr ht, gconstpointer lookup);

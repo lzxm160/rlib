@@ -1,3 +1,7 @@
+2004-01-13  Chet Heilman <cheilman@sicompos.com>
+	* libsrc/containers.h:change all f() to f(void)
+	* libsrc/rlib.h:change all f() to f(void)
+
 2004-01-09  Chet Heilman <cheilman@sicompos.com>
 	* libsrc/free.c: (rlib_hr_free_pcode), (rlib_text_free_pcode),
 	(rlib_field_free_pcode), (rlib_free_fields):
