@@ -1,3 +1,7 @@
+2004-01-09  rlib  <set EMAIL_ADDRESS environment variable>
+	* libsrc/free.c:
+	Add a cvs Id tag.
+	
 2004-01-09  Chet Heilman <cheilman@sicompos.com>
 	* libsrc/formatstring.c: (rlib_number_sprintf):
 	Changed all PERCISIONs to PRECISIONs.
