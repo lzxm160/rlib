@@ -1,4 +1,4 @@
-dnl Configure template for rlib - LAMP report writer
+dnl Configure template for RLIB
 
 dnl Copyright (c) 2003 SICOM Systems Inc (bdoan@sicompos.com)
 dnl RLIB is free software; you can redistribute it and/or modify
