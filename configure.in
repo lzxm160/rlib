@@ -448,7 +448,7 @@ rlib-$VERSION:
 	 PERL:                    ${enable_perl}
 	  PERL entension dir:     ${PERL_EXTENSION_DIR}
 
-	Music:                    Incubus
+	Music:                    Velvet Revolver
 
 	Having Problems:          rlib-users@lists.sf.net 	
 	Want to contribute:       rlib-devel@lists.sf.net	

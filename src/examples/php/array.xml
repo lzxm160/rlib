@@ -12,22 +12,21 @@
 	</Alternate>
 	<ReportHeader>
 		<Output>
-			<Line/>
-			<Line fontsize="4"/>
-			<HorizontalLine size="4" bgcolor="'white'"/>
-			<HorizontalLine size="2" bgcolor="'black'"/>
-			<HorizontalLine size="4" bgcolor="'white'"/>
-		</Output>				
-	</ReportHeader>
-
-	<PageHeader>
-		<Output>
 			<Line fontSize="11">
-				<literal>Test Report (Page Header)</literal>
+				<literal>Test Report (Normal)</literal>
+			</Line>
+			<Line fontSize="11">
+				<literal bold="yes">Test Report (Bold)</literal>
+			</Line>
+			<Line fontSize="11">
+				<literal italics="yes">Test Report (Italics)</literal>
+			</Line>
+			<Line fontSize="11">
+				<literal bold="yes" italics="yes">Test Report (Bold and Italics)</literal>
 			</Line>
 			<HorizontalLine size="4" bgcolor="'white'"/>
 		</Output>
-	</PageHeader>		
+	</ReportHeader>		
 	<Breaks>	
 		<Break name="break0" newpage="no" headernewpage="yes">
 			<BreakHeader>

@@ -214,7 +214,7 @@ gfloat get_outputs_size(rlib *r, struct rlib_element *e, gint page) {
 
 
 gint will_this_fit(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat total, gint page) {
-	if(OUTPUT(r)->is_single_page(r))
+	if(OUTPUT(r)->paginate == FALSE)
 		return TRUE;
 	if(report->position_top[page-1]+total > report->position_bottom[page-1])
 		return FALSE;
@@ -226,7 +226,7 @@ gint will_outputs_fit(rlib *r, struct rlib_part *part, struct rlib_report *repor
 	gfloat size = 0;
 	struct rlib_report_output_array *roa;
 
-	if(OUTPUT(r)->is_single_page(r))
+	if(OUTPUT(r)->paginate == FALSE)
 		return TRUE;
 	if(e == NULL)
 		return TRUE;
@@ -366,12 +366,18 @@ static void rlib_evaluate_report_attributes(rlib *r, struct rlib_report *report)
 			report->orientation = t;
 	if (rlib_execute_as_int(r, report->font_size_code, &t))
 		report->font_size = t;
-	if (rlib_execute_as_float(r, report->top_margin_code, &f))
-		report->top_margin = f;
-	if (rlib_execute_as_float(r, report->left_margin_code, &f))
-		report->left_margin = f;
-	if (rlib_execute_as_float(r, report->bottom_margin_code, &f))
-		report->bottom_margin = f;
+	if(report->is_the_only_report) {
+		report->top_margin = 0;
+		report->bottom_margin = 0;
+		report->left_margin = 0;	
+	} else {
+		if (rlib_execute_as_float(r, report->top_margin_code, &f))
+			report->top_margin = f;
+		if (rlib_execute_as_float(r, report->left_margin_code, &f))
+			report->left_margin = f;
+		if (rlib_execute_as_float(r, report->bottom_margin_code, &f))
+			report->bottom_margin = f;
+	}
 	if (rlib_execute_as_int(r, report->pages_across_code, &t))
 		report->pages_across = t;
 	if (rlib_execute_as_int(r, report->suppress_page_header_first_page_code, &t))
@@ -669,13 +675,11 @@ gint make_report(rlib *r) {
 		rlib_resolve_part_fields(r, part);
 		rlib_evaluate_part_attributes(r, part);
 		OUTPUT(r)->start_report(r, part);
-		OUTPUT(r)->start_table(r);
 		if(part->font_size != -1)
 			r->font_point = part->font_size;
 
 		rlib_layout_init_part_page(r, part);
 		rlib_layout_part_tr(r, part, part->tr_elements);
-		OUTPUT(r)->end_table(r);
 		OUTPUT(r)->end_report(r, part);
 	}
 	

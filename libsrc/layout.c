@@ -156,12 +156,18 @@ static gfloat rlib_layout_estimate_string_width(rlib *r, gint len) {
 
 static gfloat rlib_layout_output_extras_start(rlib *r, struct rlib_part *part, gint backwards, gfloat left_origin, gfloat bottom_orgin, 
 struct rlib_line_extra_data *extra_data) {
+	
+	if(extra_data->is_bold)
+		OUTPUT(r)->start_bold(r);
+	if(extra_data->is_italics)
+		OUTPUT(r)->start_italics(r);
+
 	if(extra_data->found_link)
-		OUTPUT(r)->boxurl_start(r, part, left_origin, bottom_orgin, rlib_layout_estimate_string_width(r, extra_data->width), 
+		OUTPUT(r)->start_boxurl(r, part, left_origin, bottom_orgin, rlib_layout_estimate_string_width(r, extra_data->width), 
 			RLIB_GET_LINE(extra_data->font_point), extra_data->link);
 
 	if(extra_data->running_bgcolor_status & STATUS_START) 
-		OUTPUT(r)->draw_cell_background_start(r, left_origin, bottom_orgin, extra_data->running_running_bg_total, 
+		OUTPUT(r)->start_draw_cell_background(r, left_origin, bottom_orgin, extra_data->running_running_bg_total, 
 			RLIB_GET_LINE(extra_data->font_point), &extra_data->bgcolor);
 
 	return extra_data->output_width;
@@ -169,11 +175,18 @@ struct rlib_line_extra_data *extra_data) {
 
 static gfloat rlib_layout_output_extras_end(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_orgin, 
 struct rlib_line_extra_data *extra_data) {
+
+
 	if(extra_data->running_bgcolor_status & STATUS_STOP)
-		OUTPUT(r)->draw_cell_background_end(r);	
+		OUTPUT(r)->end_draw_cell_background(r);	
 
 	if(extra_data->found_link)
-		OUTPUT(r)->boxurl_end(r);
+		OUTPUT(r)->end_boxurl(r);
+
+	if(extra_data->is_italics)
+		OUTPUT(r)->end_italics(r);
+	if(extra_data->is_bold)
+		OUTPUT(r)->end_bold(r);
 		
 	return extra_data->output_width;
 }
@@ -181,18 +194,18 @@ struct rlib_line_extra_data *extra_data) {
 static gfloat rlib_layout_output_extras(rlib *r, struct rlib_part *part, gint backwards, gfloat left_origin, gfloat bottom_orgin, 
 struct rlib_line_extra_data *extra_data) {
 	if(extra_data->found_link)
-		OUTPUT(r)->boxurl_start(r, part, left_origin, bottom_orgin, rlib_layout_estimate_string_width(r, extra_data->width), 
+		OUTPUT(r)->start_boxurl(r, part, left_origin, bottom_orgin, rlib_layout_estimate_string_width(r, extra_data->width), 
 			RLIB_GET_LINE(extra_data->font_point), extra_data->link);
 
 	if(extra_data->running_bgcolor_status & STATUS_START) 
-		OUTPUT(r)->draw_cell_background_start(r, left_origin, bottom_orgin, extra_data->running_running_bg_total, 
+		OUTPUT(r)->start_draw_cell_background(r, left_origin, bottom_orgin, extra_data->running_running_bg_total, 
 			RLIB_GET_LINE(extra_data->font_point), &extra_data->bgcolor);
 
 	if(extra_data->running_bgcolor_status & STATUS_STOP)
-		OUTPUT(r)->draw_cell_background_end(r);	
+		OUTPUT(r)->end_draw_cell_background(r);	
 
 	if(extra_data->found_link)
-		OUTPUT(r)->boxurl_end(r);
+		OUTPUT(r)->end_boxurl(r);
 		
 	return extra_data->output_width;
 }
@@ -202,13 +215,20 @@ static gfloat rlib_layout_text_from_extra_data(rlib *r, gint backwards, gfloat l
 	gchar *text = extra_data->formatted_string;
 
 	OUTPUT(r)->set_font_point(r, extra_data->font_point);
-	if(extra_data->found_color) {
+	if(extra_data->found_color)
 		OUTPUT(r)->set_fg_color(r, extra_data->color.r, extra_data->color.g, extra_data->color.b);
-	}
+	if(extra_data->is_bold)
+		OUTPUT(r)->start_bold(r);
+	if(extra_data->is_italics)
+		OUTPUT(r)->start_italics(r);
 	OUTPUT(r)->print_text(r, left_origin, bottom_orgin+(extra_data->font_point/300.0), (gchar *) rlib_encode_text(r, text), backwards, extra_data->col);
 	rtn_width = extra_data->output_width;
 	if(extra_data->found_color)
 		OUTPUT(r)->set_fg_color(r, 0, 0, 0);
+	if(extra_data->is_bold)
+		OUTPUT(r)->end_bold(r);
+	if(extra_data->is_italics)
+		OUTPUT(r)->end_italics(r);
 	OUTPUT(r)->set_font_point(r, r->font_point);
 	return rtn_width;
 }
@@ -220,10 +240,18 @@ gchar *text) {
 	OUTPUT(r)->set_font_point(r, extra_data->font_point);
 	if(extra_data->found_color)
 		OUTPUT(r)->set_fg_color(r, extra_data->color.r, extra_data->color.g, extra_data->color.b);
+	if(extra_data->is_bold)
+		OUTPUT(r)->start_bold(r);
+	if(extra_data->is_italics)
+		OUTPUT(r)->start_italics(r);
 	OUTPUT(r)->print_text(r, left_origin, bottom_orgin+(extra_data->font_point/300.0), (gchar *) rlib_encode_text(r, text), backwards, extra_data->col);
 	rtn_width = extra_data->output_width;
 	if(extra_data->found_color)
 		OUTPUT(r)->set_fg_color(r, 0, 0, 0);
+	if(extra_data->is_bold)
+		OUTPUT(r)->end_bold(r);
+	if(extra_data->is_italics)
+		OUTPUT(r)->end_italics(r);
 	OUTPUT(r)->set_font_point(r, r->font_point);
 	return rtn_width;
 }
@@ -240,13 +268,22 @@ static void rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_report_line
 	struct rlib_element *e = rl->e;
 	struct rlib_value line_rval_color;
 	struct rlib_value line_rval_bgcolor;
+	struct rlib_value line_rval_bold;
+	struct rlib_value line_rval_italics;
 
 	RLIB_VALUE_TYPE_NONE(&line_rval_color);
 	RLIB_VALUE_TYPE_NONE(&line_rval_bgcolor);
+	RLIB_VALUE_TYPE_NONE(&line_rval_bold);
+	RLIB_VALUE_TYPE_NONE(&line_rval_italics);
 	if(rl->color_code != NULL)
 		rlib_execute_pcode(r, &line_rval_color, rl->color_code, NULL);
 	if(rl->bgcolor_code != NULL)
 		rlib_execute_pcode(r, &line_rval_bgcolor, rl->bgcolor_code, NULL);
+	if(rl->bold_code != NULL)
+		rlib_execute_pcode(r, &line_rval_bold, rl->bold_code, NULL);
+	if(rl->italics_code != NULL)
+		rlib_execute_pcode(r, &line_rval_italics, rl->italics_code, NULL);
+
 	for(; e != NULL; e=e->next) {
 		RLIB_VALUE_TYPE_NONE(&extra_data[i].rval_bgcolor);
 		if (e->type == RLIB_ELEMENT_FIELD) {
@@ -270,6 +307,19 @@ static void rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_report_line
 				extra_data[i].rval_bgcolor = line_rval_bgcolor;
 				rlib_value_dup_contents(&extra_data[i].rval_bgcolor);
 			}
+			if(rf->bold_code != NULL) {
+				rlib_execute_pcode(r, &extra_data[i].rval_bold, rf->bold_code, NULL);
+			} else if(rl->bold_code != NULL) {
+				extra_data[i].rval_bold = line_rval_bold;
+				rlib_value_dup_contents(&extra_data[i].rval_bold);
+			}
+			if(rf->italics_code != NULL) {
+				rlib_execute_pcode(r, &extra_data[i].rval_italics, rf->italics_code, NULL);
+			} else if(rl->italics_code != NULL) {
+				extra_data[i].rval_italics = line_rval_italics;
+				rlib_value_dup_contents(&extra_data[i].rval_italics);
+			}
+
 			if (rf->align_code) {
 				gint t;
 				if (rlib_execute_as_int_inlist(r, rf->align_code, &t, aligns)) {
@@ -302,6 +352,18 @@ static void rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_report_line
 			else if(rl->bgcolor_code != NULL) {
 				extra_data[i].rval_bgcolor = line_rval_bgcolor;
 				rlib_value_dup_contents(&extra_data[i].rval_bgcolor);				
+			}
+			if(rt->bold_code != NULL)	
+				rlib_execute_pcode(r, &extra_data[i].rval_bold, rt->bold_code, NULL);
+			else if(rl->bold_code != NULL) {
+				extra_data[i].rval_bold = line_rval_bold;
+				rlib_value_dup_contents(&extra_data[i].rval_bold);
+			}
+			if(rt->italics_code != NULL)	
+				rlib_execute_pcode(r, &extra_data[i].rval_italics, rt->italics_code, NULL);
+			else if(rl->italics_code != NULL) {
+				extra_data[i].rval_italics = line_rval_italics;
+				rlib_value_dup_contents(&extra_data[i].rval_italics);
 			}
 
 			if(rt->value == NULL)
@@ -394,6 +456,25 @@ static void rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_report_line
 				g_free(ocolor);
 			}
 		}
+		extra_data[i].is_bold = FALSE;
+		if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_bold))) {
+			if(!RLIB_VALUE_IS_NUMBER((&extra_data[i].rval_bold))) {
+				rlogit("RLIB ENCOUNTERED AN ERROR PROCESSING BOLD FOR THIS VALUE [%s].. BOLD VALUE WAS NOT OF TYPE NUMBER\n", text);
+			} else {
+				if(RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER((&extra_data[i].rval_bold))))
+					extra_data[i].is_bold = TRUE;
+			}
+		}
+		extra_data[i].is_italics = FALSE;
+		if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_italics))) {
+			if(!RLIB_VALUE_IS_NUMBER((&extra_data[i].rval_italics))) {
+				rlogit("RLIB ENCOUNTERED AN ERROR PROCESSING ITALICS FOR THIS VALUE [%s].. ITALICS VALUE WAS NOT OF TYPE NUMBER\n", text);
+			} else {
+				if(RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER((&extra_data[i].rval_italics))))
+					extra_data[i].is_italics = TRUE;
+			}
+		}
+
 		extra_data[i].col = 0;
 		if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_col))) {
 			if(!RLIB_VALUE_IS_NUMBER((&extra_data[i].rval_col))) {
@@ -418,6 +499,8 @@ static void rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_report_line
 	}
 	rlib_value_free(&line_rval_color);
 	rlib_value_free(&line_rval_bgcolor);
+	rlib_value_free(&line_rval_bold);
+	rlib_value_free(&line_rval_italics);
 }	
 
 static void rlib_layout_find_common_properties_in_a_line(rlib *r, struct rlib_line_extra_data *extra_data, gint count) {
@@ -456,7 +539,6 @@ static void rlib_layout_find_common_properties_in_a_line(rlib *r, struct rlib_li
  		e_ptr->running_bgcolor_status |= STATUS_STOP;
 	}
 }
-
 
 static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_output_array *roa, gint backwards, gint page) {
 	struct rlib_element *e=NULL;
@@ -532,7 +614,7 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 					width = 0;
 					start_count = -1;
 					for(e = rl->e; e != NULL; e=e->next) {
-						if(!extra_data[count].found_color) {
+						if(extra_data[count].found_color == FALSE && extra_data[count].is_bold == FALSE && extra_data[count].is_italics == FALSE) {
 							if(start_count == -1)
 								start_count = count;
 							sprintf(buf, "%s%s", buf, extra_data[count].formatted_string);
@@ -594,6 +676,8 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 					rlib_value_free(&extra_data[count].rval_bgcolor);
 					rlib_value_free(&extra_data[count].rval_color);
 					rlib_value_free(&extra_data[count].rval_col);
+					rlib_value_free(&extra_data[count].rval_bold);
+					rlib_value_free(&extra_data[count].rval_italics);
 					count++;
 				}
 

@@ -1,3 +1,23 @@
+2004-10-13  Bob Doan  <bdoan@sicompos.com>
+	* configure.in: update the music I'm listening to
+	* libsrc/csv.c: bold and italics support
+	* libsrc/html.c: likewise
+	* libsrc/layout.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/txt.c: likewise
+	* src/examples/php/Makefile.am: likewise
+	* src/examples/php/array.php: likewise
+	* src/examples/php/array.xml: likewise
+	* src/examples/php/array2.xml: likewise
+	* src/examples/php/array_test.php: likewise
+	* src/examples/php/array_test.xml: likewise
+	* src/examples/php/array_test2.xml: likewise
+	* src/examples/php/flow_part_test.xml: likewise
+
 2004-10-12  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/breaks.c: added bold and italics properties (doesn't work yet), renamed struct fields for consistant naming convention
 	* libsrc/formatstring.c: likewise

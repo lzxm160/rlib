@@ -670,6 +670,15 @@ struct rlib_part * parse_part_file(gchar *filename, gchar type) {
 		part->page_footer = report->page_footer;
 		report->page_header = NULL;
 		report->page_footer = NULL;
+		
+		part->xml_left_margin = report->xml_left_margin;
+		part->xml_top_margin = report->xml_top_margin;
+		part->xml_bottom_margin = report->xml_bottom_margin;
+		report->is_the_only_report = TRUE;		
+		report->xml_left_margin = NULL;
+		report->xml_top_margin = NULL;
+		report->xml_bottom_margin = NULL;
+		
 		part->xml_pages_across = report->xml_pages_across;
 		found = TRUE;
 	}

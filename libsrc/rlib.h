@@ -188,6 +188,8 @@ struct rlib_line_extra_data {
 	struct rlib_value rval_link;
 	struct rlib_value rval_bgcolor;
 	struct rlib_value rval_color;
+	struct rlib_value rval_bold;
+	struct rlib_value rval_italics;
 	struct rlib_value rval_col;
 	gint font_point;
 	gchar formatted_string[MAXSTRLEN];
@@ -202,6 +204,8 @@ struct rlib_line_extra_data {
 	gfloat output_width;
 	gint running_bgcolor_status;
 	gfloat running_running_bg_total;
+	gboolean is_bold;
+	gboolean is_italics;
 };
 
 struct rlib_report_field {
@@ -464,6 +468,7 @@ struct rlib_report {
 	gfloat page_width;
 	gint pages_across;
 	gint suppress_page_header_first_page;
+	gboolean is_the_only_report;
 	
 	struct rlib_element *report_header;
 	struct rlib_element *page_header;
@@ -585,15 +590,19 @@ struct output_filter {
 	gint do_break;
 	gint do_grouptext;
 	gint paginate;
-	gfloat	(*get_string_width)(rlib *, char *);
+	gfloat (*get_string_width)(rlib *, char *);
 	void (*print_text)(rlib *, float, float, char *, int, int);
 	void (*set_fg_color)(rlib *, float, float, float);
 	void (*set_bg_color)(rlib *, float, float, float);
 	void (*hr)(rlib *, int, float, float, float, float, struct rlib_rgb *, float, float);
-	void (*draw_cell_background_start)(rlib *, float, float, float, float, struct rlib_rgb *);
-	void (*draw_cell_background_end)(rlib *);
-	void (*boxurl_start)(rlib *, struct rlib_part *part, float, float, float, float, char *);
-	void (*boxurl_end)(rlib *);
+	void (*start_draw_cell_background)(rlib *, float, float, float, float, struct rlib_rgb *);
+	void (*end_draw_cell_background)(rlib *);
+	void (*start_boxurl)(rlib *, struct rlib_part *part, float, float, float, float, char *);
+	void (*end_boxurl)(rlib *);
+	void (*start_bold)(rlib *);
+	void (*end_bold)(rlib *);
+	void (*start_italics)(rlib *);
+	void (*end_italics)(rlib *);
 	void (*drawimage)(rlib *, float, float, char *, char *, float, float);
 	void (*set_font_point)(rlib *, int);
 	void (*start_new_page)(rlib *, struct rlib_part *);
@@ -609,13 +618,10 @@ struct output_filter {
 	void (*spool_private)(rlib *);
 	void (*start_line)(rlib *, int);
 	void (*end_line)(rlib *, int);
-	int (*is_single_page)(rlib *);
 	void (*start_output_section)(rlib *);
 	void (*end_output_section)(rlib *);
 	char *(*get_output)(rlib *);
 	long (*get_output_length)(rlib *);
-	void (*start_table)(rlib *);
-	void (*end_table)(rlib *);
 	void (*start_tr)(rlib *);
 	void (*end_tr)(rlib *);
 	void (*start_td)(rlib *, struct rlib_part *part, gfloat left_margin, gfloat bottom_margin, int width, int height, gint border_width, struct rlib_rgb *color);

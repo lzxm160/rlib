@@ -29,6 +29,12 @@
 #define USEPDFLOCALE	1
 #define MAX_PDF_PAGES 500
 
+#define BOLD 1
+#define ITALICS 2
+
+char *font_names[4] = { "Courier", "Courier-Bold", "Courier-Oblique", "Courier-BoldOblique" };
+ 
+
 struct _private {
 	struct rlib_rgb current_color;
 	CPDFdoc *pdf;
@@ -37,6 +43,8 @@ struct _private {
 	gint length;
 	gint page_diff;
 	gint current_page;
+	gboolean is_bold;
+	gboolean is_italics;
 };
 
 
@@ -88,7 +96,7 @@ static void rlib_pdf_print_text(rlib *r, gfloat left_origin, gfloat bottom_origi
 		cpdf_hexStringMode(pdf, NO);
 		r_warning("Using UTF8 output to PDF is not fully supported by CLIBPDF\n"); 
 	} else {
-		cpdf_text(pdf, left_origin, bottom_origin, 0, t);
+		cpdf_text(pdf, left_origin, bottom_origin, 0, text);
 	}
 #endif	
 #if USEPDFLOCALE
@@ -143,10 +151,7 @@ struct rlib_rgb *color, gfloat indent, gfloat length) {
 #endif
 }
 
-/*
-	What was the guy from ClibPDF Smoking....cpdf_SetActionURL origin is bottom right... /me sighs
-*/
-static void rlib_pdf_boxurl_start(rlib *r, struct rlib_part *part, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url) {
+static void rlib_pdf_start_boxurl(rlib *r, struct rlib_part *part, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url) {
 #if USEPDFLOCALE
 	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
 #endif
@@ -183,33 +188,39 @@ gfloat nheight) {
 #endif
 }
 
-static void rlib_pdf_set_font_point(rlib *r, gint point) {
-#if USEPDFLOCALE
-	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
-#endif
+static void rlib_pdf_set_font_point_actual(rlib *r, gint point) {
 	char *encoding;
 	char *fontname;
+	int which_font = 0;
 	int result;
+	
+	if(OUTPUT_PRIVATE(r)->is_bold)
+		which_font += BOLD;
 
+	if(OUTPUT_PRIVATE(r)->is_italics)
+		which_font += ITALICS;
+
+	if (*r->pdf_fontdir1) { //if one set other is guaranteed to be set
+		cpdf_setFontDirectories(OUTPUT_PRIVATE(r)->pdf, r->pdf_fontdir1, r->pdf_fontdir2);
+	}
+	encoding = (*r->pdf_encoding)? r->pdf_encoding : NULL;
+	fontname = (*r->pdf_fontname)? r->pdf_fontname : font_names[which_font];
+#if DISABLE_UTF8
+	result = cpdf_setFont(OUTPUT_PRIVATE(r)->pdf, fontname, "WinAnsiEncoding", point);
+#else
+	result = cpdf_setFont(OUTPUT_PRIVATE(r)->pdf, fontname, encoding, point);
+#endif
+
+}
+
+static void rlib_pdf_set_font_point(rlib *r, gint point) {
 	if(point == 0)
 		point = 8;
 
 	if(r->current_font_point != point) {
-		if (*r->pdf_fontdir1) { //if one set other is guaranteed to be set
-			cpdf_setFontDirectories(OUTPUT_PRIVATE(r)->pdf, r->pdf_fontdir1, r->pdf_fontdir2);
-		}
-		encoding = (*r->pdf_encoding)? r->pdf_encoding : NULL;
-		fontname = (*r->pdf_fontname)? r->pdf_fontname : "Courier";
-#if DISABLE_UTF8
-		result = cpdf_setFont(OUTPUT_PRIVATE(r)->pdf, fontname, "WinAnsiEncoding", point);
-#else
-		result = cpdf_setFont(OUTPUT_PRIVATE(r)->pdf, fontname, encoding, point);
-#endif
+		rlib_pdf_set_font_point_actual(r, point);
 		r->current_font_point = point;
 	}
-#if USEPDFLOCALE
-	setlocale(LC_NUMERIC, tlocale);
-#endif
 }
 	
 static void rlib_pdf_start_new_page(rlib *r, struct rlib_part *part) {
@@ -339,10 +350,6 @@ static void rlib_pdf_end_page_again(rlib *r, struct rlib_part *part, struct rlib
 	rlib_pdf_turn_text_off(r);
 }
 
-static int rlib_pdf_is_single_page(rlib *r) {
-	return FALSE;
-}
-
 static int rlib_pdf_free(rlib *r) {
 	g_free(OUTPUT_PRIVATE(r));
 	g_free(OUTPUT(r));
@@ -391,16 +398,34 @@ static void rlib_pdf_start_td(rlib *r, struct rlib_part *part, gfloat left_margi
 	}
 }
 
+static void rlib_pdf_start_bold(rlib *r) {
+	OUTPUT_PRIVATE(r)->is_bold = TRUE;
+	rlib_pdf_set_font_point_actual(r, r->current_font_point);
+}
+
+static void rlib_pdf_end_bold(rlib *r) {
+	OUTPUT_PRIVATE(r)->is_bold = FALSE;
+	rlib_pdf_set_font_point_actual(r, r->current_font_point);
+}
+
+static void rlib_pdf_start_italics(rlib *r) {
+	OUTPUT_PRIVATE(r)->is_italics = TRUE;
+	rlib_pdf_set_font_point_actual(r, r->current_font_point);
+}
+
+static void rlib_pdf_end_italics(rlib *r) {
+	OUTPUT_PRIVATE(r)->is_italics = FALSE;
+	rlib_pdf_set_font_point_actual(r, r->current_font_point);
+}
+
 static void rlib_pdf_end_td(rlib *r) {}
 static void rlib_pdf_stub_line(rlib *r, int backwards) {}
 static void rlib_pdf_end_output_section(rlib *r) {}
 static void rlib_pdf_start_output_section(rlib *r) {}
-static void rlib_pdf_boxurl_end(rlib *r) {}
-static void rlib_pdf_draw_cell_background_end(rlib *r) {}
+static void rlib_pdf_end_boxurl(rlib *r) {}
+static void rlib_pdf_end_draw_cell_background(rlib *r) {}
 static void rlib_pdf_start_report(rlib *r, struct rlib_part *part) {}
 static void rlib_pdf_end_report(rlib *r, struct rlib_part *part) {}
-static void rlib_pdf_start_table(rlib *r) {}
-static void rlib_pdf_end_table(rlib *r) {}
 static void rlib_pdf_start_tr(rlib *r) {}
 static void rlib_pdf_end_tr(rlib *r) {}
 
@@ -418,11 +443,11 @@ void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r)->print_text = rlib_pdf_print_text;
 	OUTPUT(r)->set_fg_color = rlib_pdf_set_fg_color;
 	OUTPUT(r)->set_bg_color = rlib_pdf_set_fg_color;
-	OUTPUT(r)->draw_cell_background_start = rlib_pdf_drawbox;
-	OUTPUT(r)->draw_cell_background_end = rlib_pdf_draw_cell_background_end;
+	OUTPUT(r)->start_draw_cell_background = rlib_pdf_drawbox;
+	OUTPUT(r)->end_draw_cell_background = rlib_pdf_end_draw_cell_background;
 	OUTPUT(r)->hr = rlib_pdf_hr;
-	OUTPUT(r)->boxurl_start = rlib_pdf_boxurl_start;
-	OUTPUT(r)->boxurl_end = rlib_pdf_boxurl_end;
+	OUTPUT(r)->start_boxurl = rlib_pdf_start_boxurl;
+	OUTPUT(r)->end_boxurl = rlib_pdf_end_boxurl;
 	OUTPUT(r)->drawimage = rlib_pdf_drawimage;
 	OUTPUT(r)->set_font_point = rlib_pdf_set_font_point;
 	OUTPUT(r)->start_new_page = rlib_pdf_start_new_page;
@@ -438,16 +463,17 @@ void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r)->end_line = rlib_pdf_stub_line;
 	OUTPUT(r)->set_working_page = rlib_pdf_set_working_page;
 	OUTPUT(r)->set_raw_page = rlib_pdf_set_raw_page;
-	OUTPUT(r)->is_single_page = rlib_pdf_is_single_page;
 	OUTPUT(r)->start_output_section = rlib_pdf_start_output_section;
 	OUTPUT(r)->end_output_section = rlib_pdf_end_output_section;
 	OUTPUT(r)->get_output = rlib_pdf_get_output;
 	OUTPUT(r)->get_output_length = rlib_pdf_get_output_length;
-	OUTPUT(r)->start_table = rlib_pdf_start_table;
-	OUTPUT(r)->end_table = rlib_pdf_end_table;
 	OUTPUT(r)->start_tr = rlib_pdf_start_tr;
 	OUTPUT(r)->end_tr = rlib_pdf_end_tr;
 	OUTPUT(r)->start_td = rlib_pdf_start_td;
 	OUTPUT(r)->end_td = rlib_pdf_end_td;
+	OUTPUT(r)->start_bold = rlib_pdf_start_bold;
+	OUTPUT(r)->end_bold = rlib_pdf_end_bold;
+	OUTPUT(r)->start_italics = rlib_pdf_start_italics;
+	OUTPUT(r)->end_italics = rlib_pdf_end_italics;
 	OUTPUT(r)->free = rlib_pdf_free;
 }

@@ -47,6 +47,8 @@ struct _private {
 	gint do_bg;
 	gint length;
 	gint page_number;
+	gboolean is_bold;
+	gboolean is_italics;
 };
 
 static void print_text(rlib *r, gchar *text, gint backwards) {
@@ -120,7 +122,7 @@ static void rlib_html_print_text(rlib *r, gfloat left_origin, gfloat bottom_orig
 	}
 	
 	if(r->font_point != r->current_font_point) {
-		sprintf(buf_font, " size=\"%d\" ", convert_font_point(r->current_font_point));
+		sprintf(buf_font, "size=\"%d\"", convert_font_point(r->current_font_point));
 		did_fp = 1;
 	} else
 		buf_font[0] = '\0';
@@ -142,8 +144,18 @@ static void rlib_html_print_text(rlib *r, gfloat left_origin, gfloat bottom_orig
 		print_text(r, buf, backwards);
 	}
 
+	if(OUTPUT_PRIVATE(r)->is_bold == TRUE)
+		print_text(r, "<b>", backwards);
+	if(OUTPUT_PRIVATE(r)->is_italics == TRUE)
+		print_text(r, "<i>", backwards);
+
 	print_text(r, text, backwards);
 	
+	if(OUTPUT_PRIVATE(r)->is_italics == TRUE)
+		print_text(r, "</i>", backwards);
+	if(OUTPUT_PRIVATE(r)->is_bold == TRUE)
+		print_text(r, "</b>", backwards);
+
 	if(did_fg || did_fp) {
 		OUTPUT(r)->set_fg_color(r, 0, 0, 0);
 		print_text(r, "</font>", backwards);
@@ -182,13 +194,13 @@ struct rlib_rgb *color, gfloat indent, gfloat length) {
 	print_text(r, "</tr></table>", backwards);
 }
 
-static void rlib_html_draw_cell_background_start(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
+static void rlib_html_start_draw_cell_background(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
 struct rlib_rgb *color) {
 	OUTPUT(r)->set_bg_color(r, color->r, color->g, color->b);
 	OUTPUT_PRIVATE(r)->do_bg = TRUE;
 }
 
-static void rlib_html_draw_cell_background_end(rlib *r) {
+static void rlib_html_end_draw_cell_background(rlib *r) {
 	if(OUTPUT_PRIVATE(r)->did_bg) {
 		OUTPUT(r)->set_bg_color(r, 0, 0, 0);
 		print_text(r, "</span>", OUTPUT_PRIVATE(r)->bg_backwards);
@@ -198,13 +210,13 @@ static void rlib_html_draw_cell_background_end(rlib *r) {
 }
 
 
-static void rlib_html_boxurl_start(rlib *r, struct rlib_part *part, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url) {
+static void rlib_html_start_boxurl(rlib *r, struct rlib_part *part, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url) {
 	gchar buf[MAXSTRLEN];
 	sprintf(buf, "<a href=\"%s\">", url);
 	print_text(r, buf, FALSE);
 }
 
-static void rlib_html_boxurl_end(rlib *r) {
+static void rlib_html_end_boxurl(rlib *r) {
 	print_text(r, "</a>", FALSE);
 }
 
@@ -312,10 +324,6 @@ static void rlib_html_end_page(rlib *r, struct rlib_part *part) {
 	r->current_line_number = 1;
 }
 
-static int rlib_html_is_single_page(rlib *r) {
-	return TRUE;
-}
-
 static char *rlib_html_get_output(rlib *r) {
 	return OUTPUT_PRIVATE(r)->both;
 }
@@ -326,14 +334,6 @@ static long rlib_html_get_output_length(rlib *r) {
 
 static void rlib_html_set_working_page(rlib *r, struct rlib_part *part, gint page) {
 	OUTPUT_PRIVATE(r)->page_number = page-1;
-}
-
-static void rlib_html_start_table(rlib *r) {
-//	print_text(r, "<table>", FALSE);
-}
-
-static void rlib_html_end_table(rlib *r) {
-//	print_text(r, "</table>", FALSE);
 }
 
 static void rlib_html_start_tr(rlib *r) {
@@ -363,6 +363,23 @@ static void rlib_html_start_td(rlib *r, struct rlib_part *part, gfloat left_marg
 
 static void rlib_html_end_td(rlib *r) {
 	print_text(r, "</td>", FALSE);
+}
+
+
+static void rlib_html_start_bold(rlib *r) {
+	OUTPUT_PRIVATE(r)->is_bold = TRUE;
+}
+
+static void rlib_html_end_bold(rlib *r) {
+	OUTPUT_PRIVATE(r)->is_bold = FALSE;
+}
+
+static void rlib_html_start_italics(rlib *r) {
+	OUTPUT_PRIVATE(r)->is_italics = TRUE;
+}
+
+static void rlib_html_end_italics(rlib *r) {
+	OUTPUT_PRIVATE(r)->is_italics = FALSE;
 }
 
 
@@ -399,10 +416,10 @@ void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT(r)->set_fg_color = rlib_html_set_fg_color;
 	OUTPUT(r)->set_bg_color = rlib_html_set_bg_color;
 	OUTPUT(r)->hr = rlib_html_hr;
-	OUTPUT(r)->draw_cell_background_start = rlib_html_draw_cell_background_start;
-	OUTPUT(r)->draw_cell_background_end = rlib_html_draw_cell_background_end;
-	OUTPUT(r)->boxurl_start = rlib_html_boxurl_start;
-	OUTPUT(r)->boxurl_end = rlib_html_boxurl_end;
+	OUTPUT(r)->start_draw_cell_background = rlib_html_start_draw_cell_background;
+	OUTPUT(r)->end_draw_cell_background = rlib_html_end_draw_cell_background;
+	OUTPUT(r)->start_boxurl = rlib_html_start_boxurl;
+	OUTPUT(r)->end_boxurl = rlib_html_end_boxurl;
 	OUTPUT(r)->drawimage = rlib_html_drawimage;
 	OUTPUT(r)->set_font_point = rlib_html_set_font_point;
 	OUTPUT(r)->start_new_page = rlib_html_start_new_page;
@@ -415,20 +432,19 @@ void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT(r)->spool_private = rlib_html_spool_private;
 	OUTPUT(r)->start_line = rlib_html_start_line;
 	OUTPUT(r)->end_line = rlib_html_end_line;
-	OUTPUT(r)->is_single_page = rlib_html_is_single_page;
 	OUTPUT(r)->start_output_section = rlib_html_start_output_section;  
 	OUTPUT(r)->end_output_section = rlib_html_end_output_section;   
 	OUTPUT(r)->get_output = rlib_html_get_output;
 	OUTPUT(r)->get_output_length = rlib_html_get_output_length;
 	OUTPUT(r)->set_working_page = rlib_html_set_working_page; 
 	OUTPUT(r)->set_raw_page = rlib_html_set_raw_page; 
-	OUTPUT(r)->start_table = rlib_html_start_table; 
-	OUTPUT(r)->end_table = rlib_html_end_table; 
 	OUTPUT(r)->start_tr = rlib_html_start_tr; 
 	OUTPUT(r)->end_tr = rlib_html_end_tr; 
 	OUTPUT(r)->start_td = rlib_html_start_td; 
 	OUTPUT(r)->end_td = rlib_html_end_td; 
-
-
+	OUTPUT(r)->start_bold = rlib_html_start_bold;
+	OUTPUT(r)->end_bold = rlib_html_end_bold;
+	OUTPUT(r)->start_italics = rlib_html_start_italics;
+	OUTPUT(r)->end_italics = rlib_html_end_italics;
 	OUTPUT(r)->free = rlib_html_free;
 }

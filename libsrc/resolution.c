@@ -132,8 +132,8 @@ static void rlib_literal_resolve_pcode(rlib *r, struct rlib_report *report, stru
 	rt->bgcolor_code = rlib_infix_to_pcode(r, report, rt->xml_bgcolor);
 	rt->col_code = rlib_infix_to_pcode(r, report, rt->xml_col);
 	rt->width_code = rlib_infix_to_pcode(r, report, rt->xml_width);
-	rt->bold_code = rlib_infix_to_pcode(r, report, rt->xml_width);
-	rt->italics_code = rlib_infix_to_pcode(r, report, rt->xml_width);
+	rt->bold_code = rlib_infix_to_pcode(r, report, rt->xml_bold);
+	rt->italics_code = rlib_infix_to_pcode(r, report, rt->xml_italics);
 	rt->align_code = rlib_infix_to_pcode(r, report, rt->xml_align);
 	rt->width = -1;
 //rlogit("DUMPING PCODE FOR [%s]\n", rt->value);

@@ -127,10 +127,6 @@ static void rlib_txt_end_page(rlib *r, struct rlib_part *part) {
 	r->current_line_number = 1;
 }
 
-static gint rlib_txt_is_single_page(rlib *r) {
-	return TRUE;
-}
-
 static int rlib_txt_free(rlib *r) {
 	g_free(OUTPUT_PRIVATE(r)->both);
 	g_free(OUTPUT_PRIVATE(r));
@@ -154,23 +150,25 @@ static void rlib_txt_set_fg_color(rlib *r, gfloat red, gfloat green, gfloat blue
 static void rlib_txt_set_bg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {}
 static void rlib_txt_hr(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
 struct rlib_rgb *color, gfloat indent, gfloat length) {}
-static void rlib_txt_draw_cell_background_start(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
+static void rlib_txt_start_draw_cell_background(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
 struct rlib_rgb *color) {}
-static void rlib_txt_draw_cell_background_end(rlib *r) {}
-static void rlib_txt_boxurl_start(rlib *r, struct rlib_part * part, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url) {}
-static void rlib_txt_boxurl_end(rlib *r) {}
+static void rlib_txt_end_draw_cell_background(rlib *r) {}
+static void rlib_txt_start_boxurl(rlib *r, struct rlib_part * part, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url) {}
+static void rlib_txt_end_boxurl(rlib *r) {}
 static void rlib_txt_drawimage(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *nname, gchar *type, gfloat nwidth, gfloat nheight) {}
 static void rlib_txt_set_font_point(rlib *r, gint point) {}
 static void rlib_txt_start_line(rlib *r, gint backwards) {}
 static void rlib_txt_start_output_section(rlib *r) {}
 static void rlib_txt_end_output_section(rlib *r) {}
-static void rlib_txt_start_table(rlib *r) {}
-static void rlib_txt_end_table(rlib *r) {}
 static void rlib_txt_start_tr(rlib *r) {}
 static void rlib_txt_end_tr(rlib *r) {}
 static void rlib_txt_start_td(rlib *r, struct rlib_part *part, gfloat left_margin, gfloat top_margin, int width, int height, int border_width, struct rlib_rgb *color) {}
 static void rlib_txt_end_td(rlib *r) {}
 static void rlib_txt_set_raw_page(rlib *r, struct rlib_part *part, gint page) {}
+static void rlib_txt_start_bold(rlib *r) {}
+static void rlib_txt_end_bold(rlib *r) {}
+static void rlib_txt_start_italics(rlib *r) {}
+static void rlib_txt_end_italics(rlib *r) {}
 
 void rlib_txt_new_output_filter(rlib *r) {
 	OUTPUT(r) = g_malloc(sizeof(struct output_filter));
@@ -187,10 +185,10 @@ void rlib_txt_new_output_filter(rlib *r) {
 	OUTPUT(r)->set_fg_color = rlib_txt_set_fg_color;
 	OUTPUT(r)->set_bg_color = rlib_txt_set_bg_color;
 	OUTPUT(r)->hr = rlib_txt_hr;
-	OUTPUT(r)->draw_cell_background_start = rlib_txt_draw_cell_background_start;
-	OUTPUT(r)->draw_cell_background_end = rlib_txt_draw_cell_background_end;
-	OUTPUT(r)->boxurl_start = rlib_txt_boxurl_start;
-	OUTPUT(r)->boxurl_end = rlib_txt_boxurl_end;
+	OUTPUT(r)->start_draw_cell_background = rlib_txt_start_draw_cell_background;
+	OUTPUT(r)->end_draw_cell_background = rlib_txt_end_draw_cell_background;
+	OUTPUT(r)->start_boxurl = rlib_txt_start_boxurl;
+	OUTPUT(r)->end_boxurl = rlib_txt_end_boxurl;
 	OUTPUT(r)->drawimage = rlib_txt_drawimage;
 	OUTPUT(r)->set_font_point = rlib_txt_set_font_point;
 	OUTPUT(r)->start_new_page = rlib_txt_start_new_page;
@@ -203,19 +201,20 @@ void rlib_txt_new_output_filter(rlib *r) {
 	OUTPUT(r)->spool_private = rlib_txt_spool_private;
 	OUTPUT(r)->start_line = rlib_txt_start_line;
 	OUTPUT(r)->end_line = rlib_txt_end_line;
-	OUTPUT(r)->is_single_page = rlib_txt_is_single_page;
 	OUTPUT(r)->start_output_section = rlib_txt_start_output_section;   
 	OUTPUT(r)->end_output_section = rlib_txt_end_output_section; 
 	OUTPUT(r)->get_output = rlib_txt_get_output;
 	OUTPUT(r)->get_output_length = rlib_txt_get_output_length;
 	OUTPUT(r)->set_working_page = rlib_txt_set_working_page;  
 	OUTPUT(r)->set_raw_page = rlib_txt_set_raw_page; 
-	OUTPUT(r)->start_table = rlib_txt_start_table; 
-	OUTPUT(r)->end_table = rlib_txt_end_table; 
 	OUTPUT(r)->start_tr = rlib_txt_start_tr; 
 	OUTPUT(r)->end_tr = rlib_txt_end_tr; 
 	OUTPUT(r)->start_td = rlib_txt_start_td; 
 	OUTPUT(r)->end_td = rlib_txt_end_td; 
+	OUTPUT(r)->start_bold = rlib_txt_start_bold;
+	OUTPUT(r)->end_bold = rlib_txt_end_bold;
+	OUTPUT(r)->start_italics = rlib_txt_start_italics;
+	OUTPUT(r)->end_italics = rlib_txt_end_italics;
 
 	OUTPUT(r)->free = rlib_txt_free;  
 }
