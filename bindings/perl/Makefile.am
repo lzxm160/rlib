@@ -22,6 +22,6 @@
 lib_LTLIBRARIES = librlib.la
 librlib_la_SOURCES = perl.c 
 librlib_la_LIBADD = -L${top_builddir}/libsrc/ -lr $(RLIB_LIBS)
-INCLUDES = -I${top_srcdir}/libsrc/ $(RLIB_CFLAGS) 
+INCLUDES = -I${top_srcdir}/libsrc/ $(RLIB_CFLAGS) -fno-strict-aliasing
 librlib_la_LDFLAGS = -release $(RLIB_VERSION)
 libdir = $(PERL_EXTENSION_DIR)

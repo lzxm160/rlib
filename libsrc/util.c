@@ -28,16 +28,12 @@
 #include <time.h>
 #include <sys/resource.h>
 
-//<<<<<<< util.c
-
 #include <locale.h>
 
 #if 0
-=======
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
->>>>>>> 1.15
 #endif
 
 #include "rlib.h"

@@ -30,6 +30,8 @@
 
 #include "containers.h"
 #include "charencoder.h"
+#include "datetime.h"
+#include "util.h"
 
 #define USE_RLIB_VAR	0
 
@@ -117,17 +119,6 @@ struct rlib_paper {
 	long width;
 	long height;
 	char name[30];
-};
-
-struct rgb {
-	gfloat r;
-	gfloat g;
-	gfloat b;
-};
-
-struct rlib_datetime {
-	GDate date;
-	glong ltime;
 };
 
 
@@ -627,40 +618,6 @@ gint rlib_resolve_resultset_field(rlib *r, gchar *name, void **rtn_field, gint *
 struct report_variable *rlib_resolve_variable(rlib *r, gchar *name);
 void rlib_resolve_fields(rlib *r);
 
-/***** PROTOTYPES: util.c *****************************************************/
-gchar *strlwrexceptquoted (gchar *s);
-gchar *rmwhitespacesexceptquoted(gchar *s);
-void rlogit(const gchar *fmt, ...);
-#if DISABLERDEBUG
-#define r_debug(...)
-#else
-void r_debug(const gchar *fmt, ...);
-#endif
-#if DISABLERINFO
-#define R_info(...)
-#else
-void r_info(const gchar *fmt, ...);
-#endif
-void r_warning(const gchar *fmt, ...);
-void r_error(const gchar *fmt, ...);
-void rlogit_setmessagewriter(void(*writer)(const gchar *msg));
-gint rutil_enableSignalHandler(gint trueorfalse);
-gint64 tentothe(gint n);
-gchar hextochar(gchar c);
-gchar *colornames(gchar *str);
-void parsecolor(struct rgb *color, gchar *strx);
-struct rlib_datetime * stod(struct rlib_datetime *tm_date, gchar *str);
-void bumpday(gint *year, gint *month, gint *day);
-void bumpdaybackwords(gint *year, gint *month, gint *day);
-gchar *strupr (gchar *s);
-gchar *strlwr (gchar *s);
-gchar *strproper (gchar *s);
-gint daysinmonth(gint year, gint month);
-void init_signals(void);
-void make_more_space_if_necessary(gchar **str, gint *size, gint *total_size, gint len);
-gchar *str2hex(const gchar *str);
-
-
 /***** PROTOTYPES: navigation.c ***********************************************/
 gint rlib_navigate_next(rlib *r, gint resultset_num);
 gint rlib_navigate_first(rlib *r, gint resultset_num);
@@ -712,21 +669,4 @@ void rlib_set_pdf_font(rlib *r, const gchar *encoding, const gchar *fontname);
 void rlib_set_pdf_font_directories(rlib *r, const gchar *d1, const gchar *d2);
 //void rlib_set_pdf_conversion(rlib *r, int rptnum, const gchar *encoding);
 
-/* rlib_datetime - should be a separate module (class) */
-void rlib_datetime_clear(struct rlib_datetime *t1);
-void rlib_datetime_set_date(struct rlib_datetime *dt, gint y, gint m, gint d);
-void rlib_datetime_set_time(struct rlib_datetime *dt, gint h, gint m, gint s);
-int rlib_datetime_valid_date(struct rlib_datetime *dt);
-gint rlib_datetime_valid_time(struct rlib_datetime *dt);
-void rlib_datetime_clear_time(struct rlib_datetime *t);
-void rlib_datetime_clear_date(struct rlib_datetime *t);
-gint rlib_datetime_compare(struct rlib_datetime *t1, struct rlib_datetime *t2);
-void rlib_datetime_format(struct rlib_datetime *dt, gchar *buf, gint max, const gchar *fmt);
-gint rlib_datetime_daysdiff(struct rlib_datetime *dt, struct rlib_datetime *dt2);
-
-#define charcount(s) g_utf8_strlen(s, -1)
-#define bytelength(s) strlen(s)
-
-void make_all_locales_utf8();
-char *make_utf8_locale(const char *encoding);
 

@@ -85,7 +85,7 @@ struct rlib_paper * rlib_get_paper(rlib *r, gint paper_type) {
 
 struct rlib_paper * rlib_get_paper_by_name(rlib *r, gchar *paper_name) {
 	gint i;
-	rlogit("\nlooking for %s\n", paper_name);
+	r_debug("looking for %s\n", paper_name);
 	if(paper_name == NULL)
 		return NULL;
 		

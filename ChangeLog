@@ -1,3 +1,55 @@
+2004-04-12  Chet Heilman  <cheilman@sicompos.com>
+	* bindings/java/Makefile.am:
+		add -fno-strict-aliasing
+	* bindings/perl/Makefile.am:
+		add -fno-strict-aliasing
+	* bindings/python/Makefile.am:
+		add -fno-strict-aliasing
+	* libsrc/Makefile.am:
+		Add datetime and value (new files)
+	* libsrc/datetime.c: (rlib_datetime_valid_date),
+	(rlib_datetime_valid_time), (rlib_datetime_clear_time),
+	(rlib_datetime_clear_date), (rlib_datetime_clear),
+	(rlib_datetime_makesamedate), (rlib_datetime_makesametime),
+	(rlib_datetime_compare), (rlib_datetime_set_date),
+	(rlib_datetime_set_time), (rlib_datetime_time_as_long),
+	(rlib_datetime_set_time_from_long), (rlib_datetime_format_date),
+	(rlib_datetime_format_time), (split_tdformat),
+	(rlib_datetime_format), (rlib_datetime_daysdiff),
+	(rlib_datetime_addto), (rlib_datetime_secsdiff):
+		Add new file for datatime
+	* libsrc/datetime.h:
+		Header for datetime
+	* libsrc/pcode.c:
+		Removed rlib_var stuff into its own file - value.c
+	* libsrc/pcode_op_functions.c: (rlib_pcode_add),
+	(rlib_pcode_operator_add):
+		removed datetime to its own module.
+	* libsrc/rlib.h:
+		Moved some header things to other header files
+	* libsrc/util.c:
+		Moved some general purpose functions to here.
+	* libsrc/util.h:
+		New header file for things in util.c
+	* libsrc/value.c: (rlib_var_is_string), (rlib_var_get_string),
+	(rlib_var_set_string), (rlib_var_concat_string),
+	(rlib_var_get_number), (rlib_var_set_number),
+	(rlib_var_add_number), (rlib_var_mul_number),
+	(rlib_var_divby_number), (rlib_var_mod_number),
+	(rlib_var_is_number), (rlib_var_set_datetime),
+	(rlib_var_get_datetime), (rlib_var_get_type),
+	(rlib_var_get_type_name), (rlib_var_factory_new),
+	(rlib_var_factory_alloc_new), (rlib_var_factory_get_small),
+	(rlib_var_factory_get), (rlib_var_factory_new_string),
+	(rlib_var_factory_new_number), (rlib_var_factory_new_datetime),
+	(rlib_var_factory_new_reference), (rlib_var_factory_new_iif),
+	(rlib_var_factory_free_value), (rlib_var_factory_destroy),
+	(rlib_var_stack_new), (rlib_var_stack_push), (rlib_var_stack_pop),
+	(rlib_var_stack_peek), (rlib_var_stack_destroy):
+		new functions to eventually replace current rlib_value.
+	* libsrc/value.h:
+		new functions to eventually replace current rlib_value.
+		
 2004-04-11  Bob Doan  <bdoan@sicompos.com>
 	* Makefile.am: added examples
 	* autogen.sh: force compile warnings on so Chet sees warnings ;)
