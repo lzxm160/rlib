@@ -28,8 +28,8 @@
  
 #include "ralloc.h"
 #include "rlib_input.h"
+#include "rlib.h"
 
-#define MAXSTRLEN 1024
 #define INPUT_PRIVATE(input) (((struct _private *)input->private))
 
 struct odbc_fields {

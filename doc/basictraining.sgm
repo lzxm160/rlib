@@ -148,11 +148,24 @@ dtos(database.somedatefield)-7
 			Report Variables are are expressions rlib evaulates for every detail line, and resets automatically if asked to
 			on breaks.  Report variables are useful things like COUNT, SUM, AVG, HIGHEST, LOWEST.  You may also use report
 			variables to simplify expressions that will be used (normally more than once) in other calculations.  To do this
-			use the type EXPRESSION.  Report variable can be "RESET" on the event of a BREAK (this does not apply to EXPRESSION)
+			use the type EXPRESSION.  Report variable can be "RESET" on the event of a BREAK (this does not apply to EXPRESSION).  
+			Here are some examples
+			<programlisting>
+&lt;Variable name="customer_count" value="val(ei_count)+val(to_count)+val(dt_count)" 
+  type="expression"/&gt;
+&lt;Variable name="daily_percent" value="v.daily_diff / v.this_year_netsales * 100" 
+  type="expression"/&gt;
+&lt;Variable name="this_year_mtd" value="v.this_year_netsales" 
+  type="sum" resetonbreak="break5"/&gt;
+&lt;Variable name="last_year_mtd" value="v.last_year_netsales" 
+  type="sum" resetonbreak="break5"/&gt;
+&lt;Variable name="monthly_diff" value="v.this_year_mtd - v.last_year_mtd" 
+  type="expression"/&gt;
+&lt;Variable name="monthly_percent" value="v.monthly_diff / v.this_year_mtd * 100" 
+  type="expression"/&gt;
+			</programlisting>
 		</para>	
 	</sect1>
-
-
 
 	<sect1>
 		<title>Defining a Report</title>
@@ -256,11 +269,39 @@ dtos(database.somedatefield)-7
 		<para>
 			orientation - "portrait" or "landscape"
 		</para>	
+		<para>
+			topMargin - how much space to leave at the top
+		</para>	
+		<para>
+			leftMargin - how much space to leave at the left
+		</para>	
+		<para>
+			bottomMargin - how much space to leave at the bottom
+		</para>	
 	</sect1>
 	<sect1>
 		<title>Output</title>
 		<para>
 			All main sections of a report contain output.  Output is made up of Images, Lines, and Horizontal Lines.
+		</para>	
+	</sect1>
+	<sect1>
+		<title>HorizontalLine</title>
+		<para>
+			bgcolor - background color
+		</para>	
+		<para>
+			size - how tall the line is
+		</para>	
+		<para>
+			indent - offset the line from the left margin (NUMBER VALUE.. number of characters)
+		</para>	
+		<para>
+			length - the length of the line (NUMBER VALUE.. number of characters)
+		</para>	
+		<para>
+			fontSize - part of the math on the length of and indent of a line.  This is here for 
+			finer control because indent and length are given in number of characters.
 		</para>	
 	</sect1>
 	<sect1>
@@ -313,6 +354,9 @@ dtos(database.somedatefield)-7
 		<para>
 			bgcolor - expS default background color for fields on the line
 		</para>	
+		<para>
+			link - expS .. a url to link to
+		</para>	
 	</sect1>
 	<sect1>
 		<title>Field</title>
@@ -339,6 +383,9 @@ dtos(database.somedatefield)-7
 		</para>	
 		<para>
 			bgcolor - expS default background color for fields on the line
+		</para>	
+		<para>
+			link - expS .. a url to link to
 		</para>	
 	</sect1>
 	<sect1>

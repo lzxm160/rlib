@@ -202,31 +202,6 @@ SWIG_newvarlink(void)
   return ((PyObject*) result);
 }
 
-SWIGSTATIC void
-SWIG_addvarlink(PyObject *p, char *name,
-	   PyObject *(*get_attr)(void), int (*set_attr)(PyObject *p))
-{
-  swig_varlinkobject *v;
-  v= (swig_varlinkobject *) p;
-	
-  if (v->nvars >= v->maxvars -1) {
-    v->maxvars = 2*v->maxvars;
-    v->vars = (swig_globalvar **) realloc(v->vars,v->maxvars*sizeof(swig_globalvar *));
-    if (v->vars == NULL) {
-      fprintf(stderr,"SWIG : Fatal error in initializing Python module.\n");
-      exit(1);
-    }
-  }
-  v->vars[v->nvars] = (swig_globalvar *) malloc(sizeof(swig_globalvar));
-  v->vars[v->nvars]->name = (char *) malloc(strlen(name)+1);
-  strcpy(v->vars[v->nvars]->name,name);
-  v->vars[v->nvars]->get_attr = get_attr;
-  v->vars[v->nvars]->set_attr = set_attr;
-  v->nvars++;
-  v->vars[v->nvars] = 0;
-}
-
-
 
 /*****************************************************************************
  * $Header$
@@ -863,7 +838,30 @@ static PyObject *_wrap_rlib_add_resultset_follower(PyObject *self, PyObject *arg
     return _resultobj;
 }
 
+static PyObject *_wrap_rlib_add_parameter(PyObject *self, PyObject *args) {
+    PyObject * _resultobj;
+    int  _result;
+    rlib * _arg0;
+    char * _arg1;
+    char * _arg2;
+    char * _argc0 = 0;
+
+    self = self;
+    if(!PyArg_ParseTuple(args,"sss:rlib_add_parameter",&_argc0,&_arg1,&_arg2)) 
+        return NULL;
+    if (_argc0) {
+        if (SWIG_GetPtr(_argc0,(void **) &_arg0,"_rlib_p")) {
+            PyErr_SetString(PyExc_TypeError,"Type error in argument 1 of rlib_add_parameter. Expected _rlib_p.");
+        return NULL;
+        }
+    }
+    _result = (int )rlib_add_parameter(_arg0,_arg1,_arg2);
+    _resultobj = Py_BuildValue("i",_result);
+    return _resultobj;
+}
+
 static PyMethodDef librlibMethods[] = {
+	 { "rlib_add_parameter", _wrap_rlib_add_parameter, 1 },
 	 { "rlib_add_resultset_follower", _wrap_rlib_add_resultset_follower, 1 },
 	 { "rlib_add_datasource_odbc", _wrap_rlib_add_datasource_odbc, 1 },
 	 { "rlib_postgre_report", _wrap_rlib_postgre_report, 1 },

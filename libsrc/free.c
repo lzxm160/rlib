@@ -25,6 +25,7 @@
 #include "rlib.h"
 #include "pcode.h"
 #include "rlib_input.h"
+#include "rhashtable.h"
 
 static void free_pcode(struct rlib_pcode *code) {
 	int i=0;
@@ -123,22 +124,38 @@ static void rlib_break_free_pcode(rlib *r, struct break_fields *bf) {
 	free_pcode(bf->code);
 }
 
+static void rlib_free_output(rlib *r, struct report_element *e) {
+	struct report_output_array *roa;
+	struct report_element *save;
+	while(e != NULL) {
+		save = e;
+		roa = e->data;
+		rlib_free_fields(r, roa);
+		e=e->next;
+		rfree(save);
+	}	
+}
+
 void rlib_free_report(rlib *r, int which) {
 	struct report_element *e, *prev;
 
-	rlib_free_fields(r, r->reports[which]->report_header);
-	rlib_free_fields(r, r->reports[which]->page_header);
-	rlib_free_fields(r, r->reports[which]->page_footer);
-	rlib_free_fields(r, r->reports[which]->report_footer);
-	rlib_free_fields(r, r->reports[which]->detail.fields);
-	rlib_free_fields(r, r->reports[which]->detail.textlines);
+	rlib_free_output(r, r->reports[which]->report_header);
+	rlib_free_output(r, r->reports[which]->page_header);
+	rlib_free_output(r, r->reports[which]->page_footer);
+	rlib_free_output(r, r->reports[which]->report_footer);
+	rlib_free_output(r, r->reports[which]->detail.fields);
+	rlib_free_output(r, r->reports[which]->detail.textlines);
+
+	rfree(r->reports[r->current_report]->position_top);
+	rfree(r->reports[r->current_report]->position_bottom);
+
 	
 	if(r->reports[which]->breaks != NULL) {
 		for(e = r->reports[which]->breaks; e != NULL; e=e->next) {
 			struct report_break *rb = e->data;
 			struct report_element *be;
-			rlib_free_fields(r, rb->header);
-			rlib_free_fields(r, rb->footer);
+			rlib_free_output(r, rb->header);
+			rlib_free_output(r, rb->footer);
 			for(be = rb->fields; be != NULL; be=be->next) {
 				struct break_fields *bf = be->data;
 				rlib_break_free_pcode(r, bf);
@@ -241,7 +258,7 @@ int rlib_free(rlib *r) {
 			dlclose(r->inputs[i].handle);
 	}
 
-	if (r->htParameters) Hashtable_free(r->htParameters);
+	if (r->htParameters) RHashtable_free(r->htParameters);
 	
 	OUTPUT(r)->rlib_free(r);
 	

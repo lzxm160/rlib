@@ -133,14 +133,12 @@ static int rlib_mysql_previous(void *input_ptr, void *result_ptr) {
 }
 
 static int rlib_mysql_last(void *input_ptr, void *result_ptr) {
-	struct rlib_mysql_results *result = result_ptr;
 	return TRUE;
 }
 
 static char * rlib_mysql_get_field_value_as_string(void *input_ptr, void *result_ptr, void *field_ptr) {
 	struct rlib_mysql_results *result = result_ptr;
 	long field = (long)field_ptr;
-	int i;
 	field -= 1;
 	return result->this_row[field];
 }

@@ -1,7 +1,8 @@
 /*
  *  Copyright (C) 2003 SICOM Systems, INC.
  *
- *  Authors: Bob Doan <bdoan@sicompos.com>, Chet Heilman <cheilman@sicompos.com>
+ *  Authors: Bob Doan <bdoan@sicompos.com> 
+ *           Chet Heilman <cheilman@sicompos.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -46,6 +47,5 @@ int RHashtable_put(RHashtable *ht, const char *key, const void *value);
 void *RHashtable_get(RHashtable *ht, const char *key);
 void RHashtable_setCaseInsensitive(RHashtable *ht, int yesorno);
 int RHashtable_setStoreValues(RHashtable *ht, int yesorno);
-
 
 #endif

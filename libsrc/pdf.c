@@ -100,25 +100,49 @@ static void rlib_pdf_drawimage(rlib *r, float left_origin, float bottom_origin, 
 
 static void rlib_pdf_set_font_point(rlib *r, int point) {
 	if(r->current_font_point != point) {
-//		cpdf_setFont(OUTPUT_PRIVATE(r)->pdf, "Courier", "Courier", point);
 		cpdf_setFont(OUTPUT_PRIVATE(r)->pdf, "Courier", "WinAnsiEncoding", point);		
 		r->current_font_point = point;
 	}
 }
 
 static void rlib_pdf_start_new_page(rlib *r) {
-	if(r->reports[r->current_report]->orientation == RLIB_ORIENTATION_LANDSCAPE) {
-		r->position_bottom = 8.5-GET_MARGIN(r)->bottom_margin;
-		cpdf_pageInit(OUTPUT_PRIVATE(r)->pdf, r->current_page_number, LANDSCAPE, LETTER, LETTER); 
-		cpdf_translate(OUTPUT_PRIVATE(r)->pdf, 0.0, 11.0);	/* 11.0 must be changed for non-LETTER size */
-	   cpdf_rotate(OUTPUT_PRIVATE(r)->pdf, -90.0);
-		r->landscape = 1;
-	} else {
-		r->position_bottom = 11-GET_MARGIN(r)->bottom_margin;
-		cpdf_pageInit(OUTPUT_PRIVATE(r)->pdf, r->current_page_number, PORTRAIT, LETTER, LETTER); 
-		r->landscape = 0;
+	int i=0;
+	int pages_accross = r->reports[r->current_report]->pages_accross;
+	int page_number = r->current_page_number * pages_accross;
+	
+	for(i=0;i<pages_accross;i++) {
+		if(r->reports[r->current_report]->orientation == RLIB_ORIENTATION_LANDSCAPE) {
+			r->reports[r->current_report]->position_bottom[i] = 8.5-GET_MARGIN(r)->bottom_margin;
+			cpdf_pageInit(OUTPUT_PRIVATE(r)->pdf, page_number+i, LANDSCAPE, LETTER, LETTER); 
+			cpdf_translate(OUTPUT_PRIVATE(r)->pdf, 0.0, 11.0);	/* 11.0 must be changed for non-LETTER size */
+		   cpdf_rotate(OUTPUT_PRIVATE(r)->pdf, -90.0);
+			r->landscape = 1;
+		} else {
+			r->reports[r->current_report]->position_bottom[i] = 11-GET_MARGIN(r)->bottom_margin;
+			cpdf_pageInit(OUTPUT_PRIVATE(r)->pdf, page_number+i, PORTRAIT, LETTER, LETTER); 
+			r->landscape = 0;
+		}
+		cpdf_beginText(OUTPUT_PRIVATE(r)->pdf, 0);	
 	}
-	cpdf_beginText(OUTPUT_PRIVATE(r)->pdf, 0);	
+}
+
+static void rlib_pdf_set_working_page(rlib *r, int page) {
+	int pages_accross = r->reports[r->current_report]->pages_accross;
+	int page_number = r->current_page_number * pages_accross;
+	page--;
+	cpdf_setCurrentPage(OUTPUT_PRIVATE(r)->pdf, page_number + page);
+}
+
+
+static void rlib_pdf_end_text(rlib *r) {
+	int i=0;
+	int pages_accross = r->reports[r->current_report]->pages_accross;
+	int page_number = r->current_page_number * pages_accross;
+
+	for(i=0;i<pages_accross;i++) {
+		cpdf_setCurrentPage(OUTPUT_PRIVATE(r)->pdf, page_number+i);
+		cpdf_endText(OUTPUT_PRIVATE(r)->pdf);
+	}
 }
 
 static void rlib_pdf_init_end_page(rlib *r) {
@@ -128,10 +152,6 @@ static void rlib_pdf_init_end_page(rlib *r) {
 		cpdf_endText(OUTPUT_PRIVATE(r)->pdf);
 	}
 
-}
-
-static void rlib_pdf_end_text(rlib *r) {
-	cpdf_endText(OUTPUT_PRIVATE(r)->pdf);
 }
 
 static void rlib_pdf_init_output(rlib *r) {
@@ -189,7 +209,8 @@ static void rlib_pdf_end_output_section(rlib *r) {}
 static void rlib_pdf_start_output_section(rlib *r) {}
 static void rlib_pdf_boxurl_end(rlib *r) {}
 static void rlib_pdf_draw_cell_background_end(rlib *r) {}
-static void rlib_pdf_init_output_report(rlib *r) {}
+static void rlib_pdf_start_report(rlib *r) {}
+static void rlib_pdf_end_report(rlib *r) {}
 
 void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r) = rmalloc(sizeof(struct output_filter));
@@ -216,12 +237,14 @@ void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r)->rlib_init_end_page = rlib_pdf_init_end_page;
 	OUTPUT(r)->rlib_end_text = rlib_pdf_end_text;
 	OUTPUT(r)->rlib_init_output = rlib_pdf_init_output;
-	OUTPUT(r)->rlib_init_output_report = rlib_pdf_init_output_report;
+	OUTPUT(r)->rlib_start_report = rlib_pdf_start_report;
+	OUTPUT(r)->rlib_end_report = rlib_pdf_end_report;
 	OUTPUT(r)->rlib_begin_text = rlib_pdf_begin_text;
 	OUTPUT(r)->rlib_finalize_private = rlib_pdf_finalize_private;
 	OUTPUT(r)->rlib_spool_private = rlib_pdf_spool_private;
 	OUTPUT(r)->rlib_start_line = rlib_pdf_stub_line;
 	OUTPUT(r)->rlib_end_line = rlib_pdf_stub_line;
+	OUTPUT(r)->rlib_set_working_page = rlib_pdf_set_working_page;
 	OUTPUT(r)->rlib_is_single_page = rlib_pdf_is_single_page;
 	OUTPUT(r)->rlib_start_output_section = rlib_pdf_start_output_section;
 	OUTPUT(r)->rlib_end_output_section = rlib_pdf_end_output_section;

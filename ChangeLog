@@ -1,3 +1,42 @@
+2003-11-18  Bob Doan  <bdoan@sicompos.com>
+	* AUTHORS: added a heilman
+	* README: put more words in
+	* bindings/php/Makefile.am: Reports can now span pages accross, output cleanup, Chet cleanup, new compile error checking
+		and now .am's need RLIB_ stuff instead of listing all the stuff
+	* bindings/php/php.c: likewise
+	* bindings/python/Makefile.am: likewise
+	* bindings/python/environment.c: likewise
+	* bindings/python/python.c: likewise
+	* configure.in: likewise (and new --enable-memdebug)
+	* doc/basictraining.sgm: likewise
+	* doc/capi.sgm: likewise 
+	* doc/examples.sgm: likewise
+	* doc/phpapi.sgm: likewise
+	* inputs/mysql/Makefile.am: likewise
+	* inputs/mysql/mysql.c: likewise
+	* inputs/odbc/Makefile.am: likewise
+	* inputs/odbc/odbc.c: likewise
+	* inputs/postgre/Makefile.am: likewise
+	* inputs/postgre/postgre.c: likewise
+	* libsrc/Makefile.am: likewise
+	* libsrc/api.c: likewise
+	* libsrc/breaks.c: likewise
+	* libsrc/csv.c: likewise
+	* libsrc/free.c: likewise
+	* libsrc/html.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/ralloc.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rhashtable.c: likewise
+	* libsrc/rhashtable.h: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/rvector.c: likewise
+	* libsrc/txt.c: likewise
+	* rlib.pc.in: likewise
+	* tests/Makefile.am: likewise
+
 2003-11-18  Chet Heilman <cheilman@sicompos.com>
 	* bindings/php/php.c: (ZEND_FUNCTION): add binding for rlib_add_parameter
 	* libsrc/Makefile.am: Added files for RVector and RHashtable

@@ -140,7 +140,7 @@ int rlib_set_output_format(rlib *r, int format) {
 
 int rlib_add_resultset_follower(rlib *r, char *leader, char *follower) {
 	int ptr_leader = -1, ptr_follower = -1;
-	int i, x;
+	int x;
 
 	if(r->resultset_followers_count > (RLIB_MAXIMUM_FOLLOWERS-1)) {
 		return -1;

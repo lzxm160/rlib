@@ -21,7 +21,7 @@
 ## Process this file with automake to produce Makefile.in
 lib_LTLIBRARIES = librlib.la
 librlib_la_SOURCES = environment.c php.c rlib_php.h
-librlib_la_LIBADD = -L${top_srcdir}/libsrc/ -lr $(MYSQL_LIBS) $(LIBXML_LIBS) 
-INCLUDES = -I${top_srcdir}/libsrc/ $(MYSQL_CFLAGS) $(PHP_CFLAGS) $(LIBXML_CFLAGS)
+librlib_la_LIBADD = -L${top_srcdir}/libsrc/ -lr $(RLIB_LIBS)
+INCLUDES = -I${top_srcdir}/libsrc/ $(RLIB_CFLAGS)
 librlib_la_LDFLAGS = -release $(RLIB_VERSION)
 libdir = $(PHP_EXTENSION_DIR)

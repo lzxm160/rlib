@@ -32,13 +32,13 @@ noinst_PROGRAMS = \
 	$(MYSQL_INPUT) \
 	$(POSTGRE_INPUT)
 
-INCLUDES = $(POSTGRE_CFLAGS) $(LIBXML_CFLAGS) -I${top_srcdir}/libsrc/  
+INCLUDES = $(RLIB_CFLAGS) -I${top_srcdir}/libsrc/  
 
 test1_SOURCES= test1.c
-test1_LDADD = -L${top_srcdir}/libsrc/ $(MYSQL_LIBS) $(POSTGRE_LIBS) $(ODBC_LIBS) $(LIBXML_LIBS) -lcpdf -lr
+test1_LDADD = -L${top_srcdir}/libsrc/ $(RLIB_LIBS) -lr
 
 test2_SOURCES= test2.c
-test2_LDADD = -L${top_srcdir}/libsrc/ $(MYSQL_LIBS) $(POSTGRE_LIBS) $(LIBXML_LIBS) -lcpdf -lr
+test2_LDADD = -L${top_srcdir}/libsrc/ $(RLIB_LIBS) -lr
 
 test3_SOURCES= test3.c
-test3_LDADD = -L${top_srcdir}/libsrc/ $(MYSQL_LIBS) $(POSTGRE_LIBS) $(LIBXML_LIBS) -lcpdf -lr
+test3_LDADD = -L${top_srcdir}/libsrc/ $(RLIB_LIBS) -lr

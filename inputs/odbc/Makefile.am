@@ -23,9 +23,9 @@
 lib_LTLIBRARIES = libr-odbc.la
 libr_odbc_la_SOURCES = odbc.c
 
-libr_odbc_la_LIBADD = $(ODBC_LIBS) -L${top_srcdir}/libsrc/ -lr
+libr_odbc_la_LIBADD = $(RLIB_LIBS) -L${top_srcdir}/libsrc/ -lr
 
-INCLUDES = $(ODBC_CFLAGS) -I${top_srcdir}/libsrc/
+INCLUDES = $(RLIB_CFLAGS) -I${top_srcdir}/libsrc/
 
 libr_odbc_la_LDFLAGS = -release $(RLIB_VERSION)
 

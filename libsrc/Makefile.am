@@ -26,9 +26,9 @@ libr_la_SOURCES = parsexml.c reportgen.c api.c resolution.c util.c pcode.c \
 	datasource.c csv.c ralloc.c environment.c free.c navigation.c rlib_input.h \
 	pcode.h ralloc.h rlib.h rvector.c rvector.h rhashtable.c rhashtable.h
 
-libr_la_LIBADD = $(LIBXML_LIBS) -lcpdf -ldl 
+libr_la_LIBADD = $(RLIB_LIBS) -ldl 
 
-INCLUDES = $(LIBXML_CFLAGS)
+INCLUDES = $(RLIB_CFLAGS)
 
 include_HEADERS = rlib.h rlib_input.h rvector.h rhashtable.h
 

@@ -66,8 +66,9 @@ static void rlib_csv_drawimage(rlib *r, float left_origin, float bottom_origin, 
 	float nheight) {}
 
 static void rlib_csv_set_font_point(rlib *r, int point) {}
+
 static void rlib_csv_start_new_page(rlib *r) {
-	r->position_bottom = 11-GET_MARGIN(r)->bottom_margin;
+	r->reports[r->current_report]->position_bottom[0] = 11-GET_MARGIN(r)->bottom_margin;
 }
 
 static void rlib_csv_init_end_page(rlib *r) {}
@@ -111,7 +112,8 @@ static void really_print_text(rlib *r, char *text) {
 }
 
 static void rlib_csv_end_line(rlib *r, int backwards) {}
-static void rlib_csv_init_output_report(rlib *r) {}
+static void rlib_csv_start_report(rlib *r) {}
+static void rlib_csv_end_report(rlib *r) {}
 
 static void rlib_csv_start_output_section(rlib *r) {
 	int i;
@@ -151,7 +153,11 @@ static char *rlib_csv_get_output(rlib *r) {
 }
 
 static long rlib_csv_get_output_length(rlib *r) {
-	OUTPUT_PRIVATE(r)->top_size;
+	return OUTPUT_PRIVATE(r)->top_size;
+}
+
+static void rlib_csv_set_working_page(rlib *r, int page) {
+	return;
 }
 
 static int rlib_csv_free(rlib *r) {
@@ -189,7 +195,8 @@ void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT(r)->rlib_init_end_page = rlib_csv_init_end_page;
 	OUTPUT(r)->rlib_end_text = rlib_csv_end_text;
 	OUTPUT(r)->rlib_init_output = rlib_csv_init_output;
-	OUTPUT(r)->rlib_init_output_report = rlib_csv_init_output_report;
+	OUTPUT(r)->rlib_start_report = rlib_csv_start_report;
+	OUTPUT(r)->rlib_end_report = rlib_csv_end_report;
 	OUTPUT(r)->rlib_begin_text = rlib_csv_begin_text;
 	OUTPUT(r)->rlib_finalize_private = rlib_csv_finalize_private;
 	OUTPUT(r)->rlib_spool_private = rlib_csv_spool_private;
@@ -200,5 +207,6 @@ void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT(r)->rlib_end_output_section = rlib_csv_end_output_section;	
 	OUTPUT(r)->rlib_get_output = rlib_csv_get_output;
 	OUTPUT(r)->rlib_get_output_length = rlib_csv_get_output_length;
+	OUTPUT(r)->rlib_set_working_page = rlib_csv_set_working_page;	
 	OUTPUT(r)->rlib_free = rlib_csv_free;
 }

@@ -24,15 +24,15 @@
 #include "ralloc.h"
 #include "rlib.h"
 
-static char * rlib_python_resolve_memory_variable(char *name) {
+/*static char * rlib_python_resolve_memory_variable(char *name) {
 	return NULL;
 }
-
-static int rlib_python_write_output(char *data, int len) {
-//	return python_write(data, len TSRMLS_CC);
+*/
+/*static int rlib_python_write_output(char *data, int len) {
+	return python_write(data, len TSRMLS_CC);
 	return -1;
 }
-
+*/
 void rlib_python_free(rlib *r) {
 //	efree(ENVIRONMENT(r));
 }

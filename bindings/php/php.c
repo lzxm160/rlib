@@ -112,7 +112,6 @@ ZEND_GET_MODULE(rlib)
 	This will Make the connection to the SQL server and select the right database
 */
 ZEND_FUNCTION(rlib_init) {
-	long sql_host_length, sql_user_length, sql_password_length, sql_database_length;
 	rlib_inout_pass *rip;
 	long resource_id;
 	

@@ -23,12 +23,9 @@
 
 #include "ralloc.h"
 
-
-#define DEBUGMODE	1
-#if DEBUGMODE
+#if DEBUG_RLIB_MEMORY
 static RVector *mem;
 static int nBadFrees;
-
 RVector *ralloc_getVector() {
 	return mem;
 }
@@ -106,7 +103,7 @@ void *rrealloc(void *ptr, size_t size) {
 	return realloc(ptr, size);
 }
 
-Vector *ralloc_getVector() {
+RVector *ralloc_getVector() {
 	return NULL;
 }
 
@@ -116,5 +113,4 @@ void ralloc_init() {
 int ralloc_getBadFrees() {
 	return 0;
 }
-
 #endif

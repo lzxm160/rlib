@@ -1,7 +1,8 @@
 /*
  *  Copyright (C) 2003 SICOM Systems, INC.
  *
- *  Authors: Bob Doan <bdoan@sicompos.com>, Chet Heilman <cheilman@sicompos.com>
+ *  Authors: Bob Doan <bdoan@sicompos.com>
+ *           Chet Heilman <cheilman@sicompos.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
@@ -28,8 +29,8 @@
 #include "rhashtable.h"
 
 
-#include <rlib.h>
-
+#include "rlib.h"
+#include "ralloc.h"
 
 /**
  * Default search and sort functions.

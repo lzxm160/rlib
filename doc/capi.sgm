@@ -52,7 +52,19 @@
 			This function is only available if rlib is compiled with postgre support.
 		</para>
 	</sect1>
-
+	<sect1>
+		<title>rlib_add_datasource_odbc</title>
+		<para>
+			rlib_add_datasource_odbc(<emphasis>rlib * rlib_ptr</emphasis>, char *datasource_name, char *user_name, char *password)
+		</para>
+		<para>
+			Add a odbc datasource.  The datasource_name is used in rlib_add_query_as to tell rlib which datasource to run
+			the query with.  The user name and password are that of your database you are connecting to
+		</para>
+		<para>
+			This function is only available if rlib is compiled with odbc support.
+		</para>
+	</sect1>
 	<sect1>
 		<title>rlib_add_query_as</title>
 		<para>
@@ -90,7 +102,7 @@
 	<sect1>
 		<title>rlib_set_output_format_from_text</title>
 		<para>
-			rlib_set_output_format(<emphasis>rlib *rlib_ptr</emphasis>, char *name)
+			rlib_set_output_format_from_text(<emphasis>rlib *rlib_ptr</emphasis>, char *name)
 		</para>
 		<para>
 			Type can be one of the following: "pdf", "html", "csv", "txt"
@@ -163,6 +175,17 @@
 			Free rlib's memory that it allocated
 		</para>
 	</sect1>
+	<sect1>
+		<title>rlib_add_resultset_follower</title>
+		<para>
+			rlib_add_resultset_follower(<emphasis>rlib *rlib_ptr</emphasis>, char *leader, char *follower)
+		</para>
+		<para>
+			Adds the ability to have more then one main loop query.  leader and follower are the names of
+			the queries you set in rlib_add_query_as.
+		</para>
+	</sect1>
+
 	<sect1>
 		<title>SAMPLE</title>
 		<para>

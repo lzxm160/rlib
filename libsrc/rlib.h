@@ -57,6 +57,7 @@ long long int llabs(long long int j);
 #define RLIB_CONTENT_TYPE_TXT		3
 #define RLIB_CONTENT_TYPE_CSV		4
 
+#define RLIB_MAXIMUM_PAGES_ACCROSS	100
 
 #define REPORT_ELEMENT_TEXT 1
 #define REPORT_ELEMENT_FIELD 2
@@ -99,7 +100,6 @@ struct report_element {
 #define RLIB_ALIGN_LEFT 	0
 #define RLIB_ALIGN_RIGHT	1
 #define RLIB_ALIGN_CENTER	2
-
 
 struct report_text {
 	char value[MAXSTRLEN];
@@ -190,6 +190,8 @@ struct report_output {
 
 struct report_output_array {
 	int count;
+	xmlChar *xml_page;
+	long page;
 	struct report_output **data;
 };
 
@@ -198,7 +200,7 @@ struct report_horizontal_line {
 	xmlChar *size;
 	xmlChar *indent;
 	xmlChar *length;
-	xmlChar *fontSize;
+	xmlChar *font_size;
 
 	int font_point;
 	float realsize;
@@ -223,7 +225,7 @@ struct report_image {
 struct report_lines {
 	xmlChar *bgcolor;
 	xmlChar *color;
-	xmlChar *fontSize;
+	xmlChar *font_size;
 	int font_point;
 	struct rlib_pcode *bgcolor_code;
 	struct rlib_pcode *color_code;
@@ -246,14 +248,14 @@ struct report_break {
 	int newpage;
 	int headernewpage;
 	int surpressblank;
-	struct report_output_array *header;
+	struct report_element *header;
 	struct report_element *fields;
-	struct report_output_array *footer;
+	struct report_element *footer;
 };
 
 struct report_detail {
-	struct report_output_array *textlines;
-	struct report_output_array *fields;
+	struct report_element *textlines;
+	struct report_element *fields;
 };
 
 struct count_amount {
@@ -284,24 +286,28 @@ struct report_variable {
 
 struct rlib_report {
 	xmlDocPtr doc;
-	xmlChar *xml_fontsize;
-	xmlChar *defaultResult;
+	xmlChar *xml_font_size;
 	xmlChar *xml_orientation;
 	xmlChar *xml_top_margin;
 	xmlChar *xml_left_margin;
 	xmlChar *xml_bottom_margin;
+	xmlChar *xml_pages_accross;
+
+	float *position_top;
+	float *position_bottom;
 
 	long orientation;
-	long fontsize;
+	long font_size;
 	float top_margin;
 	float bottom_margin;
 	float left_margin;
+	long pages_accross;
 	
-	struct report_output_array *report_header;
-	struct report_output_array *page_header;
+	struct report_element *report_header;
+	struct report_element *page_header;
 	struct report_detail detail;
-	struct report_output_array *page_footer;
-	struct report_output_array *report_footer;
+	struct report_element *page_footer;
+	struct report_element *report_footer;
 	struct report_element *variables;
 	struct report_element *breaks;
 	int mainloop_query;
@@ -334,9 +340,6 @@ struct rlib_resultset_followers {
 };
 
 struct rlib {
-	float position_top;
-	float position_bottom;
-
 	int current_page_number;
 	int current_line_number;
 	int detail_line_count;
@@ -408,7 +411,9 @@ struct output_filter {
 	void (*rlib_init_end_page)(rlib *);
 	void (*rlib_end_text)(rlib *);
 	void (*rlib_init_output)(rlib *);
-	void (*rlib_init_output_report)(rlib *);
+	void (*rlib_set_working_page)(rlib *, int);
+	void (*rlib_start_report)(rlib *);
+	void (*rlib_end_report)(rlib *);
 	void (*rlib_begin_text)(rlib *);
 	void (*rlib_finalize_private)(rlib *);
 	void (*rlib_spool_private)(rlib *);
@@ -468,17 +473,19 @@ int rvalcmp(struct rlib_value *v1, struct rlib_value *v2);
 /***** PROTOTYPES: reportgen.c ************************************************/
 char *align_text(rlib *r, char *rtn, int len, char *src, long align, long width);
 float get_page_width(rlib *r);
-void print_detail_line(rlib *r, struct report_output_array *roa, int backwards);
-int will_line_fit(rlib *r, struct report_output_array *roa);
-int will_this_fit(rlib *r, float total);
+void print_report_output(rlib *r, struct report_element *e, int backwards);
+int will_outputs_fit(rlib *r, struct report_element *e, int page);
+int will_this_fit(rlib *r, float total, int page);
 float get_output_size(rlib *r, struct report_output_array *roa);
 void rlib_print_report_footer(rlib *r);
 int rlib_fetch_first_rows(rlib *r);
 void rlib_init_variables(rlib *r);
-void rlib_end_page_if_line_wont_fit(rlib *r, struct report_output_array *roa);
+int rlib_end_page_if_line_wont_fit(rlib *r, struct report_element *e) ;
+float get_outputs_size(rlib *r, struct report_element *e, int page);
 void rlib_process_variables(rlib *r);
 void rlib_init_page(rlib *r, char report_header);
 int make_report(rlib *r);
+int rlib_finalize(rlib *r);
 
 /***** PROTOTYPES: resolution.c ***********************************************/
 int rlib_resolve_rlib_variable(rlib *r, char *name);

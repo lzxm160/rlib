@@ -50,7 +50,6 @@ PKG_CHECK_MODULES(LIBXML, libxml-2.0 >= 2.4.0)
 AC_SUBST(LIBXML_LIBS)
 AC_SUBST(LIBXML_CFLAGS)
 
-
 AC_ARG_ENABLE(mysql,              [  --disable-mysql         disable mysql backend],,enable_mysql=yes)
 MYSQL_CFLAGS=""
 MYSQL_LIBS=""
@@ -177,21 +176,27 @@ AC_SUBST(PYTHON_CFLAGS)
 AC_SUBST(PYTHON_EXTENSION_DIR)
 AM_CONDITIONAL(HAVE_PYTHON, test x$enable_python = xyes)
 
+RLIB_CFLAGS="$LIBXML_CFLAGS $MYSQL_CFLAGS $POSTGRE_CFLAGS $ODBC_CFLAGS $PHP_CFLAGS $PYTHON_CFLAGS -Wall -Werror"
+RLIB_LIBS="$LIBXML_LIBS $MYSQL_LIBS $POSTGRE_LIBS $ODBC_LIBS -lcpdf"
+AC_SUBST(RLIB_CFLAGS)
+AC_SUBST(RLIB_LIBS)
+
 dnl Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS(fcntl.h unistd.h)
+AC_C_CONST
 
 AC_CHECK_HEADER([cpdflib.h],
 	[AC_DEFINE([HAVE_CPDFLIB_H])],
 	[AC_MSG_ERROR([You must have cpdflib properly installed in order for rlib to work.. missing cpdflib.h])])
-
-
 AC_CHECK_LIB(cpdf, cpdf_init, [], [AC_MSG_ERROR([You must have cpdflib properly installed in order for rlib to work.. missing libcpdf.so])])
 
-dnl Checks for typedefs, structures, and compiler characteristics.
-AC_C_CONST
+AC_ARG_ENABLE(memdebug,              [  --enable-memdebug       enable memory debugging],enable_memdebug="$enableval",enable_memdebug=no)
+if test x$enable_memdebug = xyes; then
+	AC_DEFINE(DEBUG_RLIB_MEMORY,1,[Debug RLIB memory usage])
+fi
 
-dnl Checks for library functions.
+
 
 AC_OUTPUT([
 Makefile
@@ -213,6 +218,7 @@ rlib-$VERSION:
 
 	prefix:                   ${prefix}
 	compiler:                 ${CC}
+	Memory debugging:         ${enable_memdebug}
 
 	INPUTS:
 	 MYSQL:                   ${enable_mysql}

@@ -25,7 +25,7 @@
 #include "pcode.h"
 #include "rlib_input.h"
 
-static void rlib_print_break_header_lines(rlib *r, struct report_break *rb, struct report_output_array *roa, int backwards) {
+static void rlib_print_break_header_lines(rlib *r, struct report_break *rb, struct report_element *e, int backwards) {
 	int blank = TRUE;
 	int surpress = FALSE;
 
@@ -47,19 +47,19 @@ static void rlib_print_break_header_lines(rlib *r, struct report_break *rb, stru
 
 	if(!surpress || (surpress && !blank)) {
 		rb->didheader = TRUE;
-		if(roa != NULL)
-			print_detail_line(r, roa, backwards);
+		if(e != NULL)
+			print_report_output(r, e, backwards);
 	} else {
 		rb->didheader = FALSE;
 	}
 }
 
-static void rlib_print_break_footer_lines(rlib *r, struct report_break *rb, struct report_output_array *roa, int backwards) {
+static void rlib_print_break_footer_lines(rlib *r, struct report_break *rb, struct report_element *e, int backwards) {
 	if(!OUTPUT(r)->do_break)
 		return;
 
 	if(rb->didheader)
-		print_detail_line(r, roa, backwards);
+		print_report_output(r, e, backwards);
 }
 
 void rlib_force_break_headers(rlib *r) {
@@ -83,8 +83,8 @@ void rlib_force_break_headers(rlib *r) {
 void rlib_handle_break_headers(rlib *r) {
 	struct report_element *e;
 	struct report_break *cache[100];
-	int icache=0,i;
-	float total=0;
+	int icache=0,page,i;
+	float total[RLIB_MAXIMUM_PAGES_ACCROSS];
 
 	if(!OUTPUT(r)->do_break)
 		return;
@@ -92,6 +92,9 @@ void rlib_handle_break_headers(rlib *r) {
 	if(r->reports[r->current_report]->breaks == NULL)
 		return;
 	
+	for(i=0;i<RLIB_MAXIMUM_PAGES_ACCROSS;i++) 
+		total[i] = 0;
+
 	for(e = r->reports[r->current_report]->breaks; e != NULL; e=e->next) {
 		struct report_break *rb = e->data;
 		struct report_element *be;
@@ -108,16 +111,23 @@ void rlib_handle_break_headers(rlib *r) {
 		
 		if(dobreak) {
 			if(rb->header != NULL) {
-				total += get_output_size(r, rb->header);
 				cache[icache++] = rb;
 			} else {
 				rb->didheader = TRUE;
+			}
+			for(page=0;page<r->reports[r->current_report]->pages_accross;page++) {
+				total[page] += get_outputs_size(r, rb->header, page);
 			}
 		}
 				
 	}
 	if(icache) {	
-		if(!will_this_fit(r,total)) {
+		int allfit = TRUE;
+		for(page=0;page<r->reports[r->current_report]->pages_accross;page++) {
+			if(!will_this_fit(r,total[page], page+1))
+				allfit = FALSE;
+		}
+		if(!allfit) {
 			OUTPUT(r)->rlib_end_page(r);
 			rlib_force_break_headers(r);
 		} else {

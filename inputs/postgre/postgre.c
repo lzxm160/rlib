@@ -66,8 +66,6 @@ static int rlib_postgre_input_close(void *input_ptr) {
 
 static PGresult * rlib_postgre_query(PGconn *conn, char *query) {
 	PGresult *result = NULL;
-	int rtn;
-
 	result = PQexec(conn, query);
 
 	if (PQresultStatus(result) != PGRES_TUPLES_OK) {

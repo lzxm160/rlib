@@ -1,1 +1,21 @@
-We Need a Readme ;)
+RLIB is a reporting engine/library.  To find out about all it can do visit:
+http://rlib.sicompos.com
+
+RLIB is released under the GPL.  This means you can link with it w/ GPL 
+compatiable licensed software.  If you are making commercial software.. or
+software not relased under the GPL you must buy a RLIB commercial license.
+
+Money from RLIB commercial licenses goes to further develop RLIB... 
+Find out more about licenses here: http://rlib.sicompos.com/license.php
+
+If you need help with rlib you can buy commercial support from SICOM Systems
+or you can get help from the community...
+
+http://rlib.sicompos.com/community.php
+rlib-users@lists.sourceforge.net
+
+We are always looking for contributers to RLIB... patches are good :)
+
+Finally:
+
+No Animals or Bob Kratz's were harmed in the making of this software.

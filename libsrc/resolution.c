@@ -185,6 +185,12 @@ static void rlib_resolve_fields2(rlib *r, struct report_output_array *roa) {
 	
 	if(roa == NULL)
 		return;
+		
+	if(roa->xml_page != NULL)
+		roa->page = atol(roa->xml_page);
+	else
+		roa->page = -1;
+	
 	for(j=0;j<roa->count;j++) {
 		struct report_output *ro = roa->data[j];
 		
@@ -206,6 +212,15 @@ static void rlib_resolve_fields2(rlib *r, struct report_output_array *roa) {
 			rlib_image_resolve_pcode(r, ((struct report_image *)ro->data));
 		}
 	}
+}
+
+static void rlib_resolve_outputs(rlib *r, struct report_element *e) {
+	struct report_output_array *roa;
+	for(; e != NULL; e=e->next) {
+		roa = e->data;
+		rlib_resolve_fields2(r, roa);
+	}			
+
 }
 
 /*
@@ -236,10 +251,10 @@ void rlib_resolve_fields(rlib *r) {
 		r->reports[r->current_report]->orientation = RLIB_ORIENTATION_PORTRAIT;
 	
 	
-	if(r->reports[r->current_report]->xml_fontsize == NULL)
-		r->reports[r->current_report]->fontsize = -1;
+	if(r->reports[r->current_report]->xml_font_size == NULL)
+		r->reports[r->current_report]->font_size = -1;
 	else
-		r->reports[r->current_report]->fontsize = atol(r->reports[r->current_report]->xml_fontsize);
+		r->reports[r->current_report]->font_size = atol(r->reports[r->current_report]->xml_font_size);
 
 	if(r->reports[r->current_report]->xml_top_margin == NULL)
 		r->reports[r->current_report]->top_margin = DEFAULT_TOP_MARGIN;
@@ -256,20 +271,28 @@ void rlib_resolve_fields(rlib *r) {
 	else
 		r->reports[r->current_report]->bottom_margin = atof(r->reports[r->current_report]->xml_bottom_margin);
 
-	rlib_resolve_fields2(r, r->reports[r->current_report]->report_header);
-	rlib_resolve_fields2(r, r->reports[r->current_report]->page_header);
-	rlib_resolve_fields2(r, r->reports[r->current_report]->page_footer);
-	rlib_resolve_fields2(r, r->reports[r->current_report]->report_footer);
+	if(r->reports[r->current_report]->xml_pages_accross == NULL)
+		r->reports[r->current_report]->pages_accross = 1;
+	else
+		r->reports[r->current_report]->pages_accross = atol(r->reports[r->current_report]->xml_pages_accross);
+		
+	r->reports[r->current_report]->position_top = rmalloc(r->reports[r->current_report]->pages_accross * sizeof(float));
+	r->reports[r->current_report]->position_bottom = rmalloc(r->reports[r->current_report]->pages_accross * sizeof(float));
 
-	rlib_resolve_fields2(r, r->reports[r->current_report]->detail.fields);
-	rlib_resolve_fields2(r, r->reports[r->current_report]->detail.textlines);
+	rlib_resolve_outputs(r, r->reports[r->current_report]->report_header);
+	rlib_resolve_outputs(r, r->reports[r->current_report]->page_header);
+	rlib_resolve_outputs(r, r->reports[r->current_report]->page_footer);
+	rlib_resolve_outputs(r, r->reports[r->current_report]->report_footer);
+
+	rlib_resolve_outputs(r, r->reports[r->current_report]->detail.fields);
+	rlib_resolve_outputs(r, r->reports[r->current_report]->detail.textlines);
 
 	if(r->reports[r->current_report]->breaks != NULL) {
 		for(e = r->reports[r->current_report]->breaks; e != NULL; e=e->next) {
 			struct report_break *rb = e->data;
 			struct report_element *be;
-			rlib_resolve_fields2(r, rb->header);
-			rlib_resolve_fields2(r, rb->footer);
+			rlib_resolve_outputs(r, rb->header);
+			rlib_resolve_outputs(r, rb->footer);
 			rb->newpage = FALSE;
 			rb->headernewpage = FALSE;
 			rb->surpressblank = FALSE;

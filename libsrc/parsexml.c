@@ -103,25 +103,28 @@ struct report_output * report_output_new(int type, void *data) {
 	return ro;
 }
 
-static struct report_output_array * parse_report_element(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
+static struct report_element * parse_report_output(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
+	struct report_element *e = rmalloc(sizeof(struct report_element));
 	struct report_output_array *roa = rmalloc(sizeof(struct report_output_array));
 	roa->count = 0;
 	roa->data = NULL;
-
-	cur = cur->xmlChildrenNode;
-	if(cur != NULL && (!xmlStrcmp(cur->name, (const xmlChar *) "Output")))
+	e->next = NULL;
+	e->data = roa;
+	roa->xml_page = NULL;
+	if(cur != NULL && (!xmlStrcmp(cur->name, (const xmlChar *) "Output"))) {
+		roa->xml_page = xmlGetProp(cur, (const xmlChar *) "page");
 		cur = cur->xmlChildrenNode;
-	
+	}	
 	while (cur != NULL) {      
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "Line"))) {
 			struct report_lines *rl = rmalloc(sizeof(struct report_lines));
 			rl->bgcolor = xmlGetProp(cur, (const xmlChar *) "bgcolor");
 			rl->color = xmlGetProp(cur, (const xmlChar *) "color");
-			rl->fontSize = xmlGetProp(cur, (const xmlChar *) "fontSize");
-			if(rl->fontSize == NULL)
+			rl->font_size = xmlGetProp(cur, (const xmlChar *) "fontSize");
+			if(rl->font_size == NULL)
 				rl->font_point = -1;
 			else
-				rl->font_point = atoi(rl->fontSize);
+				rl->font_point = atoi(rl->font_size);
 				
 			rl->e = parse_line_array(rep, doc, ns, cur);
 			roa->data = rrealloc(roa->data, sizeof(struct report_output_array *) * (roa->count + 1));
@@ -132,11 +135,11 @@ static struct report_output_array * parse_report_element(struct rlib_report *rep
 			rhl->size = xmlGetProp(cur, (const xmlChar *) "size");
 			rhl->indent = xmlGetProp(cur, (const xmlChar *) "indent");
 			rhl->length = xmlGetProp(cur, (const xmlChar *) "length");
-			rhl->fontSize = xmlGetProp(cur, (const xmlChar *) "fontSize");
-			if(rhl->fontSize == NULL)
+			rhl->font_size = xmlGetProp(cur, (const xmlChar *) "fontSize");
+			if(rhl->font_size == NULL)
 				rhl->font_point = -1;
 			else
-				rhl->font_point = atoi(rhl->fontSize);
+				rhl->font_point = atoi(rhl->font_size);
 			roa->data = rrealloc(roa->data, sizeof(struct report_output_array *) * (roa->count + 1));
 			roa->data[roa->count++] = report_output_new(REPORT_PRESENTATION_DATA_HR, rhl);
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "Image"))) {
@@ -150,8 +153,28 @@ static struct report_output_array * parse_report_element(struct rlib_report *rep
 		}
 		cur = cur->next;
 	}	
-	return roa;
+	return e;
 }
+
+static struct report_element * parse_report_outputs(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
+	struct report_element *e = NULL;
+
+	cur = cur->xmlChildrenNode;
+	while (cur != NULL) {      
+		if ((!xmlStrcmp(cur->name, (const xmlChar *) "Output"))) {
+			if(e == NULL) {
+				e = parse_report_output(rep, doc, ns, cur);
+			} else {
+				struct report_element *xxx = e;
+				for(;xxx->next != NULL; xxx=xxx->next) {};
+				xxx->next = parse_report_output(rep, doc, ns, cur);				
+			}
+		}
+		cur = cur->next;
+	}	
+	return e;
+}
+
 
 static struct report_element * parse_break_field(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
 	struct report_element *e = rmalloc(sizeof(struct report_element));
@@ -184,10 +207,10 @@ static struct report_element * parse_report_break(struct rlib_report *rep, xmlDo
 	rb->footer = NULL;
 	while (cur != NULL) {
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "BreakHeader"))) {
-			rb->header = parse_report_element(rep, doc, ns, cur);
+			rb->header = parse_report_outputs(rep, doc, ns, cur);
 		}
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "BreakFooter"))) {
-			rb->footer = parse_report_element(rep, doc, ns, cur);
+			rb->footer = parse_report_outputs(rep, doc, ns, cur);
 		}
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "BreakFields"))) {
 			if(rb->fields == NULL)
@@ -227,10 +250,10 @@ static void parse_detail(struct rlib_report *rep, xmlDocPtr doc, xmlNsPtr ns, xm
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "FieldHeaders"))) {
-			r->textlines = parse_report_element(rep, doc, ns, cur);
+			r->textlines = parse_report_outputs(rep, doc, ns, cur);
 		}
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "FieldDetails"))) {
-			r->fields = parse_report_element(rep, doc, ns, cur);
+			r->fields = parse_report_outputs(rep, doc, ns, cur);
 		}
 		cur = cur->next;
 	}
@@ -341,39 +364,31 @@ struct rlib_report * parse_report_file(char *filename) {
 		rfree(ret);
 		return(NULL);
 	}
-	ret->xml_fontsize = xmlGetProp(cur, (const xmlChar *) "fontSize");
+	ret->xml_font_size = xmlGetProp(cur, (const xmlChar *) "fontSize");
 	ret->xml_orientation = xmlGetProp(cur, (const xmlChar *) "orientation");
-	ret->defaultResult = xmlGetProp(cur, (const xmlChar *) "defaultResult");
 	ret->xml_top_margin = xmlGetProp(cur, (const xmlChar *) "topMargin");
 	ret->xml_left_margin = xmlGetProp(cur, (const xmlChar *) "leftMargin");
 	ret->xml_bottom_margin = xmlGetProp(cur, (const xmlChar *) "bottomMargin");
+	ret->xml_pages_accross = xmlGetProp(cur, (const xmlChar *) "pagesAccross");
 
 	
 	cur = cur->xmlChildrenNode;
 	ret->breaks = NULL;
 	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *) "ReportHeader"))) {
-			ret->report_header = parse_report_element(ret, doc, ns, cur);
-		}
-		if ((!xmlStrcmp(cur->name, (const xmlChar *) "PageHeader"))) {
-			ret->page_header = parse_report_element(ret, doc, ns, cur);
-		}
-		if ((!xmlStrcmp(cur->name, (const xmlChar *) "PageFooter"))) {
-			ret->page_footer = parse_report_element(ret, doc, ns, cur);
-		}
-		if ((!xmlStrcmp(cur->name, (const xmlChar *) "ReportFooter"))) {
-			ret->report_footer = parse_report_element(ret, doc, ns, cur);
-		}
-		if ((!xmlStrcmp(cur->name, (const xmlChar *) "Detail"))) {
+		if ((!xmlStrcmp(cur->name, (const xmlChar *) "ReportHeader"))) 
+			ret->report_header = parse_report_outputs(ret, doc, ns, cur);
+		if ((!xmlStrcmp(cur->name, (const xmlChar *) "PageHeader"))) 
+			ret->page_header = parse_report_outputs(ret, doc, ns, cur);
+		if ((!xmlStrcmp(cur->name, (const xmlChar *) "PageFooter"))) 
+			ret->page_footer = parse_report_outputs(ret, doc, ns, cur);
+		if ((!xmlStrcmp(cur->name, (const xmlChar *) "ReportFooter"))) 
+			ret->report_footer = parse_report_outputs(ret, doc, ns, cur);
+		if ((!xmlStrcmp(cur->name, (const xmlChar *) "Detail"))) 
 			parse_detail(ret, doc, ns, cur, &ret->detail);
-		}
-		if ((!xmlStrcmp(cur->name, (const xmlChar *) "Breaks"))) {
+		if ((!xmlStrcmp(cur->name, (const xmlChar *) "Breaks"))) 
 			ret->breaks = parse_report_breaks(ret, doc, ns, cur);
-		}
-		
-		if ((!xmlStrcmp(cur->name, (const xmlChar *) "Variables"))) {
+		if ((!xmlStrcmp(cur->name, (const xmlChar *) "Variables"))) 
 			ret->variables = parse_report_variables(doc, ns, cur);
-		}
 
 		cur = cur->next;
 	}
