@@ -80,7 +80,6 @@ gint rlib_resolve_resultset_field(rlib *r, char *name, void **rtn_field, gint *r
 	gchar *right_side = NULL, *result_name = NULL;
 
 	resultset = r->current_result;
-//TODO:localize this so utf8 names work too.
 	right_side = memchr(name, '.', strlen(name));
 	if(right_side != NULL) {
 		gint t;
@@ -111,19 +110,19 @@ gint rlib_resolve_resultset_field(rlib *r, char *name, void **rtn_field, gint *r
 
 
 static void rlib_field_resolve_pcode(rlib *r, struct rlib_report *report, struct rlib_report_field *rf) {
-	rf->code = rlib_infix_to_pcode(r, report, rf->value);
-	rf->format_code = rlib_infix_to_pcode(r, report, rf->xml_format);
-	rf->link_code = rlib_infix_to_pcode(r, report, rf->xml_link);
-	rf->color_code = rlib_infix_to_pcode(r, report, rf->xml_color);
-	rf->bgcolor_code = rlib_infix_to_pcode(r, report, rf->xml_bgcolor);
-	rf->col_code = rlib_infix_to_pcode(r, report, rf->xml_col);
-	rf->width_code = rlib_infix_to_pcode(r, report, rf->xml_width);
-	rf->bold_code = rlib_infix_to_pcode(r, report, rf->xml_bold);
-	rf->italics_code = rlib_infix_to_pcode(r, report, rf->xml_italics);
-	rf->align_code = rlib_infix_to_pcode(r, report, rf->xml_align);
-	rf->memo_code = rlib_infix_to_pcode(r, report, rf->xml_memo);
-	rf->memo_height_code = rlib_infix_to_pcode(r, report, rf->xml_memo_height);
-	rf->memo_wrap_chars_code = rlib_infix_to_pcode(r, report, rf->xml_memo_wrap_chars);
+	rf->code = rlib_infix_to_pcode(r, report, rf->value, TRUE);
+	rf->format_code = rlib_infix_to_pcode(r, report, rf->xml_format, TRUE);
+	rf->link_code = rlib_infix_to_pcode(r, report, rf->xml_link, TRUE);
+	rf->color_code = rlib_infix_to_pcode(r, report, rf->xml_color, TRUE);
+	rf->bgcolor_code = rlib_infix_to_pcode(r, report, rf->xml_bgcolor, TRUE);
+	rf->col_code = rlib_infix_to_pcode(r, report, rf->xml_col, TRUE);
+	rf->width_code = rlib_infix_to_pcode(r, report, rf->xml_width, TRUE);
+	rf->bold_code = rlib_infix_to_pcode(r, report, rf->xml_bold, TRUE);
+	rf->italics_code = rlib_infix_to_pcode(r, report, rf->xml_italics, TRUE);
+	rf->align_code = rlib_infix_to_pcode(r, report, rf->xml_align, TRUE);
+	rf->memo_code = rlib_infix_to_pcode(r, report, rf->xml_memo, TRUE);
+	rf->memo_height_code = rlib_infix_to_pcode(r, report, rf->xml_memo_height, TRUE);
+	rf->memo_wrap_chars_code = rlib_infix_to_pcode(r, report, rf->xml_memo_wrap_chars, TRUE);
 	rf->width = -1;
 //rlogit("DUMPING PCODE FOR [%s]\n", rf->value);
 //rlib_pcode_dump(rf->code,0);	
@@ -131,13 +130,13 @@ static void rlib_field_resolve_pcode(rlib *r, struct rlib_report *report, struct
 }
 
 static void rlib_literal_resolve_pcode(rlib *r, struct rlib_report *report, struct rlib_report_literal *rt) {
-	rt->color_code = rlib_infix_to_pcode(r, report, rt->xml_color);
-	rt->bgcolor_code = rlib_infix_to_pcode(r, report, rt->xml_bgcolor);
-	rt->col_code = rlib_infix_to_pcode(r, report, rt->xml_col);
-	rt->width_code = rlib_infix_to_pcode(r, report, rt->xml_width);
-	rt->bold_code = rlib_infix_to_pcode(r, report, rt->xml_bold);
-	rt->italics_code = rlib_infix_to_pcode(r, report, rt->xml_italics);
-	rt->align_code = rlib_infix_to_pcode(r, report, rt->xml_align);
+	rt->color_code = rlib_infix_to_pcode(r, report, rt->xml_color, TRUE);
+	rt->bgcolor_code = rlib_infix_to_pcode(r, report, rt->xml_bgcolor, TRUE);
+	rt->col_code = rlib_infix_to_pcode(r, report, rt->xml_col, TRUE);
+	rt->width_code = rlib_infix_to_pcode(r, report, rt->xml_width, TRUE);
+	rt->bold_code = rlib_infix_to_pcode(r, report, rt->xml_bold, TRUE);
+	rt->italics_code = rlib_infix_to_pcode(r, report, rt->xml_italics, TRUE);
+	rt->align_code = rlib_infix_to_pcode(r, report, rt->xml_align, TRUE);
 	rt->width = -1;
 //rlogit("DUMPING PCODE FOR [%s]\n", rt->value);
 //rlib_pcode_dump(rf->code,0);	
@@ -147,11 +146,11 @@ static void rlib_literal_resolve_pcode(rlib *r, struct rlib_report *report, stru
 static void rlib_break_resolve_pcode(rlib *r, struct rlib_report *report, struct rlib_break_fields *bf) {
 	if(bf->xml_value == NULL)
 		r_error("RLIB ERROR: BREAK FIELD VALUE CAN NOT BE NULL\n");
-	bf->code = rlib_infix_to_pcode(r, report, bf->xml_value);
+	bf->code = rlib_infix_to_pcode(r, report, bf->xml_value, TRUE);
 }
 
 static void rlib_variable_resolve_pcode(rlib *r, struct rlib_report *report, struct rlib_report_variable *rv) {
-	rv->code = rlib_infix_to_pcode(r, report, rv->xml_value);
+	rv->code = rlib_infix_to_pcode(r, report, rv->xml_value, TRUE);
 /*rlogit("DUMPING PCODE FOR [%s]\n", rv->value);
 rlib_pcode_dump(rv->code,0);	
 rlogit("\n\n");*/
@@ -168,16 +167,16 @@ static void rlib_hr_resolve_pcode(rlib *r, struct rlib_report *report, struct rl
 		rhl->length = 0;
 	else
 		rhl->length = atof(rhl->xml_length);
-	rhl->bgcolor_code = rlib_infix_to_pcode(r, report, rhl->xml_bgcolor);
-	rhl->suppress_code = rlib_infix_to_pcode(r, report, rhl->xml_suppress);
-	rhl->size_code = rlib_infix_to_pcode(r, report, rhl->xml_size);
+	rhl->bgcolor_code = rlib_infix_to_pcode(r, report, rhl->xml_bgcolor, TRUE);
+	rhl->suppress_code = rlib_infix_to_pcode(r, report, rhl->xml_suppress, TRUE);
+	rhl->size_code = rlib_infix_to_pcode(r, report, rhl->xml_size, TRUE);
 }
 
 static void rlib_image_resolve_pcode(rlib *r, struct rlib_report *report, struct rlib_report_image * ri) {
-	ri->value_code = rlib_infix_to_pcode(r, report, ri->xml_value);
-	ri->type_code = rlib_infix_to_pcode(r, report, ri->xml_type);
-	ri->width_code = rlib_infix_to_pcode(r, report, ri->xml_width);
-	ri->height_code = rlib_infix_to_pcode(r, report, ri->xml_height);
+	ri->value_code = rlib_infix_to_pcode(r, report, ri->xml_value, TRUE);
+	ri->type_code = rlib_infix_to_pcode(r, report, ri->xml_type, TRUE);
+	ri->width_code = rlib_infix_to_pcode(r, report, ri->xml_width, TRUE);
+	ri->height_code = rlib_infix_to_pcode(r, report, ri->xml_height, TRUE);
 }
 
 static void rlib_resolve_fields2(rlib *r, struct rlib_report *report, struct rlib_report_output_array *roa) {
@@ -198,11 +197,11 @@ static void rlib_resolve_fields2(rlib *r, struct rlib_report *report, struct rli
 		if(ro->type == RLIB_REPORT_PRESENTATION_DATA_LINE) {
 			struct rlib_report_lines *rl = ro->data;	
 			e = rl->e;
-			rl->bgcolor_code = rlib_infix_to_pcode(r, report, rl->xml_bgcolor);
-			rl->color_code = rlib_infix_to_pcode(r, report, rl->xml_color);
-			rl->suppress_code = rlib_infix_to_pcode(r, report, rl->xml_suppress);
-			rl->bold_code = rlib_infix_to_pcode(r, report, rl->xml_bold);
-			rl->italics_code = rlib_infix_to_pcode(r, report, rl->xml_italics);
+			rl->bgcolor_code = rlib_infix_to_pcode(r, report, rl->xml_bgcolor, TRUE);
+			rl->color_code = rlib_infix_to_pcode(r, report, rl->xml_color, TRUE);
+			rl->suppress_code = rlib_infix_to_pcode(r, report, rl->xml_suppress, TRUE);
+			rl->bold_code = rlib_infix_to_pcode(r, report, rl->xml_bold, TRUE);
+			rl->italics_code = rlib_infix_to_pcode(r, report, rl->xml_italics, TRUE);
 
 			for(; e != NULL; e=e->next) {
 				if(e->type == RLIB_ELEMENT_FIELD) {
@@ -253,27 +252,45 @@ int is_true_str(const gchar *str) {
 	return (!strcasecmp(str, "yes") || !strcasecmp(str, "true"))? TRUE : FALSE;
 }
 
+void rlib_resolve_graph(rlib *r, struct rlib_report *report, struct rlib_graph *graph) {
+	struct rlib_graph_plot *plot;
+	GSList *list;
+	
+	graph->type_code = rlib_infix_to_pcode(r, report, graph->xml_type, TRUE);
+	graph->subtype_code = rlib_infix_to_pcode(r, report, graph->xml_subtype, TRUE);
+	graph->width_code = rlib_infix_to_pcode(r, report, graph->xml_width, TRUE);
+	graph->height_code = rlib_infix_to_pcode(r, report, graph->xml_height, TRUE);
+	graph->title_code = rlib_infix_to_pcode(r, report, graph->xml_title, TRUE);
+	graph->x_axis_title_code = rlib_infix_to_pcode(r, report, graph->xml_x_axis_title, TRUE);
+	graph->y_axis_title_code = rlib_infix_to_pcode(r, report, graph->xml_y_axis_title, TRUE);
+
+	for(list=graph->plots;list != NULL; list = g_slist_next(list)) {
+		plot = list->data;
+		plot->axis_code = rlib_infix_to_pcode(r, report, plot->xml_axis, TRUE);
+		plot->field_code = rlib_infix_to_pcode(r, report, plot->xml_field, TRUE);
+	}
+}
 
 void rlib_resolve_report_fields(rlib *r, struct rlib_report *report) {
 	struct rlib_element *e;
 	gfloat f;
 	report->orientation = RLIB_ORIENTATION_PORTRAIT;
-	report->orientation_code = rlib_infix_to_pcode(r, report, report->xml_orientation);
+	report->orientation_code = rlib_infix_to_pcode(r, report, report->xml_orientation, TRUE);
 	report->font_size = -1;
-	report->font_size_code = rlib_infix_to_pcode(r, report, report->xml_font_size);
+	report->font_size_code = rlib_infix_to_pcode(r, report, report->xml_font_size, TRUE);
 	report->top_margin = RLIB_DEFAULT_TOP_MARGIN;
-	report->top_margin_code = rlib_infix_to_pcode(r, report, report->xml_top_margin);
+	report->top_margin_code = rlib_infix_to_pcode(r, report, report->xml_top_margin, TRUE);
 	report->left_margin = RLIB_DEFAULT_LEFT_MARGIN;
-	report->left_margin_code = rlib_infix_to_pcode(r, report, report->xml_left_margin);
+	report->left_margin_code = rlib_infix_to_pcode(r, report, report->xml_left_margin, TRUE);
 	report->bottom_margin = RLIB_DEFAULT_BOTTOM_MARGIN;
-	report->bottom_margin_code = rlib_infix_to_pcode(r, report, report->xml_bottom_margin);
+	report->bottom_margin_code = rlib_infix_to_pcode(r, report, report->xml_bottom_margin, TRUE);
 	report->pages_across = 1;
-	report->pages_across_code = rlib_infix_to_pcode(r, report, report->xml_pages_across);
+	report->pages_across_code = rlib_infix_to_pcode(r, report, report->xml_pages_across, TRUE);
 	report->suppress_page_header_first_page = FALSE;
-	report->suppress_page_header_first_page_code = rlib_infix_to_pcode(r, report, report->xml_suppress_page_header_first_page);
-	report->height_code = rlib_infix_to_pcode(r, report, report->xml_height);
+	report->suppress_page_header_first_page_code = rlib_infix_to_pcode(r, report, report->xml_suppress_page_header_first_page, TRUE);
+	report->height_code = rlib_infix_to_pcode(r, report, report->xml_height, TRUE);
 	report->iterations = 1;
-	report->iterations_code = rlib_infix_to_pcode(r, report, report->xml_iterations);
+	report->iterations_code = rlib_infix_to_pcode(r, report, report->xml_iterations, TRUE);
 
 	if (rlib_execute_as_float(r, report->pages_across_code, &f))
 		report->pages_across = f;
@@ -292,6 +309,8 @@ void rlib_resolve_report_fields(rlib *r, struct rlib_report *report) {
 	rlib_resolve_outputs(r, report, report->detail.headers);
 	rlib_resolve_outputs(r, report, report->alternate.nodata);
 
+	rlib_resolve_graph(r, report, &report->graph);
+
 	if(report->breaks != NULL) {
 		for(e = report->breaks; e != NULL; e=e->next) {
 			struct rlib_report_break *rb = e->data;
@@ -299,9 +318,9 @@ void rlib_resolve_report_fields(rlib *r, struct rlib_report *report) {
 			
 			rlib_resolve_outputs(r, report, rb->header);
 			rlib_resolve_outputs(r, report, rb->footer);
-			rb->newpage_code = rlib_infix_to_pcode(r, report, rb->xml_newpage);
-			rb->headernewpage_code = rlib_infix_to_pcode(r, report, rb->xml_headernewpage);
-			rb->suppressblank_code = rlib_infix_to_pcode(r, report, rb->xml_suppressblank);
+			rb->newpage_code = rlib_infix_to_pcode(r, report, rb->xml_newpage, TRUE);
+			rb->headernewpage_code = rlib_infix_to_pcode(r, report, rb->xml_headernewpage, TRUE);
+			rb->suppressblank_code = rlib_infix_to_pcode(r, report, rb->xml_suppressblank, TRUE);
 			for(be = rb->fields; be != NULL; be=be->next) {
 				struct rlib_break_fields *bf = be->data;
 				rlib_break_resolve_pcode(r, report, bf);
@@ -317,47 +336,47 @@ void rlib_resolve_report_fields(rlib *r, struct rlib_report *report) {
 	}
 }
 
-void rlib_resolve_part_td(rlib *r, struct rlib_part *part, struct rlib_element *e_td) {
-	struct rlib_element *e;
+void rlib_resolve_part_td(rlib *r, struct rlib_part *part, GSList *part_deviations) {
+	GSList *element;
 	
-	for(e=e_td;e != NULL;e=e->next) {
-		struct rlib_part_td *td = e->data;
-		td->width_code = rlib_infix_to_pcode(r, NULL, td->xml_width);
-		td->height_code = rlib_infix_to_pcode(r, NULL, td->xml_height);
-		td->border_width_code = rlib_infix_to_pcode(r, NULL, td->xml_border_width);
-		td->border_color_code = rlib_infix_to_pcode(r, NULL, td->xml_border_color);
+	for(element = part_deviations;element != NULL;element = g_slist_next(element)) {
+		struct rlib_part_td *td = element->data;
+		td->width_code = rlib_infix_to_pcode(r, NULL, td->xml_width, TRUE);
+		td->height_code = rlib_infix_to_pcode(r, NULL, td->xml_height, TRUE);
+		td->border_width_code = rlib_infix_to_pcode(r, NULL, td->xml_border_width, TRUE);
+		td->border_color_code = rlib_infix_to_pcode(r, NULL, td->xml_border_color, TRUE);
 	}
 }
 
-void rlib_resolve_part_tr(rlib *r, struct rlib_part *part, struct rlib_element *e_tr) {
-	struct rlib_element *e;
+static void rlib_resolve_part_tr(rlib *r, struct rlib_part *part) {
+	GSList *element;
 	
-	for(e=e_tr;e != NULL;e=e->next) {
-		struct rlib_part_tr *tr = e->data;
-		tr->layout_code = rlib_infix_to_pcode(r, NULL, tr->xml_layout);
-		tr->newpage_code = rlib_infix_to_pcode(r, NULL, tr->xml_newpage);
-		rlib_resolve_part_td(r, part, tr->e);
+	for(element = part->part_rows;element != NULL;element = g_slist_next(element)) {
+		struct rlib_part_tr *tr = element->data;
+		tr->layout_code = rlib_infix_to_pcode(r, NULL, tr->xml_layout, TRUE);
+		tr->newpage_code = rlib_infix_to_pcode(r, NULL, tr->xml_newpage, TRUE);
+		rlib_resolve_part_td(r, part, tr->part_deviations);
 	}	
 }
 
 void rlib_resolve_part_fields(rlib *r, struct rlib_part *part) {
 	gfloat f;
 	part->orientation = RLIB_ORIENTATION_PORTRAIT;
-	part->orientation_code = rlib_infix_to_pcode(r, NULL, part->xml_orientation);
+	part->orientation_code = rlib_infix_to_pcode(r, NULL, part->xml_orientation, TRUE);
 	part->font_size = -1;
-	part->font_size_code = rlib_infix_to_pcode(r, NULL, part->xml_font_size);
+	part->font_size_code = rlib_infix_to_pcode(r, NULL, part->xml_font_size, TRUE);
 	part->top_margin = RLIB_DEFAULT_TOP_MARGIN;
-	part->top_margin_code = rlib_infix_to_pcode(r, NULL, part->xml_top_margin);
+	part->top_margin_code = rlib_infix_to_pcode(r, NULL, part->xml_top_margin, TRUE);
 	part->left_margin = RLIB_DEFAULT_LEFT_MARGIN;
-	part->left_margin_code = rlib_infix_to_pcode(r, NULL, part->xml_left_margin);
+	part->left_margin_code = rlib_infix_to_pcode(r, NULL, part->xml_left_margin, TRUE);
 	part->bottom_margin = RLIB_DEFAULT_BOTTOM_MARGIN;
-	part->bottom_margin_code = rlib_infix_to_pcode(r, NULL, part->xml_bottom_margin);
+	part->bottom_margin_code = rlib_infix_to_pcode(r, NULL, part->xml_bottom_margin, TRUE);
 	part->paper = rlib_layout_get_paper(r, RLIB_PAPER_LETTER);
-	part->paper_type_code = rlib_infix_to_pcode(r, NULL, part->xml_paper_type);
+	part->paper_type_code = rlib_infix_to_pcode(r, NULL, part->xml_paper_type, TRUE);
 	part->pages_across = 1;
-	part->pages_across_code = rlib_infix_to_pcode(r, NULL, part->xml_pages_across);
+	part->pages_across_code = rlib_infix_to_pcode(r, NULL, part->xml_pages_across, TRUE);
 	part->iterations = 1;
-	part->iterations_code = rlib_infix_to_pcode(r, NULL, part->xml_iterations);
+	part->iterations_code = rlib_infix_to_pcode(r, NULL, part->xml_iterations, TRUE);
 
 	if (rlib_execute_as_float(r, part->pages_across_code, &f))
 		part->pages_across = f;
@@ -368,7 +387,7 @@ void rlib_resolve_part_fields(rlib *r, struct rlib_part *part) {
 	part->position_bottom = g_malloc(part->pages_across * sizeof(float));
 	part->bottom_size = g_malloc(part->pages_across * sizeof(float));
 
-	rlib_resolve_part_tr(r, part, part->tr_elements);
+	rlib_resolve_part_tr(r, part);
 	rlib_resolve_outputs(r, NULL, part->page_header);
 	rlib_resolve_outputs(r, NULL, part->page_footer);
 	rlib_resolve_outputs(r, NULL, part->report_header);
@@ -384,4 +403,24 @@ gchar * rlib_resolve_memory_variable(rlib *r, gchar *name) {
 		return ENVIRONMENT(r)->rlib_resolve_memory_variable(name+2);
 	}
 	return NULL;
+}
+
+void resolve_metadata(gpointer name, gpointer value, gpointer user_data) {
+	struct rlib_metadata *metadata = value;
+	metadata->formula_code = rlib_infix_to_pcode(user_data, NULL, metadata->xml_formula, FALSE);
+	RLIB_VALUE_TYPE_NONE(&metadata->rval_formula);
+}
+
+void rlib_resolve_metadata(rlib *r) {
+	g_hash_table_foreach(r->input_metadata, resolve_metadata, r);
+}
+
+void process_metadata(gpointer name, gpointer value, gpointer user_data) {
+	struct rlib_metadata *metadata = value;
+	rlib_value_free(&metadata->rval_formula);
+	rlib_execute_pcode(user_data, &metadata->rval_formula, metadata->formula_code, NULL);
+}
+
+void rlib_process_input_metadata(rlib *r) {
+	g_hash_table_foreach(r->input_metadata, process_metadata, r);
 }

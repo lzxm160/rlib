@@ -137,7 +137,8 @@ static void rlib_csv_init_end_page(rlib *r) {}
 static void rlib_csv_start_line(rlib *r, gint backwards) {}
 static void rlib_csv_end_line(rlib *r, gint backwards) {}
 static void rlib_csv_start_report(rlib *r, struct rlib_part *part) {}
-static void rlib_csv_end_report(rlib *r, struct rlib_part *part) {}
+static void rlib_csv_end_part(rlib *r, struct rlib_part *part) {}
+static void rlib_csv_end_report(rlib *r, struct rlib_report *report) {}
 static void rlib_csv_init_output(rlib *r) {}
 static void rlib_csv_set_font_point(rlib *r, gint point) {}
 static void rlib_csv_start_tr(rlib *r) {}
@@ -187,6 +188,7 @@ void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT(r)->init_output = rlib_csv_init_output;
 	OUTPUT(r)->start_report = rlib_csv_start_report;
 	OUTPUT(r)->end_report = rlib_csv_end_report;
+	OUTPUT(r)->end_part = rlib_csv_end_part;
 	OUTPUT(r)->finalize_private = rlib_csv_finalize_private;
 	OUTPUT(r)->spool_private = rlib_csv_spool_private;
 	OUTPUT(r)->start_line = rlib_csv_start_line;

@@ -49,7 +49,8 @@
 
 //man 3 llabs says the prototype is in stdlib.. no it aint!
 long long int llabs(long long int j);
-
+double trunc(double x);
+ 
 #ifndef TRUE
 #define TRUE	1
 #endif
@@ -393,7 +394,7 @@ struct rlib_part_td {
 	struct rlib_pcode *height_code;
 	struct rlib_pcode *border_width_code;
 	struct rlib_pcode *border_color_code;
-	struct rlib_element *e;
+	GSList *reports;
 };
 
 struct rlib_part_tr {
@@ -404,7 +405,7 @@ struct rlib_part_tr {
 	struct rlib_pcode *newpage_code;
 	gchar layout;
 
-	struct rlib_element *e;
+	GSList *part_deviations;
 };
 
 struct rlib_part {
@@ -418,7 +419,7 @@ struct rlib_part {
 	xmlChar *xml_font_size;
 	xmlChar *xml_iterations;
 
-	struct rlib_element *tr_elements;
+	GSList *part_rows;
 	struct rlib_element *report_header;
 	struct rlib_element *page_header;
 	struct rlib_element *page_footer;
@@ -445,6 +446,56 @@ struct rlib_part {
 	gfloat bottom_margin;
 	gfloat left_margin;
 	gint landscape;
+};
+
+struct rlib_graph_plot {
+	gchar *xml_axis;
+	gchar *xml_field;
+	struct rlib_value rval_axis;
+	struct rlib_value rval_field;
+	struct rlib_pcode *axis_code;
+	struct rlib_pcode *field_code;	
+};
+
+#define RLIB_GRAPH_TYPE_LINE_NORMAL                   1
+#define RLIB_GRAPH_TYPE_LINE_STACKED                  2
+#define RLIB_GRAPH_TYPE_LINE_PERCENT                  3
+#define RLIB_GRAPH_TYPE_AREA_NORMAL                   4
+#define RLIB_GRAPH_TYPE_AREA_STACKED                  5
+#define RLIB_GRAPH_TYPE_AREA_PERCENT                  6
+#define RLIB_GRAPH_TYPE_COLUMN_NORMAL                  7
+#define RLIB_GRAPH_TYPE_COLUMN_STACKED                 8
+#define RLIB_GRAPH_TYPE_COLUMN_PERCENT                 9
+#define RLIB_GRAPH_TYPE_ROW_NORMAL                   10
+#define RLIB_GRAPH_TYPE_ROW_STACKED                  11
+#define RLIB_GRAPH_TYPE_ROW_PERCENT                  12
+#define RLIB_GRAPH_TYPE_PIE_NORMAL                   13
+#define RLIB_GRAPH_TYPE_PIE_RING                     14
+#define RLIB_GRAPH_TYPE_PIE_OFFSET                   15
+#define RLIB_GRAPH_TYPE_XY_SYMBOLS_ONLY              16
+#define RLIB_GRAPH_TYPE_XY_LINES_WITH_SUMBOLS        17
+#define RLIB_GRAPH_TYPE_XY_LINES_ONLY                18
+#define RLIB_GRAPH_TYPE_XY_CUBIC_SPLINE              19
+#define RLIB_GRAPH_TYPE_XY_CUBIC_SPLINE_WIHT_SYMBOLS 20
+#define RLIB_GRAPH_TYPE_XY_BSPLINE                   21
+#define RLIB_GRAPH_TYPE_XY_BSPLINE_WITH_SYMBOLS      22
+
+struct rlib_graph {
+	gchar *xml_type;	
+	gchar *xml_subtype;
+	gchar *xml_width;
+	gchar *xml_height;
+	gchar *xml_title;
+	gchar *xml_x_axis_title;
+	gchar *xml_y_axis_title;
+	struct rlib_pcode *type_code;	
+	struct rlib_pcode *subtype_code;	
+	struct rlib_pcode *width_code;
+	struct rlib_pcode *height_code;
+	struct rlib_pcode *title_code;
+	struct rlib_pcode *x_axis_title_code;
+	struct rlib_pcode *y_axis_title_code;
+	GSList *plots;
 };
 
 struct rlib_report {
@@ -491,6 +542,7 @@ struct rlib_report {
 	struct rlib_element *variables;
 	struct rlib_element *breaks;
 	struct rlib_report_alternate alternate;
+	struct rlib_graph graph;
 	gint mainloop_query;
 
 	struct rlib_pcode *font_size_code;
@@ -537,6 +589,12 @@ struct rlib_signal_functions {
 	gpointer data;
 };
 
+struct rlib_metadata {
+	gchar *xml_formula;
+	struct rlib_value rval_formula;
+	struct rlib_pcode *formula_code;
+};
+
 struct rlib {
 	gint current_page_number;
 	gint total_pages_allocated;
@@ -549,7 +607,8 @@ struct rlib {
 	gint current_font_point;
 
 	GHashTable * output_paramaters;
-
+	GHashTable * input_metadata;
+	
 	rlib_char_encoder *output_encoder;		//_destroy all of these
 	rlib_char_encoder *db_encoder;
 	rlib_char_encoder *param_encoder;
@@ -564,7 +623,6 @@ struct rlib {
 	
 	struct rlib_queries queries[RLIB_MAXIMUM_QUERIES];
 
-	gint mainloop_queries_count;
 	gint queries_count;
 	struct rlib_rip_reports reportstorun[RLIB_MAXIMUM_REPORTS];
 	struct rlib_results results[RLIB_MAXIMUM_QUERIES];
@@ -630,7 +688,8 @@ struct output_filter {
 	void (*set_working_page)(rlib *, struct rlib_part *, int);
 	void (*set_raw_page)(rlib *, struct rlib_part *, int);
 	void (*start_report)(rlib *, struct rlib_part *);
-	void (*end_report)(rlib *, struct rlib_part *);
+	void (*end_part)(rlib *, struct rlib_part *);
+	void (*end_report)(rlib *, struct rlib_report *);
 	void (*finalize_private)(rlib *);
 	void (*spool_private)(rlib *);
 	void (*start_line)(rlib *, int);
@@ -643,6 +702,20 @@ struct output_filter {
 	void (*end_tr)(rlib *);
 	void (*start_td)(rlib *, struct rlib_part *part, gfloat left_margin, gfloat bottom_margin, int width, int height, gint border_width, struct rlib_rgb *color);
 	void (*end_td)(rlib *);
+	
+	void (*graph_start)(rlib *r, float, float, float, float);
+	void (*graph_title)(rlib *r, gchar *title);
+	void (*graph_x_axis_title)(rlib *r, gchar *title);
+	void (*graph_y_axis_title)(rlib *r, gchar *title);
+	void (*graph_set_limits)(rlib *r, gdouble min, gdouble max, gdouble origin);
+	void (*graph_do_grid)(rlib *r);
+	void (*graph_draw_line)(rlib *, float, float, float, float, struct rlib_rgb *);
+	void (*graph_tick_x)(rlib *, int iterations);
+	void (*graph_tick_y)(rlib *, int iterations);
+	void (*graph_set_data_plot_count)(rlib *r, int count);
+	void (*graph_label_x)(rlib *r, int iteration, gchar *label);
+	void (*graph_label_y)(rlib *r, int iteration, gchar *label, gboolean false_x);
+	void (*graph_draw_bar)(rlib *r, int iteration, int plot, gfloat height, struct rlib_rgb *);
 	int (*free)(rlib *r);
 };
 
@@ -698,13 +771,13 @@ void rlib_set_output_paramater(rlib *r, gchar *paramater, gchar *value);
 
 
 /***** PROTOTYPES: parsexml.c *************************************************/
-struct rlib_part * parse_part_file(gchar *filename, gchar type);
+struct rlib_part * parse_part_file(rlib *r, gchar *filename, gchar type);
 struct rlib_report_output * report_output_new(gint type, gpointer data);
 
 /***** PROTOTYPES: pcode.c ****************************************************/
 struct rlib_value * rlib_execute_pcode(rlib *r, struct rlib_value *rval, struct rlib_pcode *code, struct rlib_value *this_field_value);
 gint64 rlib_str_to_long_long(gchar *str);
-struct rlib_pcode * rlib_infix_to_pcode(rlib *r, struct rlib_report *report, gchar *infix);
+struct rlib_pcode * rlib_infix_to_pcode(rlib *r, struct rlib_report *report, gchar *infix, gboolean look_at_metadata);
 gint rvalcmp(struct rlib_value *v1, struct rlib_value *v2);
 gint rlib_value_free(struct rlib_value *rval);
 struct rlib_value * rlib_value_dup(struct rlib_value *orig);
@@ -715,6 +788,7 @@ gint rlib_execute_as_boolean(rlib *r, struct rlib_pcode *pcode, gint *result);
 gint rlib_execute_as_string(rlib *r, struct rlib_pcode *pcode, gchar *buf, gint buf_len);
 gint rlib_execute_as_int_inlist(rlib *r, struct rlib_pcode *pcode, gint *result, gchar *list[]);
 gint rlib_execute_as_float(rlib *r, struct rlib_pcode *pcode, gfloat *result);
+void rlib_pcode_free(struct rlib_pcode *code);
 
 /***** PROTOTYPES: reportgen.c ****************************************************/
 void rlib_set_report_from_part(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat top_margin_offset);
@@ -726,7 +800,7 @@ gint rlib_fetch_first_rows(rlib *r);
 gint rlib_end_page_if_line_wont_fit(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_element *e) ;
 gfloat get_outputs_size(rlib *r, struct rlib_element *e, gint page);
 void rlib_init_page(rlib *r, struct rlib_part *part, struct rlib_report *report, gchar report_header);
-gint make_report(rlib *r);
+gint rlib_make_report(rlib *r);
 gint rlib_finalize(rlib *r);
 void rlib_process_expression_variables(rlib *r, struct rlib_report *report);
 gint get_font_point(rlib *r, struct rlib_report_lines *rl);
@@ -742,6 +816,8 @@ gint rlib_resolve_resultset_field(rlib *r, gchar *name, void **rtn_field, gint *
 struct rlib_report_variable *rlib_resolve_variable(rlib *r, struct rlib_report *report, gchar *name);
 void rlib_resolve_report_fields(rlib *r, struct rlib_report *report);
 void rlib_resolve_part_fields(rlib *r, struct rlib_part *part);
+void rlib_resolve_metadata(rlib *r);
+void rlib_process_input_metadata(rlib *r);
 
 /***** PROTOTYPES: navigation.c ***********************************************/
 gint rlib_navigate_next(rlib *r, gint resultset_num);
@@ -755,7 +831,6 @@ void rlib_new_c_environment(rlib *r);
 /***** PROTOTYPES: free.c *****************************************************/
 int rlib_free(rlib *r);
 void rlib_free_results(rlib *r);
-void rlib_free_pcode(struct rlib_pcode *code);
 
 /***** PROTOTYPES: pdf.c ******************************************************/
 void rlib_pdf_new_output_filter(rlib *r);
@@ -802,3 +877,6 @@ void rlib_layout_init_report_page(rlib *r, struct rlib_part *part, struct rlib_r
 void rlib_layout_report_footer(rlib *r, struct rlib_part *part, struct rlib_report *report);
 gfloat rlib_layout_get_next_line(rlib *r, struct rlib_part *part, gfloat position, gfloat foint_point);
 gint rlib_layout_end_page(rlib *r, struct rlib_part *part, struct rlib_report *report);
+
+/***** PROTOTYPES: graphing.c **************************************************/
+void rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat left_margin_offset, gfloat top_margin_offset);

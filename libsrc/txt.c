@@ -99,7 +99,7 @@ static void rlib_txt_start_report(rlib *r, struct rlib_part *part) {
 	}	
 }
 
-static void rlib_txt_end_report(rlib *r, struct rlib_part *part) {
+static void rlib_txt_end_part(rlib *r, struct rlib_part *part) {
 	gint i;
 	gint pages_across = part->pages_across;
 	gint sofar = OUTPUT_PRIVATE(r)->length;
@@ -161,6 +161,7 @@ static void rlib_txt_start_line(rlib *r, gint backwards) {}
 static void rlib_txt_start_output_section(rlib *r) {}
 static void rlib_txt_end_output_section(rlib *r) {}
 static void rlib_txt_start_tr(rlib *r) {}
+static void rlib_txt_end_report(rlib *r, struct rlib_report *report) {}
 static void rlib_txt_end_tr(rlib *r) {}
 static void rlib_txt_start_td(rlib *r, struct rlib_part *part, gfloat left_margin, gfloat top_margin, int width, int height, int border_width, struct rlib_rgb *color) {}
 static void rlib_txt_end_td(rlib *r) {}
@@ -197,6 +198,7 @@ void rlib_txt_new_output_filter(rlib *r) {
 	OUTPUT(r)->init_output = rlib_txt_init_output;
 	OUTPUT(r)->start_report = rlib_txt_start_report;
 	OUTPUT(r)->end_report = rlib_txt_end_report;
+	OUTPUT(r)->end_part = rlib_txt_end_part;
 	OUTPUT(r)->finalize_private = rlib_txt_finalize_private;
 	OUTPUT(r)->spool_private = rlib_txt_spool_private;
 	OUTPUT(r)->start_line = rlib_txt_start_line;

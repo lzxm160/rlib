@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!DOCTYPE report >
+<Part layout="'flow'" fontSize="14" orientation="landscape">
+	<PageHeader>
+		<Output>
+			<Line fontSize="26">
+				<literal>RLIB IS Graphing</literal>
+			</Line>
+			<HorizontalLine size="4" bgcolor="'black'"/>
+			<HorizontalLine size="10" bgcolor="'white'"/>
+		</Output>
+	</PageHeader>		
+	<pr>
+		<pd width="1"/>
+		<pd width="50">
+			<Report fontSize="9" orientation="landscape">
+				<Graph type="'row'" subtype="'normal'" width="370" height="250" title="'The mort important plot ever!'" x_axis_title="'i can label a x axis'" y_axis_title="'y axis'">
+					<Plot axis="'x'" field="name"/>
+					<Plot axis="'y'" field="val(ty_sales)"/>
+				</Graph>
+
+			</Report>
+		</pd>
+		<pd width="1"/>
+		<pd width="48">
+			<Report fontSize="9" orientation="landscape">
+				<Graph type="'row'" subtype="'normal'" width="370" height="250" title="'Test 2'">
+					<Plot axis="'x'" field="name"/>
+					<Plot axis="'y'" field="val(ty_sales)"/>
+					<Plot axis="'y'" field="val(ly_sales)"/>
+					<Plot axis="'y'" field="val(projection)"/>
+				</Graph>
+
+			</Report>
+		</pd>
+	</pr>
+	<pr>
+		<pd width="1"/>
+		<pd width="50">
+			<Report fontSize="9" orientation="landscape">
+				<Graph type="'row'" subtype="'normal'" width="370" height="250" title="'Test 3'">
+					<Plot axis="'x'" field="name"/>
+					<Plot axis="'y'" field="val(sold)"/>
+				</Graph>
+			</Report>
+		</pd>
+		<pd width="1"/>
+		<pd width="48">
+			<Report fontSize="9" orientation="landscape">
+				<Graph type="'row'" subtype="'normal'" width="370" height="250" title="'Test 4'">
+					<Plot axis="'x'" field="name"/>
+					<Plot axis="'y'" field="val(negative)"/>
+				</Graph>
+
+			</Report>
+		</pd>
+	</pr>
+	<PageFooter>
+		<Output>
+			<Line>
+				<literal>Page: </literal>	
+				<field value="r.pageno" width="3" align="right"/>
+			</Line>
+		</Output>
+	</PageFooter>
+</Part>

@@ -38,7 +38,14 @@
 #define CODESET _NL_CTYPE_CODESET_NAME
 #endif
 
-void string_destroyer (gpointer data) {
+static void string_destroyer (gpointer data) {
+	g_free(data);
+}
+
+static void metadata_destroyer (gpointer data) {
+	struct rlib_metadata *metadata = data;
+	rlib_value_free(&metadata->rval_formula);
+	rlib_pcode_free(metadata->formula_code);
 	g_free(data);
 }
 
@@ -60,6 +67,7 @@ rlib * rlib_init_with_environment(struct environment_filter *environment) {
 	}
 	
 	r->output_paramaters = g_hash_table_new_full (g_str_hash, g_str_equal, string_destroyer, string_destroyer);
+	r->input_metadata = g_hash_table_new_full (g_str_hash, g_str_equal, string_destroyer, metadata_destroyer);
 	
 #if !DISABLE_UTF8
 	make_all_locales_utf8();
@@ -158,15 +166,15 @@ gint rlib_execute(rlib *r) {
 		if(r->reportstorun[i].type == RLIB_REPORT_TYPE_FILE)
 			sprintf(newfile, "%s.rlib", r->reportstorun[i].name);
 		if(r->reportstorun[i].type == RLIB_REPORT_TYPE_BUFFER || (r->parts[i] = load_report(newfile)) == NULL)
-			r->parts[i] = parse_part_file(r->reportstorun[i].name, r->reportstorun[i].type);
+			r->parts[i] = parse_part_file(r, r->reportstorun[i].name, r->reportstorun[i].type);
 		xmlCleanupParser();		
 		if(r->parts[i] == NULL) {
 			r_error("Failed to load a report file [%s]\n", r->reportstorun[i].name);
 			return -1;
 		}
 	}
-
-	make_report(r);	
+	rlib_resolve_metadata(r);
+	rlib_make_report(r);	
 	rlib_finalize(r);
 	return 0;
 }

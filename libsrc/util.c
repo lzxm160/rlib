@@ -312,8 +312,7 @@ gchar *colornames(char *str) {
 	return str;
 }
 
-
-void parsecolor(struct rlib_rgb *color, gchar *strx) {
+void rlib_parsecolor(struct rlib_rgb *color, gchar *strx) {
 	gchar *str = colornames(strx);
 	if(str != NULL && r_bytecount(str) == 8) {
 		guchar r;
@@ -340,45 +339,6 @@ struct rlib_datetime * stod(struct rlib_datetime *dt, gchar *str) {
 	}
 	return dt;
 }
-
-#if 0
-gchar month_dates[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
-
-gint daysinmonth(gint year, gint month) {
-	return g_date_get_days_in_month(year, month);
-}
-void bumpday(gint *year, gint *month, gint *day) {
-	gint maxday;
-	*day = *day + 1;
-	maxday = month_dates[(*month)];
-	if(*month == 1 && *year % 4 == 0 && *year % 100 != 0)
-		maxday++;
-	if(*day > maxday) {
-		(*month)++;
-		*day=1;
-	}
-	if(*month > 11) {
-		*month=1;
-		(*year)++;
-	}
-}
-
-void bumpdaybackwords(gint *year, gint *month, gint *day) {
-	gint maxday;
-	*day = *day - 1;
-	if(*day == 0) {
-		maxday = month_dates[(*month)-1];
-		if(*month == 1 && *year % 4 == 0 && *year % 100 != 0)
-			maxday++;
-		*day = maxday;
-		*month = *month - 1;
-		if(*month == -1) {
-			*month=11;
-			(*year)--;
-		}
-	}
-}
-#endif
 
 gchar *strupr (gchar *s) {
 	gchar c;

@@ -22,10 +22,10 @@ dnl Process this file with autoconf to produce a configure script.
 
 
 AC_INIT(libsrc/rlib.h)
-AM_INIT_AUTOMAKE(rlib, 1.3.0)
+AM_INIT_AUTOMAKE(rlib, 1.3.1)
 AM_MAINTAINER_MODE
 AC_DISABLE_STATIC
-RLIB_VERSION=1.3.0
+RLIB_VERSION=1.3.1
 AC_SUBST(RLIB_VERSION)
 
 dnl Checks for programs.
@@ -164,6 +164,26 @@ AC_SUBST(PHP_EXTENSION_DIR)
 AC_SUBST(HAVE_PHP)
 AM_CONDITIONAL(HAVE_PHP, test x$enable_php = xyes)
 
+AC_ARG_ENABLE(gd,              [  --disable-gd         disable gd graphing],,enable_gd=yes)
+GD_CFLAGS=""
+GD_LIBS=""
+if test x$enable_gd = xyes; then
+	AC_PATH_PROG(GD_CONFIG, gdlib-config, no)
+	if test x$GD_CONFIG = xno; then
+		enable_gd=no
+		echo "*** WARNING: GD NOT FOUND IN PATH.  RLIB WILL NOT BE COMPILED WITH SUPPORT FOR IT"
+	else
+		AC_DEFINE(HAVE_GD,1,[Build with GD support])
+		GD_CFLAGS=`$GD_CONFIG --includes`
+		GD_LIBS=`$GD_CONFIG --libs`
+	fi
+fi
+AC_SUBST(GD_CFLAGS)
+AC_SUBST(GD_LIBS)
+AC_SUBST(HAVE_GD)
+AM_CONDITIONAL(HAVE_GD, test x$enable_gd = xyes)
+
+
 python_version=2.2
 AC_ARG_WITH(pythonver,
 [  --with-pythonver	Set Python Version Number.. 2.0, 2.1, 2.2, 2.3..],[python_version=$withval])
@@ -172,13 +192,10 @@ AC_ARG_ENABLE(python,              [  --disable-python      disable python front
 PYTHON_CFLAGS=""
 PYTHON_EXTENSION_DIR=""
 if test x$enable_python = xyes; then
-echo "TEST 1"
 	AM_PATH_PYTHON($python_version)
-echo "TEST 2"
 	if test x$PYTHON_VERSION = x$python_version; then
 		AC_DEFINE(HAVE_PYTHON,1,[Build with PYTHON support])
 		PYTHON_CFLAGS="-I $PYTHON_PREFIX/include/python$PYTHON_VERSION"
-echo "$PYTHON_CFLAGS"
 		PYTHON_EXTENSION_DIR=$pyexecdir
 	else
 		enable_python=no
@@ -365,8 +382,8 @@ fi
 AC_SUBST(CPDF_LIBS)
 AM_CONDITIONAL(ENABLE_CPDF, test x$enable_cpdf = xyes)
 
-RLIB_CFLAGS="$LIBXML_CFLAGS $LIBGLIB_CFLAGS $LIBGMODULE_CFLAGS $MYSQL_CFLAGS $POSTGRE_CFLAGS $ODBC_CFLAGS $PHP_CFLAGS $PYTHON_CFLAGS $JAVA_CFLAGS $PERL_CFLAGS $RLIB_WARNINGS"
-RLIB_LIBS="$LIBXML_LIBS $LIBGLIB_LIBS $LIBGMODULE_LIBS $MYSQL_LIBS $POSTGRE_LIBS $ODBC_LIBS $ICONVLIBS $CPDF_LIBS"
+RLIB_CFLAGS="$LIBXML_CFLAGS $LIBGLIB_CFLAGS $LIBGMODULE_CFLAGS $MYSQL_CFLAGS $POSTGRE_CFLAGS $ODBC_CFLAGS $PHP_CFLAGS $PYTHON_CFLAGS $JAVA_CFLAGS $PERL_CFLAGS $RLIB_WARNINGS $GD_CFLAGS"
+RLIB_LIBS="$LIBXML_LIBS $LIBGLIB_LIBS $LIBGMODULE_LIBS $MYSQL_LIBS $POSTGRE_LIBS $ODBC_LIBS $ICONVLIBS $CPDF_LIBS $GD_LIBS"
 AC_SUBST(RLIB_CFLAGS)
 AC_SUBST(RLIB_LIBS)
 
@@ -420,36 +437,40 @@ tests/Makefile
 echo "
 rlib-$VERSION:
 
-	prefix:                   ${prefix}
-	compiler:                 ${CC}
-	Memory debugging:         ${enable_memdebug}
-	Warning Fun:              ${enable_warningfun}
-	Crash detection:          ${enable_crash}
-	UTF8 disabled:            ${enable_utf8}
+   prefix:                   ${prefix}
+   compiler:                 ${CC}
+   Memory debugging:         ${enable_memdebug}
+   Warning Fun:              ${enable_warningfun}
+   Crash detection:          ${enable_crash}
+   UTF8 disabled:            ${enable_utf8}
 
-	INPUTS:
-	 MYSQL:                   ${enable_mysql}
-	 POSTGRE:                 ${enable_postgre}
-	 ODBC:                    ${enable_odbc}
+   INPUTS:
+    MYSQL:                   ${enable_mysql}
+    POSTGRE:                 ${enable_postgre}
+    ODBC:                    ${enable_odbc}
 
    OUTPUTS:
-	 PDF:                     ${enable_cpdf}
-	 HTML:                    Always
-	 CSV:                     Always
-	 TEXT:                    Always
+    PDF:                     ${enable_cpdf}
+    HTML:                    Always
+    CSV:                     Always
+    TEXT:                    Always
+
+   GRAPHING:
+    PDF:                     ${enable_cpdf}
+    HTML:                    ${enable_gd}
 	 
-	BINDINGS:
-	 PHP:                     ${enable_php}
-	  PHP entension dir:      ${PHP_EXTENSION_DIR}
-	 PYTHON:                  ${enable_python}
-	  PYTHON version:         ${python_version}
-	  PYTHON entension dir:   ${PYTHON_EXTENSION_DIR}
-	 JAVA:                    ${enable_java}
-	 PERL:                    ${enable_perl}
-	  PERL entension dir:     ${PERL_EXTENSION_DIR}
+   BINDINGS:
+    PHP:                     ${enable_php}
+     PHP entension dir:      ${PHP_EXTENSION_DIR}
+    PYTHON:                  ${enable_python}
+     PYTHON version:         ${python_version}
+     PYTHON entension dir:   ${PYTHON_EXTENSION_DIR}
+    JAVA:                    ${enable_java}
+    PERL:                    ${enable_perl}
+     PERL entension dir:     ${PERL_EXTENSION_DIR}
 
-	Music:                    Velvet Revolver
+   Music:                    Velvet Revolver
 
-	Having Problems:          rlib-users@lists.sf.net 	
-	Want to contribute:       rlib-devel@lists.sf.net	
+   Having Problems:          rlib-users@lists.sf.net 	
+   Want to contribute:       rlib-devel@lists.sf.net	
 "

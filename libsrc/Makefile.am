@@ -25,11 +25,11 @@ CPDF_FILES=pdf.c
 endif
 
 lib_LTLIBRARIES = libr.la
-libr_la_SOURCES = parsexml.c reportgen.c layout.c api.c resolution.c util.c util.h \
-	pcode.c pcode_op_functions.c formatstring.c fxp.c breaks.c $(CPDF_FILES) \
-	html.c txt.c datasource.c csv.c ralloc.c environment.c free.c\
+libr_la_SOURCES = parsexml.c reportgen.c layout.c graphing.c api.c resolution.c \
+	util.c util.h pcode.c pcode_op_functions.c formatstring.c fxp.c breaks.c \
+	$(CPDF_FILES) html.c txt.c datasource.c csv.c ralloc.c environment.c free.c\
 	navigation.c save.c load.c rlib_input.h pcode.h ralloc.h rlib.h\
-	containers.h containers.c charencoder.c charencoder.h\
+	containers.h containers.c charencoder.c charencoder.h \
 	datetime.c datetime.h value.c value.h
 
 libr_la_LIBADD = $(RLIB_LIBS) -ldl 

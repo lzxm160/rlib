@@ -924,76 +924,6 @@ static PyObject *_wrap_rlib_version(PyObject *self, PyObject *args) {
 }
 
 
-static PyObject *_wrap_rlib_set_output_encoding(PyObject *self, PyObject *args) {
-    PyObject *resultobj;
-    rlib *arg1 = (rlib *) 0 ;
-    char *arg2 ;
-    PyObject * obj0 = 0 ;
-    
-    if(!PyArg_ParseTuple(args,(char *)"Os:rlib_set_output_encoding",&obj0,&arg2)) goto fail;
-    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
-    rlib_set_output_encoding(arg1,(char const *)arg2);
-    
-    Py_INCREF(Py_None); resultobj = Py_None;
-    return resultobj;
-    fail:
-    return NULL;
-}
-
-
-static PyObject *_wrap_rlib_set_report_output_encoding(PyObject *self, PyObject *args) {
-    PyObject *resultobj;
-    rlib *arg1 = (rlib *) 0 ;
-    int arg2 ;
-    char *arg3 ;
-    PyObject * obj0 = 0 ;
-    
-    if(!PyArg_ParseTuple(args,(char *)"Ois:rlib_set_report_output_encoding",&obj0,&arg2,&arg3)) goto fail;
-    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
-    rlib_set_report_output_encoding(arg1,arg2,(char const *)arg3);
-    
-    Py_INCREF(Py_None); resultobj = Py_None;
-    return resultobj;
-    fail:
-    return NULL;
-}
-
-
-static PyObject *_wrap_rlib_set_pdf_font(PyObject *self, PyObject *args) {
-    PyObject *resultobj;
-    rlib *arg1 = (rlib *) 0 ;
-    char *arg2 ;
-    char *arg3 ;
-    PyObject * obj0 = 0 ;
-    
-    if(!PyArg_ParseTuple(args,(char *)"Oss:rlib_set_pdf_font",&obj0,&arg2,&arg3)) goto fail;
-    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
-    rlib_set_pdf_font(arg1,(char const *)arg2,(char const *)arg3);
-    
-    Py_INCREF(Py_None); resultobj = Py_None;
-    return resultobj;
-    fail:
-    return NULL;
-}
-
-
-static PyObject *_wrap_rlib_set_pdf_font_directories(PyObject *self, PyObject *args) {
-    PyObject *resultobj;
-    rlib *arg1 = (rlib *) 0 ;
-    char *arg2 ;
-    char *arg3 ;
-    PyObject * obj0 = 0 ;
-    
-    if(!PyArg_ParseTuple(args,(char *)"Oss:rlib_set_pdf_font_directories",&obj0,&arg2,&arg3)) goto fail;
-    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
-    rlib_set_pdf_font_directories(arg1,(char const *)arg2,(char const *)arg3);
-    
-    Py_INCREF(Py_None); resultobj = Py_None;
-    return resultobj;
-    fail:
-    return NULL;
-}
-
 
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"rlib_init", _wrap_rlib_init, METH_VARARGS },
@@ -1013,10 +943,6 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"rlib_add_resultset_follower", _wrap_rlib_add_resultset_follower, METH_VARARGS },
 	 { (char *)"rlib_add_parameter", _wrap_rlib_add_parameter, METH_VARARGS },
 	 { (char *)"rlib_version", _wrap_rlib_version, METH_VARARGS },
-	 { (char *)"rlib_set_output_encoding", _wrap_rlib_set_output_encoding, METH_VARARGS },
-	 { (char *)"rlib_set_report_output_encoding", _wrap_rlib_set_report_output_encoding, METH_VARARGS },
-	 { (char *)"rlib_set_pdf_font", _wrap_rlib_set_pdf_font, METH_VARARGS },
-	 { (char *)"rlib_set_pdf_font_directories", _wrap_rlib_set_pdf_font_directories, METH_VARARGS },
 	 { NULL, NULL }
 };
 

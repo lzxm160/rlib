@@ -1,3 +1,28 @@
+2004-12-02  Bob Doan  <bdoan@sicompos.com>
+	* bindings/python/python.c: initial graphing support / code cleanup / use more glib stuff
+	* configure.in: likewise
+	* libsrc/Makefile.am: likewise
+	* libsrc/api.c: likewise
+	* libsrc/csv.c: likewise
+	* libsrc/free.c: likewise
+	* libsrc/graphing.c: likewise
+	* libsrc/html.c: likewise
+	* libsrc/layout.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/pcode.c: likewise
+	* libsrc/pcode.h:likewise
+	* libsrc/pcode_op_functions.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h:likewise
+	* libsrc/txt.c: likewise
+	* libsrc/util.c: likewise
+	* libsrc/util.h:likewise
+	* src/examples/php/Makefile.am:likewise
+	* src/examples/php/graph.php:likewise
+	* src/examples/php/graph.xml:likewise
+
 2004-11-17  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/php.c: made utf8 work again
 	* libsrc/api.c: likewise

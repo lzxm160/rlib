@@ -441,7 +441,7 @@ static void rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_report_line
 					else
 						colorstring = idx+1;	
 				}
-				parsecolor(&extra_data[i].bgcolor, colorstring);
+				rlib_parsecolor(&extra_data[i].bgcolor, colorstring);
 				extra_data[i].found_bgcolor = TRUE;
 				g_free(ocolor);
 			}
@@ -462,7 +462,7 @@ static void rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_report_line
 					else
 						colorstring = idx+1;	
 				}
-				parsecolor(&extra_data[i].color, colorstring);
+				rlib_parsecolor(&extra_data[i].color, colorstring);
 				extra_data[i].found_color = TRUE;
 				g_free(ocolor);
 			}
@@ -713,7 +713,7 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 					struct rlib_rgb bgcolor;
 					output_count++;
 					colorstring = RLIB_VALUE_GET_AS_STRING(rval);
-					parsecolor(&bgcolor, colorstring);
+					rlib_parsecolor(&bgcolor, colorstring);
 					if(rhl->font_point == -1)
 						font_point = r->font_point;
 					else

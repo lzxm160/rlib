@@ -269,7 +269,7 @@ static void rlib_html_start_report(rlib *r, struct rlib_part *part) {
 	
 }
 
-static void rlib_html_end_report(rlib *r, struct rlib_part *part) {
+static void rlib_html_end_part(rlib *r, struct rlib_part *part) {
 	gint i;
 	gint pages_across = part->pages_across;
 	gint sofar = OUTPUT_PRIVATE(r)->length;
@@ -387,6 +387,7 @@ static void rlib_html_end_italics(rlib *r) {
 static void rlib_html_init_end_page(rlib *r) {}
 static void rlib_html_init_output(rlib *r) {}
 static void rlib_html_finalize_private(rlib *r) {}
+static void rlib_html_end_report(rlib *r, struct rlib_report *report) {}
 static void rlib_html_start_output_section(rlib *r) {}
 static void rlib_html_end_output_section(rlib *r) {}
 static void rlib_html_set_raw_page(rlib *r, struct rlib_part *part, gint page) {}
@@ -429,6 +430,7 @@ void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT(r)->init_output = rlib_html_init_output;
 	OUTPUT(r)->start_report = rlib_html_start_report;
 	OUTPUT(r)->end_report = rlib_html_end_report;
+	OUTPUT(r)->end_part = rlib_html_end_part;
 	OUTPUT(r)->finalize_private = rlib_html_finalize_private;
 	OUTPUT(r)->spool_private = rlib_html_spool_private;
 	OUTPUT(r)->start_line = rlib_html_start_line;

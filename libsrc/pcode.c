@@ -112,6 +112,29 @@ struct rlib_pcode_operator rlib_pcode_verbs[] = {
       { NULL, 	 	0, 0, FALSE,-1,			TRUE,		NULL}
 };
 
+void rlib_pcode_free(struct rlib_pcode *code) {
+	gint i=0;
+	
+	if(code == NULL)
+		return;
+	
+	for(i=0;i<code->count;i++) {
+		if(code->instructions[i].instruction == PCODE_PUSH) {
+			struct rlib_pcode_operand *o = code->instructions[i].value;
+			if(o->type == OPERAND_STRING || o->type == OPERAND_NUMBER || o->type == OPERAND_FIELD)
+				g_free(o->value);
+			if(o->type == OPERAND_IIF) {
+				struct rlib_pcode_if *rpif = o->value;
+				rlib_pcode_free(rpif->evaulation);
+				rlib_pcode_free(rpif->true);
+				rlib_pcode_free(rpif->false);
+				g_free(rpif);				
+			}
+			g_free(o);
+		}
+	}
+	g_free(code);
+}
 
 struct rlib_operator_stack {
 	gint count;
@@ -209,12 +232,13 @@ gint rvalcmp(struct rlib_value *v1, struct rlib_value *v2) {
 }
 #endif
 
-struct rlib_pcode_operand * rlib_new_operand(rlib *r, struct rlib_report *report, gchar *str) {
+struct rlib_pcode_operand * rlib_new_operand(rlib *r, struct rlib_report *report, gchar *str, gboolean look_at_metadata) {
 	gint resultset;
 	gpointer field=NULL;
 	gchar *memresult;
 	struct rlib_pcode_operand *o;
 	struct rlib_report_variable *rv;
+	struct rlib_metadata *metadata;
 	gint rvar;
 	o = g_new0(struct rlib_pcode_operand, 1);
 	if(str[0] == '\'') {
@@ -277,6 +301,9 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, struct rlib_report *report
 	} else if((rvar = rlib_resolve_rlib_variable(r, str))) {
 		o->type = OPERAND_RLIB_VARIABLE;
 		o->value = (void *)rvar;
+	} else if((metadata = g_hash_table_lookup(r->input_metadata, str)) != NULL && look_at_metadata == TRUE) {  
+		o->type = OPERAND_METADATA;
+		o->value = metadata;
 	} else if(rlib_resolve_resultset_field(r, str, &field, &resultset)) {
 		struct rlib_resultset_field *rf = g_malloc(sizeof(struct rlib_resultset_field));
 		rf->resultset = resultset;
@@ -312,6 +339,10 @@ void rlib_pcode_dump(struct rlib_pcode *p, gint offset) {
 			else if(o->type == OPERAND_FIELD) {
 				struct rlib_resultset_field *rf = o->value;
 				rlogit("Result Set = [%d]; Field = [%d]", rf->resultset, rf->field);
+			} else if(o->type == OPERAND_METADATA) {
+				struct rlib_metadata *metadata = o->value;
+				rlogit("METADATA");
+				rlib_pcode_dump(metadata->formula_code, offset+1);
 			} else if(o->type == OPERAND_MEMORY_VARIABLE) {
 				rlogit("Result Memory Variable = [%s]", (char *)o->value);
 			} else if(o->type == OPERAND_VARIABLE) {
@@ -436,7 +467,7 @@ static gchar *skip_next_closing_paren(gchar *str) {
 }
 
 
-struct rlib_pcode * rlib_infix_to_pcode(rlib *r, struct rlib_report *report, gchar *infix) {
+struct rlib_pcode * rlib_infix_to_pcode(rlib *r, struct rlib_report *report, gchar *infix, gboolean look_at_metadata) {
 	gchar *moving_ptr = infix;
 	gchar *op_pointer = infix;
 	gchar operand[255];
@@ -483,7 +514,7 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, struct rlib_report *report, gch
 				memcpy(operand, op_pointer, moving_ptr - op_pointer);
 				operand[moving_ptr - op_pointer] = '\0';
 				if(operand[0] != ')') {
-					rlib_pcode_add(pcodes, rlib_new_pcode_instruction(&rpi, PCODE_PUSH, rlib_new_operand(r, report, operand)));
+					rlib_pcode_add(pcodes, rlib_new_pcode_instruction(&rpi, PCODE_PUSH, rlib_new_operand(r, report, operand, look_at_metadata)));
 				}
 //				op_pointer += moving_ptr - op_pointer;
 // How about just:
@@ -540,9 +571,9 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, struct rlib_report *report, gch
 						iif++;
 					}
 					rpif = g_malloc(sizeof(struct rlib_pcode_if));
-					rpif->evaulation = rlib_infix_to_pcode(r, report, evaulation);			
-					rpif->true = rlib_infix_to_pcode(r, report, true);			
-					rpif->false = rlib_infix_to_pcode(r, report, false);
+					rpif->evaulation = rlib_infix_to_pcode(r, report, evaulation, look_at_metadata);			
+					rpif->true = rlib_infix_to_pcode(r, report, true, look_at_metadata);			
+					rpif->false = rlib_infix_to_pcode(r, report, false, look_at_metadata);
 					rpif->str_ptr = iif;
 					smart_add_pcode(pcodes, &os, op);
 					o = g_malloc(sizeof(struct rlib_pcode_operand));			
@@ -577,7 +608,7 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, struct rlib_report *report, gch
 		memcpy(operand, op_pointer, moving_ptr - op_pointer);
 		operand[moving_ptr - op_pointer] = '\0';
 		if(operand[0] != ')') {
-			rlib_pcode_add(pcodes, rlib_new_pcode_instruction(&rpi, PCODE_PUSH, rlib_new_operand(r, report, operand)));
+			rlib_pcode_add(pcodes, rlib_new_pcode_instruction(&rpi, PCODE_PUSH, rlib_new_operand(r, report, operand, look_at_metadata)));
 		}
 		op_pointer += moving_ptr - op_pointer;
 	}
@@ -685,6 +716,10 @@ struct rlib_value *this_field_value) {
 		return rlib_value_new(rval, RLIB_VALUE_DATE, FALSE, o->value);
 	} else if(o->type == OPERAND_FIELD) {
 		return rlib_value_new(rval, RLIB_VALUE_STRING, FALSE, rlib_resolve_field_value(r, o->value));
+	} else if(o->type == OPERAND_METADATA) { 
+		struct rlib_metadata *metadata = o->value;
+		*rval = metadata->rval_formula;
+		return rval;
 	} else if(o->type == OPERAND_MEMORY_VARIABLE) {
 		return rlib_value_new(rval, RLIB_VALUE_STRING, FALSE, o->value);		
 	} else if(o->type == OPERAND_RLIB_VARIABLE) {

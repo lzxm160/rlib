@@ -139,14 +139,15 @@ struct rlib_pcode_if {
 	char *str_ptr;
 };
 
-#define OPERAND_NUMBER				1
-#define OPERAND_STRING				2
-#define OPERAND_DATE 				3
-#define OPERAND_FIELD				4
-#define OPERAND_VARIABLE			5
-#define OPERAND_MEMORY_VARIABLE	6
-#define OPERAND_RLIB_VARIABLE		7
-#define OPERAND_IIF					8
+#define OPERAND_NUMBER          1
+#define OPERAND_STRING          2
+#define OPERAND_DATE            3
+#define OPERAND_FIELD           4
+#define OPERAND_VARIABLE        5
+#define OPERAND_MEMORY_VARIABLE 6
+#define OPERAND_RLIB_VARIABLE   7
+#define OPERAND_METADATA        8
+#define OPERAND_IIF             9
 
 #define RLIB_RLIB_VARIABLE_PAGENO    1
 #define RLIB_RLIB_VARIABLE_VALUE     2

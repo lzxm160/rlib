@@ -1551,9 +1551,9 @@ gint rlib_pcode_operator_eval(rlib *r, struct rlib_value_stack *vs, struct rlib_
 	if(v1 != NULL) {
 		if(RLIB_VALUE_IS_STRING(v1)) {
 			struct rlib_pcode *code;
-			code = rlib_infix_to_pcode(r, NULL, RLIB_VALUE_GET_AS_STRING(v1));
+			code = rlib_infix_to_pcode(r, NULL, RLIB_VALUE_GET_AS_STRING(v1), TRUE);
 			rlib_execute_pcode(r, &rval_rtn, code, this_field_value);		
-			rlib_free_pcode(code);
+			rlib_pcode_free(code);
 			rlib_value_free(v1);
 			rlib_value_stack_push(vs,&rval_rtn);
 			return TRUE;
