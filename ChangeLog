@@ -1,6 +1,8 @@
 2003-12-10  Chet Heilman <cheilman@sicompos.com>
 
-	reviewed by: <delete if not using a buddy>
+	* configure.in: Add glib-2.0 pkg.
+
+2003-12-10  Chet Heilman <cheilman@sicompos.com>
 
 	* libsrc/free.c: (rlib_field_free_pcode): start changes for memo fields
 	* libsrc/parsexml.c: (parse_line_array): likewise
