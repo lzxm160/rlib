@@ -539,7 +539,7 @@ struct rlib_value *rlib_operand_get_value(rlib *r, struct rlib_value *rval, stru
 	} else if(o->type == OPERAND_DATE) {
 		return rlib_value_new(rval, RLIB_VALUE_DATE, FALSE, o->value);
 	} else if(o->type == OPERAND_FIELD) {
-		return rlib_value_new(rval, RLIB_VALUE_STRING, FALSE, rlib_resolve_field_value(r, o->value));
+		return rlib_value_new(rval, RLIB_VALUE_STRING, TRUE, rstrdup(rlib_resolve_field_value(r, o->value)));
 	} else if(o->type == OPERAND_MEMORY_VARIABLE) {
 		return rlib_value_new(rval, RLIB_VALUE_STRING, FALSE, o->value);		
 	} else if(o->type == OPERAND_RLIB_VARIABLE) {

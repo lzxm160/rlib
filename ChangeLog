@@ -1,3 +1,11 @@
+2003-11-21  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/breaks.c: breaks/csv was broken.. rlib variables were wrong
+	* libsrc/csv.c: likewise
+	* libsrc/txt.c: likewise
+	* libsrc/html.c: likewise
+	* libsrc/pcode.c: major problems w/ rlib values.. fixed but hacked... leaking memory
+	* libsrc/reportgen.c: likewise
+
 2003-11-19  Bob Doan  <bdoan@sicompos.com>
 	* configure.in: bump version to 1.1.5, fix odbc driver problems
 	* inputs/odbc/odbc.c: likewise

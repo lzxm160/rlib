@@ -86,9 +86,7 @@ void rlib_handle_break_headers(rlib *r) {
 	int icache=0,page,i;
 	float total[RLIB_MAXIMUM_PAGES_ACCROSS];
 
-	if(!OUTPUT(r)->do_break)
-		return;
-	
+
 	if(r->reports[r->current_report]->breaks == NULL)
 		return;
 	
@@ -121,7 +119,7 @@ void rlib_handle_break_headers(rlib *r) {
 		}
 				
 	}
-	if(icache) {	
+	if(icache && OUTPUT(r)->do_break) {	
 		int allfit = TRUE;
 		for(page=0;page<r->reports[r->current_report]->pages_accross;page++) {
 			if(!will_this_fit(r,total[page], page+1))
@@ -141,9 +139,6 @@ void rlib_handle_break_headers(rlib *r) {
 //TODO: Variables need to resolve the name into a number or something.. like break numbers for more efficient compareseon
 void rlib_reset_variables_on_break(rlib *r, char *name) {
 	struct report_element *e;
-
-	if(!OUTPUT(r)->do_break)
-		return;
 
 	for(e = r->reports[r->current_report]->variables; e != NULL; e=e->next) {
 		struct report_variable *rv = e->data;
@@ -174,8 +169,6 @@ void rlib_break_all_below_in_reverse_order(rlib *r, struct report_element *e) {
 	struct break_fields *bf;
 	int do_endpage = FALSE;
 
-	if(!OUTPUT(r)->do_break)
-		return;
 
 	for(xxx =e; xxx != NULL; xxx=xxx->next)
 		count++;
@@ -189,17 +182,13 @@ void rlib_break_all_below_in_reverse_order(rlib *r, struct report_element *e) {
 			bf = be->data;
 			bf->rval = NULL;
 		}
-		rlib_end_page_if_line_wont_fit(r, rb->footer);
-			
-/*
-	Fun little hack so break lines reflect the correct value.. not the next row
-*/
 
-		rlib_navigate_previous(r, r->current_result);
-		
-		rlib_print_break_footer_lines(r, rb, rb->footer, FALSE);
-
-		rlib_navigate_next(r, r->current_result);
+		if(OUTPUT(r)->do_break) {
+			rlib_end_page_if_line_wont_fit(r, rb->footer);
+			rlib_navigate_previous(r, r->current_result);
+			rlib_print_break_footer_lines(r, rb, rb->footer, FALSE);
+			rlib_navigate_next(r, r->current_result);
+		}
 
 		rlib_reset_variables_on_break(r, rb->name);
 
@@ -207,7 +196,7 @@ void rlib_break_all_below_in_reverse_order(rlib *r, struct report_element *e) {
 			do_endpage = TRUE;
 		}
 	}
-	if(do_endpage) {
+	if(do_endpage && OUTPUT(r)->do_break) {
 		if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
 			OUTPUT(r)->rlib_end_page(r);
 			rlib_force_break_headers(r);
@@ -224,12 +213,8 @@ void rlib_handle_break_footers(rlib *r) {
 	struct report_element *e;
 	struct break_fields *bf;
 
-	if(!OUTPUT(r)->do_break)
-		return;
-	
 	if(r->reports[r->current_report]->breaks == NULL)
 		return;
-	
 	for(e = r->reports[r->current_report]->breaks; e != NULL; e=e->next) {
 		struct report_break *rb = e->data;
 		struct report_element *be;

@@ -195,7 +195,6 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 		rlib_execute_pcode(r, &line_rval_bgcolor, rl->bgcolor_code, NULL);
 
 	for(; e != NULL; e=e->next) {
-
 		if(e->type == REPORT_ELEMENT_FIELD) {
 			char buf[MAXSTRLEN];
 
@@ -206,16 +205,17 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 			if(rf->link_code != NULL)	
 				rlib_execute_pcode(r, &extra_data[i].rval_link, rf->link_code, NULL);
 
-			if(rf->color_code != NULL)	
+			if(rf->color_code != NULL)
 				rlib_execute_pcode(r, &extra_data[i].rval_color, rf->color_code, NULL);
 			else if(rl->color_code != NULL)
 				extra_data[i].rval_color = line_rval_color;
 
 			if(rf->bgcolor_code != NULL)
 				rlib_execute_pcode(r, &extra_data[i].rval_bgcolor, rf->bgcolor_code, NULL);
+
 			else if(rl->bgcolor_code != NULL)
 				extra_data[i].rval_bgcolor = line_rval_bgcolor;
-
+			
 			rlib_format_string(r, rf, &extra_data[i].rval_code, buf);
 			align_text(r, extra_data[i].formatted_string, MAXSTRLEN, buf, rf->align, rf->width);
 			
@@ -292,6 +292,7 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 					else
 						colorstring = idx+1;	
 				}
+				//rlogit("--- BG COLOR FOLLOWS [%s]\n", colorstring);
 				parsecolor(&extra_data[i].bgcolor, colorstring);
 				extra_data[i].found_bgcolor = TRUE;
 				rfree(ocolor);
@@ -773,7 +774,6 @@ void rlib_process_variables(rlib *r) {
 int make_report(rlib *r) {
 	int i = 0;
 	int report = 0;
-	
 	if(r->format == RLIB_FORMAT_HTML)
 		rlib_html_new_output_filter(r);
 	else if(r->format == RLIB_FORMAT_TXT)
@@ -782,7 +782,6 @@ int make_report(rlib *r) {
 		rlib_csv_new_output_filter(r);
 	else
 		rlib_pdf_new_output_filter(r);
-	
 	r->current_font_point = -1;
 
 	OUTPUT(r)->rlib_set_fg_color(r, -1, -1, -1);

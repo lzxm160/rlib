@@ -259,7 +259,7 @@ static void rlib_html_end_report(rlib *r) {
 	int pages_accross = r->reports[r->current_report]->pages_accross;
 	int sofar = OUTPUT_PRIVATE(r)->length;
 	for(i=0;i<pages_accross;i++) {
-		OUTPUT_PRIVATE(r)->both = rrealloc(OUTPUT_PRIVATE(r)->both, OUTPUT_PRIVATE(r)->length + OUTPUT_PRIVATE(r)->top[i].size + OUTPUT_PRIVATE(r)->bottom[i].size);
+		OUTPUT_PRIVATE(r)->both = rrealloc(OUTPUT_PRIVATE(r)->both, sofar + OUTPUT_PRIVATE(r)->top[i].size + OUTPUT_PRIVATE(r)->bottom[i].size);
 		memcpy(OUTPUT_PRIVATE(r)->both + sofar , OUTPUT_PRIVATE(r)->top[i].data, OUTPUT_PRIVATE(r)->top[i].size);
 		memcpy(OUTPUT_PRIVATE(r)->both + sofar + OUTPUT_PRIVATE(r)->top[i].size, OUTPUT_PRIVATE(r)->bottom[i].data, OUTPUT_PRIVATE(r)->bottom[i].size);
 		sofar += OUTPUT_PRIVATE(r)->top[i].size + OUTPUT_PRIVATE(r)->bottom[i].size;	
@@ -330,6 +330,8 @@ void rlib_html_new_output_filter(rlib *r) {
 
 	OUTPUT_PRIVATE(r)->do_bg = FALSE;
 	OUTPUT_PRIVATE(r)->page_number = 0;
+	OUTPUT_PRIVATE(r)->both = NULL;
+	OUTPUT_PRIVATE(r)->length = 0;
 	OUTPUT(r)->do_align = TRUE;
 	OUTPUT(r)->do_break = TRUE;
 	OUTPUT(r)->do_grouptext = FALSE;	

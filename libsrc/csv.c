@@ -24,7 +24,7 @@
 #include "ralloc.h"
 #include "rlib.h"
 
-#define MAX_COL	40
+#define MAX_COL	100
 
 struct _private {
 	char col[MAX_COL][MAXSTRLEN];
