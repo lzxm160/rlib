@@ -4,6 +4,11 @@
 <!ATTLIST Report
 	fontSize CDATA #IMPLIED
 	xmlns:xi CDATA #IMPLIED
+	topMargin CDATA #IMPLIED
+	leftMargin CDATA #IMPLIED
+	bottomMargin CDATA #IMPLIED
+	pagesAcross CDATA #IMPLIED
+	suppressPageHeaderFirstPage CDATA #IMPLIED
 	orientation CDATA #IMPLIED >
 <!ELEMENT xi:include EMPTY>
 <!ATTLIST xi:include
@@ -17,10 +22,15 @@
 <!ATTLIST Line 
 	fontSize CDATA #IMPLIED
 	suppress CDATA #IMPLIED
+	color CDATA #IMPLIED
 	bgcolor CDATA #IMPLIED >
 <!ELEMENT HorizontalLine EMPTY>
 <!ATTLIST HorizontalLine
 	size CDATA #IMPLIED
+	indent CDATA #IMPLIED
+	length CDATA #IMPLIED
+	fontSize CDATA #IMPLIED
+	suppress CDATA #IMPLIED
 	bgcolor CDATA #IMPLIED >
 <!ELEMENT Image EMPTY >
 <!ATTLIST Image
@@ -34,11 +44,17 @@
 	width CDATA #IMPLIED
 	align CDATA #IMPLIED
 	format CDATA #IMPLIED
+	bgcolor CDATA #IMPLIED
+	color CDATA #IMPLIED
+	link CDATA #IMPLIED
+	maxlines CDATA #IMPLIED
 	col CDATA #IMPLIED >
 <!ELEMENT text (#PCDATA) >
 <!ATTLIST text
 	width CDATA #IMPLIED
 	align CDATA #IMPLIED
+	bgcolor CDATA #IMPLIED
+	color CDATA #IMPLIED
 	col CDATA #IMPLIED >
 <!ELEMENT Detail (FieldHeaders?, FieldDetails?) >
 <!ELEMENT FieldHeaders (Output)* >
@@ -47,6 +63,8 @@
 <!ELEMENT Break (BreakHeader | BreakFooter | BreakFields)* >
 <!ATTLIST Break
 	name CDATA #REQUIRED
+	headernewpage CDATA #IMPLIED
+	suppressblank CDATA #IMPLIED
 	newpage CDATA #IMPLIED >
 <!ELEMENT BreakHeader (Output)* >
 <!ELEMENT BreakFooter (Output)* >
@@ -59,6 +77,6 @@
 <!ATTLIST Variable 
 	name CDATA #REQUIRED
 	value CDATA #REQUIRED
-	type CDATA #REQUIRED
+	type (expression|count|sum|average|lowest|highest) "sum"
 	resetonbreak CDATA #IMPLIED >
 	

@@ -1,3 +1,12 @@
+2004-01-05  Chet Heilman <cheilman@sicompos.com>
+	* libsrc/parsexml.c: (parse_report_file): Change parser function so it
+	works with XInclude. Also correct spelling: pagesAccross corrected to
+	pagesAcross.
+	* rlib.dtd: Add missing attributes to DTD.
+
+2004-01-02  Chet Heilman <cheilman@sicompos.com>
+	* rlib.dtd: Add first draft of a DTD.
+
 2003-12-31  Chet Heilman <cheilman@sicompos.com>
 	* libsrc/api.c: (rlib_dump_profile_fp), (rlib_dump_profile): Fix
 	memory profiling functions.

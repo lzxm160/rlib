@@ -347,7 +347,7 @@ struct rlib_report * parse_report_file(gchar *filename) {
 	xmlNsPtr ns = NULL;
 	xmlNodePtr cur;
 
-	doc = xmlParseFile(filename);
+	doc = xmlReadFile(filename, NULL, 0);
 	xmlXIncludeProcess(doc);
 
 	if (doc == NULL)  {
@@ -403,7 +403,7 @@ struct rlib_report * parse_report_file(gchar *filename) {
 	ret->xml_top_margin = xmlGetProp(cur, (const xmlChar *) "topMargin");
 	ret->xml_left_margin = xmlGetProp(cur, (const xmlChar *) "leftMargin");
 	ret->xml_bottom_margin = xmlGetProp(cur, (const xmlChar *) "bottomMargin");
-	ret->xml_pages_accross = xmlGetProp(cur, (const xmlChar *) "pagesAccross");
+	ret->xml_pages_accross = xmlGetProp(cur, (const xmlChar *) "pagesAcross");
 	ret->xml_suppress_page_header_first_page = xmlGetProp(cur, (const xmlChar *) "suppressPageHeaderFirstPage");
 	
 	cur = cur->xmlChildrenNode;
