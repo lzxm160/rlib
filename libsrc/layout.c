@@ -848,6 +848,7 @@ gint rlib_layout_end_page(rlib *r, struct rlib_part *part, struct rlib_report *r
 
 void rlib_layout_init_part_page(rlib *r, struct rlib_part *part, gboolean first) {
 	gint i;
+	gint save_font_size = r->font_point;
 	if(part->font_size != -1)
 		r->font_point = part->font_size;
 
@@ -872,6 +873,6 @@ void rlib_layout_init_part_page(rlib *r, struct rlib_part *part, gboolean first)
 		part->position_bottom[i] -= part->bottom_size[i];
 
 	}
-
 	OUTPUT(r)->init_end_page(r);
+	r->font_point = save_font_size;
 }

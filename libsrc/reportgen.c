@@ -98,11 +98,14 @@ gchar *align_text(rlib *r, gchar *rtn, gint len, gchar *src, gint align, gint wi
 			}
 		}
 		if(align == RLIB_ALIGN_CENTER) {
-			gint x = (width - r_charcount(src))/2;
-			if (x > (len - 1)) x = len -1;
-			if(x > 0) {
-				memset(rtn, ' ', x);
-				g_strlcpy(rtn+x, src, len - x);
+			if(!(width > 0 && r_charcount(src) > width)) {
+				gint x = (width - r_charcount(src))/2;
+				if (x > (len - 1)) 
+					x = len -1;
+				if(x > 0) {
+					memset(rtn, ' ', x);
+					g_strlcpy(rtn+x, src, len - x);
+				}
 			}
 		}
 	}

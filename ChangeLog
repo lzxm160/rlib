@@ -1,3 +1,9 @@
+2004-12-13  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/layout.c: save report font size when the PART starts a new page
+	* libsrc/reportgen.c: don't try to center things larger then the width of the field
+	* src/examples/php/array.php: testing
+	* src/examples/php/array.xml: likewise
+
 2004-12-08  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/pcode_op_functions.c: don't crash on NULL values
 	* libsrc/util.c: likewise
