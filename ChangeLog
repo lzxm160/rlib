@@ -1,4 +1,12 @@
 2004-02-25  Chet Heilman  <cheilman@sicompos.com>
+	* libsrc/html.c: (rlib_html_start_report):
+		Use encoding_name to set charset type in content-type header.
+	* libsrc/reportgen.c: (make_report):
+		Make encoding effective for all output formats.
+	* libsrc/rlib.h:
+		Add field to hold encoding name.
+
+2004-02-25  Chet Heilman  <cheilman@sicompos.com>
 	* doc/basictraining.sgm:
 		Add brief explanation of DATE arithmetic.
 	* doc/book.sgm:

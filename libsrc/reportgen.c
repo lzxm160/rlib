@@ -16,6 +16,8 @@
  * License along with this program; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
+ *
+ * $Id$
  */
  
 #include <stdlib.h>
@@ -1088,21 +1090,23 @@ gint make_report(rlib *r) {
 	gchar *lc_encoding;
 	
 	lc_encoding = nl_langinfo(CODESET);
-	if (lc_encoding == NULL) lc_encoding = "ISO8859-15";
-	r_debug("Using encoding %s", lc_encoding);
+	if (lc_encoding == NULL) lc_encoding = "ISO8859-1";
+	r->output_encoder = iconv_open(lc_encoding, "UTF-8");
+	if (r->output_encoder == (iconv_t) -1) {
+		g_strlcpy(r->output_encoding_name, "UTF-8", sizeof(r->output_encoding_name));
+		r_error("Cannot convert UTF-8 to %s. Using UTF-8 for output", lc_encoding);
+	} else {
+		g_strlcpy(r->output_encoding_name, lc_encoding, sizeof(r->output_encoding_name));
+		r_debug("Using encoding %s", lc_encoding);
+	}
 	if(r->format == RLIB_FORMAT_HTML)
 		rlib_html_new_output_filter(r);
 	else if(r->format == RLIB_FORMAT_TXT)
 		rlib_txt_new_output_filter(r);
 	else if(r->format == RLIB_FORMAT_CSV)
 		rlib_csv_new_output_filter(r);
-	else {
+	else
 		rlib_pdf_new_output_filter(r);
-		r->output_encoder = iconv_open(lc_encoding, "UTF-8");
-		if (r->output_encoder == (iconv_t) -1) {
-			r_error("Cannot convert UTF-8 to %s", lc_encoding);
-		}
-	}
 	r->current_font_point = -1;
 
 	OUTPUT(r)->rlib_set_fg_color(r, -1, -1, -1);

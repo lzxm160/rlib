@@ -360,8 +360,10 @@ struct rlib_report {
 	struct report_element *breaks;
 	struct report_alternate alternate;
 	gint mainloop_query;
-	iconv_t output_encoder;
 
+	iconv_t output_encoder;
+	char output_encoding_name[64];
+	
 	struct rlib_pcode *font_size_code;
 	struct rlib_pcode *orientation_code;
 	struct rlib_pcode *top_margin_code;
@@ -413,6 +415,7 @@ struct rlib {
 	gchar pdf_fontname[256];
 	gboolean utf8;
 	iconv_t output_encoder;
+	char output_encoding_name[64];
 	time_t now; //set when rlib starts now will then be a constant over the time of the report
 	
 	struct rlib_queries queries[RLIB_MAXIMUM_QUERIES];
