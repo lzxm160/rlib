@@ -41,7 +41,6 @@ INSERT INTO example (name, type, price)
 &lt;? dl ("rlib/libr.so");
 
 	$format = "pdf";
-	/*assume database is on same server, user name is sicom, password is twinklwtoes, and the database is ship*/
 	$sql_host = "localhost";
 	$sql_users = "username";
 	$sql_password = "password";
@@ -99,7 +98,7 @@ INSERT INTO example (name, type, price)
 					&lt;text width="1"/&gt;
 					&lt;text width="5" col="2"&gt;Type&lt;/text&gt;
 					&lt;text width="1"/&gt;
-					&lt;text width="10" col="3"&gt;Price&lt;/text&gt;
+					&lt;text width="10" col="3" align="right"&gt;Price&lt;/text&gt;
 				&lt;/Line&gt;
 				&lt;HorizontalLine size="1" bgcolor="'black'"/&gt;
 				&lt;HorizontalLine size="4" bgcolor="'white'"/&gt;
@@ -112,7 +111,7 @@ INSERT INTO example (name, type, price)
 					&lt;text width="1"/&gt;
 					&lt;field value="type" width="5" align="left" col="2"/&gt;
 					&lt;text width="1"/&gt;
-					&lt;field value="val(price)" width="10" format="'%$.2d'" align="left" col="3"/&gt;
+					&lt;field value="val(price)" width="10" format="'%$.2d'" align="right" col="3"/&gt;
 				&lt;/Line&gt;
 			&lt;/Output&gt;
 		&lt;/FieldDetails&gt;

@@ -140,18 +140,6 @@ dtos(database.somedatefield)-7
 			for each break.  It should also be noted here that RLIB knows how much room is left on a page.  It will not start a break at
 			the bottom of a page if at least 1 data line will fit.  Instead it will end the page and start the break on the next page.
 		</para>
-
-		<para>
-			Note the the break headers here are "District A", "Market a". The break footers are the maroon color and also
-			have "SUB TOTAL" in the date column.		
-		</para>
-<para>
-<screenshot>
-<screeninfo>800x600</screeninfo>
-
-<graphic fileref="IMAGES/example2.png"></graphic>
-</screenshot>
-</para>
 	
 	</sect1>
 	<sect1>
