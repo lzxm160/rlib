@@ -1,3 +1,20 @@
+2005-03-13   Bob Doan  <bdoan@sicompos.com>
+	* configure.in: make it at least COMPILE on win32
+	* doc/Makefile: likewise
+	* libsrc/api.c: likewise
+	* libsrc/axis.c: likewise
+	* libsrc/charencoder.c: likewise
+	* libsrc/formatstring.c: likewise 
+	* libsrc/graphing.c: likewise
+	* libsrc/html.c: likewise
+	* libsrc/layout.c: likewise
+	* libsrc/load.c: likewise
+	* libsrc/pcode.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/save.c: likewise
+	* libsrc/util.c: likewise
+
 2005-03-08  Bob Doan  <bdoan@sicompos.com>
 	* Makefile.am: include JPEG README
 	* NEWS: RELEASE TIME
