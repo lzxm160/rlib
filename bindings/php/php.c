@@ -51,6 +51,12 @@ ZEND_FUNCTION(rlib_free);
 ZEND_FUNCTION(rlib_get_content_type);
 ZEND_FUNCTION(rlib_add_parameter);
 ZEND_FUNCTION(rlib_set_locale);
+ZEND_FUNCTION(rlib_version);
+ZEND_FUNCTION(rlib_set_pdf_font);
+ZEND_FUNCTION(rlib_set_pdf_font_directories);
+ZEND_FUNCTION(rlib_set_output_encoding);
+ZEND_FUNCTION(rlib_set_report_output_encoding);
+
 ZEND_MODULE_STARTUP_D(rlib);
 
 /*WRD: It appears we are thread safe here.. not sure yet*/
@@ -59,27 +65,32 @@ static gint le_link;
 /* compiled function list so Zend knows what's in this module */
 zend_function_entry rlib_functions[] =
 {
-	 ZEND_FE(rlib_init, NULL)
+	ZEND_FE(rlib_init, NULL)
 #if HAVE_MYSQL
-	 ZEND_FE(rlib_add_datasource_mysql, NULL)
-	 ZEND_FE(rlib_add_datasource_mysql_from_group, NULL)
+	ZEND_FE(rlib_add_datasource_mysql, NULL)
+	ZEND_FE(rlib_add_datasource_mysql_from_group, NULL)
 #endif
 #if HAVE_POSTGRE
-	 ZEND_FE(rlib_add_datasource_postgre, NULL)
+	ZEND_FE(rlib_add_datasource_postgre, NULL)
 #endif
 #if HAVE_ODBC
-	 ZEND_FE(rlib_add_datasource_odbc, NULL)
+	ZEND_FE(rlib_add_datasource_odbc, NULL)
 #endif
-	 ZEND_FE(rlib_add_query_as, NULL)
-	 ZEND_FE(rlib_add_resultset_follower, NULL)
-	 ZEND_FE(rlib_add_report, NULL)
-	 ZEND_FE(rlib_set_output_format_from_text, NULL)
-	 ZEND_FE(rlib_execute, NULL)
-	 ZEND_FE(rlib_spool, NULL)
-	 ZEND_FE(rlib_free, NULL)
-	 ZEND_FE(rlib_get_content_type, NULL)
-	 ZEND_FE(rlib_add_parameter, NULL)
-	 ZEND_FE(rlib_set_locale, NULL)
+	ZEND_FE(rlib_add_query_as, NULL)
+	ZEND_FE(rlib_add_resultset_follower, NULL)
+	ZEND_FE(rlib_add_report, NULL)
+	ZEND_FE(rlib_set_output_format_from_text, NULL)
+	ZEND_FE(rlib_execute, NULL)
+	ZEND_FE(rlib_spool, NULL)
+	ZEND_FE(rlib_free, NULL)
+	ZEND_FE(rlib_get_content_type, NULL)
+	ZEND_FE(rlib_add_parameter, NULL)
+	ZEND_FE(rlib_set_locale, NULL)
+	ZEND_FE(rlib_version, NULL)
+	ZEND_FE(rlib_set_pdf_font, NULL)
+	ZEND_FE(rlib_set_pdf_font_directories, NULL)
+	ZEND_FE(rlib_set_output_encoding, NULL)
+	ZEND_FE(rlib_set_report_output_encoding, NULL)
     {NULL, NULL, NULL}
 };
 

@@ -1,3 +1,18 @@
+2004-03-08  Chet Heilman  <cheilman@sicompos.com>
+	* bindings/php/php.c:
+		fix some bindings that were not correctly configured.
+	* bindings/php/environment.c: (rlib_php_resolve_memory_variable):
+		correct "warning: dereferencing type-punned pointer will break strict-aliasing rules"
+		in these modules.
+	* doc/capi.sgm:
+		Add rlib_set_locale function that was missing.
+	* doc/phpapi.sgm:
+		Add php documentation for new functions including set_locale.
+	* libsrc/datasource.c: (rlib_add_datasource_mysql_private),
+	(rlib_add_datasource_postgre), (rlib_add_datasource_odbc):
+		correct "warning: dereferencing type-punned pointer will break strict-aliasing rules"
+		in these modules.
+
 2004-03-03  Chet Heilman  <cheilman@sicompos.com>
 	* doc/capi.sgm:
 

@@ -24,11 +24,13 @@
 #include "rlib.h"
 
 static char * rlib_php_resolve_memory_variable(char *name) {
-	zval **data; 
-	if (zend_hash_find(&EG(symbol_table),name,strlen(name)+1,(void **)&data)==FAILURE) { 
+	void *data;
+	zval **f1;
+	if (zend_hash_find(&EG(symbol_table),name,strlen(name)+1, &data)==FAILURE) { 
 		return NULL;
 	} else {
-		return Z_STRVAL_PP(data);
+		f1 = data;
+		return Z_STRVAL_PP(f1);
 	}
 }
 
