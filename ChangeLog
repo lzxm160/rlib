@@ -1,5 +1,20 @@
-2003-12-30  Chet Heilman <cheilman@sicompos.com>
+2003-12-30  Bob Doan  <bdoan@sicompos.com>
+	* Makefile.am: added rlibc
+	* bin/Makefile.am: likewise
+	* bin/rlibc.c: likewise
+	* bindings/python/Makefile.am: removed environment.c
+	* bindings/python/environment.c: likewise
+	* configure.in: added rlibc
+	* inputs/odbc/odbc.c: merge cvs
+	* libsrc/Makefile.am: likewise
+	* libsrc/breaks.c:  free memory
+	* libsrc/formatstring.c: likewise
+	* libsrc/free.c: likewise
+	* libsrc/pcode.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/save.c: new file for saving xml to flat file
 
+2003-12-30  Chet Heilman <cheilman@sicompos.com>
 	* libsrc/Makefile.am: remove rhashtable and rvector
 	* libsrc/api.c: (rlib_add_parameter): use GHashTable
 	* libsrc/free.c: (ht_entry_free), (rlib_free): use GHashTable

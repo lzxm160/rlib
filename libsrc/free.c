@@ -61,6 +61,7 @@ static void rlib_image_free_pcode(rlib *r, struct report_image * ri) {
 
 static void rlib_hr_free_pcode(rlib *r, struct report_horizontal_line * rhl) {
 	free_pcode(rhl->bgcolor_code);
+	free_pcode(rhl->suppress_code);
 	rfree(rhl);
 }
 
@@ -96,6 +97,7 @@ static void rlib_free_fields(rlib *r, struct report_output_array *roa) {
 			e = rl->e;
 			free_pcode(rl->bgcolor_code);
 			free_pcode(rl->color_code);
+			free_pcode(rl->suppress_code);
 			for(; e != NULL; e=e->next) {
 				if(e->type == REPORT_ELEMENT_FIELD) {
 					rlib_field_free_pcode(r, ((struct report_field *)e->data));

@@ -122,7 +122,7 @@ gint64 rlib_str_to_long_long(gchar *str) {
 	gint64 foo=0;
 	gchar *other_side=NULL;
 	gint len=0;
-	gint64 left = 0 , right = 0;
+	gint64 left=0, right=0;
 	
 	if(str == NULL)
 		return 0;

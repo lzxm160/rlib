@@ -376,6 +376,10 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 		extra_data[i].output_width = estimate_string_width_from_extra_data(r, &extra_data[i]);		
 		i++;
 	}
+	
+	rlib_value_free(&line_rval_color);
+	rlib_value_free(&line_rval_bgcolor);
+	
 }	
 
 void find_stuff_in_common(rlib *r, struct rlib_line_extra_data *extra_data, gint count) {

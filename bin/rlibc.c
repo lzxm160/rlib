@@ -17,35 +17,30 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
  
-#include <Python.h>
+#include <rlib.h>
+#include <rlib_input.h>
 
-#include "ralloc.h"
-#include "rlib.h"
+int main(int argc, char **argv) {
+	char *filename;
+	struct rlib_report *rep;
+	if(argc != 2) {
+		fprintf(stderr, "Usage: rlibc filename.xml\nOr: rlibc --help\n\n");
+		return 1;
+	}
+	filename = argv[1];
+	if(!strcmp(filename, "--help")) {
+		fprintf(stderr, "rlibc converts a rlib xml file to a .rlib file for faster loading at runtime\n\n");
+		return 1;	
+	}
 
-/*static char * rlib_python_resolve_memory_variable(char *name) {
-	return NULL;
-}
-*/
-/*static int rlib_python_write_output(char *data, int len) {
-	return python_write(data, len TSRMLS_CC);
-	return -1;
-}
-*/
-void rlib_python_free(rlib *r) {
-//	efree(ENVIRONMENT(r));
-}
+	rep = parse_report_file(filename);
+	if(rep == NULL) {
+		fprintf(stderr, "Invalid RLIB XML FILE %s\n", filename);
+		return 1;
+	}
 
-
-struct environment_filter * rlib_python_new_environment() {
-/*	struct environment_filter *ef;
-	ef = emalloc(sizeof(struct environment_filter));
-
-	ef->rlib_resolve_memory_variable = rlib_python_resolve_memory_variable;
-	ef->rlib_write_output = rlib_python_write_output;
-	ef->free = rlib_python_free;
-	return ef;
-*/
-return NULL;
+	return 0;
 }

@@ -27,8 +27,8 @@
 #include <sqltypes.h>
  
 #include "ralloc.h"
-#include "rlib_input.h"
 #include "rlib.h"
+#include "rlib_input.h"
 
 #define INPUT_PRIVATE(input) (((struct _private *)input->private))
 

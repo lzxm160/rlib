@@ -315,6 +315,7 @@ AC_OUTPUT([
 Makefile
 rlib.pc
 libsrc/Makefile
+bin/Makefile
 bindings/Makefile
 bindings/php/Makefile
 bindings/python/Makefile

@@ -78,6 +78,7 @@ void rlib_force_break_headers(rlib *r) {
 			struct break_fields *bf = be->data;
 			if(dobreak && bf->rval == NULL) {
 				dobreak=1;
+				rlib_value_free(bf->rval);
 				bf->rval = rlib_execute_pcode(r, &bf->rval2, bf->code, NULL);
 			} else {
 				dobreak = 0;
@@ -114,6 +115,7 @@ void rlib_handle_break_headers(rlib *r) {
 			struct break_fields *bf = be->data;
 			if(dobreak && bf->rval == NULL) {
 				dobreak=1;
+				rlib_value_free(bf->rval);
 				bf->rval = rlib_execute_pcode(r, &bf->rval2, bf->code, NULL);
 			} else {
 				dobreak = 0;
@@ -192,6 +194,7 @@ void rlib_break_all_below_in_reverse_order(rlib *r, struct report_element *e) {
 		rb = xxx->data;
 		for(be = rb->fields; be != NULL; be=be->next) {
 			bf = be->data;
+			rlib_value_free(bf->rval);
 			bf->rval = NULL;
 		}
 		if(OUTPUT(r)->do_break) {
@@ -234,6 +237,7 @@ void rlib_handle_break_footers(rlib *r) {
 		struct report_element *be;
 		for(be = rb->fields; be != NULL; be=be->next) {
 			struct rlib_value rval_tmp;
+			RLIB_VALUE_TYPE_NONE(&rval_tmp);
 			bf = be->data;
 			if(dobreak && (INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result) 
 				|| rvalcmp(bf->rval, rlib_execute_pcode(r, &rval_tmp, bf->code, NULL)))) {
@@ -241,6 +245,7 @@ void rlib_handle_break_footers(rlib *r) {
 			} else {
 				dobreak = 0;
 			}
+			rlib_value_free(&rval_tmp);
 		}
 		
 		if(dobreak) {

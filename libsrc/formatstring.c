@@ -154,6 +154,7 @@ gint rlib_format_string(rlib *r, struct report_field *rf, struct rlib_value *rva
 		rval_fmtstr = rlib_execute_pcode(r, &rval_fmtstr2, rf->format_code, rval);
 		if(!RLIB_VALUE_IS_STRING(rval_fmtstr)) {
 			sprintf(buf, "!ERR_F_F");
+			rlib_value_free(rval_fmtstr);
 			return FALSE;
 		} else {
 			formatstring = RLIB_VALUE_GET_AS_STRING(rval_fmtstr);
@@ -194,6 +195,7 @@ gint rlib_format_string(rlib *r, struct report_field *rf, struct rlib_value *rva
 									buf[pos++] = tmp[j];
 							} else {
 								sprintf(buf, "!ERR_F_D");
+								rlib_value_free(rval_fmtstr);
 								return FALSE;
 							}
 						} else if(fmtstr[fpos-1] == 's') {
@@ -205,6 +207,7 @@ gint rlib_format_string(rlib *r, struct report_field *rf, struct rlib_value *rva
 
 							} else {
 								sprintf(buf, "!ERR_F_S");
+								rlib_value_free(rval_fmtstr);
 								return FALSE;
 							}
 						}
@@ -218,6 +221,7 @@ gint rlib_format_string(rlib *r, struct report_field *rf, struct rlib_value *rva
 			}
 			
 		}
+		rlib_value_free(rval_fmtstr);
 	}
 
 
