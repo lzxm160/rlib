@@ -199,6 +199,7 @@ then
 	dir="/usr/local"
 else
 	dir=$withval
+	enable_java=yes
 fi
 ])
 javadir=""

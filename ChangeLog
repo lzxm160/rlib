@@ -1,3 +1,55 @@
+2004-02-27  Chet Heilman  <cheilman@sicompos.com>
+	* bindings/interfaces/SWIGTYPE_p_rlib.class:
+		Add java classes for binding to rlib.
+	* bindings/interfaces/SWIGTYPE_p_rlib.java: (SWIGTYPE_p_rlib),
+	(SWIGTYPE_p_rlib.SWIGTYPE_p_rlib), (SWIGTYPE_p_rlib.getCPtr):
+		same.
+	* bindings/interfaces/librlib.class:
+		same.
+	* bindings/interfaces/librlib.java: (librlib), (librlib.rlib_init),
+	(librlib.rlib_add_datasource_mysql),
+	(librlib.rlib_add_datasource_postgre), (librlib.rlib_add_query_as),
+	(librlib.rlib_add_report), (librlib.rlib_execute),
+	(librlib.rlib_set_output_format_from_text), (librlib.rlib_spool),
+	(librlib.rlib_free), (librlib.rlib_get_output),
+	(librlib.rlib_get_output_length), (librlib.rlib_mysql_report),
+	(librlib.rlib_postgre_report), (librlib.rlib_add_datasource_odbc),
+	(librlib.rlib_add_resultset_follower),
+	(librlib.rlib_add_parameter), (librlib.rlib_version),
+	(librlib.rlib_set_output_encoding),
+	(librlib.rlib_set_report_output_encoding),
+	(librlib.rlib_set_pdf_font),
+	(librlib.rlib_set_pdf_font_directories):
+		same.
+	* bindings/interfaces/librlib.pm:
+		Add binding interface for perl.
+	* bindings/interfaces/librlib.py:
+		Add binding interface for python.
+	* bindings/interfaces/librlibJNI.class:
+		Add java classes for binding to rlib.
+	* bindings/java/java.c: (SWIG_JavaThrowException):
+		Add java classes for binding to rlib.
+	* bindings/perl/perl.c:
+		Add binding interface for perl.
+	* bindings/php/php.c: (ZEND_FUNCTION):
+		New interface functions.
+	* bindings/python/python.c:
+		Update binding interface for python with new functions.
+	* configure.in:
+	* libsrc/api.c: (rlib_init_with_environment), (rlib_set_locale),
+	(rlib_set_report_output_encoding), (rlib_set_output_encoding),
+	(rlib_set_pdf_font_directories), (rlib_set_pdf_font):
+		Fixes to locale setting.
+	* libsrc/parsexml.c: (parse_report_file):
+		Change handling of Locales.
+	* libsrc/reportgen.c: (rlib_output_text), (get_encoder),
+	(make_report):
+		Change handling of Locales.
+	* libsrc/rlib.h:
+		Change handling of Locales.
+	* libsrc/rlib.i:
+		Add new functions for SWIG.
+
 2004-02-25  Chet Heilman  <cheilman@sicompos.com>
 	* libsrc/html.c: (rlib_html_start_report):
 		Use encoding_name to set charset type in content-type header.
