@@ -1,4 +1,9 @@
 2004-07-15  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/pdf.c: fix compile warnings w/ disable utf8
+	* libsrc/datetime.c: fix problem w/ gcc trying to be smart about double assigning lvalues
+	* libsrc/util.h: likewise
+
+2004-07-15  Bob Doan  <bdoan@sicompos.com>
 	* configure.in: bump vwrsion
 	* libsrc/pcode_op_functions.c: offset from sunday, not monday
 	* libsrc/pdf.c: better disable UTF16 stuff

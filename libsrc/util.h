@@ -70,7 +70,7 @@ gchar *str2hex(const gchar *str);
 #define r_charcount(s) (strlen(s))
 #define r_bytecount(s) (strlen(s))
 #define r_strchr(s, len, chr) (strchr(s, chr))
-#define r_nextchr(s) (++s)
+#define r_nextchr(s) (s+1)
 #define r_getchr(s) (*s)
 #define r_strcmp(s1,s2) (strcmp(s1, s2))
 #define r_strupr(s) (strupr(s))

@@ -141,7 +141,7 @@ static gchar timechars[] = "HIklMpPrRsSTXzZ";
 static void split_tdformat(gchar **datefmt, gchar **timefmt, gint *order, const gchar *fmtstr) {
 	gint havedate = FALSE, havetime = FALSE;
 	gchar *splitpoint = NULL;
-	gchar *s, *t;
+	gchar *s, *t = NULL;
 	gchar *pctptr;
 	gint mode = 0;
 
@@ -150,6 +150,7 @@ static void split_tdformat(gchar **datefmt, gchar **timefmt, gint *order, const 
 	t = (gchar *) fmtstr;
 	while (!splitpoint && (t = r_strchr(t, r_bytecount(t), '%'))) {
 		pctptr = t;
+
 		t = r_nextchr(t);
 		switch (r_getchr(t)) {
 		case '%':
