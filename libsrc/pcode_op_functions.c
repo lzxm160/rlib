@@ -1440,6 +1440,27 @@ gint rlib_pcode_operator_stodt(rlib *r, struct rlib_value_stack *vs, struct rlib
 	return FALSE;
 }
 
+gint rlib_pcode_operator_stodtsql(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+	struct rlib_value *v1, rval_rtn;
+	v1 = rlib_value_stack_pop(vs);
+	if(RLIB_VALUE_IS_STRING(v1)) {
+		gint year=2000, month=1, day=1, hour=12, min=0, sec=0;
+		struct rlib_datetime dt;
+		gchar *str = RLIB_VALUE_GET_AS_STRING(v1);
+		sscanf(str, "%4d-%2d-%2d %2d:%2d:%2d", &year, &month, &day, &hour, &min, &sec);
+		rlib_datetime_clear(&dt);
+		rlib_datetime_set_date(&dt, year, month, day);
+		rlib_datetime_set_time(&dt, hour, min, sec);
+		rlib_value_free(v1);
+		rlib_value_stack_push(vs, rlib_value_new_date(&rval_rtn, &dt));
+		return TRUE;
+	}
+	rlib_pcode_operator_fatal_execption("stodt", 1, v1, NULL, NULL);
+	rlib_value_free(v1);
+	rlib_value_stack_push(vs, rlib_value_new_error(&rval_rtn));		
+	return FALSE;
+}
+
 gint rlib_pcode_operator_isnull(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
 	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);

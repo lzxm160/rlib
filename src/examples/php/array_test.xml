@@ -46,6 +46,8 @@
 					<field value="last_name" width="20" align="left" col="2"/>
 					<literal width="1"/>
 					<field value="color" width="20" align="left" col="3"/>
+					<literal width="1"/>
+					<field value="tstod('12:12:12')" format="'%I:%M %p'" width="20" align="left" col="3"/>
 				</Line>
 			</Output>
 		</FieldDetails>
