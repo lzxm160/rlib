@@ -1,4 +1,15 @@
-2004-01-09  rlib  <set EMAIL_ADDRESS environment variable>
+2004-01-09  Chet Heilman <cheilman@sicompos.com>
+	* libsrc/free.c: (rlib_hr_free_pcode), (rlib_text_free_pcode),
+	(rlib_field_free_pcode), (rlib_free_fields):
+	Put back changes that were temp. patched out because they were
+	freeing uninitialized variables.
+	* libsrc/parsexml.c: (parse_line_array), (parse_report_output),
+	(parse_break_field), (parse_report_break), (parse_report_variable),
+	(parse_report_file):
+	Allocate main objects using g_new0 instead of g_malloc to make sure
+	that all variables in the struct are properly inited to 0.
+
+2004-01-09  Chet Heilman <cheilman@sicompos.com>
 	* libsrc/free.c:
 	Add a cvs Id tag.
 	

@@ -62,10 +62,10 @@ static void rlib_image_free_pcode(rlib *r, struct report_image * ri) {
 static void rlib_hr_free_pcode(rlib *r, struct report_horizontal_line * rhl) {
 	free_pcode(rhl->bgcolor_code);
 	free_pcode(rhl->suppress_code);
-//	free_pcode(rhl->indent_code);
-//	free_pcode(rhl->length_code);
-//	free_pcode(rhl->font_size_code);
-//	free_pcode(rhl->size_code);
+	free_pcode(rhl->indent_code);
+	free_pcode(rhl->length_code);
+	free_pcode(rhl->font_size_code);
+	free_pcode(rhl->size_code);
 	g_free(rhl);
 }
 
@@ -73,8 +73,8 @@ static void rlib_text_free_pcode(rlib *r, struct report_literal *rt) {
 	free_pcode(rt->color_code);
 	free_pcode(rt->bgcolor_code);
 	free_pcode(rt->col_code);
-//	free_pcode(rt->width_code);
-//	free_pcode(rt->align_code);
+	free_pcode(rt->width_code);
+	free_pcode(rt->align_code);
 	g_free(rt);
 }
 
@@ -87,8 +87,8 @@ static void rlib_field_free_pcode(rlib *r, struct report_field *rf) {
 	free_pcode(rf->col_code);
 	free_pcode(rf->maxlines_code);
 	free_pcode(rf->wrapchars_code);
-//	free_pcode(rf->width_code);
-//	free_pcode(rf->align_code);
+	free_pcode(rf->width_code);
+	free_pcode(rf->align_code);
 	g_free(rf);
 }
 
@@ -106,7 +106,7 @@ static void rlib_free_fields(rlib *r, struct report_output_array *roa) {
 			free_pcode(rl->bgcolor_code);
 			free_pcode(rl->color_code);
 			free_pcode(rl->suppress_code);
-//			free_pcode(rl->font_size_code);
+			free_pcode(rl->font_size_code);
 			for(; e != NULL; e=e->next) {
 				if(e->type == REPORT_ELEMENT_FIELD) {
 					rlib_field_free_pcode(r, ((struct report_field *)e->data));
