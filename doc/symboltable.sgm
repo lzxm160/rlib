@@ -411,7 +411,10 @@
 	<sect1>
 		<title>date()</title>
 		<para>
-			Returns the current date time in RLIB DATE Format
+			Returns the current date time in RLIB DATE Format.
+			This value is set to a constant when report generation starts and remains unchanged for the duration of the report.
+			<emphasis>This is a change from previous versions of RLIB which would reset this value to the current time on each invocation.</emphasis>
+			Locking this value prevents the current date/time from changing from page to page when the current date/time is repeated on multiple pages.
 		</para>
 		<para>
 			<emphasis> Returns</emphasis> DATE
@@ -473,9 +476,9 @@
 		</para>
 	</sect1>
 	<sect1>
-		<title>format(expX, expS)</title>
+		<title>format(exp_, expS)</title>
 		<para>
-			Formats the passed expX (may be expD, expS or expN) using the expS parameter as a format string.
+			Formats the passed exp_ (may be expD, expS or expN) using the expS parameter as a format string.
 			Format strings <emphasis> must </emphasis> be in the new '!' format. 
 		</para>
 		<para>

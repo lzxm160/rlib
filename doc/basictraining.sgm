@@ -1,3 +1,4 @@
+<!-- $Id$ -->
 <chapter label="2" id="basics">
 	<title>Basic Training</title>
 	<sect1>
@@ -35,6 +36,30 @@ dtos(database.somedatefield)-7
 				round(val('7.2')*9/2)
 			</programlisting>
 			As long as it gets passed a expN.. got it? Good.  By the way,  val(expS) takes a string and turns it into a number.
+		</para>
+	</sect1>
+	<sect1>
+		<title>The DATE variable type</title>
+		<para>
+			The RLIB DATE variables can hold either a date, a time or both. Mathematical operations on DATE variables are supported.
+			When doing date/time arithmetic, the operations performed depend on whether the date component, time component or both are validly set to a value.
+			For example, assuming date() returns a DATE variable and both time and date are set to 1/1/2004 at 10:31:45:
+			<programlisting>
+				date() + 15 
+			</programlisting>
+			is 1/1/2004 at 10:32:00
+			<programlisting>
+				chgdateof(date(), dateof(date()) + 15) 
+			</programlisting>
+			is 1/16/2004 at 10:31:45
+			<programlisting>
+				timeof(date()) + 15 
+			</programlisting>
+			is 10:32:00
+			<programlisting>
+				dateof(date()) + 15 
+			</programlisting>
+			is 1/16/2004
 		</para>
 	</sect1>
 	<sect1>

@@ -1,3 +1,13 @@
+2004-02-25  Chet Heilman  <cheilman@sicompos.com>
+	* doc/basictraining.sgm:
+		Add brief explanation of DATE arithmetic.
+	* doc/book.sgm:
+		Add me to list of authors.
+	* doc/formating.sgm:
+		Add new format info.
+	* doc/symboltable.sgm:
+		Refine format() description.
+
 2004-02-24  Chet Heilman  <cheilman@sicompos.com>
 	* doc/symboltable.sgm:
 		Add new function definitions.
