@@ -200,7 +200,7 @@ fi
 AM_CONDITIONAL(HAVE_DOC, test x$enable_doc = xyes)
 
 
-python_version=2.4
+python_version=2.2
 AC_ARG_WITH(pythonver,
 [  --with-pythonver	Set Python Version Number.. 2.0, 2.1, 2.2, 2.3, 2.4],[python_version=$withval])
 

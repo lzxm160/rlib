@@ -1,4 +1,7 @@
 2005-03-06  Bob Doan  <bdoan@sicompos.com>
+	* configure.in: don't require python v 2.4
+
+2005-03-06  Bob Doan  <bdoan@sicompos.com>
 	* autogen.sh: don't have binding flags in RLIB_CFLAGS and gstart to get PERL bindings in place
 	* bindings/interfaces/librlib.pm: likewise
 	* bindings/java/Makefile.am: likewise
