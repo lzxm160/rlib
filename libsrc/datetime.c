@@ -147,28 +147,28 @@ static void split_tdformat(gchar **datefmt, gchar **timefmt, gint *order, const 
 	*timefmt = *datefmt = NULL;
 	*order = 0;
 	t = (gchar *) fmtstr;
-	while (!splitpoint && (t = g_utf8_strchr(t, bytelength(t), '%'))) {
+	while (!splitpoint && (t = r_strchr(t, r_bytecount(t), '%'))) {
 		pctptr = t;
-		t = g_utf8_next_char(t);
-		switch (g_utf8_get_char(t)) {
+		t = r_nextchr(t);
+		switch (r_getchr(t)) {
 		case '%':
-			t = g_utf8_next_char(t);
+			t = r_nextchr(t);
 			break;
 		case 'E': //These are prefixes that moderate the next char
 		case 'O':
-			t = g_utf8_next_char(t);
+			t = r_nextchr(t);
 			//supposed to fall thru - break intentionally missing
 		default:
-			if ((s = g_utf8_strchr(datechars, bytelength(datechars), g_utf8_get_char(t)))) {
+			if ((s = r_strchr(datechars, r_bytecount(datechars), r_getchr(t)))) {
 				if (mode && (mode != 1)) splitpoint = pctptr;
 				if (!mode) mode = 1; //date first
 				havedate = TRUE;
-			} else if ((s = g_utf8_strchr(timechars, bytelength(timechars), g_utf8_get_char(t)))) {
+			} else if ((s = r_strchr(timechars, r_bytecount(timechars), r_getchr(t)))) {
 				if (mode && (mode != 2)) splitpoint = pctptr;
 				if (!mode) mode = 2; // time first
 				havetime = TRUE;
 			}
-			t = g_utf8_next_char(t);
+			t = r_nextchr(t);
 			break;
 		}
 	}
@@ -220,11 +220,11 @@ void rlib_datetime_format(struct rlib_datetime *dt, gchar *buf, gint max, const 
 	switch (order) {
 	case 1:
 		g_strlcpy(buf, datebuf, max);
-		g_strlcat(buf, timebuf, max - bytelength(datebuf));
+		g_strlcat(buf, timebuf, max - r_bytecount(datebuf));
 		break;
 	case 2:
 		g_strlcpy(buf, timebuf, max);
-		g_strlcat(buf, datebuf, max - bytelength(timebuf));
+		g_strlcat(buf, datebuf, max - r_bytecount(timebuf));
 		break;
 	default:
 		g_strlcpy(buf, "!ERR_DT_NO", max);

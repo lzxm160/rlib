@@ -1,3 +1,34 @@
+2004-05-05  Chet Heilman <cheilman@sicompos.com>
+	* libsrc/api.c: (rlib_init_with_environment), (rlib_set_locale):
+		ability to turn off UTF8 internals
+	* libsrc/charencoder.c: (encode):
+		ability to turn off UTF8 internals
+	* libsrc/datetime.c: (split_tdformat), (rlib_datetime_format):
+		ability to turn off UTF8 internals
+	* libsrc/pcode.c: (rlib_str_to_long_long), (rlib_new_operand):
+		ability to turn off UTF8 internals
+	* libsrc/pcode.h:
+		ability to turn off UTF8 internals
+	* libsrc/pcode_op_functions.c: (rlib_pcode_operator_add),
+	(rlib_pcode_operator_lte), (rlib_pcode_operator_lt),
+	(rlib_pcode_operator_gte), (rlib_pcode_operator_gt),
+	(rlib_pcode_operator_eql), (rlib_pcode_operator_noteql),
+	(rlib_pcode_operator_upper), (rlib_pcode_operator_lower),
+	(rlib_pcode_operator_left), (rlib_pcode_operator_right),
+	(rlib_pcode_operator_substring), (rlib_pcode_operator_stodt):
+		ability to turn off UTF8 internals
+	* libsrc/reportgen.c: (align_text), (execute_pcodes_for_line),
+	(wrap_memo_lines):
+		ability to turn off UTF8 internals
+	* libsrc/resolution.c: (rlib_resolve_rlib_variable),
+	(rlib_resolve_variable), (rlib_resolve_memory_variable):
+		ability to turn off UTF8 internals
+	* libsrc/util.c: (parsecolor):
+		ability to turn off UTF8 internals
+	* libsrc/util.h:
+		ability to turn off UTF8 internals - define string functions for 
+		internal data with UTF8/non-UTF8 macros
+
 2004-04-28  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/php.c: ability to turn off UTF8 internals
 	* configure.in: likewise

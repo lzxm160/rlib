@@ -364,12 +364,8 @@ struct rlib_report {
 	xmlChar *xml_suppress_page_header_first_page;
 	
 	gchar xml_encoding_name[ENCODING_NAME_SIZE]; //UTF8 if "", else whatever specified in xml
-#if DISABLE_UTF8
 	iconv_t cd;
-#endif	
 	rlib_char_encoder *output_encoder;
-//	rlib_char_encoder *db_encoder;
-//	rlib_char_encoder *param_encoder;		
 	
 	gfloat *position_top;
 	gfloat *position_bottom;
@@ -420,7 +416,6 @@ struct rip_reports {
 struct input_filters {
 	gchar *name;
 	gpointer handle;
-//	rlib_char_encoder *encoder;
 	struct input_filter *input;
 };
 
@@ -670,6 +665,5 @@ struct rlib_report * load_report(gchar *filename);
 /* temp/test stuff */
 void rlib_set_pdf_font(rlib *r, const gchar *encoding, const gchar *fontname);
 void rlib_set_pdf_font_directories(rlib *r, const gchar *d1, const gchar *d2);
-//void rlib_set_pdf_conversion(rlib *r, int rptnum, const gchar *encoding);
 
 

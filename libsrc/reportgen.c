@@ -85,7 +85,7 @@ struct rlib_paper * rlib_get_paper(rlib *r, gint paper_type) {
 
 struct rlib_paper * rlib_get_paper_by_name(rlib *r, gchar *paper_name) {
 	gint i;
-	r_debug("looking for %s\n", paper_name);
+//	r_debug("looking for %s\n", paper_name);
 	if(paper_name == NULL)
 		return NULL;
 		
@@ -327,7 +327,7 @@ gchar *align_text(rlib *r, gchar *rtn, gint len, gchar *src, gint align, gint wi
 	if(align == RLIB_ALIGN_LEFT || width == -1) {
 	} else {
 		if(align == RLIB_ALIGN_RIGHT) {        
-			gint x = width - charcount(src);
+			gint x = width - r_charcount(src);
 			if (x > (len - 1)) x = len - 1;
 			if(x > 0) {
 				memset(rtn, ' ', x);
@@ -335,7 +335,7 @@ gchar *align_text(rlib *r, gchar *rtn, gint len, gchar *src, gint align, gint wi
 			}
 		}
 		if(align == RLIB_ALIGN_CENTER) {
-			gint x = (width - charcount(src))/2;
+			gint x = (width - r_charcount(src))/2;
 			if (x > (len - 1)) x = len -1;
 			if(x > 0) {
 				memset(rtn, ' ', x);
@@ -467,17 +467,18 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 		if(text == NULL)
 			text = "";
 		if(extra_data[i].width == -1)
-			extra_data[i].width = charcount(text);
+			extra_data[i].width = r_charcount(text);
 		else {
-			gint slen = charcount(text);
+			gint slen = r_charcount(text);
 			if(slen > extra_data[i].width)
-				*g_utf8_offset_to_pointer(text, extra_data[i].width) = '\0';
+				*r_ptrfromindex(text, extra_data[i].width) = '\0';
 			else if(slen < extra_data[i].width && MAXSTRLEN != slen) {
-				gint xx;
-				for(xx=0;xx<extra_data[i].width-slen;xx++) {
-					*g_utf8_offset_to_pointer(text, slen+xx) = ' ';
+				gint lim = extra_data[i].width - slen;
+				gchar *ptr = r_ptrfromindex(text, slen);
+				while (lim-- > 0) {
+					*ptr++ = ' ';
 				}
-				*g_utf8_offset_to_pointer(text, extra_data[i].width) = '\0';
+				*ptr = '\0';
 			}
 		}
 		extra_data[i].found_bgcolor = FALSE;
@@ -605,7 +606,7 @@ RVector *wrap_memo_lines(gchar *txt, gint width, const gchar *wrapchars) {
 	RVector *v = RVector_new();
 	
 	do {
-		if (charcount(txt) < width) {
+		if (r_charcount(txt) < width) {
 			RVector_add(v, g_strdup(txt));
 			break;
 		} else {

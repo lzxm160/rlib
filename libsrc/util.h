@@ -67,8 +67,29 @@ void init_signals(void);
 void make_more_space_if_necessary(gchar **str, gint *size, gint *total_size, gint len);
 gchar *str2hex(const gchar *str);
 
-#define charcount(s) g_utf8_strlen(s, -1)
-#define bytelength(s) strlen(s)
+#if DISABLE_UTF8
+#define r_charcount(s) (strlen(s))
+#define r_bytecount(s) (strlen(s))
+#define r_strchr(s, len, chr) (strchr(s, chr))
+#define r_nextchr(s) (++s)
+#define r_getchr(s) (*s)
+#define r_strcmp(s1,s2) (strcmp(s1, s2))
+#define r_strupr(s) (strupr(s))
+#define r_strlwr(s) (strlwr(s))
+#define r_ptrfromindex(s, idx) (g_utf8_offset_to_pointer(s, idx))
+
+#else
+#define r_charcount(s) (g_utf8_strlen(s, -1))
+#define r_bytecount(s) (strlen(s))
+#define r_strchr(t, len, chr) (g_utf8_strchr(t, len, chr))
+#define r_nextchr(t) (g_utf8_next_char(t))
+#define r_getchr(t) (g_utf8_get_char(t))
+#define r_strcmp(a,b) (g_utf8_collate(a, b))
+#define r_strupr(a) (g_utf8_strup(a, -1))
+#define r_strlwr(a) (g_utf8_strdown(a, -1))
+#define r_ptrfromindex(s, idx) (s+idx)
+
+#endif
 
 void make_all_locales_utf8();
 char *make_utf8_locale(const char *encoding);

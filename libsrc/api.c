@@ -52,7 +52,9 @@ rlib * rlib_init_with_environment(struct environment_filter *environment) {
 	if (lc_encoding != NULL) {
 		rlib_set_encodings(r, lc_encoding, lc_encoding, lc_encoding);
 	}
+#if !DISABLE_UTF8
 	make_all_locales_utf8();
+#endif
 //	strcpy(r->pdf_encoding, "WinAnsiEncoding");
 	return r;
 }
@@ -257,9 +259,14 @@ result = 0;
 *  Returns TRUE if locale was actually set, otherwise, FALSE
 */
 gint rlib_set_locale(rlib *r, gchar *locale) {
-	gchar *cur = setlocale(LC_ALL, make_utf8_locale(locale));
-//	char *lc_encoding;
+	gchar *cur;
 	
+#if DISABLE_UTF8
+	cur = setlocale(LC_ALL, locale);
+#else
+	cur = setlocale(LC_ALL, make_utf8_locale(locale));
+#endif
+
 	if (!cur) {
 		r_error("Locale could not be changed to %s by rlib_set_locale", locale);
 		return FALSE;
@@ -420,11 +427,20 @@ void rlib_set_encodings(rlib *r, const char *outputencoding, const char *dbencod
 
 
 #ifdef VERSION
-gchar *rlib_version() {
+gchar *cpdf_version(void);
+gchar *rlib_version(void) {
+#if 0
+#if DISABLE_UTF8
+gchar *charset="8859-1";
+#else
+gchar *charset="UTF8";
+#endif
+r_debug("rlib_version: version=[%s], CHARSET=%s, CPDF=%s", VERSION, charset, cpdf_version());
+#endif
 	return VERSION;
 }
 #else
-gchar *rlib_version() {
+gchar *rlib_version(void) {
 	return "Unknown";
 }
 #endif

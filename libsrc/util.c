@@ -294,7 +294,7 @@ gchar *colornames(char *str) {
 
 void parsecolor(struct rgb *color, gchar *strx) {
 	gchar *str = colornames(strx);
-	if(str != NULL && bytelength(str) == 8) {
+	if(str != NULL && r_bytecount(str) == 8) {
 		guchar r;
 		guchar g;
 		guchar b;

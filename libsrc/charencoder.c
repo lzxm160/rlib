@@ -48,7 +48,7 @@ static const gchar *encode(gchar *encodebuf, size_t len, iconv_t cd, const gchar
 
 	encodebuf[0] = '\0';
 	if ((txt != NULL) && (cd != (iconv_t) -1) && (*txt != '\0')) {
-		slen = bytelength(txt);
+		slen = r_bytecount(txt);
 		while (slen > 0 && !fatal) {
 #if ICONV_CONST_CHAR_PP
 			result = iconv(cd, (const gchar **) &txt, &slen, &dest, &len);
@@ -146,6 +146,9 @@ void rlib_char_encoder_set_buffer(rlib_char_encoder *rce, gchar *buf, gint max) 
 
 
 const gchar *rlib_char_encoder_encode(rlib_char_encoder *rce, const gchar *text) {
+#if DISABLE_UTF8
+	return text;
+#else
 	const gchar *result = text;
 	if (rce) {
 		if (!rce->isUTF8) {
@@ -174,6 +177,7 @@ const gchar *rlib_char_encoder_encode(rlib_char_encoder *rce, const gchar *text)
 		result = "";
 	}
 	return result;
+#endif	
 }
 
 

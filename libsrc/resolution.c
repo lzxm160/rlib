@@ -37,7 +37,7 @@
 
 */
 gint rlib_resolve_rlib_variable(rlib *r, gchar *name) {
-	if(bytelength(name) >= 3 && name[0] == 'r' && name[1] == '.') {
+	if(r_bytecount(name) >= 3 && name[0] == 'r' && name[1] == '.') {
 		name += 2;
 		if(!strcmp(name, "pageno"))
 			return RLIB_RLIB_VARIABLE_PAGENO;
@@ -230,12 +230,13 @@ static void rlib_resolve_outputs(rlib *r, struct report_element *e) {
 */
 struct report_variable *rlib_resolve_variable(rlib *r, gchar *name) {
 	struct report_element *e;
-	if(bytelength(name) >= 3 && name[0] == 'v' && name[1] == '.') {
+//r_debug("Resolving variable [%s]", name);	
+	if(r_bytecount(name) >= 3 && name[0] == 'v' && name[1] == '.') {
 		name += 2;
 		for(e = r->reports[r->current_report]->variables; e != NULL; e=e->next) {
 			struct report_variable *rv = e->data;
-			if(!strcmp(name, rv->name))
-				return rv;
+		if(!strcmp(name, rv->name))
+			return rv;
 		}	
 		rlogit("rlib_resolve_variable: Could not find [%s]\n", name);
 	}
@@ -318,7 +319,7 @@ void rlib_resolve_fields(rlib *r) {
 
 
 gchar * rlib_resolve_memory_variable(rlib *r, gchar *name) {
-	if(bytelength(name) >= 3 && name[0] == 'm' && name[1] == '.') {
+	if(r_bytecount(name) >= 3 && name[0] == 'm' && name[1] == '.') {
 		if (r->htParameters) {
 			gchar *result = rlib_hashtable_lookup(r->htParameters, name + 2);
 			if (result) return g_strdup(result);

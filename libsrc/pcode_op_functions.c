@@ -93,8 +93,8 @@ gint rlib_pcode_operator_add(rlib *r, struct rlib_var_stack *vs, struct rlib_val
 			return TRUE;
 		}
 		if(RLIB_VALUE_IS_STRING(v1) && RLIB_VALUE_IS_STRING(v2)) {
-			gchar *newstr = g_malloc(bytelength(RLIB_VALUE_GET_AS_STRING(v1))+bytelength(RLIB_VALUE_GET_AS_STRING(v2))+1);
-			memcpy(newstr, RLIB_VALUE_GET_AS_STRING(v2), bytelength(RLIB_VALUE_GET_AS_STRING(v2))+1);
+			gchar *newstr = g_malloc(r_bytecount(RLIB_VALUE_GET_AS_STRING(v1))+r_bytecount(RLIB_VALUE_GET_AS_STRING(v2))+1);
+			memcpy(newstr, RLIB_VALUE_GET_AS_STRING(v2), r_bytecount(RLIB_VALUE_GET_AS_STRING(v2))+1);
 			strcat(newstr, RLIB_VALUE_GET_AS_STRING(v1));
 			rlib_value_free(v1);
 			rlib_value_free(v2);
@@ -147,8 +147,8 @@ gint rlib_pcode_operator_add(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 			return TRUE;
 		}
 		if(RLIB_VALUE_IS_STRING(v1) && RLIB_VALUE_IS_STRING(v2)) {
-			gchar *newstr = g_malloc(bytelength(RLIB_VALUE_GET_AS_STRING(v1))+bytelength(RLIB_VALUE_GET_AS_STRING(v2))+1);
-			memcpy(newstr, RLIB_VALUE_GET_AS_STRING(v2), bytelength(RLIB_VALUE_GET_AS_STRING(v2))+1);
+			gchar *newstr = g_malloc(r_bytecount(RLIB_VALUE_GET_AS_STRING(v1))+r_bytecount(RLIB_VALUE_GET_AS_STRING(v2))+1);
+			memcpy(newstr, RLIB_VALUE_GET_AS_STRING(v2), r_bytecount(RLIB_VALUE_GET_AS_STRING(v2))+1);
 			strcat(newstr, RLIB_VALUE_GET_AS_STRING(v1));
 			rlib_value_free(v1);
 			rlib_value_free(v2);
@@ -337,11 +337,7 @@ gint rlib_pcode_operator_lte(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 			return TRUE;
 		}
 		if(RLIB_VALUE_IS_STRING(v1) && RLIB_VALUE_IS_STRING(v2)) {
-#if DISABLE_UTF8		
-			if(strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) <= 0) {
-#else
-			if(g_utf8_collate(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) <= 0) {
-#endif
+			if(r_strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) <= 0) {
 				rlib_value_free(v1);
 				rlib_value_free(v2);
 				rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
@@ -390,11 +386,7 @@ gint rlib_pcode_operator_lt(rlib *r, struct rlib_value_stack *vs, struct rlib_va
 			return TRUE;
 		}
 		if(RLIB_VALUE_IS_STRING(v1) && RLIB_VALUE_IS_STRING(v2)) {
-#if DISABLE_UTF8	
-			if(strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) < 0) {
-#else
-			if(g_utf8_collate(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) < 0) {
-#endif
+			if(r_strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) < 0) {
 				rlib_value_free(v1);
 				rlib_value_free(v2);
 				rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
@@ -441,11 +433,7 @@ gint rlib_pcode_operator_gte(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 		return TRUE;
 	}
 	if(RLIB_VALUE_IS_STRING(v1) && RLIB_VALUE_IS_STRING(v2)) {
-#if DISABLE_UTF8	
-		if(strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) >= 0) {
-#else
-		if(g_utf8_collate(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) >= 0) {
-#endif
+		if(r_strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) >= 0) {
 			rlib_value_free(v1);
 			rlib_value_free(v2);
 			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
@@ -490,12 +478,8 @@ gint rlib_pcode_operator_gt(rlib *r, struct rlib_value_stack *vs, struct rlib_va
 		}
 		return TRUE;
 	}
-	if(RLIB_VALUE_IS_STRING(v1) && RLIB_VALUE_IS_STRING(v2)) {
-#if DISABLE_UTF8
-		if(strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) > 0) {
-#else
-		if(g_utf8_collate(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) > 0) {
-#endif
+	if (RLIB_VALUE_IS_STRING(v1) && RLIB_VALUE_IS_STRING(v2)) {
+		if (r_strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) > 0) {
 			rlib_value_free(v1);
 			rlib_value_free(v2);
 			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
@@ -546,11 +530,7 @@ gint rlib_pcode_operator_eql(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 			push = RLIB_DECIMAL_PRECISION;
 		if(RLIB_VALUE_GET_AS_STRING(v2) == NULL || RLIB_VALUE_GET_AS_STRING(v1) == NULL)
 			push = 0;
-#if DISABLE_UTF8
-		if(strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) == 0) {
-#else
-		if(g_utf8_collate(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) == 0) {
-#endif
+		if(r_strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) == 0) {
 			push = RLIB_DECIMAL_PRECISION;
 		} else {
 			push = 0;
@@ -596,11 +576,7 @@ gint rlib_pcode_operator_noteql(rlib *r, struct rlib_value_stack *vs, struct rli
 		return TRUE;
 	}
 	if(RLIB_VALUE_IS_STRING(v1) && RLIB_VALUE_IS_STRING(v2)) {
-#if DISABLE_UTF8
-		if(strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) != 0) {
-#else
-		if(g_utf8_collate(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) != 0) {
-#endif
+		if (r_strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) != 0) {
 			rlib_value_free(v1);
 			rlib_value_free(v2);
 			rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
@@ -1318,11 +1294,7 @@ gint rlib_pcode_operator_upper(rlib *r, struct rlib_value_stack *vs, struct rlib
 	if(RLIB_VALUE_IS_STRING(v1)) {
 		gchar *tmp = g_strdup(RLIB_VALUE_GET_AS_STRING(v1));
 		rlib_value_free(v1);
-#if DISABLE_UTF8
-		rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, strupr(tmp)));
-#else
-		rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, g_utf8_strup(tmp, -1)));
-#endif
+		rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, r_strupr(tmp)));
 		g_free(tmp);
 		return TRUE;
 	}
@@ -1338,11 +1310,7 @@ gint rlib_pcode_operator_lower(rlib *r, struct rlib_value_stack *vs, struct rlib
 	if(RLIB_VALUE_IS_STRING(v1)) {
 		gchar *tmp = g_strdup(RLIB_VALUE_GET_AS_STRING(v1));
 		rlib_value_free(v1);
-#if DISABLE_UTF8
-		rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, strlwr(tmp)));
-#else
-		rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, g_utf8_strdown(tmp, -1)));
-#endif
+		rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, r_strlwr(tmp)));
 		g_free(tmp);
 		return TRUE;
 	}
@@ -1361,7 +1329,7 @@ gint rlib_pcode_operator_left(rlib *r, struct rlib_value_stack *vs, struct rlib_
 		gchar *tmp = g_strdup(RLIB_VALUE_GET_AS_STRING(v2));
 		gint n = RLIB_VALUE_GET_AS_NUMBER(v1)/RLIB_DECIMAL_PRECISION;
 		if (n >= 0) {
-			if (charcount(tmp) > n) *g_utf8_offset_to_pointer(tmp, n) = '\0';
+			if (r_charcount(tmp) > n) *r_ptrfromindex(tmp, n) = '\0';
 		}
 		rlib_value_free(v1);
 		rlib_value_free(v2);
@@ -1383,13 +1351,13 @@ gint rlib_pcode_operator_right(rlib *r, struct rlib_value_stack *vs, struct rlib
 	if(RLIB_VALUE_IS_STRING(v2) && RLIB_VALUE_IS_NUMBER(v1)) {
 		gchar *tmp = g_strdup(RLIB_VALUE_GET_AS_STRING(v2));
 		gint n = RLIB_VALUE_GET_AS_NUMBER(v1)/RLIB_DECIMAL_PRECISION;
-		gint len = charcount(tmp);
+		gint len = r_charcount(tmp);
 		if (n >= 0) {
 			if (n > len) n = len;
 		}
 		rlib_value_free(v1);
 		rlib_value_free(v2);
-		rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, g_utf8_offset_to_pointer(tmp, len - n)));
+		rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, r_ptrfromindex(tmp, len - n)));
 		g_free(tmp);
 		return TRUE;
 	}
@@ -1409,18 +1377,18 @@ gint rlib_pcode_operator_substring(rlib *r, struct rlib_value_stack *vs, struct 
 		gchar *tmp = g_strdup(RLIB_VALUE_GET_AS_STRING(v3));
 		gint st = RLIB_VALUE_GET_AS_NUMBER(v2)/RLIB_DECIMAL_PRECISION;
 		gint sz = RLIB_VALUE_GET_AS_NUMBER(v1)/RLIB_DECIMAL_PRECISION;
-		gint len = charcount(tmp);
+		gint len = r_charcount(tmp);
 		gint maxlen;
 		if (st < 0) st = 0;
 		if (st > len) st = len;
 		maxlen = len - st;
 		if (sz < 0) sz = maxlen;
 		if (sz > maxlen) sz = maxlen;
-		*g_utf8_offset_to_pointer(tmp, st + sz) = '\0';
+		*r_ptrfromindex(tmp, st + sz) = '\0';
 		rlib_value_free(v1);
 		rlib_value_free(v2);
 		rlib_value_free(v3);
-		rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, g_utf8_offset_to_pointer(tmp, st)));
+		rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, r_ptrfromindex(tmp, st)));
 		g_free(tmp);
 		return TRUE;
 	}
@@ -1451,13 +1419,14 @@ gint rlib_pcode_operator_proper(rlib *r, struct rlib_value_stack *vs, struct rli
 	return FALSE;
 }
 
-gint rlib_pcode_operator_stods(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_stodt(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
 	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_STRING(v1)) {
-		gint year, month, day, hour, min, sec;
+		gint year=2000, month=1, day=1, hour=12, min=0, sec=0;
 		struct rlib_datetime dt;
-		sscanf(RLIB_VALUE_GET_AS_STRING(v1), "%4d%2d%2d%2d%2d%2d", &year, &month, &day, &hour, &min, &sec);
+		gchar *str = RLIB_VALUE_GET_AS_STRING(v1);
+		sscanf(str, "%4d%2d%2d%2d%2d%2d", &year, &month, &day, &hour, &min, &sec);
 		rlib_datetime_clear(&dt);
 		rlib_datetime_set_date(&dt, year, month, day);
 		rlib_datetime_set_time(&dt, hour, min, sec);
@@ -1465,7 +1434,7 @@ gint rlib_pcode_operator_stods(rlib *r, struct rlib_value_stack *vs, struct rlib
 		rlib_value_stack_push(vs, rlib_value_new_date(&rval_rtn, &dt));
 		return TRUE;
 	}
-	rlib_pcode_operator_fatal_execption("stods", 1, v1, NULL, NULL);
+	rlib_pcode_operator_fatal_execption("stodt", 1, v1, NULL, NULL);
 	rlib_value_free(v1);
 	rlib_value_stack_push(vs, rlib_value_new_error(&rval_rtn));		
 	return FALSE;

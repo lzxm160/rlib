@@ -86,7 +86,7 @@ struct rlib_pcode_operator rlib_pcode_verbs[] = {
 		{"right(", 	6, 0, 	TRUE, 	OP_LEFT, 	TRUE, 	rlib_pcode_operator_right},
 		{"mid(", 	4, 0, 	TRUE, 	OP_LEFT, 	TRUE, 	rlib_pcode_operator_substring},
       {"proper(", 7, 0,	TRUE,	OP_PROPER, 	TRUE,		rlib_pcode_operator_proper},
-      {"stodt(", 	6, 0,	TRUE,	OP_STODS,  	TRUE, 	rlib_pcode_operator_stods},
+      {"stodt(", 	6, 0,	TRUE,	OP_STODS,  	TRUE, 	rlib_pcode_operator_stodt},
       {"isnull(",	7, 0,	TRUE,	OP_ISNULL, 	TRUE, 	rlib_pcode_operator_isnull},
       {"dim(", 	4, 0,	TRUE,	OP_DIM,  	TRUE, 	rlib_pcode_operator_dim},
       {"wiy(", 	4, 0,	TRUE,	OP_WIY,  	TRUE, 	rlib_pcode_operator_wiy},
@@ -154,7 +154,7 @@ gint64 rlib_str_to_long_long(gchar *str) {
 		return 0;
 	
 	temp = nl_langinfo(RADIXCHAR);
-	if (!temp || bytelength(temp) != 1) {
+	if (!temp || r_bytecount(temp) != 1) {
 		r_warning("nl_langinfo returned %s as DECIMAL_POINT", temp);
 	} else decimalsep = *temp;
 	left = atoll(str);
@@ -166,7 +166,7 @@ gint64 rlib_str_to_long_long(gchar *str) {
 	if(other_side != NULL) {
 		other_side++;
 		right = atoll(other_side);
-		len = bytelength(other_side);
+		len = r_bytecount(other_side);
 	}
 	if (len > RLIB_FXP_PRECISION) {
 		len = RLIB_FXP_PRECISION;
@@ -174,7 +174,7 @@ gint64 rlib_str_to_long_long(gchar *str) {
 	}
 	foo = ((right * tentothe(RLIB_FXP_PRECISION - len))
 				+ (left * RLIB_DECIMAL_PRECISION)) * sign;
-//rlogit("left is %lld, right is %lld, sign is %d, foo is %lld", left, right, sign, foo);
+//r_debug("left is %lld, right is %lld, sign is %d, foo is %lld", left, right, sign, foo);
 	return foo;
 }
 
@@ -188,10 +188,10 @@ gint rvalcmp(struct rlib_value *v1, struct rlib_value *v2) {
 			return -1;
 	}
 	if(RLIB_VALUE_IS_STRING(v1) && RLIB_VALUE_IS_STRING(v2)) {
-		return strcmp(RLIB_VALUE_GET_AS_STRING(v1), RLIB_VALUE_GET_AS_STRING(v2));
+		return r_strcmp(RLIB_VALUE_GET_AS_STRING(v1), RLIB_VALUE_GET_AS_STRING(v2));
 	}
 	if(RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_DATE(v2)) {
-		return memcmp(&RLIB_VALUE_GET_AS_DATE(v1), &RLIB_VALUE_GET_AS_DATE(v2), sizeof(struct rlib_datetime));
+		return rlib_datetime_compare(&RLIB_VALUE_GET_AS_DATE(v1), &RLIB_VALUE_GET_AS_DATE(v2));
 	}
 	return -1;
 }
@@ -206,8 +206,8 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, gchar *str) {
 	gint rvar;
 	o = g_new0(struct rlib_pcode_operand, 1);
 	if(str[0] == '\'') {
-		gchar *newstr = g_malloc(bytelength(str)-1);
-		memcpy(newstr, str+1, bytelength(str)-1);
+		gchar *newstr = g_malloc(r_bytecount(str)-1);
+		memcpy(newstr, str+1, r_bytecount(str)-1);
 		newstr[strlen(str)-2] = '\0';
 		o->type = OPERAND_STRING;
 		o->value = newstr;
@@ -273,7 +273,7 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, gchar *str) {
 		o->value = rf;
 	} else {
 		gchar *err = "BAD_OPERAND";
-		gchar *newstr = g_malloc(bytelength(err)+1);
+		gchar *newstr = g_malloc(r_bytecount(err)+1);
 		strcpy(newstr, err);
 		o->type = OPERAND_STRING;
 		o->value = newstr;
