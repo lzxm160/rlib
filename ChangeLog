@@ -1,3 +1,7 @@
+2004-02-02  Chet Heilman  <cheilman@sicompos.com>
+	* libsrc/pcode.c: (rlib_str_to_long_long): Fix problem in conversion
+	of negative numbers.
+
 2004-01-21  Bob Doan  <bdoan@sicompos.com>
 	* NEWS: 1.1.7 release
 

@@ -126,22 +126,34 @@ struct rlib_pcode_instruction * rlib_new_pcode_instruction(struct rlib_pcode_ins
 }
 
 gint64 rlib_str_to_long_long(gchar *str) {
-	gint64 foo=0;
-	gchar *other_side=NULL;
+	gint64 foo;
+	gchar *other_side;
 	gint len=0;
 	gint64 left=0, right=0;
-	
+	gint sign = 1;
+	gchar decimalsep = '.'; //TODO: Needs to come from locale info
+		
 	if(str == NULL)
 		return 0;
 	
 	left = atoll(str);
-	other_side = index(str, '.');
+	other_side = strchr(str, decimalsep);
+	if (left < 0) {
+		sign = -1;
+		left = -left;
+	}
 	if(other_side != NULL) {
 		other_side++;
 		right = atoll(other_side);
 		len = strlen(other_side);
 	}
-	foo = (left * RLIB_DECIMAL_PRECISION) + (right*(RLIB_DECIMAL_PRECISION/tentothe(len)));
+	if (len > RLIB_FXP_PRECISION) {
+		len = RLIB_FXP_PRECISION;
+		rlogit("Numerical overflow in str_to_long_long conversion");
+	}
+	foo = ((right * tentothe(RLIB_FXP_PRECISION - len))
+				+ (left * RLIB_DECIMAL_PRECISION)) * sign;
+//rlogit("left is %lld, right is %lld, sign is %d, foo is %lld", left, right, sign, foo);
 	return foo;
 }
 
