@@ -171,22 +171,27 @@ gint rlib_number_sprintf(gchar *dest, gchar *fmtstr, const struct rlib_value *rv
 	return strlen(dest);
 }
 
+static gint rlib_format_string_default(rlib *r, struct rlib_report_field *rf, struct rlib_value *rval, gchar *buf) {
+	if(RLIB_VALUE_IS_NUMBER(rval)) {
+		sprintf(buf, "%lld", RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(rval)));
+	} else if(RLIB_VALUE_IS_STRING(rval)) {
+		if(RLIB_VALUE_GET_AS_STRING(rval) == NULL)
+			buf[0] = 0;
+		else
+			sprintf(buf, "%s", RLIB_VALUE_GET_AS_STRING(rval));
+	} else if(RLIB_VALUE_IS_DATE(rval))  {
+		struct rlib_datetime *dt = &RLIB_VALUE_GET_AS_DATE(rval);
+		rlib_datetime_format(dt, buf, 100, "%m/%d/%Y");
+	} else {
+		sprintf(buf, "!ERR_F");
+		return FALSE;
+	}
+	return TRUE;
+}
+
 gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value *rval, gchar *buf) {
 	if(rf->xml_format == NULL) {
-		if(RLIB_VALUE_IS_NUMBER(rval)) {
-			sprintf(buf, "%lld", RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(rval)));
-		} else if(RLIB_VALUE_IS_STRING(rval)) {
-			if(RLIB_VALUE_GET_AS_STRING(rval) == NULL)
-				buf[0] = 0;
-			else
-				sprintf(buf, "%s", RLIB_VALUE_GET_AS_STRING(rval));
-		} else if(RLIB_VALUE_IS_DATE(rval))  {
-			struct rlib_datetime *dt = &RLIB_VALUE_GET_AS_DATE(rval);
-			rlib_datetime_format(dt, buf, 100, "%m/%d/%Y");
-		} else {
-			sprintf(buf, "!ERR_F");
-			return FALSE;
-		}
+		rlib_format_string_default(r, rf, rval, buf);
 	} else {
 		gchar *formatstring;
 		struct rlib_value rval_fmtstr2, *rval_fmtstr=&rval_fmtstr2;
@@ -197,100 +202,104 @@ gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value
 			return FALSE;
 		} else {
 			formatstring = RLIB_VALUE_GET_AS_STRING(rval_fmtstr);
-			if (*formatstring == '!') {
-				gchar *tfmt = formatstring + 1;
-				gboolean goodfmt = TRUE;
-				switch (*tfmt) {
-				case '$': //Format as money
-					if (RLIB_VALUE_IS_NUMBER(rval)) {
-						return format_money(buf, 100, tfmt + 1, RLIB_VALUE_GET_AS_NUMBER(rval));
+			if(formatstring == NULL) {
+				rlib_format_string_default(r, rf, rval, buf);
+			} else {
+				if (*formatstring == '!') {
+					gchar *tfmt = formatstring + 1;
+					gboolean goodfmt = TRUE;
+					switch (*tfmt) {
+					case '$': //Format as money
+						if (RLIB_VALUE_IS_NUMBER(rval)) {
+							return format_money(buf, 100, tfmt + 1, RLIB_VALUE_GET_AS_NUMBER(rval));
+						}
+						++formatstring;
+						break;
+					case '#': //Format as number
+						if (RLIB_VALUE_IS_NUMBER(rval)) {
+							return format_number(buf, 100, tfmt + 1, RLIB_VALUE_GET_AS_NUMBER(rval));
+						}
+						++formatstring;
+						break;
+					case '@': //Format as time/date
+						if(RLIB_VALUE_IS_DATE(rval)) {
+							struct rlib_datetime *dt = &RLIB_VALUE_GET_AS_DATE(rval);
+							rlib_datetime_format(dt, buf, 100, tfmt + 1);
+						}
+						break;
+					default:
+						goodfmt = FALSE;
+						break;
 					}
-					++formatstring;
-					break;
-				case '#': //Format as number
-					if (RLIB_VALUE_IS_NUMBER(rval)) {
-						return format_number(buf, 100, tfmt + 1, RLIB_VALUE_GET_AS_NUMBER(rval));
-					}
-					++formatstring;
-					break;
-				case '@': //Format as time/date
-					if(RLIB_VALUE_IS_DATE(rval)) {
-						struct rlib_datetime *dt = &RLIB_VALUE_GET_AS_DATE(rval);
-						rlib_datetime_format(dt, buf, 100, tfmt + 1);
-					}
-					break;
-				default:
-					goodfmt = FALSE;
-					break;
+					if (goodfmt) return TRUE;
 				}
-				if (goodfmt) return TRUE;
-			}
-			if(RLIB_VALUE_IS_DATE(rval)) {
-				rlib_datetime_format(&RLIB_VALUE_GET_AS_DATE(rval), buf, 100, formatstring);
-			} else {	
-				gint i=0,j=0,pos=0,fpos=0;
-				gchar fmtstr[20];
-				gint special_format=0;
-				gchar *idx;
-				gint len_formatstring;
-				idx = strchr(formatstring, ':');
-				if(idx != NULL && RLIB_VALUE_IS_NUMBER(rval)) {
-					formatstring = g_strdup(formatstring);
+				if(RLIB_VALUE_IS_DATE(rval)) {
+					rlib_datetime_format(&RLIB_VALUE_GET_AS_DATE(rval), buf, 100, formatstring);
+				} else {	
+					gint i=0,j=0,pos=0,fpos=0;
+					gchar fmtstr[20];
+					gint special_format=0;
+					gchar *idx;
+					gint len_formatstring;
 					idx = strchr(formatstring, ':');
-					special_format=1;
-					if(RLIB_VALUE_GET_AS_NUMBER(rval) >= 0)
-						idx[0] = '\0';
-					else
-						formatstring = idx+1;				
-				}
-					
-				len_formatstring = strlen(formatstring);
-				
-				for(i=0;i<len_formatstring;i++) {
-					if(formatstring[i] == '%' && ((i+1) < len_formatstring && formatstring[i+1] != '%')) {
-						int tchar;
-						while(formatstring[i] != 's' && formatstring[i] != 'd' && i <=len_formatstring) {
-							fmtstr[fpos++] = formatstring[i++];
-						}
-						fmtstr[fpos++] = formatstring[i];
-						fmtstr[fpos] = '\0';
-						tchar = fmtstr[fpos - 1];
-						if ((tchar == 'd') || (tchar == 'i') || (tchar == 'n')) {
-							if(RLIB_VALUE_IS_NUMBER(rval)) {
-								gchar tmp[50];
-								
-								rlib_number_sprintf(tmp, fmtstr, rval, special_format);
-								for(j=0;j<(int)strlen(tmp);j++)
-									buf[pos++] = tmp[j];
-							} else {
-								sprintf(buf, "!ERR_F_D");
-								rlib_value_free(rval_fmtstr);
-								return FALSE;
-							}
-						} else if (tchar == 's') {
-							if(RLIB_VALUE_IS_STRING(rval)) {
-								gchar tmp[500];
-								rlib_string_sprintf(tmp, fmtstr, rval);
-								for(j=0;j<(int)strlen(tmp);j++)
-									buf[pos++] = tmp[j];
-
-							} else {
-								sprintf(buf, "!ERR_F_S");
-								rlib_value_free(rval_fmtstr);
-								return FALSE;
-							}
-						}
-					} else {
-						buf[pos++] = formatstring[i];
-						if(formatstring[i] == '%')
-							i++;
+					if(idx != NULL && RLIB_VALUE_IS_NUMBER(rval)) {
+						formatstring = g_strdup(formatstring);
+						idx = strchr(formatstring, ':');
+						special_format=1;
+						if(RLIB_VALUE_GET_AS_NUMBER(rval) >= 0)
+							idx[0] = '\0';
+						else
+							formatstring = idx+1;				
 					}
+
+					len_formatstring = strlen(formatstring);
+
+					for(i=0;i<len_formatstring;i++) {
+						if(formatstring[i] == '%' && ((i+1) < len_formatstring && formatstring[i+1] != '%')) {
+							int tchar;
+							while(formatstring[i] != 's' && formatstring[i] != 'd' && i <=len_formatstring) {
+								fmtstr[fpos++] = formatstring[i++];
+							}
+							fmtstr[fpos++] = formatstring[i];
+							fmtstr[fpos] = '\0';
+							tchar = fmtstr[fpos - 1];
+							if ((tchar == 'd') || (tchar == 'i') || (tchar == 'n')) {
+								if(RLIB_VALUE_IS_NUMBER(rval)) {
+									gchar tmp[50];
+
+									rlib_number_sprintf(tmp, fmtstr, rval, special_format);
+									for(j=0;j<(int)strlen(tmp);j++)
+										buf[pos++] = tmp[j];
+								} else {
+									sprintf(buf, "!ERR_F_D");
+									rlib_value_free(rval_fmtstr);
+									return FALSE;
+								}
+							} else if (tchar == 's') {
+								if(RLIB_VALUE_IS_STRING(rval)) {
+									gchar tmp[500];
+									rlib_string_sprintf(tmp, fmtstr, rval);
+									for(j=0;j<(int)strlen(tmp);j++)
+										buf[pos++] = tmp[j];
+
+								} else {
+									sprintf(buf, "!ERR_F_S");
+									rlib_value_free(rval_fmtstr);
+									return FALSE;
+								}
+							}
+						} else {
+							buf[pos++] = formatstring[i];
+							if(formatstring[i] == '%')
+								i++;
+						}
+					}
+					buf[pos++] = '\0'; 
 				}
-				buf[pos++] = '\0'; 
+
 			}
-			
+			rlib_value_free(rval_fmtstr);
 		}
-		rlib_value_free(rval_fmtstr);
 	}
 	return TRUE;
 }

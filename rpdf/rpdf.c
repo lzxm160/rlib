@@ -861,13 +861,11 @@ gboolean rpdf_image(struct rpdf *pdf, gdouble x, gdouble y, gdouble width, gdoub
 			return FALSE;
 		}
 		stream_read_bytes(image->data,&read_spot,4,size);
-fprintf(stderr, "SO FAR SO GOOD\n");	
 		if(memcmp(stream_read_bytes(image->data,&read_spot,4,size), "IHDR", 4) != 0) {
 			g_free(image->data);
 			g_free(image);
 			return FALSE;
 		}
-fprintf(stderr, "SO FAR SO GOOD 2\n");	
 
 fprintf(stderr, "WIDTH = %ld\n", stream_read_long(image->data,&read_spot,size));
 fprintf(stderr, "HEIGHT = %ld\n", stream_read_long(image->data,&read_spot,size));

@@ -278,7 +278,7 @@ static void pdf_set_working_page(rlib *r, struct rlib_part *part, gint page) {
 	gint page_number = r->current_page_number * pages_across;
 	page--;
 	
-	rpdf_set_page(OUTPUT_PRIVATE(r)->pdf, page_number + page - OUTPUT_PRIVATE(r)->page_diff);
+	rpdf_set_page(OUTPUT_PRIVATE(r)->pdf, page_number + page - OUTPUT_PRIVATE(r)->page_diff - 1);
 	OUTPUT_PRIVATE(r)->current_page = page_number + page - OUTPUT_PRIVATE(r)->page_diff;
 #if USEPDFLOCALE
 	setlocale(LC_NUMERIC, tlocale);

@@ -91,14 +91,31 @@ struct _private {
 
 static void print_text(rlib *r, gchar *text, gint backwards) {
 	gint current_page = OUTPUT_PRIVATE(r)->page_number;
-	struct _packet *packet = g_new0(struct _packet, 1);
-	packet->type = TEXT;
-	packet->data = g_strdup(text);
-	
-	if(backwards)
-		OUTPUT_PRIVATE(r)->bottom[current_page] = g_slist_append(OUTPUT_PRIVATE(r)->bottom[current_page], packet);
-	else
-		OUTPUT_PRIVATE(r)->top[current_page] = g_slist_append(OUTPUT_PRIVATE(r)->top[current_page], packet);
+	struct _packet *packet = NULL;
+
+	if(backwards) {
+		if(OUTPUT_PRIVATE(r)->bottom[current_page] != NULL)
+			packet = OUTPUT_PRIVATE(r)->bottom[current_page]->data;
+		if(packet != NULL && packet->type == TEXT) {
+			rlib_string_append(packet->data, text);
+		} else {	
+			packet = g_new0(struct _packet, 1);
+			packet->type = TEXT;
+			packet->data = rlib_string_new_with_string(text);
+			OUTPUT_PRIVATE(r)->bottom[current_page] = g_slist_prepend(OUTPUT_PRIVATE(r)->bottom[current_page], packet);
+		}
+	} else {
+		if(OUTPUT_PRIVATE(r)->top[current_page] != NULL)
+			packet = OUTPUT_PRIVATE(r)->top[current_page]->data;
+		if(packet != NULL && packet->type == TEXT) {
+			rlib_string_append(packet->data, text);
+		} else {	
+			packet = g_new0(struct _packet, 1);
+			packet->type = TEXT;
+			packet->data = rlib_string_new_with_string(text);
+			OUTPUT_PRIVATE(r)->top[current_page] = g_slist_prepend(OUTPUT_PRIVATE(r)->top[current_page], packet);
+		}
+	}
 }
 
 static gfloat rlib_html_get_string_width(rlib *r, gchar *text) {
@@ -298,12 +315,10 @@ static void rlib_html_print_text_delayed(rlib *r, struct rlib_delayed_extra_data
 	packet->data = delayed_data;
 	
 	if(backwards)
-		OUTPUT_PRIVATE(r)->bottom[current_page] = g_slist_append(OUTPUT_PRIVATE(r)->bottom[current_page], packet);
+		OUTPUT_PRIVATE(r)->bottom[current_page] = g_slist_prepend(OUTPUT_PRIVATE(r)->bottom[current_page], packet);
 	else
-		OUTPUT_PRIVATE(r)->top[current_page] = g_slist_append(OUTPUT_PRIVATE(r)->top[current_page], packet);
+		OUTPUT_PRIVATE(r)->top[current_page] = g_slist_prepend(OUTPUT_PRIVATE(r)->top[current_page], packet);
 }
-
-
 
 static void rlib_html_start_report(rlib *r, struct rlib_part *part) {
 	gchar buf[MAXSTRLEN];
@@ -340,39 +355,69 @@ static void rlib_html_end_part(rlib *r, struct rlib_part *part) {
 	char buf[MAXSTRLEN];
 	print_text(r, "</pre></td></tr></table>", TRUE);
 	for(i=0;i<part->pages_across;i++) {
-		GSList *list = OUTPUT_PRIVATE(r)->top[i]; 
+		GSList *tmp = OUTPUT_PRIVATE(r)->top[i]; 
+		GSList *list = NULL;
+		while(tmp != NULL) {
+			list = g_slist_prepend(list, tmp->data);
+			tmp = tmp->next;
+		}
+
 		while(list != NULL) {
 			struct _packet *packet = list->data;
-			
-			
+			gchar *str;	
+			if(packet->type == DELAY) {
+				html_callback(buf, MAXSTRLEN-1, packet->data);
+				str = g_strdup(buf);
+			} else {
+				str = ((struct rlib_string *)packet->data)->string;
+			}
 			if(OUTPUT_PRIVATE(r)->both  == NULL) {
-				OUTPUT_PRIVATE(r)->both  = packet->data;
+				OUTPUT_PRIVATE(r)->both  = str;
 			} else {
 				old = OUTPUT_PRIVATE(r)->both ;
-				OUTPUT_PRIVATE(r)->both  = g_strconcat(OUTPUT_PRIVATE(r)->both , packet->data, NULL);
+				OUTPUT_PRIVATE(r)->both  = g_strconcat(OUTPUT_PRIVATE(r)->both , str, NULL);
 				g_free(old);
-				g_free(packet->data);
+				if(packet->type == TEXT)
+					rlib_string_free(packet->data);
 			}
+			g_free(packet);
 			list = list->next;
 		}
 
-		list = OUTPUT_PRIVATE(r)->bottom[i]; 
+		g_slist_free(list);
+		list = NULL;
+		tmp = OUTPUT_PRIVATE(r)->bottom[i]; 
+		while(tmp != NULL) {
+			list = g_slist_prepend(list, tmp->data);
+			tmp = tmp->next;
+		}
+
 		while(list != NULL) {
 			struct _packet *packet = list->data;
+			gchar *str;	
 			if(packet->type == DELAY) {
 				html_callback(buf, MAXSTRLEN-1, packet->data);
-				packet->data = g_strdup(buf);
+				str = g_strdup(buf);
+			} else {
+				str = ((struct rlib_string *)packet->data)->string;
 			}
 			if(OUTPUT_PRIVATE(r)->both  == NULL) {
-				OUTPUT_PRIVATE(r)->both  = packet->data;
+				OUTPUT_PRIVATE(r)->both  = str;
 			} else {
-				old = OUTPUT_PRIVATE(r)->both ;
-				OUTPUT_PRIVATE(r)->both  = g_strconcat(OUTPUT_PRIVATE(r)->both , packet->data, NULL);
+				old = OUTPUT_PRIVATE(r)->both;
+				OUTPUT_PRIVATE(r)->both  = g_strconcat(OUTPUT_PRIVATE(r)->both , str, NULL);
 				g_free(old);
-				g_free(packet->data);
+				if(packet->type == TEXT)
+					rlib_string_free(packet->data);
+
 			}
+			g_free(packet);
 			list = list->next;
 		}
+		
+		g_slist_free(list);
+		list = NULL;
+		
 		old = OUTPUT_PRIVATE(r)->both ;
 		OUTPUT_PRIVATE(r)->both  = g_strconcat(OUTPUT_PRIVATE(r)->both , "</td>", NULL);
 		g_free(old);

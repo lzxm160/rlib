@@ -42,14 +42,31 @@ struct _private {
 
 static void print_text(rlib *r, gchar *text, gint backwards) {
 	gint current_page = OUTPUT_PRIVATE(r)->page_number;
-	struct _packet *packet = g_new0(struct _packet, 1);
-	packet->type = TEXT;
-	packet->data = g_strdup(text);
-	
-	if(backwards)
-		OUTPUT_PRIVATE(r)->bottom[current_page] = g_slist_append(OUTPUT_PRIVATE(r)->bottom[current_page], packet);
-	else
-		OUTPUT_PRIVATE(r)->top[current_page] = g_slist_append(OUTPUT_PRIVATE(r)->top[current_page], packet);
+	struct _packet *packet = NULL;
+
+	if(backwards) {
+		if(OUTPUT_PRIVATE(r)->bottom[current_page] != NULL)
+			packet = OUTPUT_PRIVATE(r)->bottom[current_page]->data;
+		if(packet != NULL && packet->type == TEXT) {
+			rlib_string_append(packet->data, text);
+		} else {	
+			packet = g_new0(struct _packet, 1);
+			packet->type = TEXT;
+			packet->data = rlib_string_new_with_string(text);
+			OUTPUT_PRIVATE(r)->bottom[current_page] = g_slist_prepend(OUTPUT_PRIVATE(r)->bottom[current_page], packet);
+		}
+	} else {
+		if(OUTPUT_PRIVATE(r)->top[current_page] != NULL)
+			packet = OUTPUT_PRIVATE(r)->top[current_page]->data;
+		if(packet != NULL && packet->type == TEXT) {
+			rlib_string_append(packet->data, text);
+		} else {	
+			packet = g_new0(struct _packet, 1);
+			packet->type = TEXT;
+			packet->data = rlib_string_new_with_string(text);
+			OUTPUT_PRIVATE(r)->top[current_page] = g_slist_prepend(OUTPUT_PRIVATE(r)->top[current_page], packet);
+		}
+	}
 }
 
 static gfloat rlib_txt_get_string_width(rlib *r, gchar *text) {
@@ -95,45 +112,87 @@ static void txt_callback(gchar *data, gint len, struct rlib_delayed_extra_data *
 	g_free(delayed_data);
 }
 
+static void rlib_txt_print_text_delayed(rlib *r, struct rlib_delayed_extra_data *delayed_data, int backwards) {
+	gint current_page = OUTPUT_PRIVATE(r)->page_number;
+	struct _packet *packet = g_new0(struct _packet, 1);
+	packet->type = DELAY;
+	packet->data = delayed_data;
+	
+	if(backwards)
+		OUTPUT_PRIVATE(r)->bottom[current_page] = g_slist_prepend(OUTPUT_PRIVATE(r)->bottom[current_page], packet);
+	else
+		OUTPUT_PRIVATE(r)->top[current_page] = g_slist_prepend(OUTPUT_PRIVATE(r)->top[current_page], packet);
+}
+
 
 static void rlib_txt_end_part(rlib *r, struct rlib_part *part) {
 	gint i;
 	gchar *old;
 	char buf[MAXSTRLEN];
 	for(i=0;i<part->pages_across;i++) {
-		GSList *list = OUTPUT_PRIVATE(r)->top[i]; 
+		GSList *tmp = OUTPUT_PRIVATE(r)->top[i]; 
+		GSList *list = NULL;
+		while(tmp != NULL) {
+			list = g_slist_prepend(list, tmp->data);
+			tmp = tmp->next;
+		}
+
 		while(list != NULL) {
 			struct _packet *packet = list->data;
-			
-			
+			gchar *str;	
+			if(packet->type == DELAY) {
+				txt_callback(buf, MAXSTRLEN-1, packet->data);
+				str = g_strdup(buf);
+			} else {
+				str = ((struct rlib_string *)packet->data)->string;
+			}
 			if(OUTPUT_PRIVATE(r)->both  == NULL) {
-				OUTPUT_PRIVATE(r)->both  = packet->data;
+				OUTPUT_PRIVATE(r)->both  = str;
 			} else {
 				old = OUTPUT_PRIVATE(r)->both ;
-				OUTPUT_PRIVATE(r)->both  = g_strconcat(OUTPUT_PRIVATE(r)->both , packet->data, NULL);
+				OUTPUT_PRIVATE(r)->both  = g_strconcat(OUTPUT_PRIVATE(r)->both , str, NULL);
 				g_free(old);
-				g_free(packet->data);
+				if(packet->type == TEXT)
+					rlib_string_free(packet->data);
 			}
+			g_free(packet);
 			list = list->next;
 		}
 
-		list = OUTPUT_PRIVATE(r)->bottom[i]; 
+		g_slist_free(list);
+		list = NULL;
+		tmp = OUTPUT_PRIVATE(r)->bottom[i]; 
+		while(tmp != NULL) {
+			list = g_slist_prepend(list, tmp->data);
+			tmp = tmp->next;
+		}
+
 		while(list != NULL) {
 			struct _packet *packet = list->data;
+			gchar *str;	
 			if(packet->type == DELAY) {
 				txt_callback(buf, MAXSTRLEN-1, packet->data);
-				packet->data = g_strdup(buf);
+				str = g_strdup(buf);
+			} else {
+				str = ((struct rlib_string *)packet->data)->string;
 			}
 			if(OUTPUT_PRIVATE(r)->both  == NULL) {
-				OUTPUT_PRIVATE(r)->both  = packet->data;
+				OUTPUT_PRIVATE(r)->both  = str;
 			} else {
-				old = OUTPUT_PRIVATE(r)->both ;
-				OUTPUT_PRIVATE(r)->both  = g_strconcat(OUTPUT_PRIVATE(r)->both , packet->data, NULL);
+				old = OUTPUT_PRIVATE(r)->both;
+				OUTPUT_PRIVATE(r)->both  = g_strconcat(OUTPUT_PRIVATE(r)->both , str, NULL);
 				g_free(old);
-				g_free(packet->data);
+				if(packet->type == TEXT)
+					rlib_string_free(packet->data);
+
 			}
+			g_free(packet);
 			list = list->next;
 		}
+		
+		g_slist_free(list);
+		list = NULL;
+		
 
 	}
 	OUTPUT_PRIVATE(r)->length = strlen(OUTPUT_PRIVATE(r)->both);
@@ -227,6 +286,7 @@ void rlib_txt_new_output_filter(rlib *r) {
 	OUTPUT(r)->print_text = rlib_txt_print_text;
 	OUTPUT(r)->set_fg_color = rlib_txt_set_fg_color;
 	OUTPUT(r)->set_bg_color = rlib_txt_set_bg_color;
+	OUTPUT(r)->print_text_delayed = rlib_txt_print_text_delayed;	
 	OUTPUT(r)->hr = rlib_txt_hr;
 	OUTPUT(r)->start_draw_cell_background = rlib_txt_start_draw_cell_background;
 	OUTPUT(r)->end_draw_cell_background = rlib_txt_end_draw_cell_background;
