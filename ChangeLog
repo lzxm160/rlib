@@ -1,4 +1,12 @@
 2003-12-12  Bob Doan  <bdoan@sicompos.com>
+	* bindings/php/patch from Mario Teijeiro Otero <emeteo@escomposlinux.org>.. Correct automake stuff so we build on debian
+	* bindings/python/Makefile.am: likewise
+	* inputs/mysql/Makefile.am: likewise
+	* inputs/odbc/Makefile.am: likewise
+	* inputs/postgre/Makefile.am: likewise
+	* tests/Makefile.am: likewise
+
+2003-12-12  Bob Doan  <bdoan@sicompos.com>
 	* configure.in: better python stuff
 	* inputs/mysql/mysql.c: fix breaking
 	* inputs/postgre/postgre.c: likewise

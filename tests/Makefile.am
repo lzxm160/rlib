@@ -35,10 +35,10 @@ noinst_PROGRAMS = \
 INCLUDES = $(RLIB_CFLAGS) -I${top_srcdir}/libsrc/  
 
 test1_SOURCES= test1.c
-test1_LDADD = -L${top_srcdir}/libsrc/ $(RLIB_LIBS) -lr
+test1_LDADD = -L${top_builddir}/libsrc/ $(RLIB_LIBS) -lr
 
 test2_SOURCES= test2.c
-test2_LDADD = -L${top_srcdir}/libsrc/ $(RLIB_LIBS) -lr
+test2_LDADD = -L${top_builddir}/libsrc/ $(RLIB_LIBS) -lr
 
 test3_SOURCES= test3.c
-test3_LDADD = -L${top_srcdir}/libsrc/ $(RLIB_LIBS) -lr
+test3_LDADD = -L${top_builddir}/libsrc/ $(RLIB_LIBS) -lr
