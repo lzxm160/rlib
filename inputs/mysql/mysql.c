@@ -35,6 +35,7 @@ struct rlib_mysql_results {
 	MYSQL_ROW previous_row;
 	MYSQL_ROW save_row;
 	MYSQL_ROW last_row;
+	int isdone;
 	int didprevious;
 	int *fields;
 };
@@ -86,6 +87,7 @@ static int rlib_mysql_first(void *input_ptr, void *result_ptr) {
 	result->previous_row = NULL;
 	result->last_row = NULL;
 	result->didprevious = FALSE;
+	result->isdone = FALSE;
 	return TRUE;
 }
 
@@ -101,11 +103,12 @@ static int rlib_mysql_next(void *input_ptr, void *result_ptr) {
 		if(row != NULL) {
 			result->previous_row = result->this_row;
 			result->this_row = row;
+			result->isdone = FALSE;
 			return TRUE;
 		} else {
 			result->previous_row = result->this_row;
 			result->last_row = result->this_row;
-			result->this_row = NULL;
+			result->isdone = TRUE;
 			return FALSE;	
 		}
 	}
@@ -113,10 +116,7 @@ static int rlib_mysql_next(void *input_ptr, void *result_ptr) {
 
 static int rlib_mysql_isdone(void *input_ptr, void *result_ptr) {
 	struct rlib_mysql_results *result = result_ptr;
-	if(result->this_row == NULL)
-		return TRUE;
-	else
-		return FALSE;
+	return result->isdone;
 }
 
 static int rlib_mysql_previous(void *input_ptr, void *result_ptr) {

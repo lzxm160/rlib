@@ -1,3 +1,11 @@
+2003-12-12  Bob Doan  <bdoan@sicompos.com>
+	* configure.in: better python stuff
+	* inputs/mysql/mysql.c: fix breaking
+	* inputs/postgre/postgre.c: likewise
+	* libsrc/breaks.c: likewise
+	* libsrc/html.c: fix output problems
+	* libsrc/reportgen.c: likewise
+
 2003-12-10  Chet Heilman <cheilman@sicompos.com>
 
 	* configure.in: Add glib-2.0 pkg.

@@ -258,7 +258,7 @@ static void rlib_html_end_report(rlib *r) {
 	int pages_accross = r->reports[r->current_report]->pages_accross;
 	int sofar = OUTPUT_PRIVATE(r)->length;
 
-	print_text(r, "</pre></td></tr></table>", FALSE);
+	print_text(r, "</pre></td></tr></table>", TRUE);
 
 	for(i=0;i<pages_accross;i++) {
 		OUTPUT_PRIVATE(r)->both = rrealloc(OUTPUT_PRIVATE(r)->both, sofar + OUTPUT_PRIVATE(r)->top[i].size + OUTPUT_PRIVATE(r)->bottom[i].size);

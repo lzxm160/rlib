@@ -148,8 +148,8 @@ PHP_EXTENSION_DIR=""
 if test x$enable_php = xyes; then
 	AC_PATH_PROG(PHP_CONFIG, php-config, no)
 	if test x$PHP_CONFIG = xno; then
-		echo "*** WARNING: PHP NOT FOUND IN PATH.  RLIB WILL NOT BE COMPILED WITH SUPPORT FOR IT"
 		enable_php=no
+		echo "*** WARNING: PHP NOT FOUND IN PATH.  RLIB WILL NOT BE COMPILED WITH SUPPORT FOR IT"
 	else
 		AC_DEFINE(HAVE_PHP,1,[Build with PHP support])
 		PHP_CFLAGS=`$PHP_CONFIG --includes`
@@ -161,18 +161,22 @@ AC_SUBST(PHP_EXTENSION_DIR)
 AC_SUBST(HAVE_PHP)
 AM_CONDITIONAL(HAVE_PHP, test x$enable_php = xyes)
 
+python_version=2.2
+AC_ARG_WITH(pythonver,
+[  --with-pythonver	Set Python Version Number.. 2.0, 2.1, 2.2, 2.3..],[python_version=$withval])
+
 AC_ARG_ENABLE(python,              [  --disable-python      disable python frontend],,enable_python=yes)
 PYTHON_CFLAGS=""
 PYTHON_EXTENSION_DIR=""
 if test x$enable_python = xyes; then
-	AM_PATH_PYTHON(2.2)
-	if test x$PYTHON_VERSION = x2.2; then
+	AM_PATH_PYTHON($python_version)
+	if test x$PYTHON_VERSION = x$python_version; then
 		AC_DEFINE(HAVE_PYTHON,1,[Build with PYTHON support])
 		PYTHON_CFLAGS="-I $PYTHON_PREFIX/include/python$PYTHON_VERSION"
 		PYTHON_EXTENSION_DIR=$pyexecdir
 	else
-		echo "*** WARNING: PYTHON 2.2 NOT FOUND IN PATH.  RLIB WILL NOT BE COMPILED WITH SUPPORT FOR IT"
 		enable_python=no
+		echo "*** WARNING: PYTHON ${python_version} NOT FOUND IN PATH.  RLIB WILL NOT BE COMPILED WITH SUPPORT FOR IT"
 	fi
 fi
 AC_SUBST(HAVE_PYTHON)
@@ -238,6 +242,7 @@ rlib-$VERSION:
 	 PHP:                     ${enable_php}
 	  PHP entension dir:      ${PHP_EXTENSION_DIR}
 	 PYTHON:                  ${enable_python}
+	  PYTHON version:         ${python_version}
 	  PYTHON entension dir:   ${PYTHON_EXTENSION_DIR}
 
 	WOCKET:                   In My Pocket

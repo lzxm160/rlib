@@ -25,7 +25,7 @@
 #include "pcode.h"
 #include "rlib_input.h"
 
-static void rlib_print_break_header_lines(rlib *r, struct report_break *rb, struct report_element *e, int backwards) {
+static void rlib_print_break_header_output(rlib *r, struct report_break *rb, struct report_element *e, int backwards) {
 	int blank = TRUE;
 	int surpress = FALSE;
 
@@ -44,7 +44,6 @@ static void rlib_print_break_header_lines(rlib *r, struct report_break *rb, stru
 		}		
 		
 	}
-
 	if(!surpress || (surpress && !blank)) {
 		rb->didheader = TRUE;
 		if(e != NULL)
@@ -54,7 +53,7 @@ static void rlib_print_break_header_lines(rlib *r, struct report_break *rb, stru
 	}
 }
 
-static void rlib_print_break_footer_lines(rlib *r, struct report_break *rb, struct report_element *e, int backwards) {
+static void rlib_print_break_footer_output(rlib *r, struct report_break *rb, struct report_element *e, int backwards) {
 	if(!OUTPUT(r)->do_break)
 		return;
 
@@ -73,8 +72,23 @@ void rlib_force_break_headers(rlib *r) {
 	
 	for(e = r->reports[r->current_report]->breaks; e != NULL; e=e->next) {
 		struct report_break *rb = e->data;
+		struct report_element *be;
+		int dobreak=1;
+		for(be = rb->fields; be != NULL; be=be->next) {
+			struct break_fields *bf = be->data;
+			if(dobreak && bf->rval == NULL) {
+				dobreak=1;
+				bf->rval = rlib_execute_pcode(r, &bf->rval2, bf->code, NULL);
+			} else {
+				dobreak = 0;
+			}
+		}	
+	}
+	
+	for(e = r->reports[r->current_report]->breaks; e != NULL; e=e->next) {
+		struct report_break *rb = e->data;
 		if(rb->headernewpage) {
-			rlib_print_break_header_lines(r, rb, rb->header, FALSE);
+			rlib_print_break_header_output(r, rb, rb->header, FALSE);
 		}
 				
 	}
@@ -130,7 +144,7 @@ void rlib_handle_break_headers(rlib *r) {
 			rlib_force_break_headers(r);
 		} else {
 			for(i=0;i<icache;i++) {
-				rlib_print_break_header_lines(r, cache[i], cache[i]->header, FALSE);	
+				rlib_print_break_header_output(r, cache[i], cache[i]->header, FALSE);	
 			}
 		}
 	}
@@ -182,12 +196,13 @@ void rlib_break_all_below_in_reverse_order(rlib *r, struct report_element *e) {
 			bf = be->data;
 			bf->rval = NULL;
 		}
-
 		if(OUTPUT(r)->do_break) {
 			rlib_end_page_if_line_wont_fit(r, rb->footer);
-			rlib_navigate_previous(r, r->current_result);
-			rlib_print_break_footer_lines(r, rb, rb->footer, FALSE);
-			rlib_navigate_next(r, r->current_result);
+			if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result))
+				rlib_navigate_previous(r, r->current_result);
+			rlib_print_break_footer_output(r, rb, rb->footer, FALSE);
+			if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result))
+				rlib_navigate_next(r, r->current_result);
 		}
 
 		rlib_reset_variables_on_break(r, rb->name);
@@ -222,7 +237,8 @@ void rlib_handle_break_footers(rlib *r) {
 		for(be = rb->fields; be != NULL; be=be->next) {
 			struct rlib_value rval_tmp;
 			bf = be->data;
-			if(dobreak && (INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result) || rvalcmp(bf->rval, rlib_execute_pcode(r, &rval_tmp, bf->code, NULL)))) {
+			if(dobreak && (INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result) 
+				|| rvalcmp(bf->rval, rlib_execute_pcode(r, &rval_tmp, bf->code, NULL)))) {
 				dobreak=1;
 			} else {
 				dobreak = 0;

@@ -36,6 +36,7 @@ struct rlib_postgre_results {
 	int tot_rows;
 	int tot_fields;
 	int isdone;
+	int last_action;
 	int *fields;
 };
 
@@ -83,13 +84,13 @@ static int rlib_postgre_first(void *input_ptr, void *result_ptr) {
 }
 
 static int rlib_postgre_next(void *input_ptr, void *result_ptr) {
-	struct rlib_postgre_results *result = result_ptr;
-	if(result->row+1 < result->tot_rows) {
-		result->row++;
-		result->isdone = FALSE;
+	struct rlib_postgre_results *results = result_ptr;
+	if(results->row+1 < results->tot_rows) {
+		results->row++;
+		results->isdone = FALSE;
 		return TRUE;
 	}
-	result->isdone = TRUE;
+	results->isdone = TRUE;
 	return FALSE;
 }
 
@@ -112,7 +113,6 @@ static int rlib_postgre_previous(void *input_ptr, void *result_ptr) {
 static int rlib_postgre_last(void *input_ptr, void *result_ptr) {
 	struct rlib_postgre_results *result = result_ptr;
 	result->row = result->tot_rows-1;
-	result->isdone = TRUE;
 	return TRUE;
 }
 

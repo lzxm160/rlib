@@ -75,6 +75,27 @@ static float advance_margin(rlib *r, float margin, int chars) {
 #define STATUS_START 1
 #define STATUS_STOP	2
 
+static float rlib_output_extras_start(rlib *r, int backwards, float left_origin, float bottom_orgin, struct rlib_line_extra_data *extra_data) {
+	if(extra_data->found_link)
+		OUTPUT(r)->rlib_boxurl_start(r, left_origin, bottom_orgin, rlib_get_estimated_width(r, extra_data->width), RLIB_GET_LINE(extra_data->font_point), extra_data->link);
+
+	if(extra_data->running_bgcolor_status & STATUS_START) 
+		OUTPUT(r)->rlib_draw_cell_background_start(r, left_origin, bottom_orgin, extra_data->running_running_bg_total, RLIB_GET_LINE(extra_data->font_point), &extra_data->bgcolor);
+
+	return extra_data->output_width;
+}
+
+static float rlib_output_extras_end(rlib *r, int backwards, float left_origin, float bottom_orgin, struct rlib_line_extra_data *extra_data) {
+	if(extra_data->running_bgcolor_status & STATUS_STOP)
+		OUTPUT(r)->rlib_draw_cell_background_end(r);	
+
+	if(extra_data->found_link)
+		OUTPUT(r)->rlib_boxurl_end(r);
+		
+	return extra_data->output_width;
+}
+
+
 static float rlib_output_extras(rlib *r, int backwards, float left_origin, float bottom_orgin, struct rlib_line_extra_data *extra_data) {
 	if(extra_data->found_link)
 		OUTPUT(r)->rlib_boxurl_start(r, left_origin, bottom_orgin, rlib_get_estimated_width(r, extra_data->width), RLIB_GET_LINE(extra_data->font_point), extra_data->link);
@@ -91,7 +112,6 @@ static float rlib_output_extras(rlib *r, int backwards, float left_origin, float
 	return extra_data->output_width;
 }
 	
-
 static float rlib_output_text(rlib *r, int backwards, float left_origin, float bottom_orgin, struct rlib_line_extra_data *extra_data) {
 	float rtn_width;
 	char *text;
@@ -115,7 +135,6 @@ static float rlib_output_text(rlib *r, int backwards, float left_origin, float b
 	return rtn_width;
 }
 
-
 static float rlib_output_text_text(rlib *r, int backwards, float left_origin, float bottom_orgin, struct rlib_line_extra_data *extra_data, char *text) {
 	float rtn_width;
 	OUTPUT(r)->rlib_set_font_point(r, extra_data->font_point);
@@ -134,7 +153,6 @@ static float rlib_output_text_text(rlib *r, int backwards, float left_origin, fl
 
 	return rtn_width;
 }
-
 
 char *align_text(rlib *r, char *rtn, int len, char *src, long align, long width) {
 	strcpy(rtn, src);
@@ -176,7 +194,6 @@ float estimate_string_width_from_extra_data(rlib *r, struct rlib_line_extra_data
 	return rtn_width;
 }
 	
-	
 void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_extra_data *extra_data) {
 	int i=0;
 	struct report_field *rf;
@@ -193,8 +210,6 @@ void execute_pcodes_for_line(rlib *r, struct report_lines *rl, struct rlib_line_
 		rlib_execute_pcode(r, &line_rval_color, rl->color_code, NULL);
 	if(rl->bgcolor_code != NULL)
 		rlib_execute_pcode(r, &line_rval_bgcolor, rl->bgcolor_code, NULL);
-
-	
 
 	for(; e != NULL; e=e->next) {
 		RLIB_VALUE_TYPE_NONE(&extra_data[i].rval_bgcolor);
@@ -578,17 +593,21 @@ static int print_report_output_private(rlib *r, struct report_output_array *roa,
 						if(e->type == REPORT_ELEMENT_FIELD) {
 							struct report_field *rf = ((struct report_field *)e->data);
 							rf->rval = &extra_data[count].rval_code;
-							rlib_output_extras(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)),  
+							rlib_output_extras_start(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)),  
 								&extra_data[count]);
 							width = rlib_output_text(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)), 
+								&extra_data[count]);
+							rlib_output_extras_end(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)),  
 								&extra_data[count]);
 						}
 
 						if(e->type == REPORT_ELEMENT_TEXT) {
-							rlib_output_extras(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)), 
+							rlib_output_extras_start(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)), 
 								&extra_data[count]);
 							width = rlib_output_text(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)), 
 								&extra_data[count]);				
+							rlib_output_extras_end(r, backwards, margin, rlib_get_next_line(r, *rlib_position, get_font_point(r, rl)), 
+								&extra_data[count]);
 						}
 						margin += width;
 						count++;
