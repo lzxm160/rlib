@@ -35,7 +35,6 @@ gint rlib_add_datasource(rlib *r, gchar *input_name, struct input_filter *input)
 	return 0;
 }
 
-#if HAVE_MYSQL
 static gint rlib_add_datasource_mysql_private(rlib *r, gchar *input_name, gchar *database_group, gchar *database_host, 
 gchar *database_user, gchar *database_password, gchar *database_database) {
 	GModule* handle;
@@ -82,9 +81,7 @@ gchar *database_database) {
 gint rlib_add_datasource_mysql_from_group(rlib *r, gchar *input_name, gchar *group) {
 	return rlib_add_datasource_mysql_private(r, input_name, group, NULL, NULL, NULL, NULL);
 }
-#endif
 
-#if HAVE_POSTGRE
 gint rlib_add_datasource_postgre(rlib *r, gchar *input_name, gchar *conn) {
 	GModule* handle;
 	gpointer rlib_postgre_new_input_filter;
@@ -114,9 +111,7 @@ gint rlib_add_datasource_postgre(rlib *r, gchar *input_name, gchar *conn) {
 	r->inputs_count++;
 	return 0;
 }
-#endif
 
-#if HAVE_ODBC
 gint rlib_add_datasource_odbc(rlib *r, gchar *input_name, gchar *source, gchar *user, gchar *password) {
 	GModule* handle;
 	gpointer rlib_odbc_new_input_filter;
@@ -146,5 +141,4 @@ gint rlib_add_datasource_odbc(rlib *r, gchar *input_name, gchar *source, gchar *
 	r->inputs_count++;
 	return 0;
 }
-#endif
 

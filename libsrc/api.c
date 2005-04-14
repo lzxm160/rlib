@@ -517,8 +517,6 @@ gchar *rlib_version(void) {
 }
 #endif
 
-
-#if HAVE_MYSQL
 gint rlib_mysql_report(gchar *hostname, gchar *username, gchar *password, gchar *database, gchar *xmlfilename, gchar *sqlquery, 
 gchar *outputformat) {
 	rlib *r;
@@ -534,9 +532,7 @@ gchar *outputformat) {
 	rlib_free(r);
 	return 0;
 }
-#endif
 
-#if HAVE_POSTGRE
 gint rlib_postgre_report(gchar *connstr, gchar *xmlfilename, gchar *sqlquery, gchar *outputformat) {
 	rlib *r;
 	r = rlib_init();
@@ -551,4 +547,3 @@ gint rlib_postgre_report(gchar *connstr, gchar *xmlfilename, gchar *sqlquery, gc
 	rlib_free(r);
 	return 0;
 }
-#endif

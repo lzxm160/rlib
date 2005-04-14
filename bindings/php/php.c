@@ -32,16 +32,10 @@
 
 /* declaration of functions to be exported */
 ZEND_FUNCTION(rlib_init);
-#if HAVE_MYSQL
 ZEND_FUNCTION(rlib_add_datasource_mysql);
 ZEND_FUNCTION(rlib_add_datasource_mysql_from_group);
-#endif
-#if HAVE_POSTGRE
 ZEND_FUNCTION(rlib_add_datasource_postgre);
-#endif
-#if HAVE_ODBC
 ZEND_FUNCTION(rlib_add_datasource_odbc);
-#endif
 ZEND_FUNCTION(rlib_add_datasource_array);
 ZEND_FUNCTION(rlib_add_query_as);
 ZEND_FUNCTION(rlib_add_resultset_follower);
@@ -71,16 +65,10 @@ static gint le_link;
 zend_function_entry rlib_functions[] =
 {
 	ZEND_FE(rlib_init, NULL)
-#if HAVE_MYSQL
 	ZEND_FE(rlib_add_datasource_mysql, NULL)
 	ZEND_FE(rlib_add_datasource_mysql_from_group, NULL)
-#endif
-#if HAVE_POSTGRE
 	ZEND_FE(rlib_add_datasource_postgre, NULL)
-#endif
-#if HAVE_ODBC
 	ZEND_FE(rlib_add_datasource_odbc, NULL)
-#endif
 	ZEND_FE(rlib_add_datasource_array, NULL)
 	ZEND_FE(rlib_add_query_as, NULL)
 	ZEND_FE(rlib_add_resultset_follower, NULL)
@@ -150,7 +138,6 @@ ZEND_FUNCTION(rlib_init) {
 	RETURN_RESOURCE(resource_id);
 }
 
-#if HAVE_MYSQL
 ZEND_FUNCTION(rlib_add_datasource_mysql) {
 	zval *z_rip = NULL;
 	gint datasource_length, sql_host_length, sql_user_length, sql_password_length, sql_database_length;
@@ -191,9 +178,7 @@ ZEND_FUNCTION(rlib_add_datasource_mysql_from_group) {
 	result = rlib_add_datasource_mysql_from_group(rip->r, datasource_name, database_group);
 	RETURN_LONG(result);
 }
-#endif
 
-#if HAVE_POSTGRE
 ZEND_FUNCTION(rlib_add_datasource_postgre) {
 	zval *z_rip = NULL;
 	gint datasource_length, conn_length;
@@ -212,9 +197,7 @@ ZEND_FUNCTION(rlib_add_datasource_postgre) {
 	result = rlib_add_datasource_postgre(rip->r, datasource_name, conn);
 	RETURN_LONG(result);
 }
-#endif
 
-#if HAVE_ODBC
 ZEND_FUNCTION(rlib_add_datasource_odbc) {
 	zval *z_rip = NULL;
 	gint datasource_length, sql_odbc_length, sql_user_length, sql_password_length;
@@ -235,7 +218,6 @@ ZEND_FUNCTION(rlib_add_datasource_odbc) {
 	result = rlib_add_datasource_odbc(rip->r, datasource_name, database_odbc, database_user, database_password);
 	RETURN_LONG(result);
 }
-#endif
 
 ZEND_FUNCTION(rlib_add_datasource_array) {
 	zval *z_rip = NULL;

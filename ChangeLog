@@ -1,3 +1,10 @@
+2005-04-13  Bob Doan  <bdoan@sicompos.com>
+	* bindings/php/php.c: Don't #ifdef around the datasources.  It's dumb.  They are plugins
+	* libsrc/api.c: likewise
+	* libsrc/datasource.c:  likewise
+	* rpdf/rpdf.c: more image fun
+	* rpdf/rpdf.h: likewise
+
 2005-03-31  Bob Doan  <bdoan@sicompos.com>
 	* configure.in: keep track of pages correctly
 	* libsrc/graphing.c: likewise

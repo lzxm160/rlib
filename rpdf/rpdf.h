@@ -150,6 +150,13 @@ struct rpdf_image_jpeg {
 	gint precision;
 };
 
+struct rpdf_image_png {
+	gint width;
+	gint height;
+	gint bpc;
+	gint ct;
+};
+
 struct rpdf_images {
 	gint number;
 	gint image_type;

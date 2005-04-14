@@ -851,6 +851,7 @@ gboolean rpdf_image(struct rpdf *pdf, gdouble x, gdouble y, gdouble width, gdoub
 	close(fd);
 
 	if(image_type == RPDF_IMAGE_PNG) {
+		struct rpdf_image_png *png_info = g_new0(struct rpdf_image_png, 1);
 		gchar header[9];
 		sprintf(header, "%cPNG%c%c%c%c", 137,13,10,26,10);			
 		if(memcmp(stream_read_bytes(image->data,&read_spot,8,size), header, 8) != 0) {
@@ -864,10 +865,28 @@ gboolean rpdf_image(struct rpdf *pdf, gdouble x, gdouble y, gdouble width, gdoub
 			g_free(image);
 			return FALSE;
 		}
+		png_info->width = image->width = stream_read_long(image->data,&read_spot,size);
+		png_info->height = image->height = stream_read_long(image->data,&read_spot,size);
+		
+		png_info->bpc = stream_read_byte(image->data, &read_spot, size);
 
+		if(png_info->bpc > 8)
+			fprintf(stderr, "16 but depths not supported\n");
+		
+		png_info->ct = stream_read_byte(image->data, &read_spot, size);
+		
+		if(png_info->ct == 1 || png_info->ct >= 4)
+			fprintf(stderr, "Unsuported Ct (Alpha Channel?)\n");
+
+		if(stream_read_byte(image->data, &read_spot, size) != 0)
+			fprintf(stderr, "Unknown compression method\n");
+		if(stream_read_byte(image->data, &read_spot, size) != 0)
+			fprintf(stderr, "Unknown filter method\n");
+		if(stream_read_byte(image->data, &read_spot, size) != 0)
+			fprintf(stderr, "Interlacing not supported\n");
+			
 fprintf(stderr, "WIDTH = %ld\n", stream_read_long(image->data,&read_spot,size));
 fprintf(stderr, "HEIGHT = %ld\n", stream_read_long(image->data,&read_spot,size));
-
 			
 	} else if(image_type == RPDF_IMAGE_JPEG) {
 		struct rpdf_image_jpeg *jpeg_info = g_new0(struct rpdf_image_jpeg, 1);
