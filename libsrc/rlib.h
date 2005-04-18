@@ -27,7 +27,6 @@
 #include <time.h>
 #include <glib.h>
 
-#include "containers.h"
 #include "charencoder.h"
 #include "datetime.h"
 #include "util.h"
@@ -564,9 +563,6 @@ struct rlib_report {
 	xmlChar *xml_height;
 	xmlChar *xml_iterations;
 	
-	gchar xml_encoding_name[ENCODING_NAME_SIZE]; //UTF8 if "", else whatever specified in xml
-	rlib_char_encoder *output_encoder;
-	
 	gfloat *position_top;
 	gfloat *position_bottom;
 	gfloat *bottom_size;
@@ -661,16 +657,12 @@ struct rlib {
 
 	gint current_font_point;
 
-	GHashTable * output_parameters;
-	GHashTable * input_metadata;
+	GHashTable *parameters;
+	GHashTable *output_parameters;
+	GHashTable *input_metadata;
 	
-	rlib_char_encoder *output_encoder;		//_destroy all of these
-	rlib_char_encoder *db_encoder;
-	rlib_char_encoder *param_encoder;
-
-	rlib_char_encoder *current_output_encoder; //DO NOT use _destroy these
-	rlib_char_encoder *current_db_encoder;
-	rlib_char_encoder *current_param_encoder;
+	GIConv output_encoder;		
+	gchar *output_encoder_name;
 	
 	time_t now; //set when rlib starts now will then be a constant over the time of the report
 	
@@ -697,7 +689,6 @@ struct rlib {
 	struct output_filter *o;
 	struct input_filters inputs[MAX_INPUT_FILTERS];
 	struct environment_filter *environment;
-	rlib_hashtable_ptr htParameters;
 };
 typedef struct rlib rlib;
 
@@ -831,9 +822,6 @@ void rlib_init_profiler(void);
 void rlib_dump_profile(gint profilenum, const gchar *filename);
 void rlib_trap(void); //For internals debugging only
 gchar *rlib_version(); // returns the version string.
-void rlib_set_encodings(rlib *r, const char *output, const char *database, const char *params);
-void rlib_set_database_encoding(rlib *r, const char *encoding);
-void rlib_set_parameter_encoding(rlib *r, const char *encoding);
 gint rlib_set_datasource_encoding(rlib *r, gchar *input_name, gchar *encoding);
 void rlib_set_output_encoding(rlib *r, const char *encoding);
 void rlib_set_output_parameter(rlib *r, gchar *parameter, gchar *value);

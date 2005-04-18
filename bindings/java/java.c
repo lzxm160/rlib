@@ -768,28 +768,6 @@ JNIEXPORT void JNICALL Java_librlibJNI_rlib_1set_1output_1encoding(JNIEnv *jenv,
 }
 
 
-JNIEXPORT void JNICALL Java_librlibJNI_rlib_1set_1database_1encoding(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
-    rlib *arg1 = (rlib *) 0 ;
-    char *arg2 ;
-    
-    (void)jenv;
-    (void)jcls;
-    arg1 = *(rlib **)&jarg1; 
-    {
-        arg2 = 0;
-        if (jarg2) {
-            arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
-            if (!arg2) return ;
-        }
-    }
-    rlib_set_database_encoding(arg1,(char const *)arg2);
-    
-    {
-        if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, arg2); 
-    }
-}
-
-
 JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1set_1datasource_1encoding(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3) {
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
@@ -827,70 +805,7 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1set_1datasource_1encoding(JNIEnv *j
 }
 
 
-JNIEXPORT void JNICALL Java_librlibJNI_rlib_1set_1parameter_1encoding(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
-    rlib *arg1 = (rlib *) 0 ;
-    char *arg2 ;
-    
-    (void)jenv;
-    (void)jcls;
-    arg1 = *(rlib **)&jarg1; 
-    {
-        arg2 = 0;
-        if (jarg2) {
-            arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
-            if (!arg2) return ;
-        }
-    }
-    rlib_set_parameter_encoding(arg1,(char const *)arg2);
-    
-    {
-        if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, arg2); 
-    }
-}
 
-
-JNIEXPORT void JNICALL Java_librlibJNI_rlib_1set_1encodings(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
-    rlib *arg1 = (rlib *) 0 ;
-    char *arg2 ;
-    char *arg3 ;
-    char *arg4 ;
-    
-    (void)jenv;
-    (void)jcls;
-    arg1 = *(rlib **)&jarg1; 
-    {
-        arg2 = 0;
-        if (jarg2) {
-            arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
-            if (!arg2) return ;
-        }
-    }
-    {
-        arg3 = 0;
-        if (jarg3) {
-            arg3 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg3, 0);
-            if (!arg3) return ;
-        }
-    }
-    {
-        arg4 = 0;
-        if (jarg4) {
-            arg4 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg4, 0);
-            if (!arg4) return ;
-        }
-    }
-    rlib_set_encodings(arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
-    
-    {
-        if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, arg2); 
-    }
-    {
-        if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, arg3); 
-    }
-    {
-        if (arg4) (*jenv)->ReleaseStringUTFChars(jenv, jarg4, arg4); 
-    }
-}
 
 
 JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1free(JNIEnv *jenv, jclass jcls, jlong jarg1) {

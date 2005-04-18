@@ -1549,34 +1549,6 @@ XS(_wrap_rlib_set_output_encoding) {
 }
 
 
-XS(_wrap_rlib_set_database_encoding) {
-    {
-        rlib *arg1 = (rlib *) 0 ;
-        char *arg2 ;
-        int argvi = 0;
-        dXSARGS;
-        
-        if ((items < 2) || (items > 2)) {
-            SWIG_croak("Usage: rlib_set_database_encoding(r,encoding);");
-        }
-        {
-            if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
-                SWIG_croak("Type error in argument 1 of rlib_set_database_encoding. Expected _p_rlib");
-            }
-        }
-        if (!SvOK((SV*) ST(1))) arg2 = 0;
-        else arg2 = (char *) SvPV(ST(1), PL_na);
-        rlib_set_database_encoding(arg1,(char const *)arg2);
-        
-        
-        XSRETURN(argvi);
-        fail:
-        ;
-    }
-    croak(Nullch);
-}
-
-
 XS(_wrap_rlib_set_datasource_encoding) {
     {
         rlib *arg1 = (rlib *) 0 ;
@@ -1602,68 +1574,6 @@ XS(_wrap_rlib_set_datasource_encoding) {
         
         ST(argvi) = sv_newmortal();
         sv_setiv(ST(argvi++), (IV) result);
-        XSRETURN(argvi);
-        fail:
-        ;
-    }
-    croak(Nullch);
-}
-
-
-XS(_wrap_rlib_set_parameter_encoding) {
-    {
-        rlib *arg1 = (rlib *) 0 ;
-        char *arg2 ;
-        int argvi = 0;
-        dXSARGS;
-        
-        if ((items < 2) || (items > 2)) {
-            SWIG_croak("Usage: rlib_set_parameter_encoding(r,encoding);");
-        }
-        {
-            if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
-                SWIG_croak("Type error in argument 1 of rlib_set_parameter_encoding. Expected _p_rlib");
-            }
-        }
-        if (!SvOK((SV*) ST(1))) arg2 = 0;
-        else arg2 = (char *) SvPV(ST(1), PL_na);
-        rlib_set_parameter_encoding(arg1,(char const *)arg2);
-        
-        
-        XSRETURN(argvi);
-        fail:
-        ;
-    }
-    croak(Nullch);
-}
-
-
-XS(_wrap_rlib_set_encodings) {
-    {
-        rlib *arg1 = (rlib *) 0 ;
-        char *arg2 ;
-        char *arg3 ;
-        char *arg4 ;
-        int argvi = 0;
-        dXSARGS;
-        
-        if ((items < 4) || (items > 4)) {
-            SWIG_croak("Usage: rlib_set_encodings(r,outputencoding,dbencoding,paramencoding);");
-        }
-        {
-            if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
-                SWIG_croak("Type error in argument 1 of rlib_set_encodings. Expected _p_rlib");
-            }
-        }
-        if (!SvOK((SV*) ST(1))) arg2 = 0;
-        else arg2 = (char *) SvPV(ST(1), PL_na);
-        if (!SvOK((SV*) ST(2))) arg3 = 0;
-        else arg3 = (char *) SvPV(ST(2), PL_na);
-        if (!SvOK((SV*) ST(3))) arg4 = 0;
-        else arg4 = (char *) SvPV(ST(3), PL_na);
-        rlib_set_encodings(arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
-        
-        
         XSRETURN(argvi);
         fail:
         ;
@@ -1772,10 +1682,7 @@ static swig_command_info swig_commands[] = {
 {"librlibc::rlib_set_locale", _wrap_rlib_set_locale},
 {"librlibc::rlib_set_output_parameter", _wrap_rlib_set_output_parameter},
 {"librlibc::rlib_set_output_encoding", _wrap_rlib_set_output_encoding},
-{"librlibc::rlib_set_database_encoding", _wrap_rlib_set_database_encoding},
 {"librlibc::rlib_set_datasource_encoding", _wrap_rlib_set_datasource_encoding},
-{"librlibc::rlib_set_parameter_encoding", _wrap_rlib_set_parameter_encoding},
-{"librlibc::rlib_set_encodings", _wrap_rlib_set_encodings},
 {"librlibc::rlib_free", _wrap_rlib_free},
 {"librlibc::rlib_version", _wrap_rlib_version},
 {0,0}

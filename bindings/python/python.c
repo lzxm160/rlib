@@ -1138,22 +1138,6 @@ static PyObject *_wrap_rlib_set_output_encoding(PyObject *self, PyObject *args) 
 }
 
 
-static PyObject *_wrap_rlib_set_database_encoding(PyObject *self, PyObject *args) {
-    PyObject *resultobj;
-    rlib *arg1 = (rlib *) 0 ;
-    char *arg2 ;
-    PyObject * obj0 = 0 ;
-    
-    if(!PyArg_ParseTuple(args,(char *)"Os:rlib_set_database_encoding",&obj0,&arg2)) goto fail;
-    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
-    rlib_set_database_encoding(arg1,(char const *)arg2);
-    
-    Py_INCREF(Py_None); resultobj = Py_None;
-    return resultobj;
-    fail:
-    return NULL;
-}
-
 
 static PyObject *_wrap_rlib_set_datasource_encoding(PyObject *self, PyObject *args) {
     PyObject *resultobj;
@@ -1168,42 +1152,6 @@ static PyObject *_wrap_rlib_set_datasource_encoding(PyObject *self, PyObject *ar
     result = (int)rlib_set_datasource_encoding(arg1,arg2,arg3);
     
     resultobj = PyInt_FromLong((long)result);
-    return resultobj;
-    fail:
-    return NULL;
-}
-
-
-static PyObject *_wrap_rlib_set_parameter_encoding(PyObject *self, PyObject *args) {
-    PyObject *resultobj;
-    rlib *arg1 = (rlib *) 0 ;
-    char *arg2 ;
-    PyObject * obj0 = 0 ;
-    
-    if(!PyArg_ParseTuple(args,(char *)"Os:rlib_set_parameter_encoding",&obj0,&arg2)) goto fail;
-    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
-    rlib_set_parameter_encoding(arg1,(char const *)arg2);
-    
-    Py_INCREF(Py_None); resultobj = Py_None;
-    return resultobj;
-    fail:
-    return NULL;
-}
-
-
-static PyObject *_wrap_rlib_set_encodings(PyObject *self, PyObject *args) {
-    PyObject *resultobj;
-    rlib *arg1 = (rlib *) 0 ;
-    char *arg2 ;
-    char *arg3 ;
-    char *arg4 ;
-    PyObject * obj0 = 0 ;
-    
-    if(!PyArg_ParseTuple(args,(char *)"Osss:rlib_set_encodings",&obj0,&arg2,&arg3,&arg4)) goto fail;
-    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
-    rlib_set_encodings(arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4);
-    
-    Py_INCREF(Py_None); resultobj = Py_None;
     return resultobj;
     fail:
     return NULL;
@@ -1265,10 +1213,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"rlib_set_locale", _wrap_rlib_set_locale, METH_VARARGS },
 	 { (char *)"rlib_set_output_parameter", _wrap_rlib_set_output_parameter, METH_VARARGS },
 	 { (char *)"rlib_set_output_encoding", _wrap_rlib_set_output_encoding, METH_VARARGS },
-	 { (char *)"rlib_set_database_encoding", _wrap_rlib_set_database_encoding, METH_VARARGS },
 	 { (char *)"rlib_set_datasource_encoding", _wrap_rlib_set_datasource_encoding, METH_VARARGS },
-	 { (char *)"rlib_set_parameter_encoding", _wrap_rlib_set_parameter_encoding, METH_VARARGS },
-	 { (char *)"rlib_set_encodings", _wrap_rlib_set_encodings, METH_VARARGS },
 	 { (char *)"rlib_free", _wrap_rlib_free, METH_VARARGS },
 	 { (char *)"rlib_version", _wrap_rlib_version, METH_VARARGS },
 	 { NULL, NULL }

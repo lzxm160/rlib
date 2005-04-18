@@ -324,7 +324,7 @@ gchar *colornames(char *str) {
 
 void rlib_parsecolor(struct rlib_rgb *color, gchar *strx) {
 	gchar *str = colornames(strx);
-	if(str != NULL && r_bytecount(str) == 8) {
+	if(str != NULL && r_strlen(str) == 8) {
 		guchar r;
 		guchar g;
 		guchar b;
@@ -399,10 +399,10 @@ char *make_utf8_locale(const char *encoding) {
 	gchar *locale, *codeset = NULL, *extra = NULL;
 	gchar buf[256];
 	gchar *t;
-	gint len = strlen(encoding);
+	gint len = r_strlen(encoding);
 
-	if ((encoding == NULL) || (strlen(encoding) < 2)) {
-		r_warning("encoding is NULL or invalid [%s]... using en_US", encoding);
+	if ((encoding == NULL) || (r_strlen(encoding) < 2)) {
+		r_warning("encoding is NULL or invalid [%s]... using en_US\n", encoding);
 		return "en_US.utf8";
 	}
 	g_strlcpy(buf, encoding, sizeof(buf));
@@ -411,7 +411,7 @@ char *make_utf8_locale(const char *encoding) {
 	if (t) {
 		*t = '\0';
 		codeset = t + 1;
-		len = strlen(codeset);
+		len = r_strlen(codeset);
 	}
 	if (codeset) {
 		t = g_strstr_len(codeset, len, "@");
@@ -429,7 +429,6 @@ char *make_utf8_locale(const char *encoding) {
 	return result;
 }
 
-
 void make_all_locales_utf8() {
 	int *lc = locale_codes;
 	int i;
@@ -437,13 +436,12 @@ void make_all_locales_utf8() {
 		char *t = setlocale(i, NULL);
 		if (t) {
 			if (!setlocale(i, make_utf8_locale(t))) {
-				r_error("Setting locale to [%s] FAILED", t);
+				r_error("Setting locale to [%s] FAILED\n", t);
 			}
 		}
 		++lc;
 	}
 }
-
 
 //For debug purposes so I can see a hex dump of certain utf8 strings.
 inline guint itox(guint i) { return (i < 10)?'0'+i:'A'+i-10; } 
@@ -470,6 +468,7 @@ struct rlib_string * rlib_string_new() {
 	return g_new0(struct rlib_string, 1);
 }
 
+/* THIS IS NOT UTF8 ON PURPOSE */
 void rlib_string_append(struct rlib_string *rs, gchar *str) {
 	gint slen = strlen(str);
 	if((rs->slen + slen  + 1) > rs->buf_size) {

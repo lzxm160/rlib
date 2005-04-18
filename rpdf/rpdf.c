@@ -587,23 +587,23 @@ gboolean rpdf_finalize(struct rpdf *pdf) {
 }
 
 void rpdf_set_title(struct rpdf *pdf, gchar *title) {
-	pdf->title = g_strdup(title);
+	pdf->title = g_strconcat("(", title, ")", NULL);
 }	
 
 void rpdf_set_subject(struct rpdf *pdf, gchar *subject) {
-	pdf->subject = g_strdup(subject);
+	pdf->subject = g_strconcat("(", subject, ")", NULL);
 }	
 
 void rpdf_set_author(struct rpdf *pdf, gchar *author) {
-	pdf->author = g_strdup(author);
+	pdf->author = g_strconcat("(", author, ")", NULL);
 }	
 
 void rpdf_set_keywords(struct rpdf *pdf, gchar *keywords) {
-	pdf->keywords = g_strdup(keywords);
+	pdf->keywords = g_strconcat("(", keywords, ")", NULL);
 }	
 
 void rpdf_set_creator(struct rpdf *pdf, gchar *creator) {
-	pdf->creator = g_strdup(creator);
+	pdf->creator = g_strconcat("(", creator, ")", NULL);
 }	
 
 void rpdf_translate(struct rpdf *pdf, gdouble x, gdouble y) {

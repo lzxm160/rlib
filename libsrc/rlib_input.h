@@ -32,7 +32,7 @@
 
 struct input_info {
 	char charset[64];
-	rlib_char_encoder *encoder;
+	GIConv encoder;
 };
 
 

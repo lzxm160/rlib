@@ -152,7 +152,7 @@ static void split_tdformat(gchar **datefmt, gchar **timefmt, gint *order, const 
 	*timefmt = *datefmt = NULL;
 	*order = 0;
 	t = (gchar *) fmtstr;
-	while (!splitpoint && (t = r_strchr(t, r_bytecount(t), '%'))) {
+	while (!splitpoint && (t = r_strchr(t, r_strlen(t), '%'))) {
 		pctptr = t;
 
 		t = r_nextchr(t);
@@ -165,11 +165,11 @@ static void split_tdformat(gchar **datefmt, gchar **timefmt, gint *order, const 
 			t = r_nextchr(t);
 			//supposed to fall thru - break intentionally missing
 		default:
-			if ((s = r_strchr(datechars, r_bytecount(datechars), r_getchr(t)))) {
+			if ((s = r_strchr(datechars, r_strlen(datechars), r_getchr(t)))) {
 				if (mode && (mode != 1)) splitpoint = pctptr;
 				if (!mode) mode = 1; //date first
 				havedate = TRUE;
-			} else if ((s = r_strchr(timechars, r_bytecount(timechars), r_getchr(t)))) {
+			} else if ((s = r_strchr(timechars, r_strlen(timechars), r_getchr(t)))) {
 				if (mode && (mode != 2)) splitpoint = pctptr;
 				if (!mode) mode = 2; // time first
 				havetime = TRUE;
@@ -226,11 +226,11 @@ void rlib_datetime_format(struct rlib_datetime *dt, gchar *buf, gint max, const 
 	switch (order) {
 	case 1:
 		g_strlcpy(buf, datebuf, max);
-		g_strlcat(buf, timebuf, max - r_bytecount(datebuf));
+		g_strlcat(buf, timebuf, max - r_strlen(datebuf));
 		break;
 	case 2:
 		g_strlcpy(buf, timebuf, max);
-		g_strlcat(buf, datebuf, max - r_bytecount(timebuf));
+		g_strlcat(buf, datebuf, max - r_strlen(timebuf));
 		break;
 	default:
 		g_strlcpy(buf, "!ERR_DT_NO", max);

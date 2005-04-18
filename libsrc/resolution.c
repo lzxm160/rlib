@@ -38,7 +38,7 @@
 
 */
 gint rlib_resolve_rlib_variable(rlib *r, gchar *name) {
-	if(r_bytecount(name) >= 3 && name[0] == 'r' && name[1] == '.') {
+	if(r_strlen(name) >= 3 && name[0] == 'r' && name[1] == '.') {
 		name += 2;
 		if(!strcmp(name, "pageno"))
 			return RLIB_RLIB_VARIABLE_PAGENO;
@@ -58,16 +58,22 @@ gint rlib_resolve_rlib_variable(rlib *r, gchar *name) {
 
 gchar * rlib_resolve_field_value(rlib *r, struct rlib_resultset_field *rf) {
 	struct input_filter *rs = INPUT(r, rf->resultset);
+	gchar encoded_buf[MAXSTRLEN];
+	gchar *str, *ptr= encoded_buf;
+	gint slen, elen;
 	
 	if(r->results[rf->resultset].navigation_failed == TRUE)
 		return NULL;
 	
+	str = rs->get_field_value_as_string(rs, r->results[rf->resultset].result, rf->field);
+	
 #if DISABLE_UTF8
-	return g_strdup(rs->get_field_value_as_string(rs, r->results[rf->resultset].result, rf->field));
+	return g_strdup(str);
 #else
-	rlib_char_encoder *enc = (rs->info.encoder)? rs->info.encoder : r->db_encoder;
-	return g_strdup((gchar *) rlib_char_encoder_encode(enc, 
-			rs->get_field_value_as_string(rs, r->results[rf->resultset].result , rf->field)));
+	slen = r_strlen(str);
+	elen = MAXSTRLEN;
+	rlib_charencoder_convert(rs->info.encoder, &str, &slen, &ptr, &elen);
+	return g_strdup(encoded_buf);
 #endif
 }
 
@@ -86,12 +92,12 @@ gint rlib_resolve_resultset_field(rlib *r, char *name, void **rtn_field, gint *r
 	gchar *right_side = NULL, *result_name = NULL;
 
 	resultset = r->current_result;
-	right_side = memchr(name, '.', strlen(name));
+	right_side = memchr(name, '.', r_strlen(name));
 	if(right_side != NULL) {
 		gint t;
-		result_name = g_malloc(strlen(name) - strlen(right_side) + 1);
-		memcpy(result_name, name, strlen(name) - strlen(right_side));
-		result_name[strlen(name) - strlen(right_side)] = '\0';
+		result_name = g_malloc(r_strlen(name) - r_strlen(right_side) + 1);
+		memcpy(result_name, name, r_strlen(name) - r_strlen(right_side));
+		result_name[r_strlen(name) - r_strlen(right_side)] = '\0';
 		right_side++;
 		name = right_side;
 		t = rlib_lookup_result(r, result_name);
@@ -246,7 +252,7 @@ struct rlib_report_variable *rlib_resolve_variable(rlib *r, struct rlib_part *pa
 		report = part->only_report;
 	if(report == NULL)
 		return NULL;
-	if(r_bytecount(name) >= 3 && name[0] == 'v' && name[1] == '.') {
+	if(r_strlen(name) >= 3 && name[0] == 'v' && name[1] == '.') {
 		name += 2;
 		for(e = report->variables; e != NULL; e=e->next) {
 			struct rlib_report_variable *rv = e->data;
@@ -413,13 +419,12 @@ void rlib_resolve_part_fields(rlib *r, struct rlib_part *part) {
 	rlib_resolve_outputs(r, part, NULL, part->report_header);
 }
 
-
 gchar * rlib_resolve_memory_variable(rlib *r, gchar *name) {
-	if(r_bytecount(name) >= 3 && name[0] == 'm' && name[1] == '.') {
-		if (r->htParameters) {
-			gchar *result = rlib_hashtable_lookup(r->htParameters, name + 2);
-			if (result) return g_strdup(result);
-		}
+	if(r_strlen(name) >= 3 && name[0] == 'm' && name[1] == '.') {
+		gchar *value;
+		value = g_hash_table_lookup(r->parameters, name);
+		if(value != NULL)
+			return g_strdup(value);
 		return ENVIRONMENT(r)->rlib_resolve_memory_variable(name+2);
 	}
 	return NULL;

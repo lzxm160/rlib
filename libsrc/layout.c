@@ -115,16 +115,16 @@ gfloat rlib_layout_estimate_string_width_from_extra_data(rlib *r, struct rlib_li
 	return rtn_width;
 }
 
-static const gchar *rlib_encode_text(rlib *r, const gchar *text) {
-	gchar *result = "";
-
+static gchar *rlib_encode_text(rlib *r, gchar *text, gchar *result, gint result_len) {
 	if (text == NULL) {
 		r_error("rlib_encode_text called with NULL text");
 		result = "!ERR_ENC1";
 	} else {
-		result = (gchar *) rlib_char_encoder_encode(r->current_output_encoder, text);
+		gint len = r_strlen(text);
+		gchar *tmp = result;
+		rlib_charencoder_convert(r->output_encoder, &text, &len, &tmp, &result_len);
 		if (result == NULL) {
-			r_error("encode returned NULL result input was[%s], len=%d", text, strlen(text));
+			r_error("encode returned NULL result input was[%s], len=%d", text, r_strlen(text));
 			result = "!ERR_ENC2";
 		}
 	}
@@ -196,6 +196,7 @@ static gfloat rlib_layout_text_from_extra_data(rlib *r, gint backwards, gfloat l
 	gfloat rtn_width;
 	gchar *text = extra_data->formatted_string;
 	gint i, slen;
+	gchar encoded_text[MAXSTRLEN];
 	
 	if(OUTPUT(r)->trim_links == FALSE) {
 		flag = TEXT_NORMAL;
@@ -203,7 +204,7 @@ static gfloat rlib_layout_text_from_extra_data(rlib *r, gint backwards, gfloat l
 
 	if(flag == TEXT_LEFT && extra_data->found_link) {
 		text = g_strdup(text);
-		slen = strlen(text);
+		slen = r_strlen(text);
 		for(i=slen-1;i>0;i--) {
 			if(isspace(text[i]))
 				text[i] = 0;
@@ -212,7 +213,7 @@ static gfloat rlib_layout_text_from_extra_data(rlib *r, gint backwards, gfloat l
 		}
 	} else if(flag == TEXT_RIGHT && extra_data->found_link) {
 		gint count = 0;
-		slen = strlen(text);
+		slen = r_strlen(text);
 		for(i=slen-1;i>0;i--) {
 			if(isspace(text[i]))
 				count++;
@@ -251,7 +252,7 @@ static gfloat rlib_layout_text_from_extra_data(rlib *r, gint backwards, gfloat l
 			delayed_data->r = r;
 			OUTPUT(r)->print_text_delayed(r, delayed_data, backwards);
 		} else {
-			OUTPUT(r)->print_text(r, left_origin, bottom_orgin+(extra_data->font_point/300.0), (gchar *) rlib_encode_text(r, text), backwards, extra_data->col);
+			OUTPUT(r)->print_text(r, left_origin, bottom_orgin+(extra_data->font_point/300.0), (gchar *) rlib_encode_text(r, text, encoded_text, MAXSTRLEN), backwards, extra_data->col);
 		}
 		rtn_width = extra_data->output_width;
 		if(extra_data->found_color)
@@ -314,6 +315,7 @@ struct rlib_line_extra_data *extra_data) {
 static gfloat rlib_layout_text_string(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_orgin, struct rlib_line_extra_data *extra_data, 
 gchar *text) {
 	gfloat rtn_width;
+	gchar encoded_text[MAXSTRLEN];
 	OUTPUT(r)->set_font_point(r, extra_data->font_point);
 	if(extra_data->found_color)
 		OUTPUT(r)->set_fg_color(r, extra_data->color.r, extra_data->color.g, extra_data->color.b);
@@ -321,7 +323,7 @@ gchar *text) {
 		OUTPUT(r)->start_bold(r);
 	if(extra_data->is_italics)
 		OUTPUT(r)->start_italics(r);
-	OUTPUT(r)->print_text(r, left_origin, bottom_orgin+(extra_data->font_point/300.0), (gchar *) rlib_encode_text(r, text), backwards, extra_data->col);
+	OUTPUT(r)->print_text(r, left_origin, bottom_orgin+(extra_data->font_point/300.0), rlib_encode_text(r, text, encoded_text, MAXSTRLEN), backwards, extra_data->col);
 	rtn_width = extra_data->output_width;
 	if(extra_data->found_color)
 		OUTPUT(r)->set_fg_color(r, 0, 0, 0);
@@ -525,9 +527,9 @@ static void rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 		if(text == NULL)
 			text = "";
 		if(extra_data[i].width == -1)
-			extra_data[i].width = r_charcount(text);
+			extra_data[i].width = r_strlen(text);
 		else {
-			gint slen = r_charcount(text);
+			gint slen = r_strlen(text);
 			if(slen > extra_data[i].width)
 				*r_ptrfromindex(text, extra_data[i].width) = '\0';
 			else if(slen < extra_data[i].width && MAXSTRLEN != slen) {

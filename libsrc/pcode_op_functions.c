@@ -88,8 +88,8 @@ gint rlib_pcode_operator_add(rlib *r, struct rlib_var_stack *vs, struct rlib_val
 			return TRUE;
 		}
 		if(RLIB_VALUE_IS_STRING(v1) && RLIB_VALUE_IS_STRING(v2)) {
-			gchar *newstr = g_malloc(r_bytecount(RLIB_VALUE_GET_AS_STRING(v1))+r_bytecount(RLIB_VALUE_GET_AS_STRING(v2))+1);
-			memcpy(newstr, RLIB_VALUE_GET_AS_STRING(v2), r_bytecount(RLIB_VALUE_GET_AS_STRING(v2))+1);
+			gchar *newstr = g_malloc(r_strlen(RLIB_VALUE_GET_AS_STRING(v1))+r_strlen(RLIB_VALUE_GET_AS_STRING(v2))+1);
+			memcpy(newstr, RLIB_VALUE_GET_AS_STRING(v2), r_strlen(RLIB_VALUE_GET_AS_STRING(v2))+1);
 			strcat(newstr, RLIB_VALUE_GET_AS_STRING(v1));
 			rlib_value_free(v1);
 			rlib_value_free(v2);
@@ -144,8 +144,8 @@ gint rlib_pcode_operator_add(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 		if(RLIB_VALUE_IS_STRING(v1) && RLIB_VALUE_IS_STRING(v2)) {
 			gchar *safe1 =  RLIB_VALUE_GET_AS_STRING(v1) == NULL ? "" : RLIB_VALUE_GET_AS_STRING(v1);
 			gchar *safe2 =  RLIB_VALUE_GET_AS_STRING(v2) == NULL ? "" : RLIB_VALUE_GET_AS_STRING(v2);
-			gchar *newstr = g_malloc(r_bytecount(safe1)+r_bytecount(safe2)+1);
-			memcpy(newstr, safe2, r_bytecount(safe2)+1);
+			gchar *newstr = g_malloc(r_strlen(safe1)+r_strlen(safe2)+1);
+			memcpy(newstr, safe2, r_strlen(safe2)+1);
 			strcat(newstr, safe1);
 			rlib_value_free(v1);
 			rlib_value_free(v2);
@@ -1331,7 +1331,7 @@ gint rlib_pcode_operator_left(rlib *r, struct rlib_value_stack *vs, struct rlib_
 		gchar *tmp = g_strdup(RLIB_VALUE_GET_AS_STRING(v2));
 		gint n = RLIB_VALUE_GET_AS_NUMBER(v1)/RLIB_DECIMAL_PRECISION;
 		if (n >= 0) {
-			if (r_charcount(tmp) > n) *r_ptrfromindex(tmp, n) = '\0';
+			if (r_strlen(tmp) > n) *r_ptrfromindex(tmp, n) = '\0';
 		}
 		rlib_value_free(v1);
 		rlib_value_free(v2);
@@ -1353,7 +1353,7 @@ gint rlib_pcode_operator_right(rlib *r, struct rlib_value_stack *vs, struct rlib
 	if(RLIB_VALUE_IS_STRING(v2) && RLIB_VALUE_IS_NUMBER(v1)) {
 		gchar *tmp = g_strdup(RLIB_VALUE_GET_AS_STRING(v2));
 		gint n = RLIB_VALUE_GET_AS_NUMBER(v1)/RLIB_DECIMAL_PRECISION;
-		gint len = r_charcount(tmp);
+		gint len = r_strlen(tmp);
 		if (n >= 0) {
 			if (n > len) n = len;
 		}
@@ -1379,7 +1379,7 @@ gint rlib_pcode_operator_substring(rlib *r, struct rlib_value_stack *vs, struct 
 		gchar *tmp = g_strdup(RLIB_VALUE_GET_AS_STRING(v3));
 		gint st = RLIB_VALUE_GET_AS_NUMBER(v2)/RLIB_DECIMAL_PRECISION;
 		gint sz = RLIB_VALUE_GET_AS_NUMBER(v1)/RLIB_DECIMAL_PRECISION;
-		gint len = r_charcount(tmp);
+		gint len = r_strlen(tmp);
 		gint maxlen;
 		if (st < 0) st = 0;
 		if (st > len) st = len;

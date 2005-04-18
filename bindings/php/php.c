@@ -53,8 +53,8 @@ ZEND_FUNCTION(rlib_add_parameter);
 ZEND_FUNCTION(rlib_set_locale);
 ZEND_FUNCTION(rlib_version);
 ZEND_FUNCTION(rlib_set_output_parameter);
-ZEND_FUNCTION(rlib_set_encodings);
 ZEND_FUNCTION(rlib_set_datasource_encoding);
+ZEND_FUNCTION(rlib_set_output_encoding);
 
 ZEND_MODULE_STARTUP_D(rlib);
 
@@ -87,7 +87,7 @@ zend_function_entry rlib_functions[] =
 	ZEND_FE(rlib_version, NULL)
 	ZEND_FE(rlib_set_output_parameter, NULL)
 	ZEND_FE(rlib_set_datasource_encoding, NULL)
-	ZEND_FE(rlib_set_encodings, NULL)
+	ZEND_FE(rlib_set_output_encoding, NULL)
 	{NULL, NULL, NULL}
 };
 
@@ -502,21 +502,21 @@ ZEND_FUNCTION(rlib_set_datasource_encoding) {
 	rlib_set_datasource_encoding(rip->r, datasource, encoding);
 }
 
-
-ZEND_FUNCTION(rlib_set_encodings) {
-	gint id = -1;
-	gint whatever;
-	gchar *outputencoding, *dbencoding, *paramencoding;
+ZEND_FUNCTION(rlib_set_output_encoding) {
 	zval *z_rip = NULL;
+	gint whatever;
+	gchar *encoding;
 	rlib_inout_pass *rip;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsss", &z_rip, &outputencoding, &whatever, &dbencoding, &whatever, &paramencoding, &whatever) == FAILURE) {
+	gint id = -1;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &z_rip, &encoding, &whatever) == FAILURE) {
 		return;
 	}
+	
 	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
-	rlib_set_encodings(rip->r, outputencoding, dbencoding, paramencoding);
-}
 
+	rlib_set_output_encoding(rip->r, encoding);
+}
 
 ZEND_FUNCTION(rlib_set_output_parameter) {
 	gint id = -1;

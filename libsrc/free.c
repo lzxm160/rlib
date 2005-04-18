@@ -362,10 +362,8 @@ gint rlib_free_follower(rlib *r ) {
 
 gint rlib_free(rlib *r) {
 	int i;
-	rlib_char_encoder_destroy(&r->db_encoder);
-	rlib_char_encoder_destroy(&r->param_encoder);
-	rlib_char_encoder_destroy(&r->output_encoder);
-
+	rlib_charencoder_free(r->output_encoder);
+	g_free(r->output_encoder_name);
 
 	rlib_free_tree(r);
 	xmlCleanupParser();
@@ -377,16 +375,13 @@ gint rlib_free(rlib *r) {
 			g_module_close(r->inputs[i].handle);
 	}
 
-	if (r->htParameters) {
-		rlib_hashtable_destroy(r->htParameters);
-	}
-
 	if(r->did_execute) {
 		OUTPUT(r)->free(r);
 		ENVIRONMENT(r)->free(r);
 	}
 	g_hash_table_freeze(r->outut_paramaters);
 	g_hash_table_freeze(r->input_metadata);
+	g_hash_table_freeze(r->paramaters);
 	rlib_free_follower(r);
 				
 	g_free(r);

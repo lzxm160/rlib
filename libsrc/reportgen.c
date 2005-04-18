@@ -92,7 +92,7 @@ gchar *align_text(rlib *r, gchar *rtn, gint len, gchar *src, gint align, gint wi
 	if(align == RLIB_ALIGN_LEFT || width == -1) {
 	} else {
 		if(align == RLIB_ALIGN_RIGHT) {        
-			gint x = width - r_charcount(src);
+			gint x = width - r_strlen(src);
 			if (x > (len - 1)) x = len - 1;
 			if(x > 0) {
 				memset(rtn, ' ', x);
@@ -100,8 +100,8 @@ gchar *align_text(rlib *r, gchar *rtn, gint len, gchar *src, gint align, gint wi
 			}
 		}
 		if(align == RLIB_ALIGN_CENTER) {
-			if(!(width > 0 && r_charcount(src) > width)) {
-				gint x = (width - r_charcount(src))/2;
+			if(!(width > 0 && r_strlen(src) > width)) {
+				gint x = (width - r_strlen(src))/2;
 				if (x > (len - 1)) 
 					x = len -1;
 				if(x > 0) {
@@ -133,7 +133,7 @@ RVector *wrap_memo_lines(gchar *txt, gint width, const gchar *wrapchars) {
 	RVector *v = RVector_new();
 	
 	do {
-		if (r_charcount(txt) < width) {
+		if (r_strlen(txt) < width) {
 			RVector_add(v, g_strdup(txt));
 			break;
 		} else {
@@ -739,7 +739,6 @@ gint rlib_make_report(rlib *r) {
 	OUTPUT(r)->init_output(r);
 
 
-	r->current_output_encoder = NULL;
 	for(i=0;i<r->parts_count;i++) {
 		struct rlib_part *part = r->parts[i];
 		rlib_fetch_first_rows(r);

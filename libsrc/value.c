@@ -60,8 +60,8 @@ void rlib_var_set_string(rlib_var *v, const char *str) {
 
 
 gint rlib_var_concat_string(rlib_var *v, const char *str) {
-	int len = strlen(v->value.ch);
-	int tlen = len + strlen(str);
+	int len = r_strlen(v->value.ch);
+	int tlen = len + r_strlen(str);
 	if (tlen >= v->len) return -1;
 	
 	strcpy(v->value.ch + len, str);
@@ -235,7 +235,7 @@ static rlib_var *rlib_var_factory_get(rlib_var_factory *f, int size) {
 
 //Gets an appropriately sized rlib_var and copies the string to it.
 rlib_var *rlib_var_factory_new_string(rlib_var_factory *f, const gchar *str) {
-	int len = strlen(str) + 1;
+	int len = r_strlen(str) + 1;
 	rlib_var *v = rlib_var_factory_get(f, len);
 	g_strlcpy(v->value.ch, str, len); //just strcpy maybe??
 	v->type = RLIB_VAR_STRING;

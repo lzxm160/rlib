@@ -484,8 +484,8 @@ static void parse_metadata_item(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur, GHas
 static void parse_report(rlib *r, struct rlib_part *part, struct rlib_report *report, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur, gchar *query) {
 	report->doc = doc;
 	report->contents = NULL;
-	if (doc->encoding) 
-		g_strlcpy(report->xml_encoding_name, doc->encoding, sizeof(report->xml_encoding_name));
+//	if (doc->encoding) 
+//		g_strlcpy(report->xml_encoding_name, doc->encoding, sizeof(report->xml_encoding_name));
 
 	while (cur && xmlIsBlankNode (cur)) 
 		cur = cur -> next;

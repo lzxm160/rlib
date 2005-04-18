@@ -194,7 +194,7 @@ gint64 rlib_str_to_long_long(gchar *str) {
 #else
 	temp = nl_langinfo(RADIXCHAR);
 #endif
-	if (!temp || r_bytecount(temp) != 1) {
+	if (!temp || r_strlen(temp) != 1) {
 		r_warning("nl_langinfo returned %s as DECIMAL_POINT", temp);
 	} else {
 		decimalsep = *temp;
@@ -209,7 +209,7 @@ gint64 rlib_str_to_long_long(gchar *str) {
 	if(other_side != NULL) {
 		other_side++;
 		right = atoll(other_side);
-		len = r_bytecount(other_side);
+		len = r_strlen(other_side);
 	}
 	if (len > RLIB_FXP_PRECISION) {
 		len = RLIB_FXP_PRECISION;
@@ -253,8 +253,8 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, struct rlib_part *part, st
 	gint rvar;
 	o = g_new0(struct rlib_pcode_operand, 1);
 	if(str[0] == '\'') {
-		gchar *newstr = g_malloc(r_bytecount(str)-1);
-		memcpy(newstr, str+1, r_bytecount(str)-1);
+		gchar *newstr = g_malloc(r_strlen(str)-1);
+		memcpy(newstr, str+1, r_strlen(str)-1);
 		newstr[strlen(str)-2] = '\0';
 		o->type = OPERAND_STRING;
 		o->value = newstr;
@@ -323,7 +323,7 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, struct rlib_part *part, st
 		o->value = rf;
 	} else {
 		gchar *err = "BAD_OPERAND";
-		gchar *newstr = g_malloc(r_bytecount(err)+1);
+		gchar *newstr = g_malloc(r_strlen(err)+1);
 		strcpy(newstr, err);
 		o->type = OPERAND_STRING;
 		o->value = newstr;

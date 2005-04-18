@@ -1,3 +1,33 @@
+2005-04-18  Bob Doan  <bdoan@sicompos.com>
+	* bindings/java/java.c: restore utf8 support, redo utf8 api's, fix a few small rpdf problems
+	* bindings/perl/perl.c: likewise
+	* bindings/php/php.c: likewise
+	* bindings/python/python.c: likewise
+	* libsrc/Makefile.am: likewise
+	* libsrc/api.c: likewise
+	* libsrc/charencoder.c: likewise
+	* libsrc/charencoder.h: likewise
+	* libsrc/containers.c: likewise
+	* libsrc/containers.h: likewise
+	* libsrc/datetime.c: likewise
+	* libsrc/free.c: likewise
+	* libsrc/html.c: likewise
+	* libsrc/layout.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/pcode.c: likewise
+	* libsrc/pcode_op_functions.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/rlib.i: likewise
+	* libsrc/rlib_input.h: likewise
+	* libsrc/util.c:  likewise
+	* libsrc/util.h: likewise
+	* libsrc/value.c:  likewise
+	* rpdf/rpdf.c:  likewise
+	* src/examples/php/hungary.php: likewise
+	* src/examples/php/hungary.xml: likewise
+
 2005-04-13  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/php.c: Don't #ifdef around the datasources.  It's dumb.  They are plugins
 	* libsrc/api.c: likewise

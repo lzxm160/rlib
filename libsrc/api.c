@@ -70,12 +70,10 @@ rlib * rlib_init_with_environment(struct environment_filter *environment) {
 #else
 	lc_encoding = nl_langinfo(CODESET);
 #endif
-	if (lc_encoding != NULL) {
-		rlib_set_encodings(r, lc_encoding, lc_encoding, lc_encoding);
-	}
 	
 	r->output_parameters = g_hash_table_new_full (g_str_hash, g_str_equal, string_destroyer, string_destroyer);
 	r->input_metadata = g_hash_table_new_full (g_str_hash, g_str_equal, string_destroyer, metadata_destroyer);
+	r->parameters = g_hash_table_new_full (g_str_hash, g_str_equal, string_destroyer, string_destroyer);
 	
 #if !DISABLE_UTF8
 	make_all_locales_utf8();
@@ -107,7 +105,6 @@ gint rlib_add_query_pointer_as(rlib *r, gchar *input_source, gchar *sql, gchar *
 	r->queries_count++;
 	return r->queries_count;
 }
-
 
 gint rlib_add_query_as(rlib *r, gchar *input_source, gchar *sql, gchar *name) {
 	gint i;
@@ -210,9 +207,7 @@ gchar * rlib_get_content_type_as_text(rlib *r) {
 		if(r->format == RLIB_CONTENT_TYPE_CSV) {
 			return RLIB_WEB_CONTENT_TYPE_CSV;
 		} else {
-			const char *charset = (r->current_output_encoder)? 
-						rlib_char_encoder_get_name(r->current_output_encoder)
-						: "UTF-8";
+			const char *charset = r->output_encoder_name != NULL ? r->output_encoder_name: "UTF-8";
 			if(r->format == RLIB_CONTENT_TYPE_HTML) {
 				g_snprintf(buf, sizeof(buf), RLIB_WEB_CONTENT_TYPE_HTML, charset);
 				return buf;
@@ -300,7 +295,6 @@ gboolean rlib_signal_connect(rlib *r, gint signal_number, gboolean (*signal_func
 	return TRUE;
 }
 
-
 gboolean rlib_signal_connect_string(rlib *r, gchar *signal_name, gboolean (*signal_function)(rlib *, gpointer), gpointer data) {
 	gint signal = -1;
 	if(!strcasecmp(signal_name, "row_change"))
@@ -327,32 +321,10 @@ gboolean rlib_query_refresh(rlib *r) {
 	return TRUE;
 }
 
-
-/**
- *	Add name/value pair to the memory constants.
- *  Saves copies of the name and value, NOT pointers.
- */
 gint rlib_add_parameter(rlib *r, const gchar *name, const gchar *value) {
-	char buf[MAXSTRLEN];
-	gint result = 1;
-	rlib_hashtable_ptr ht = r->htParameters;
-	
-	if (!ht) { //If no hashtable - add one
-		ht = r->htParameters = rlib_hashtable_new_copyboth();
-	}
-	if (ht) {
-//This encodes both the name and value in UTF8 from whatever the source is written in.
-		g_strlcpy(buf, rlib_char_encoder_encode(r->param_encoder, name), sizeof(buf));
-		rlib_hashtable_insert(ht, (gpointer) buf, (gpointer) rlib_char_encoder_encode(r->param_encoder, value));
-#if 0
-//The rlib_hashtable_new_copyboth() hashtable already duplicates the strings (see docs above)
-rlib_hashtable_insert(ht, (gpointer) g_strdup(name), (gpointer) g_strdup(value));
-#endif
-result = 0;
-	}
-	return result;
+	g_hash_table_insert(r->parameters, g_strdup(name), g_strdup(value));
+	return TRUE;
 }
-
 
 /*
 *  Returns TRUE if locale was actually set, otherwise, FALSE
@@ -370,17 +342,9 @@ gint rlib_set_locale(rlib *r, gchar *locale) {
 		r_error("Locale could not be changed to %s by rlib_set_locale", locale);
 		return FALSE;
 	}
-#if 0
-	lc_encoding = nl_langinfo(CODESET);
-	if (lc_encoding != NULL) {
-		rlib_set_encodings(r, lc_encoding, lc_encoding, lc_encoding);
-		r_info("Encoding changed to locale %s lang=%s in rlib_set_locale", cur, lc_encoding);
-	}		
-#endif
 	r_debug("Locale set to: %s", locale);
 	return (cur)? TRUE : FALSE;
 }
-
 
 void rlib_init_profiler() {
 	g_mem_set_vtable(glib_mem_profiler_table);
@@ -424,28 +388,14 @@ void rlib_trap() {
 	return;
 }
 
-
 void rlib_set_output_parameter(rlib *r, gchar *parameter, gchar *value) {
 	g_hash_table_insert(r->output_parameters, g_strdup(parameter), g_strdup(value));
 }
 
-
 void rlib_set_output_encoding(rlib *r, const char *encoding) {
-	rlib_char_encoder_destroy(&r->output_encoder);
-	r->output_encoder = rlib_char_encoder_new(encoding, TRUE);
+	r->output_encoder = rlib_charencoder_new(encoding, "UTF-8");
+	r->output_encoder_name  = g_strdup(encoding);
 }
-
-/**
- * Sets the default encoding that is used by the datasource so RLIB 
- * knows how to properly handle its data. Use this function 
- * The default is to assume that input from the database is in the 
- * same locale as the current system locale.
- */
-void rlib_set_database_encoding(rlib *r, const char *encoding) {
-	rlib_char_encoder_destroy(&r->db_encoder);
-	r->db_encoder = rlib_char_encoder_new(encoding, FALSE);
-}
-
 
 gint rlib_set_datasource_encoding(rlib *r, gchar *input_name, gchar *encoding) {
 	int i;
@@ -454,48 +404,14 @@ gint rlib_set_datasource_encoding(rlib *r, gchar *input_name, gchar *encoding) {
 	for (i=0;i<r->inputs_count;i++) {
 		tif = r->inputs[i].input;
 		if (strcmp(r->inputs[i].name, input_name) == 0) {
-			rlib_char_encoder_destroy(&tif->info.encoder);
-			tif->info.encoder = rlib_char_encoder_new(encoding, FALSE);
-#if 0
-			r->inputs[i].input->input_decoder = iconv_open(RLIB_ENCODING, decoding);
-			if (r->inputs[i].input->input_decoder == (iconv_t) -1)  {
-				rlogit("Error.. invalid decoding [%s]\n", decoding);
-				return -1;			
-			}
-#endif
+			tif->info.encoder = rlib_charencoder_new(encoding, FALSE);
 			return 0;
 		}
 	}
-	rlogit("Error.. datasource [%s] does not exist\n", input_name);
+	r_error("Error.. datasource [%s] does not exist\n", input_name);
 	return -1;
 }
 
-
-/**
- * Sets the encoding that is used by the parameters so RLIB knows how to 
- * properly handle them. This is used for all reports/inputs, etc.
- * The default is to assume that input from parameter values is UTF8. 
- */
-void rlib_set_parameter_encoding(rlib *r, const char *encoding) {
-	rlib_char_encoder_destroy(&r->param_encoder);
-	r->param_encoder = rlib_char_encoder_new(encoding, FALSE);
-}
-
-
-/**
- * Sets the DEFAULT encodings for multiple data sources in one function.
- */
-void rlib_set_encodings(rlib *r, const char *outputencoding, const char *dbencoding, const char *paramencoding) {
-	if (outputencoding && *outputencoding) {
-		rlib_set_output_encoding(r, outputencoding);
-	}
-	if (dbencoding && *dbencoding) {
-		rlib_set_database_encoding(r, dbencoding);
-	}
-	if (paramencoding && *paramencoding) {
-		rlib_set_parameter_encoding(r, paramencoding);
-	}
-}
 
 
 #ifdef VERSION

@@ -78,8 +78,8 @@ gchar *str2hex(const gchar *str);
 long long rlib_safe_atoll(char *str);
 
 #if DISABLE_UTF8
-#define r_charcount(s) (strlen(s))
-#define r_bytecount(s) (strlen(s))
+
+#define r_strlen(s) (strlen(s))
 #define r_strchr(s, len, chr) (strchr(s, chr))
 #define r_nextchr(s) (s+1)
 #define r_getchr(s) (*s)
@@ -89,8 +89,8 @@ long long rlib_safe_atoll(char *str);
 #define r_ptrfromindex(s, idx) (s+idx)
 
 #else
-#define r_charcount(s) (g_utf8_strlen(s, -1))
-#define r_bytecount(s) (strlen(s))
+
+#define r_strlen(s) (g_utf8_strlen(s, -1))
 #define r_strchr(t, len, chr) (g_utf8_strchr(t, len, chr))
 #define r_nextchr(t) (g_utf8_next_char(t))
 #define r_getchr(t) (g_utf8_get_char(t))

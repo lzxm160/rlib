@@ -150,6 +150,8 @@ static void rlib_html_print_text(rlib *r, gfloat left_origin, gfloat bottom_orig
 	gint did_fp = 0;
 	gchar buf_font[MAXSTRLEN];
 
+r_error("WE GOT [%s]\n", text);
+
 	OUTPUT_PRIVATE(r)->bg_backwards = backwards;
 	
 
@@ -724,7 +726,6 @@ static void html_graph_set_data_plot_count(rlib *r, gint count) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
 	graph->data_plot_count = count;
 }
-
 
 static void html_graph_plot_bar(rlib *r, gchar side, gint iteration, gint plot, gfloat height_percent, struct rlib_rgb *color,gfloat last_height, gboolean divide_iterations) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;	
