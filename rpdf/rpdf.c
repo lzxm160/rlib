@@ -582,7 +582,7 @@ gboolean rpdf_finalize(struct rpdf *pdf) {
 	rpdf_out_string(pdf, ">>\n");
 	sprintf(buf, "startxref\n%d\n", save_size);
 	rpdf_out_string(pdf, buf);
-	rpdf_out_string(pdf, "%%EOF\n\n");
+	rpdf_out_string(pdf, "%%EOF\n");
 	return TRUE;
 }
 

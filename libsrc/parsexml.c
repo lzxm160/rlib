@@ -369,16 +369,23 @@ static struct rlib_graph_plot * parse_graph_plots(struct rlib_report *report, xm
 	gp->xml_label = xmlGetProp(cur, (const xmlChar *) "label");
 	gp->xml_side = xmlGetProp(cur, (const xmlChar *) "side");
 	gp->xml_disabled = xmlGetProp(cur, (const xmlChar *) "disabled");
+	gp->xml_color = xmlGetProp(cur, (const xmlChar *) "color");
 	return gp;
 }
 
 static void parse_graph(struct rlib_report *report, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur, struct rlib_graph *graph) {
+	graph->xml_name = xmlGetProp(cur, (const xmlChar *) "name");
 	graph->xml_type = xmlGetProp(cur, (const xmlChar *) "type");
 	graph->xml_subtype = xmlGetProp(cur, (const xmlChar *) "subtype");
 	graph->xml_width = xmlGetProp(cur, (const xmlChar *) "width");
 	graph->xml_height = xmlGetProp(cur, (const xmlChar *) "height");
+	graph->xml_bold_titles = xmlGetProp(cur, (const xmlChar *) "bold_titles");
 	graph->xml_title = xmlGetProp(cur, (const xmlChar *) "title");
-	graph->xml_title = xmlGetProp(cur, (const xmlChar *) "title");
+	graph->xml_legend_bg_color = xmlGetProp(cur, (const xmlChar *) "legend_bg_color");
+	graph->xml_legend_orientation = xmlGetProp(cur, (const xmlChar *) "legend_orientation");
+	graph->xml_draw_x_line = xmlGetProp(cur, (const xmlChar *) "draw_x_line");
+	graph->xml_draw_y_line = xmlGetProp(cur, (const xmlChar *) "draw_y_line");
+	graph->xml_grid_color = xmlGetProp(cur, (const xmlChar *) "grid_color");
 	graph->xml_x_axis_title = xmlGetProp(cur, (const xmlChar *) "x_axis_title");
 	graph->xml_y_axis_title = xmlGetProp(cur, (const xmlChar *) "y_axis_title");
 	graph->xml_y_axis_mod = xmlGetProp(cur, (const xmlChar *) "y_axis_mod");

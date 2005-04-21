@@ -38,6 +38,8 @@ ZEND_FUNCTION(rlib_add_datasource_postgre);
 ZEND_FUNCTION(rlib_add_datasource_odbc);
 ZEND_FUNCTION(rlib_add_datasource_array);
 ZEND_FUNCTION(rlib_add_query_as);
+ZEND_FUNCTION(rlib_graph_add_bg_region);
+ZEND_FUNCTION(rlib_graph_clear_bg_region);
 ZEND_FUNCTION(rlib_add_resultset_follower);
 ZEND_FUNCTION(rlib_add_resultset_follower_n_to_1);
 ZEND_FUNCTION(rlib_add_report);
@@ -71,6 +73,8 @@ zend_function_entry rlib_functions[] =
 	ZEND_FE(rlib_add_datasource_odbc, NULL)
 	ZEND_FE(rlib_add_datasource_array, NULL)
 	ZEND_FE(rlib_add_query_as, NULL)
+	ZEND_FE(rlib_graph_add_bg_region, NULL)
+	ZEND_FE(rlib_graph_clear_bg_region, NULL)
 	ZEND_FE(rlib_add_resultset_follower, NULL)
 	ZEND_FE(rlib_add_resultset_follower_n_to_1, NULL)
 	ZEND_FE(rlib_add_report, NULL)
@@ -237,8 +241,6 @@ ZEND_FUNCTION(rlib_add_datasource_array) {
 	RETURN_LONG(result);
 }
 
-
-
 ZEND_FUNCTION(rlib_add_query_as) {
 	zval *z_rip = NULL;
 	gint whatever;
@@ -254,6 +256,41 @@ ZEND_FUNCTION(rlib_add_query_as) {
 	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
 
 	rlib_add_query_as(rip->r, estrdup(datasource_name), estrdup(sql), estrdup(name));
+}
+
+ZEND_FUNCTION(rlib_graph_add_bg_region) {
+	zval *z_rip = NULL;
+	gint whatever;
+	gchar *graph_name, *region_label, *color;
+	gdouble start, end;
+	rlib_inout_pass *rip;
+	gint id = -1;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsssdd", &z_rip, 
+		&graph_name, &whatever, &region_label, &whatever, &color, &whatever, &start, &end) == FAILURE) {
+		return;
+	}
+	
+	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
+
+	rlib_graph_add_bg_region(rip->r, graph_name, region_label, color, start, end);
+}
+
+ZEND_FUNCTION(rlib_graph_clear_bg_region) {
+	zval *z_rip = NULL;
+	gint whatever;
+	gchar *graph_name;
+	rlib_inout_pass *rip;
+	gint id = -1;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &z_rip, 
+		&graph_name, &whatever) == FAILURE) {
+		return;
+	}
+	
+	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
+
+	rlib_graph_clear_bg_region(rip->r, graph_name);
 }
 
 ZEND_FUNCTION(rlib_add_resultset_follower) {

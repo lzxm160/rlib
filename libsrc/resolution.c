@@ -58,10 +58,14 @@ gint rlib_resolve_rlib_variable(rlib *r, gchar *name) {
 
 gchar * rlib_resolve_field_value(rlib *r, struct rlib_resultset_field *rf) {
 	struct input_filter *rs = INPUT(r, rf->resultset);
+#if !DISABLE_UTF8
 	gchar encoded_buf[MAXSTRLEN];
-	gchar *str, *ptr= encoded_buf;
 	gint slen, elen;
-	
+	gchar *ptr= encoded_buf;
+#endif	
+	gchar *str;
+
+
 	if(r->results[rf->resultset].navigation_failed == TRUE)
 		return NULL;
 	
@@ -264,7 +268,6 @@ struct rlib_report_variable *rlib_resolve_variable(rlib *r, struct rlib_part *pa
 	return NULL;
 }
 
-
 int is_true_str(const gchar *str) {
 	if (str == NULL) return FALSE;
 	return (!strcasecmp(str, "yes") || !strcasecmp(str, "true"))? TRUE : FALSE;
@@ -274,11 +277,18 @@ void rlib_resolve_graph(rlib *r, struct rlib_part *part, struct rlib_report *rep
 	struct rlib_graph_plot *plot;
 	GSList *list;
 	
+	graph->name_code = rlib_infix_to_pcode(r, part, report, graph->xml_name, TRUE);
 	graph->type_code = rlib_infix_to_pcode(r, part, report, graph->xml_type, TRUE);
 	graph->subtype_code = rlib_infix_to_pcode(r, part, report, graph->xml_subtype, TRUE);
 	graph->width_code = rlib_infix_to_pcode(r, part, report, graph->xml_width, TRUE);
 	graph->height_code = rlib_infix_to_pcode(r, part, report, graph->xml_height, TRUE);
 	graph->title_code = rlib_infix_to_pcode(r, part, report, graph->xml_title, TRUE);
+	graph->bold_titles_code = rlib_infix_to_pcode(r, part, report, graph->xml_bold_titles, TRUE);
+	graph->legend_bg_color_code = rlib_infix_to_pcode(r, part, report, graph->xml_legend_bg_color, TRUE);
+	graph->legend_orientation_code = rlib_infix_to_pcode(r, part, report, graph->xml_legend_orientation, TRUE);
+	graph->draw_x_line_code = rlib_infix_to_pcode(r, part, report, graph->xml_draw_x_line, TRUE);
+	graph->draw_y_line_code = rlib_infix_to_pcode(r, part, report, graph->xml_draw_y_line, TRUE);
+	graph->grid_color_code = rlib_infix_to_pcode(r, part, report, graph->xml_grid_color, TRUE);
 	graph->x_axis_title_code = rlib_infix_to_pcode(r, part, report, graph->xml_x_axis_title, TRUE);
 	graph->y_axis_title_code = rlib_infix_to_pcode(r, part, report, graph->xml_y_axis_title, TRUE);
 	graph->y_axis_mod_code = rlib_infix_to_pcode(r, part, report, graph->xml_y_axis_mod, TRUE);
@@ -293,6 +303,7 @@ void rlib_resolve_graph(rlib *r, struct rlib_part *part, struct rlib_report *rep
 		plot->label_code = rlib_infix_to_pcode(r, part, report, plot->xml_label, TRUE);
 		plot->side_code = rlib_infix_to_pcode(r, part, report, plot->xml_side, TRUE);
 		plot->disabled_code = rlib_infix_to_pcode(r, part, report, plot->xml_disabled, TRUE);
+		plot->color_code = rlib_infix_to_pcode(r, part, report, plot->xml_color, TRUE);
 	}
 }
 

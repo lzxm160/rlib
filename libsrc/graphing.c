@@ -222,6 +222,7 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	gint y_ticks = 10, fake_y_ticks;
 	gint i = 0;
 	gint y_axis_mod = 0;
+	gboolean draw_x_line = TRUE, draw_y_line = TRUE, bold_titles = FALSE;
 	gboolean have_right_side = FALSE;
 	gint side = RLIB_SIDE_LEFT;
 	gfloat tmp;
@@ -230,7 +231,9 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	gfloat y_origin[2] = {0,0};
 	gchar data_type[2] = {POSITIVE, POSITIVE}; 
 	struct rlib_rgb color[MAX_COLOR_POOL];
-	gchar type[MAXSTRLEN], subtype[MAXSTRLEN], title[MAXSTRLEN], x_axis_title[MAXSTRLEN], y_axis_title[MAXSTRLEN], y_axis_title_right[MAXSTRLEN], side_str[MAXSTRLEN];
+	struct rlib_rgb plot_color;
+	gchar type[MAXSTRLEN], subtype[MAXSTRLEN], title[MAXSTRLEN], legend_bg_color[MAXSTRLEN], legend_orientation[MAXSTRLEN], x_axis_title[MAXSTRLEN];
+	gchar y_axis_title[MAXSTRLEN], y_axis_title_right[MAXSTRLEN], side_str[MAXSTRLEN], grid_color[MAXSTRLEN], name[MAXSTRLEN], color_str[MAXSTRLEN];
 	gint graph_type;
 	gboolean divide_iterations = TRUE;
 	gboolean should_label_under_tick = FALSE;
@@ -253,6 +256,14 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 		subtype[0] = 0;
 	if(!rlib_execute_as_string(r, graph->title_code, title, MAXSTRLEN))
 		title[0] = 0;
+	if(!rlib_execute_as_string(r, graph->name_code, name, MAXSTRLEN))
+		name[0] = 0;
+	if(!rlib_execute_as_string(r, graph->legend_bg_color_code, legend_bg_color, MAXSTRLEN))
+		legend_bg_color[0] = 0;
+	if(!rlib_execute_as_string(r, graph->legend_orientation_code, legend_orientation, MAXSTRLEN))
+		legend_orientation[0] = 0;
+	if(!rlib_execute_as_string(r, graph->grid_color_code, grid_color, MAXSTRLEN))
+		grid_color[0] = 0;
 	if(!rlib_execute_as_string(r, graph->x_axis_title_code, x_axis_title, MAXSTRLEN))
 		x_axis_title[0] = 0;
 	if(!rlib_execute_as_string(r, graph->y_axis_title_code, y_axis_title, MAXSTRLEN))
@@ -265,6 +276,13 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 		left_axis_decimal_hint = i;
 	if(rlib_execute_as_int(r, graph->y_axis_decimals_code_right, &i))
 		right_axis_decimal_hint = i;
+	if(rlib_execute_as_int(r, graph->draw_x_line_code, &i))
+		draw_x_line = i;
+	if(rlib_execute_as_int(r, graph->draw_y_line_code, &i))
+		draw_y_line = i;
+	if(rlib_execute_as_int(r, graph->bold_titles_code, &i))
+		bold_titles = i;
+
 
 	if(!rlib_will_this_fit(r, part, report, graph_height / RLIB_PDF_DPI, 1)) {
 		*top_margin_offset = 0;
@@ -296,6 +314,31 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	rlib_fetch_first_rows(r);
 	row_count = 0;
 	OUTPUT(r)->graph_start(r, left_margin_offset, rlib_layout_get_next_line_by_font_point(r, part, part->position_top[0]+(*top_margin_offset), 0), graph_width, graph_height, should_label_under_tick);
+
+	if(legend_orientation[0] != 0) {
+		gint orientation = RLIB_GRAPH_LEGEND_ORIENTATION_RIGHT;
+		if(strcmp(legend_orientation, "bottom") == 0)
+			orientation = RLIB_GRAPH_LEGEND_ORIENTATION_BOTTOM;
+	
+		OUTPUT(r)->graph_set_legend_orientation(r, orientation);	
+	}
+
+	if(legend_bg_color[0] != 0) {
+		struct rlib_rgb rgb;
+		rlib_parsecolor(&rgb, legend_bg_color);
+		OUTPUT(r)->graph_set_legend_bg_color(r, &rgb);	
+	}
+
+	if(grid_color[0] != 0) {
+		struct rlib_rgb rgb;
+		rlib_parsecolor(&rgb, grid_color);
+		OUTPUT(r)->graph_set_grid_color(r, &rgb);	
+	}
+	
+	OUTPUT(r)->graph_set_name(r, name);
+	
+	OUTPUT(r)->graph_set_draw_x_y(r, draw_x_line, draw_y_line);
+	OUTPUT(r)->graph_set_bold_titles(r, bold_titles);
 	
 	rlib_fetch_first_rows(r);
 	if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
@@ -320,8 +363,7 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 						disabled = FALSE;
 						if(rlib_execute_as_boolean(r, plot->disabled_code, &tmp_disabled));
 							disabled = tmp_disabled;
-						if(!disabled && rlib_execute_as_float(r, plot->field_code, &y_value)) {
-							
+						if(!disabled && rlib_execute_as_float(r, plot->field_code, &y_value)) {	
 							side = RLIB_SIDE_LEFT;
 							if(rlib_execute_as_string(r, plot->side_code, side_str, MAXSTRLEN)) {
 								if(strcmp(side_str, "right") == 0) {
@@ -457,7 +499,12 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 						disabled = tmp_disabled;
 					if(!disabled) {
 						if(rlib_execute_as_string(r, plot->label_code, legend_label, MAXSTRLEN)) {
-							OUTPUT(r)->graph_draw_legend_label(r, i, legend_label, &color[i]);
+							if(!rlib_execute_as_string(r, plot->color_code, color_str, MAXSTRLEN)) {
+								plot_color = color[i];
+							} else {
+								rlib_parsecolor(&plot_color, color_str);
+							}
+							OUTPUT(r)->graph_draw_legend_label(r, i, legend_label, &plot_color, is_line_graph(graph_type));
 						}
 						i++;
 					}
@@ -469,15 +516,16 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	last_row_values = g_malloc(i * sizeof(gfloat));
 	last_row_height = g_malloc(i * sizeof(gfloat));
 
-	OUTPUT(r)->graph_title(r, title);
+	OUTPUT(r)->graph_set_title(r, title);
+	
 	if(!is_pie_graph(graph_type)) {
 		OUTPUT(r)->graph_x_axis_title(r, x_axis_title);
 		OUTPUT(r)->graph_y_axis_title(r, RLIB_SIDE_LEFT, y_axis_title);
 		OUTPUT(r)->graph_y_axis_title(r, RLIB_SIDE_RIGHT, y_axis_title_right);
 		OUTPUT(r)->graph_set_x_iterations(r, row_count);
 		OUTPUT(r)->graph_do_grid(r, FALSE);
-		OUTPUT(r)->graph_tick_x(r);
 		OUTPUT(r)->graph_tick_y(r, y_ticks);
+		OUTPUT(r)->graph_tick_x(r);
 	} else {
 		OUTPUT(r)->graph_do_grid(r, TRUE);
 	}
@@ -543,6 +591,11 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 									have_right_side = TRUE;
 								}
 							}
+							if(!rlib_execute_as_string(r, plot->color_code, color_str, MAXSTRLEN)) {
+								plot_color = color[data_plot_count];
+							} else {
+								rlib_parsecolor(&plot_color, color_str);
+							}
 							if(is_percent_graph(graph_type) || is_pie_graph(graph_type)) {
 								y_value = fabs(y_value);
 								if(is_pie_graph(graph_type))
@@ -573,16 +626,16 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 									last_height = last_height_neg;
 							} 
 							if(is_row_graph(graph_type)) {
-								OUTPUT(r)->graph_plot_bar(r, side, row_count, plot_count, value, &color[data_plot_count],last_height, divide_iterations);
+								OUTPUT(r)->graph_plot_bar(r, side, row_count, plot_count, value, &plot_color,last_height, divide_iterations);
 							} else if(is_line_graph(graph_type)) {
 								if(row_count > 0)
-									OUTPUT(r)->graph_plot_line(r, side, row_count, last_row_values[i], last_row_height[i], value, last_height, &color[data_plot_count]);
+									OUTPUT(r)->graph_plot_line(r, side, row_count, last_row_values[i], last_row_height[i], value, last_height, &plot_color);
 							} else if(is_pie_graph(graph_type)) {
 								gboolean offset = graph_type == RLIB_GRAPH_TYPE_PIE_OFFSET;
 								OUTPUT(r)->graph_plot_pie(r, running_col_sum, value+running_col_sum, offset, &color[row_count]);
 								running_col_sum += value;
 								if(rlib_execute_as_string(r, plot->label_code, legend_label, MAXSTRLEN))
-									OUTPUT(r)->graph_draw_legend_label(r, row_count, legend_label, &color[row_count]);
+									OUTPUT(r)->graph_draw_legend_label(r, row_count, legend_label, &color[row_count], is_line_graph(graph_type));
 					
 							}
 								

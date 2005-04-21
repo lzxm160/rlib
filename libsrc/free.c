@@ -138,11 +138,18 @@ static void rlib_free_graph(rlib *r, struct rlib_graph *graph) {
 	struct rlib_graph_plot *plot;
 	GSList *list;
 	
+	rlib_pcode_free(graph->name_code);
 	rlib_pcode_free(graph->type_code);
 	rlib_pcode_free(graph->subtype_code);
 	rlib_pcode_free(graph->width_code);
 	rlib_pcode_free(graph->height_code);
+	rlib_pcode_free(graph->bold_titles_code);
 	rlib_pcode_free(graph->title_code);
+	rlib_pcode_free(graph->legend_bg_color_code);
+	rlib_pcode_free(graph->legend_orientation_code);
+	rlib_pcode_free(graph->draw_x_line_code);
+	rlib_pcode_free(graph->draw_y_line_code);
+	rlib_pcode_free(graph->grid_color_code);
 	rlib_pcode_free(graph->x_axis_title_code);
 	rlib_pcode_free(graph->y_axis_title_code);
 	rlib_pcode_free(graph->y_axis_mod_code);
@@ -157,6 +164,7 @@ static void rlib_free_graph(rlib *r, struct rlib_graph *graph) {
 		rlib_pcode_free(plot->label_code);
 		rlib_pcode_free(plot->side_code);
 		rlib_pcode_free(plot->disabled_code);	
+		rlib_pcode_free(plot->color_code);	
 	}
 }
 

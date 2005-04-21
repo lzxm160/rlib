@@ -88,8 +88,8 @@ double trunc(double x);
 #define RLIB_FORMAT_CSV 	4
 #define RLIB_FORMAT_XML 	5
 
-#define RLIB_ORIENTATION_PORTRAIT	1
-#define RLIB_ORIENTATION_LANDSCAPE	2
+#define RLIB_ORIENTATION_PORTRAIT	0
+#define RLIB_ORIENTATION_LANDSCAPE	1
 
 #define RLIB_DEFAULT_BOTTOM_MARGIN .2
 #define RLIB_DEFAULT_LEFT_MARGIN	.2
@@ -133,6 +133,9 @@ double trunc(double x);
 
 #define RLIB_SIDE_LEFT  0
 #define RLIB_SIDE_RIGHT 1
+
+#define RLIB_GRAPH_LEGEND_ORIENTATION_RIGHT  0
+#define RLIB_GRAPH_LEGEND_ORIENTATION_BOTTOM 1
 
 struct rlib_paper {
 	char type;
@@ -482,22 +485,33 @@ struct rlib_part {
 	gint landscape;
 };
 
+struct rlib_graph_region {
+	gchar *graph_name;
+	gchar *region_label;
+	struct rlib_rgb color;
+	gfloat start;
+	gfloat end;
+};
+
 struct rlib_graph_plot {
 	gchar *xml_axis;
 	gchar *xml_field;
 	gchar *xml_label;
 	gchar *xml_side;	
 	gchar *xml_disabled;	
+	gchar *xml_color;
 	struct rlib_value rval_axis;
 	struct rlib_value rval_field;
 	struct rlib_value rval_label;
 	struct rlib_value rval_side;
 	struct rlib_value rval_disabled;
+	struct rlib_value rval_color;
 	struct rlib_pcode *axis_code;
 	struct rlib_pcode *field_code;	
 	struct rlib_pcode *label_code;	
 	struct rlib_pcode *side_code;
 	struct rlib_pcode *disabled_code;
+	struct rlib_pcode *color_code;
 };
 
 #define RLIB_GRAPH_TYPE_LINE_NORMAL                   1
@@ -524,22 +538,36 @@ struct rlib_graph_plot {
 #define RLIB_GRAPH_TYPE_XY_BSPLINE_WITH_SYMBOLS      22
 
 struct rlib_graph {
+	gchar *xml_name;
 	gchar *xml_type;	
 	gchar *xml_subtype;
 	gchar *xml_width;
 	gchar *xml_height;
 	gchar *xml_title;
+	gchar *xml_bold_titles;
+	gchar *xml_legend_bg_color;
+	gchar *xml_legend_orientation;
+	gchar *xml_draw_x_line;
+	gchar *xml_draw_y_line;
+	gchar *xml_grid_color;
 	gchar *xml_x_axis_title;
 	gchar *xml_y_axis_title;
 	gchar *xml_y_axis_mod;
 	gchar *xml_y_axis_title_right;
 	gchar *xml_y_axis_decimals;
 	gchar *xml_y_axis_decimals_right;
+	struct rlib_pcode *name_code;	
 	struct rlib_pcode *type_code;	
 	struct rlib_pcode *subtype_code;	
 	struct rlib_pcode *width_code;
 	struct rlib_pcode *height_code;
 	struct rlib_pcode *title_code;
+	struct rlib_pcode *bold_titles_code;
+	struct rlib_pcode *legend_bg_color_code;
+	struct rlib_pcode *legend_orientation_code;
+	struct rlib_pcode *draw_x_line_code;
+	struct rlib_pcode *draw_y_line_code;
+	struct rlib_pcode *grid_color_code;
 	struct rlib_pcode *x_axis_title_code;
 	struct rlib_pcode *y_axis_title_code;
 	struct rlib_pcode *y_axis_mod_code;
@@ -689,6 +717,7 @@ struct rlib {
 	struct output_filter *o;
 	struct input_filters inputs[MAX_INPUT_FILTERS];
 	struct environment_filter *environment;
+	GSList *graph_regions;
 };
 typedef struct rlib rlib;
 
@@ -754,7 +783,13 @@ struct output_filter {
 	void (*end_td)(rlib *);
 	
 	void (*graph_start)(rlib *r, float, float, float, float, gboolean x_axis_labels_are_under_tick);
-	void (*graph_title)(rlib *r, gchar *title);
+	void (*graph_set_title)(rlib *r, gchar *title);
+	void (*graph_set_name)(rlib *r, gchar *name);
+	void (*graph_set_legend_bg_color)(rlib *r, struct rlib_rgb *);
+	void (*graph_set_legend_orientation)(rlib *r, gint orientation);
+	void (*graph_set_draw_x_y)(rlib *r, gboolean draw_x, gboolean draw_y);
+	void (*graph_set_bold_titles)(rlib *r, gboolean bold_titles);
+	void (*graph_set_grid_color)(rlib *r, struct rlib_rgb *);
 	void (*graph_x_axis_title)(rlib *r, gchar *title);
 	void (*graph_y_axis_title)(rlib *r, gchar side, gchar *title);
 	void (*graph_set_limits)(rlib *r, gchar side, gdouble min, gdouble max, gdouble origin);
@@ -773,7 +808,7 @@ struct output_filter {
 	void (*graph_hint_label_y)(rlib *r, gchar side, gchar *string);
 	void (*graph_hint_legend)(rlib *r, gchar *string);
 	void (*graph_draw_legend)(rlib *r);
-	void (*graph_draw_legend_label)(rlib *r, gint iteration, gchar *string, struct rlib_rgb *);
+	void (*graph_draw_legend_label)(rlib *r, gint iteration, gchar *string, struct rlib_rgb *, gboolean);
 	void (*graph_finalize)(rlib *r);
 	int (*free)(rlib *r);
 };
@@ -825,7 +860,8 @@ gchar *rlib_version(); // returns the version string.
 gint rlib_set_datasource_encoding(rlib *r, gchar *input_name, gchar *encoding);
 void rlib_set_output_encoding(rlib *r, const char *encoding);
 void rlib_set_output_parameter(rlib *r, gchar *parameter, gchar *value);
-
+gint rlib_graph_add_bg_region(rlib *r, gchar *graph_name, gchar *region_label, gchar *color, gfloat start, gfloat end);
+gint rlib_graph_clear_bg_region(rlib *r, gchar *graph_name);
 
 /***** PROTOTYPES: parsexml.c *************************************************/
 struct rlib_part * parse_part_file(rlib *r, gchar *filename, gchar type);

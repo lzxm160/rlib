@@ -250,7 +250,7 @@ static void rlib_txt_end_italics(rlib *r) {}
 
 static void txt_graph_start(rlib *r, gfloat left, gfloat top, gfloat width, gfloat height, gboolean x_axis_labels_are_under_tick) {}
 static void txt_graph_set_limits(rlib *r, gchar side, gdouble min, gdouble max, gdouble origin) {}
-static void txt_graph_title(rlib *r, gchar *title) {}
+static void txt_graph_set_title(rlib *r, gchar *title) {}
 static void txt_graph_x_axis_title(rlib *r, gchar *title) {}
 static void txt_graph_y_axis_title(rlib *r, gchar side, gchar *title) {}
 static void txt_graph_do_grid(rlib *r, gboolean just_a_box) {}
@@ -267,9 +267,15 @@ static void txt_graph_plot_line(rlib *r, gchar side, gint iteration, gfloat p1_h
 static void txt_graph_plot_pie(rlib *r, gfloat start, gfloat end, gboolean offset, struct rlib_rgb *color) {}
 static void txt_graph_hint_legend(rlib *r, gchar *label) {}
 static void txt_graph_draw_legend(rlib *r) {}
-static void txt_graph_draw_legend_label(rlib *r, gint iteration, gchar *label, struct rlib_rgb *color) {}
+static void txt_graph_draw_legend_label(rlib *r, gint iteration, gchar *label, struct rlib_rgb *color, gboolean is_line) {}
 static void txt_graph_finalize(rlib *r) {}
 static void txt_graph_draw_line(rlib *r, gfloat x, gfloat y, gfloat new_x, gfloat new_y, struct rlib_rgb *color) {}
+static void txt_graph_set_name(rlib *r, gchar *name) {}
+static void txt_graph_set_legend_bg_color(rlib *r, struct rlib_rgb *rgb) {}
+static void txt_graph_set_legend_orientation(rlib *r, gint orientation) {}
+static void txt_graph_set_draw_x_y(rlib *r, gboolean draw_x, gboolean draw_y) {}
+static void txt_graph_set_bold_titles(rlib *r, gboolean bold_titles) {}
+static void txt_graph_set_grid_color(rlib *r, struct rlib_rgb *rgb) {}
 
 void rlib_txt_new_output_filter(rlib *r) {
 	OUTPUT(r) = g_malloc(sizeof(struct output_filter));
@@ -323,7 +329,13 @@ void rlib_txt_new_output_filter(rlib *r) {
 
 	OUTPUT(r)->graph_start = txt_graph_start;
 	OUTPUT(r)->graph_set_limits = txt_graph_set_limits;
-	OUTPUT(r)->graph_title = txt_graph_title;
+	OUTPUT(r)->graph_set_title = txt_graph_set_title;
+	OUTPUT(r)->graph_set_name = txt_graph_set_name;
+	OUTPUT(r)->graph_set_legend_bg_color = txt_graph_set_legend_bg_color;
+	OUTPUT(r)->graph_set_legend_orientation = txt_graph_set_legend_orientation;
+	OUTPUT(r)->graph_set_draw_x_y = txt_graph_set_draw_x_y;
+	OUTPUT(r)->graph_set_bold_titles = txt_graph_set_bold_titles;
+	OUTPUT(r)->graph_set_grid_color = txt_graph_set_grid_color;
 	OUTPUT(r)->graph_x_axis_title = txt_graph_x_axis_title;
 	OUTPUT(r)->graph_y_axis_title = txt_graph_y_axis_title;
 	OUTPUT(r)->graph_do_grid = txt_graph_do_grid;

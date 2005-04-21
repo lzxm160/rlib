@@ -117,21 +117,33 @@ int rlib_gd_spool(struct rlib_gd *rgd) {
 	return TRUE;
 }
 
-int rlib_gd_text(struct rlib_gd *rgd, char *text, int x, int y, int rotate) {
-	if(rotate)
-		gdImageStringUp(rgd->im, gdFontLarge,	x,	y,	text, rgd->black);
-	else
-		gdImageString(rgd->im, gdFontLarge,	x,	y,	text, rgd->black);
-		
+int rlib_gd_text(struct rlib_gd *rgd, char *text, int x, int y, gboolean rotate, gboolean bold) {
+	if(bold) {
+		if(rotate)
+			gdImageStringUp(rgd->im, gdFontMediumBold,	x,	y,	text, rgd->black);
+		else
+			gdImageString(rgd->im, gdFontMediumBold, x,	y,	text, rgd->black);
+	} else {
+		if(rotate)
+			gdImageStringUp(rgd->im, gdFontMedium,	x,	y,	text, rgd->black);
+		else
+			gdImageString(rgd->im, gdFontMedium, x,	y,	text, rgd->black);	
+	}		
 	return TRUE;
 }
 
-int rlib_gd_get_string_width(struct rlib_gd *rgd, gchar *text) {
-	return gdFontLarge->w * strlen(text);
+int rlib_gd_get_string_width(struct rlib_gd *rgd, gchar *text, gboolean bold) {
+	if(bold)
+		return gdFontMediumBold->w * strlen(text);
+	else
+		return gdFontMedium->w * strlen(text);
 }
 
-int rlib_gd_get_string_height(struct rlib_gd *rgd) {
-	return  gdFontLarge->h;
+int rlib_gd_get_string_height(struct rlib_gd *rgd, gboolean bold) {
+	if(bold)
+		return gdFontMediumBold->h;
+	else
+		return gdFontMedium->h;
 }
 
 int rlib_gd_set_thickness(struct rlib_gd *rgd, int thickness) {

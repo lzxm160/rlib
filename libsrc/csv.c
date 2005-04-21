@@ -157,7 +157,7 @@ static void rlib_csv_end_italics(rlib *r) {}
 
 static void csv_graph_start(rlib *r, gfloat left, gfloat top, gfloat width, gfloat height, gboolean x_axis_labels_are_under_tick) {}
 static void csv_graph_set_limits(rlib *r, gchar side, gdouble min, gdouble max, gdouble origin) {}
-static void csv_graph_title(rlib *r, gchar *title) {}
+static void csv_graph_set_title(rlib *r, gchar *title) {}
 static void csv_graph_x_axis_title(rlib *r, gchar *title) {}
 static void csv_graph_y_axis_title(rlib *r, gchar side, gchar *title) {}
 static void csv_graph_do_grid(rlib *r, gboolean just_a_box) {}
@@ -174,9 +174,16 @@ static void csv_graph_plot_line(rlib *r, gchar side, gint iteration, gfloat p1_h
 static void csv_graph_plot_pie(rlib *r, gfloat start, gfloat end, gboolean offset, struct rlib_rgb *color) {}
 static void csv_graph_hint_legend(rlib *r, gchar *label) {}
 static void csv_graph_draw_legend(rlib *r) {}
-static void csv_graph_draw_legend_label(rlib *r, gint iteration, gchar *label, struct rlib_rgb *color) {}
+static void csv_graph_draw_legend_label(rlib *r, gint iteration, gchar *label, struct rlib_rgb *color, gboolean is_line) {}
 static void csv_graph_finalize(rlib *r) {}
 static void csv_graph_draw_line(rlib *r, gfloat x, gfloat y, gfloat new_x, gfloat new_y, struct rlib_rgb *color) {}
+
+static void csv_graph_set_name(rlib *r, gchar *name) {}
+static void csv_graph_set_legend_bg_color(rlib *r, struct rlib_rgb *rgb) {}
+static void csv_graph_set_legend_orientation(rlib *r, gint orientation) {}
+static void csv_graph_set_draw_x_y(rlib *r, gboolean draw_x, gboolean draw_y) {}
+static void csv_graph_set_bold_titles(rlib *r, gboolean bold_titles) {}
+static void csv_graph_set_grid_color(rlib *r, struct rlib_rgb *rgb) {}
 
 static int rlib_csv_free(rlib *r) {
 	g_free(OUTPUT_PRIVATE(r)->top);
@@ -240,7 +247,13 @@ void rlib_csv_new_output_filter(rlib *r) {
 
 	OUTPUT(r)->graph_start = csv_graph_start;
 	OUTPUT(r)->graph_set_limits = csv_graph_set_limits;
-	OUTPUT(r)->graph_title = csv_graph_title;
+	OUTPUT(r)->graph_set_title = csv_graph_set_title;
+	OUTPUT(r)->graph_set_name = csv_graph_set_name;
+	OUTPUT(r)->graph_set_legend_bg_color = csv_graph_set_legend_bg_color;
+	OUTPUT(r)->graph_set_legend_orientation = csv_graph_set_legend_orientation;
+	OUTPUT(r)->graph_set_draw_x_y = csv_graph_set_draw_x_y;
+	OUTPUT(r)->graph_set_bold_titles = csv_graph_set_bold_titles;
+	OUTPUT(r)->graph_set_grid_color = csv_graph_set_grid_color;	
 	OUTPUT(r)->graph_x_axis_title = csv_graph_x_axis_title;
 	OUTPUT(r)->graph_y_axis_title = csv_graph_y_axis_title;
 	OUTPUT(r)->graph_do_grid = csv_graph_do_grid;

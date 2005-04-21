@@ -404,7 +404,7 @@ gint rlib_set_datasource_encoding(rlib *r, gchar *input_name, gchar *encoding) {
 	for (i=0;i<r->inputs_count;i++) {
 		tif = r->inputs[i].input;
 		if (strcmp(r->inputs[i].name, input_name) == 0) {
-			tif->info.encoder = rlib_charencoder_new(encoding, FALSE);
+			tif->info.encoder = rlib_charencoder_new(encoding, "UTF-8");
 			return 0;
 		}
 	}
@@ -412,7 +412,21 @@ gint rlib_set_datasource_encoding(rlib *r, gchar *input_name, gchar *encoding) {
 	return -1;
 }
 
+gint rlib_graph_add_bg_region(rlib *r, gchar *graph_name, gchar *region_label, gchar *color, gfloat start, gfloat end) {
+	struct rlib_graph_region *gr = g_new0(struct rlib_graph_region, 1);
+	gr->graph_name = g_strdup(graph_name);
+	gr->region_label = g_strdup(region_label);
+	rlib_parsecolor(&gr->color, color);
+	gr->start = start;
+	gr->end = end;
+	r->graph_regions = g_slist_append(r->graph_regions, gr);
+	return TRUE;
+}
 
+gint rlib_graph_clear_bg_region(rlib *r, gchar *graph_name) {
+
+	return TRUE;
+}
 
 #ifdef VERSION
 gchar *rpdf_version(void);
@@ -463,3 +477,4 @@ gint rlib_postgre_report(gchar *connstr, gchar *xmlfilename, gchar *sqlquery, gc
 	rlib_free(r);
 	return 0;
 }
+

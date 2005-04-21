@@ -25,6 +25,7 @@
 #include <gdfontt.h>
 #include <gdfonts.h>
 #include <gdfontmb.h>
+#include <gdFontMedium.h>
 #include <gdfontl.h>
 #include <gdfontg.h>
 #else
@@ -49,9 +50,9 @@ struct rlib_gd {
 struct rlib_gd * rlib_gd_new(gint width, gint height, gchar *image_directory);
 int rlib_gd_free(struct rlib_gd *rgd);
 int rlib_gd_spool(struct rlib_gd *rgd);
-int rlib_gd_text(struct rlib_gd *rgd, char *text, int x, int y, int rotate);
-int rlib_gd_get_string_width(struct rlib_gd *rgd, char *text);
-int rlib_gd_get_string_height(struct rlib_gd *rgd);
+int rlib_gd_text(struct rlib_gd *rgd, char *text, int x, int y, gboolean rotate, gboolean bold);
+int rlib_gd_get_string_width(struct rlib_gd *rgd, char *text, gboolean bold);
+int rlib_gd_get_string_height(struct rlib_gd *rgd, gboolean bold);
 int rlib_gd_line(struct rlib_gd *rgd, gint x1, gint y1, gint x2, gint y2, struct rlib_rgb *color);
 int rlib_gd_rectangle(struct rlib_gd *rgd, gint x1, gint y1, gint x2, gint y2, struct rlib_rgb *color);
 int rlib_gd_arc(struct rlib_gd *rgd, gint x, gint y, gint radius, gint start_angle, gint end_angle, struct rlib_rgb *color);

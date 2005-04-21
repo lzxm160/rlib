@@ -213,7 +213,7 @@ gint64 rlib_str_to_long_long(gchar *str) {
 	}
 	if (len > RLIB_FXP_PRECISION) {
 		len = RLIB_FXP_PRECISION;
-		rlogit("Numerical overflow in str_to_long_long conversion");
+		rlogit("Numerical overflow in str_to_long_long conversion [%s]\n", str);
 	}
 	foo = ((right * tentothe(RLIB_FXP_PRECISION - len))
 				+ (left * RLIB_DECIMAL_PRECISION)) * sign;

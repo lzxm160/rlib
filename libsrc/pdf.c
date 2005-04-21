@@ -35,6 +35,9 @@
 
 #define PDF_PIXEL 0.002
 
+#define PLOT_LINE_WIDTH 1.2
+#define GRID_LINE_WIDTH 0.5
+
 gchar *font_names[4] = { "Courier", "Courier-Bold", "Courier-Oblique", "Courier-BoldOblique" };
 
 struct _graph {
@@ -42,6 +45,12 @@ struct _graph {
 	gdouble y_max[2];
 	gdouble y_origin[2];
 	gdouble non_standard_x_start;
+	gboolean has_legend_bg_color;
+	struct rlib_rgb legend_bg_color;
+	gboolean has_grid_color;
+	struct rlib_rgb grid_color;
+
+	gint legend_orientation;
 	gfloat y_label_space_left;
 	gfloat y_label_space_right;
 	gfloat y_label_width_left;
@@ -49,6 +58,7 @@ struct _graph {
 	gfloat x_label_width;
 	gfloat x_tick_width;
 	gfloat legend_width;
+	gfloat legend_height;
 	gfloat top;
 	gfloat bottom;
 	gfloat left;
@@ -66,10 +76,17 @@ struct _graph {
 	gint x_iterations;
 	gint y_iterations;
 	gint data_plot_count;
+	gint orig_data_plot_count;
 	gboolean x_axis_labels_are_under_tick;
 	
 	gfloat legend_top;
 	gfloat legend_left;
+	gboolean draw_x;
+	gboolean draw_y;
+	gchar *name;
+	gint region_count;
+	gint current_region;
+	gboolean bold_titles;
 };
 
 struct _private {
@@ -464,42 +481,110 @@ static void pdf_graph_set_limits(rlib *r, gchar side, gdouble min, gdouble max, 
 	graph->y_origin[(gint)side] = origin;
 }
 
-static void pdf_graph_title(rlib *r, gchar *title) {
+static void pdf_graph_set_title(rlib *r, gchar *title) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
 	gfloat title_width = pdf_get_string_width(r, title);
 	graph->title_height = RLIB_GET_LINE(r->current_font_point);
-
+	if(graph->bold_titles)
+		rpdf_set_font(OUTPUT_PRIVATE(r)->pdf, font_names[1], "WinAnsiEncoding", r->current_font_point);
 	pdf_print_text(r, graph->left + ((graph->width-title_width)/2.0), graph->top-graph->title_height, title, 0);
+	if(graph->bold_titles)
+		rpdf_set_font(OUTPUT_PRIVATE(r)->pdf, font_names[0], "WinAnsiEncoding", r->current_font_point);
+}
+
+static void pdf_graph_set_name(rlib *r, gchar *name) {
+	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
+	graph->name = name;
+}
+
+static void pdf_graph_set_legend_bg_color(rlib *r, struct rlib_rgb *rgb) {
+	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
+	graph->legend_bg_color = *rgb;
+	graph->has_legend_bg_color = TRUE;
+}
+
+static void pdf_graph_set_legend_orientation(rlib *r, gint orientation) {
+	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
+	graph->legend_orientation = orientation;
+}
+
+static void pdf_graph_set_grid_color(rlib *r, struct rlib_rgb *rgb) {
+	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
+	graph->grid_color = *rgb;
+	graph->has_grid_color = TRUE;
+}
+
+static void pdf_graph_set_draw_x_y(rlib *r, gboolean draw_x, gboolean draw_y) {
+	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
+	graph->draw_x = draw_x;
+	graph->draw_y = draw_y;
+}
+
+static void pdf_graph_set_bold_titles(rlib *r, gboolean bold_titles) {
+	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
+	graph->bold_titles = bold_titles;
 }
 
 static void pdf_graph_x_axis_title(rlib *r, gchar *title) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
+	graph->height_offset = 0;
+	
+
+	if(graph->bold_titles)
+		rpdf_set_font(OUTPUT_PRIVATE(r)->pdf, font_names[1], "WinAnsiEncoding", r->current_font_point);
+
+	if(graph->legend_orientation == RLIB_GRAPH_LEGEND_ORIENTATION_BOTTOM)
+		graph->height_offset += graph->legend_height;	
+	
 	if(title[0] == 0)
-		graph->height_offset = RLIB_GET_LINE(r->current_font_point) / 2.0;
+		graph->height_offset += RLIB_GET_LINE(r->current_font_point) / 2.0;
 	else {
 		gfloat title_width = pdf_get_string_width(r, title);
-		graph->height_offset = RLIB_GET_LINE(r->current_font_point);
-		pdf_print_text(r, graph->left + ((graph->width-title_width)/2.0), graph->bottom+(graph->height_offset/2.0), title, 0);
-		graph->height_offset *= 1.5;
+		graph->height_offset += (RLIB_GET_LINE(r->current_font_point) * 1.5);
+		pdf_print_text(r, graph->left + ((graph->width-title_width)/2.0), graph->bottom+graph->height_offset - RLIB_GET_LINE(r->current_font_point), title, 0);
 	}
+
+	if(graph->bold_titles)
+		rpdf_set_font(OUTPUT_PRIVATE(r)->pdf, font_names[0], "WinAnsiEncoding", r->current_font_point);
+
 }
 
 static void pdf_graph_y_axis_title(rlib *r, gchar side, gchar *title) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
+
+	if(graph->bold_titles)
+		rpdf_set_font(OUTPUT_PRIVATE(r)->pdf, font_names[1], "WinAnsiEncoding", r->current_font_point);
 
 	gfloat title_width = pdf_get_string_width(r, title);
 	if(title[0] == 0) {
 	
 	} else {
 		if(side == RLIB_SIDE_LEFT) {
-			pdf_print_text(r, graph->left+(pdf_get_string_width(r, "W")*1.25), graph->bottom+((graph->height - title_width)/2.0), title,  90);
+			pdf_print_text(r, graph->left+(pdf_get_string_width(r, "W")*1.25), graph->bottom+graph->legend_height+((graph->height - graph->legend_height - title_width)/2.0), title,  90);
 			graph->y_label_space_left = pdf_get_string_width(r, "W") * 1.5;
 		} else {
-			pdf_print_text(r, graph->left+graph->width, graph->bottom+((graph->height - title_width)/2.0), title,  90);
-			graph->y_label_space_right = pdf_get_string_width(r, "W") * 1.5;
+			pdf_print_text(r, graph->left+graph->width - (pdf_get_string_width(r, "W")*.3), graph->bottom+graph->legend_height+((graph->height -graph->legend_height- title_width)/2.0), title,  90);
+			graph->y_label_space_right = pdf_get_string_width(r, "W") * 1.6;
 		}
 	}
 
+	if(graph->bold_titles)
+		rpdf_set_font(OUTPUT_PRIVATE(r)->pdf, font_names[0], "WinAnsiEncoding", r->current_font_point);
+
+}
+
+static void pdf_draw_regions(gpointer data, gpointer user_data) {
+	struct rlib_graph_region *gr = data;
+	rlib *r = user_data;
+	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
+	if(graph->name != NULL) {
+		if(strcmp(graph->name, gr->graph_name) == 0) {
+			OUTPUT(r)->set_bg_color(r, gr->color.r, gr->color.g, gr->color.b);
+			rpdf_rect(OUTPUT_PRIVATE(r)->pdf, graph->x_start + (graph->x_width*(gr->start/100.0)), graph->y_start, graph->x_width*((gr->end-gr->start)/100.0), graph->y_height);
+			rpdf_fill(OUTPUT_PRIVATE(r)->pdf);
+			OUTPUT(r)->set_bg_color(r, 0, 0, 0);	
+		}
+	}	
 }
 
 static void pdf_graph_do_grid(rlib *r, gboolean just_a_box) {
@@ -516,9 +601,7 @@ static void pdf_graph_do_grid(rlib *r, gboolean just_a_box) {
 	graph->height -= graph->title_height*1.1;
 
 	graph->height_offset += graph->intersection;
-
 	graph->width -= (graph->y_label_width_right + graph->y_label_space_right);
-
 	graph->x_width = graph->width - graph->width_offset - graph->intersection;
 
 	if(graph->x_axis_labels_are_under_tick)	 {
@@ -540,20 +623,26 @@ static void pdf_graph_do_grid(rlib *r, gboolean just_a_box) {
 
 	graph->x_start = graph->left+graph->width_offset;
 
+	graph->y_start = graph->bottom + graph->height_offset;
+	graph->y_height = graph->height - graph->height_offset - graph->intersection;
+
+	g_slist_foreach(r->graph_regions, pdf_draw_regions, r);
+
 	if(!just_a_box) {
+
+		if(graph->has_grid_color) 
+			OUTPUT(r)->set_bg_color(r, graph->grid_color.r, graph->grid_color.g, graph->grid_color.b);
+
 		pdf_graph_draw_line(r, graph->left+graph->width_offset, graph->bottom+graph->height_offset-graph->intersection, graph->left+graph->width_offset, graph->top-graph->intersection, NULL);
 		pdf_graph_draw_line(r, graph->left+graph->width_offset-graph->intersection, graph->bottom+graph->height_offset, graph->left+graph->width-graph->intersection, graph->bottom+graph->height_offset, NULL);
 
 		if(graph->y_label_width_right > 0)
 			pdf_graph_draw_line(r, graph->x_start+graph->x_width, graph->bottom+graph->height_offset-graph->intersection, graph->x_start+graph->x_width, graph->top-graph->intersection, NULL);
 
+		if(graph->has_grid_color) 
+			OUTPUT(r)->set_bg_color(r, 0, 0, 0);
+
 	}
-	
-
-
-	graph->y_start = graph->bottom + graph->height_offset;
-	graph->y_height = graph->height - graph->height_offset - graph->intersection;
-
 }
 
 static void pdf_graph_tick_x(rlib *r) {
@@ -563,10 +652,24 @@ static void pdf_graph_tick_x(rlib *r) {
 
 	graph->height_offset	+= graph->intersection;
 	
+	if(graph->has_grid_color) 
+		OUTPUT(r)->set_bg_color(r, graph->grid_color.r, graph->grid_color.g, graph->grid_color.b);
+
+	rpdf_set_line_width(OUTPUT_PRIVATE(r)->pdf, GRID_LINE_WIDTH);
+
+
 	for(i=0;i<graph->x_iterations;i++) {
 		spot = graph->x_start + ((graph->x_tick_width)*i);
-		pdf_graph_draw_line(r, spot, graph->y_start-(graph->intersection), spot, graph->y_start, NULL);
+		if(graph->draw_x)
+			pdf_graph_draw_line(r, spot, graph->y_start-(graph->intersection), spot, graph->y_start + graph->y_height, NULL);
+		else
+			pdf_graph_draw_line(r, spot, graph->y_start-(graph->intersection), spot, graph->y_start, NULL);
 	}
+
+	rpdf_set_line_width(OUTPUT_PRIVATE(r)->pdf, 1);
+
+	if(graph->has_grid_color) 
+		OUTPUT(r)->set_bg_color(r, 0, 0, 0);
 
 }
 
@@ -621,11 +724,26 @@ static void pdf_graph_tick_y(rlib *r, gint iterations) {
 
 	if(graph->y_label_width_right > 0)
 		extra += graph->intersection;	
+
+	if(graph->has_grid_color) 
+		OUTPUT(r)->set_bg_color(r, graph->grid_color.r, graph->grid_color.g, graph->grid_color.b);
+
+	rpdf_set_line_width(OUTPUT_PRIVATE(r)->pdf, GRID_LINE_WIDTH);
 	
-	for(i=1;i<iterations+1;i++) {
+	for(i=0;i<iterations+1;i++) {
 		gfloat y = graph->y_start + ((graph->y_height/iterations) * i);
-		pdf_graph_draw_line(r, graph->left+graph->width_offset-graph->intersection, y, graph->left+graph->width-graph->intersection+extra, y, NULL);
+		if(graph->draw_y) {
+			pdf_graph_draw_line(r, graph->left+graph->width_offset-graph->intersection, y, graph->left+graph->width-graph->intersection+extra, y, NULL);
+		} else {
+			pdf_graph_draw_line(r, graph->left+graph->width_offset-graph->intersection, y, graph->left+graph->width_offset, y, NULL);
+			pdf_graph_draw_line(r, graph->left+graph->width-graph->intersection, y, graph->left+graph->width-graph->intersection+extra, y, NULL);
+		}
 	}
+
+	rpdf_set_line_width(OUTPUT_PRIVATE(r)->pdf, 1);
+
+	if(graph->has_grid_color) 
+		OUTPUT(r)->set_bg_color(r, 0, 0, 0);
 
 }
 
@@ -657,7 +775,6 @@ static void pdf_graph_set_data_plot_count(rlib *r, gint count) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
 	graph->data_plot_count = count;
 }
-
 
 static void pdf_graph_plot_bar(rlib *r, gchar side, gint iteration, gint plot, gfloat height_percent, struct rlib_rgb *color,gfloat last_height, gboolean divide_iterations) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;	
@@ -700,9 +817,8 @@ void pdf_graph_plot_line(rlib *r, gchar side, gint iteration, gfloat p1_height, 
 		p1_start += (real_height * graph->y_height);
 		p2_start += (real_height * graph->y_height);
 	}
-	
 	OUTPUT(r)->set_bg_color(r, color->r, color->g, color->b);
-	rpdf_set_line_width(OUTPUT_PRIVATE(r)->pdf, 1.1);
+	rpdf_set_line_width(OUTPUT_PRIVATE(r)->pdf, PLOT_LINE_WIDTH);
 	pdf_graph_draw_line(r, left, p1_start + (graph->y_height * p1_height), left+x_tick_width, p2_start + (graph->y_height * p2_height), NULL);
 	rpdf_set_line_width(OUTPUT_PRIVATE(r)->pdf, 1);
 	OUTPUT(r)->set_bg_color(r, 0, 0, 0);
@@ -751,14 +867,80 @@ static void pdf_graph_hint_legend(rlib *r, gchar *label) {
 		graph->legend_width = width;
 };
 
+static void pdf_count_regions(gpointer data, gpointer user_data) {
+	struct rlib_graph_region *gr = data;
+	rlib *r = user_data;
+	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
+	if(graph->name != NULL) {
+		if(strcmp(graph->name, gr->graph_name) == 0) {
+			gfloat width =  pdf_get_string_width(r, gr->region_label) + pdf_get_string_width(r, "WWW");
+		
+			if(width > graph->legend_width)
+				graph->legend_width = width;
+
+			graph->region_count++;
+		}
+	}	
+}
+
+static void pdf_label_regions(gpointer data, gpointer user_data) {
+	struct rlib_graph_region *gr = data;
+	rlib *r = user_data;
+	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
+	if(graph->name != NULL) {
+		if(strcmp(graph->name, gr->graph_name) == 0) {
+			gint iteration = graph->orig_data_plot_count + graph->current_region;
+			gfloat offset =  ((iteration + 1) * RLIB_GET_LINE(r->current_font_point) );
+			gfloat w_width = pdf_get_string_width(r, "W");
+			gfloat line_height = RLIB_GET_LINE(r->current_font_point);
+			gfloat left = graph->legend_left + (w_width/2);
+			gfloat top =  graph->legend_top - offset;
+			gfloat bottom =  top + (line_height *.6);
+
+			OUTPUT(r)->set_bg_color(r, gr->color.r, gr->color.g, gr->color.b);
+			rpdf_rect(OUTPUT_PRIVATE(r)->pdf, graph->legend_left + (w_width/2), graph->legend_top - offset , w_width, line_height*.6);
+			rpdf_fill(OUTPUT_PRIVATE(r)->pdf);
+			OUTPUT(r)->set_bg_color(r, 0, 0, 0);
+
+			pdf_graph_draw_line(r, left, bottom, left, top, NULL);
+			pdf_graph_draw_line(r, left+w_width, bottom, left+w_width, top, NULL);
+			pdf_graph_draw_line(r, left, bottom, left+w_width, bottom, NULL);
+			pdf_graph_draw_line(r, left, top, left+w_width, top, NULL);
+			pdf_print_text(r, graph->legend_left + (w_width*2), graph->legend_top - offset, gr->region_label, 0);
+
+			graph->current_region++;
+		}
+	}	
+}
+
 static void pdf_graph_draw_legend(rlib *r) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
-	gfloat left = graph->left+graph->width - graph->legend_width;
-	gfloat width = graph->legend_width;
-	gfloat height = (RLIB_GET_LINE(r->current_font_point) * graph->data_plot_count) + (RLIB_GET_LINE(r->current_font_point) / 2);
-	gfloat top = graph->top;
-	gfloat bottom = graph->top - height;
+	gfloat left, width, height, top, bottom;
+	
+	g_slist_foreach(r->graph_regions, pdf_count_regions, r);
+	graph->orig_data_plot_count = graph->data_plot_count;
+	graph->data_plot_count += graph->region_count;
 
+	if(graph->legend_orientation == RLIB_GRAPH_LEGEND_ORIENTATION_RIGHT) {
+		left = graph->left+graph->width - graph->legend_width;
+		width = graph->legend_width;
+		height = (RLIB_GET_LINE(r->current_font_point) * graph->data_plot_count) + (RLIB_GET_LINE(r->current_font_point) / 2);
+		top = graph->top;
+		bottom = graph->top - height;
+	} else {
+		left = graph->left;
+		width = graph->width;
+		height = (RLIB_GET_LINE(r->current_font_point) * graph->data_plot_count) + (RLIB_GET_LINE(r->current_font_point) / 2);
+		top = graph->bottom + height;
+		bottom = graph->bottom;
+	}
+
+	if(graph->has_legend_bg_color) {
+		OUTPUT(r)->set_bg_color(r, graph->legend_bg_color.r, graph->legend_bg_color.g, graph->legend_bg_color.b);
+		rpdf_rect(OUTPUT_PRIVATE(r)->pdf, left, bottom, width, top-bottom);
+		rpdf_fill(OUTPUT_PRIVATE(r)->pdf);		
+		OUTPUT(r)->set_bg_color(r, 0, 0, 0);
+	}
 
 	pdf_graph_draw_line(r, left, bottom, left, top, NULL);
 	pdf_graph_draw_line(r, left+width, bottom, left+width, top, NULL);
@@ -767,20 +949,41 @@ static void pdf_graph_draw_legend(rlib *r) {
 	
 	graph->legend_top = top;
 	graph->legend_left = left;
+
+	if(graph->legend_orientation == RLIB_GRAPH_LEGEND_ORIENTATION_RIGHT)
+		graph->width -= width;
+	else
+		graph->legend_height = height;
 	
-	graph->width -= width;
+	g_slist_foreach(r->graph_regions, pdf_label_regions, r);
+
 }
 
-static void pdf_graph_draw_legend_label(rlib *r, gint iteration, gchar *label, struct rlib_rgb *color) {
+static void pdf_graph_draw_legend_label(rlib *r, gint iteration, gchar *label, struct rlib_rgb *color, gboolean line) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
 	gfloat offset =  ((iteration + 1) * RLIB_GET_LINE(r->current_font_point) );
 	gfloat w_width = pdf_get_string_width(r, "W");
 	gfloat line_height = RLIB_GET_LINE(r->current_font_point);
+	gfloat left = graph->legend_left + (w_width/2);
+	gfloat top =  graph->legend_top - offset;
+	gfloat bottom =  top + (line_height *.6);
 
-	OUTPUT(r)->set_bg_color(r, color->r, color->g, color->b);
-	rpdf_rect(OUTPUT_PRIVATE(r)->pdf, graph->legend_left + (w_width/2), graph->legend_top - offset , w_width, line_height*.6);
-	rpdf_fill(OUTPUT_PRIVATE(r)->pdf);
-	OUTPUT(r)->set_bg_color(r, 0, 0, 0);
+	if(!line) {
+		OUTPUT(r)->set_bg_color(r, color->r, color->g, color->b);
+		rpdf_rect(OUTPUT_PRIVATE(r)->pdf, graph->legend_left + (w_width/2), graph->legend_top - offset , w_width, line_height*.6);
+		rpdf_fill(OUTPUT_PRIVATE(r)->pdf);
+		OUTPUT(r)->set_bg_color(r, 0, 0, 0);
+
+		pdf_graph_draw_line(r, left, bottom, left, top, NULL);
+		pdf_graph_draw_line(r, left+w_width, bottom, left+w_width, top, NULL);
+		pdf_graph_draw_line(r, left, bottom, left+w_width, bottom, NULL);
+		pdf_graph_draw_line(r, left, top, left+w_width, top, NULL);
+	} else {
+		OUTPUT(r)->set_bg_color(r, color->r, color->g, color->b);
+		rpdf_rect(OUTPUT_PRIVATE(r)->pdf, graph->legend_left + (w_width/2), graph->legend_top - offset + (line_height * .2) , w_width, line_height*.2);
+		rpdf_fill(OUTPUT_PRIVATE(r)->pdf);
+		OUTPUT(r)->set_bg_color(r, 0, 0, 0);	
+	}	
 	pdf_print_text(r, graph->legend_left + (w_width*2), graph->legend_top - offset, label, 0);
 }
 
@@ -849,7 +1052,13 @@ void rlib_pdf_new_output_filter(rlib *r) {
 	
 	OUTPUT(r)->graph_start = pdf_graph_start;
 	OUTPUT(r)->graph_set_limits = pdf_graph_set_limits;
-	OUTPUT(r)->graph_title = pdf_graph_title;
+	OUTPUT(r)->graph_set_title = pdf_graph_set_title;
+	OUTPUT(r)->graph_set_name = pdf_graph_set_name;
+	OUTPUT(r)->graph_set_legend_bg_color = pdf_graph_set_legend_bg_color;
+	OUTPUT(r)->graph_set_legend_orientation = pdf_graph_set_legend_orientation;
+	OUTPUT(r)->graph_set_draw_x_y = pdf_graph_set_draw_x_y;
+	OUTPUT(r)->graph_set_bold_titles = pdf_graph_set_bold_titles;
+	OUTPUT(r)->graph_set_grid_color = pdf_graph_set_grid_color;
 	OUTPUT(r)->graph_x_axis_title = pdf_graph_x_axis_title;
 	OUTPUT(r)->graph_y_axis_title = pdf_graph_y_axis_title;
 	OUTPUT(r)->graph_do_grid = pdf_graph_do_grid;

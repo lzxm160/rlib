@@ -49,3 +49,5 @@ void rlib_set_output_encoding(rlib *r, const char *encoding);
 int rlib_set_datasource_encoding(rlib *r, char *input_name, char *encoding);
 int rlib_free(rlib *r);
 char *rlib_version(void);
+int rlib_graph_add_bg_region(rlib *r, char *graph_name, char *region_label, char *color, float start, float end);
+int rlib_graph_clear_bg_region(rlib *r, char *graph_name);
