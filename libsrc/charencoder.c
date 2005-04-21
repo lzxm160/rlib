@@ -62,12 +62,12 @@ gint rlib_charencoder_convert(GIConv converter, gchar **inbuf, gsize *inbytes_le
 	memcpy(*outbuf, *inbuf, *outbytes_left < *inbytes_left ? *outbytes_left : *inbytes_left);
 	return 0;
 #else
+	memset(*outbuf, 0, *outbytes_left);
 	if(converter <= 0) {
 		memcpy(*outbuf, *inbuf, *outbytes_left < *inbytes_left ? *outbytes_left + 1 : *inbytes_left + 1);
 		return 1;
 	} else {
-		memset(*outbuf, 0, *outbytes_left);
-		gint res = g_iconv(converter, inbuf, inbytes_left, outbuf, outbytes_left);
+		gint res = g_iconv(converter, inbuf, inbytes_left, outbuf, outbytes_left);	
 		return res;
 	}
 #endif

@@ -41,8 +41,8 @@
 	rlib_add_query_as($rlib, "local_array", "data", "data");
 	rlib_add_report($rlib, "hungary.xml");
 	rlib_set_output_format_from_text($rlib, "pdf");
-//	rlib_set_output_encoding($rlib, "ISO8859-1");
-	rlib_set_output_encoding($rlib, "ISO-8859-2");
+	rlib_set_output_encoding($rlib, "ISO8859-2");
+//	rlib_set_output_encoding($rlib, "UTF-8");
 	
 	rlib_execute($rlib);
 	header(rlib_get_content_type($rlib));

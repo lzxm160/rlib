@@ -1,4 +1,10 @@
 2005-04-21  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/charencoder.c: nada
+	* libsrc/layout.c: don't r_strlen the string, strlen to get they byte count
+	* src/examples/php/hungary.php: 
+	* src/examples/php/hungary.xml:
+
+2005-04-21  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/php.c: Lots of work on making the graphs look pretier.  New api to set graph region bg colors, new gd non bold medium font
 	* libsrc/Makefile.am: likewise
 	* libsrc/api.c: likewise

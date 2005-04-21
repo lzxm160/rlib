@@ -120,7 +120,7 @@ static gchar *rlib_encode_text(rlib *r, gchar *text, gchar *result, gint result_
 		r_error("rlib_encode_text called with NULL text");
 		result = "!ERR_ENC1";
 	} else {
-		gint len = r_strlen(text);
+		gint len = strlen(text);
 		gchar *tmp = result;
 		rlib_charencoder_convert(r->output_encoder, &text, &len, &tmp, &result_len);
 		if (result == NULL) {
