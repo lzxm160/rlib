@@ -74,7 +74,7 @@ gchar * rlib_resolve_field_value(rlib *r, struct rlib_resultset_field *rf) {
 #if DISABLE_UTF8
 	return g_strdup(str);
 #else
-	slen = r_strlen(str);
+	slen = strlen(str);
 	elen = MAXSTRLEN;
 	rlib_charencoder_convert(rs->info.encoder, &str, &slen, &ptr, &elen);
 	return g_strdup(encoded_buf);
@@ -433,7 +433,7 @@ void rlib_resolve_part_fields(rlib *r, struct rlib_part *part) {
 gchar * rlib_resolve_memory_variable(rlib *r, gchar *name) {
 	if(r_strlen(name) >= 3 && name[0] == 'm' && name[1] == '.') {
 		gchar *value;
-		value = g_hash_table_lookup(r->parameters, name);
+		value = g_hash_table_lookup(r->parameters, name+2);
 		if(value != NULL)
 			return g_strdup(value);
 		return ENVIRONMENT(r)->rlib_resolve_memory_variable(name+2);
