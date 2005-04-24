@@ -944,6 +944,7 @@ gint rlib_add_datasource_mysql(rlib *r, gchar *input_name, gchar *database_host,
 gint rlib_add_datasource_mysql_from_group(rlib *r, gchar *input_name, gchar *group);
 gint rlib_add_datasource_postgre(rlib *r, gchar *input_name, gchar *conn);
 gint rlib_add_datasource_odbc(rlib *r, gchar *input_name, gchar *source, gchar *user, gchar *password);
+gint rlib_add_datasource_xml(rlib *r, gchar *input_name);
 
 /***** PROTOTYPES: postgre.c **************************************************/
 gpointer rlib_postgre_new_input_filter(void);
@@ -977,3 +978,6 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 int adjust_limits(gdouble  dataMin, gdouble dataMax, gint denyMinEqualsAdjMin, gint minTMs, gint maxTMs, 
 	gint* numTms, gdouble* tmi, gdouble* adjMin, gdouble* adjMax, gint *goodIncs, gint numGoodIncs);
 
+/***** PROTOTYPES: xml_data_source.c ******************************************************/
+gpointer rlib_xml_new_input_filter();
+gpointer rlib_xml_connect(gpointer input_ptr);

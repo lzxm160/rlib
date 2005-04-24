@@ -252,6 +252,27 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1datasource_1odbc(JNIEnv *jenv,
 }
 
 
+JNIEXPORT jlong JNICALL Java_librlibJNI_rlib_1add_1datasource_1xml(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
+    jlong jresult = 0 ;
+    rlib *arg1 = (rlib *) 0 ;
+    gchar *arg2 = (gchar *) 0 ;
+    gint result;
+    
+    (void)jenv;
+    (void)jcls;
+    arg1 = *(rlib **)&jarg1; 
+    arg2 = *(gchar **)&jarg2; 
+    result = rlib_add_datasource_xml(arg1,arg2);
+    
+    {
+        gint * resultptr = (gint *) malloc(sizeof(gint));
+        memmove(resultptr, &result, sizeof(gint));
+        *(gint **)&jresult = resultptr;
+    }
+    return jresult;
+}
+
+
 JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1query_1as(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;

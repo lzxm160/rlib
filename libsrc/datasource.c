@@ -142,3 +142,14 @@ gint rlib_add_datasource_odbc(rlib *r, gchar *input_name, gchar *source, gchar *
 	return 0;
 }
 
+gint rlib_add_datasource_xml(rlib *r, gchar *input_name) {
+	gpointer xml;
+
+	r->inputs[r->inputs_count].input = rlib_xml_new_input_filter();
+	xml = rlib_xml_connect(r->inputs[r->inputs_count].input);
+	r->inputs[r->inputs_count].name = g_strdup(input_name);
+	r->inputs[r->inputs_count].handle = NULL;
+	r->inputs[r->inputs_count].input->info.encoder = NULL;
+	r->inputs_count++;
+	return 0;
+}

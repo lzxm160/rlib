@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<data>
+	<rows>
+		<row>
+			<col>Bob</col>
+			<col>Doan</col>
+			<col>blue</col>
+			<col>1</col>
+			<col>Green Eggs And Spam I Am I Am</col>
+		</row>
+		<row>
+			<col>Eric</col>
+			<col>Buruschkin</col>
+			<col>green</col>
+			<col>1</col>
+			<col>Green Eggs And Spam I Am I Am</col>
+		</row>
+		<row>
+			<col>Mike</col>
+			<col>Roth</col>
+			<col>yellow</col>
+			<col>2</col>
+			<col>Green Eggs And Spam I Am I Am</col>
+		</row>
+		<row>
+			<col>Bob</col>
+			<col>Kratz</col>
+			<col>pink</col>
+			<col>2</col>
+			<col>Green Eggs And Spam I Am I Am</col>
+		</row>
+		<row>
+			<col>Steve</col>
+			<col>Tilden</col>
+			<col>purple</col>
+			<col>2</col>
+			<col>Dude</col>
+		</row>
+	</rows>
+	<fields>
+		<field>first_name</field>
+		<field>last_name</field>
+		<field>color</field>
+		<field>group</field>
+		<field>breakfast</field>
+	</fields>
+</data>

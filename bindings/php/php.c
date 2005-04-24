@@ -37,6 +37,7 @@ ZEND_FUNCTION(rlib_add_datasource_mysql_from_group);
 ZEND_FUNCTION(rlib_add_datasource_postgre);
 ZEND_FUNCTION(rlib_add_datasource_odbc);
 ZEND_FUNCTION(rlib_add_datasource_array);
+ZEND_FUNCTION(rlib_add_datasource_xml);
 ZEND_FUNCTION(rlib_add_query_as);
 ZEND_FUNCTION(rlib_graph_add_bg_region);
 ZEND_FUNCTION(rlib_graph_clear_bg_region);
@@ -72,6 +73,7 @@ zend_function_entry rlib_functions[] =
 	ZEND_FE(rlib_add_datasource_postgre, NULL)
 	ZEND_FE(rlib_add_datasource_odbc, NULL)
 	ZEND_FE(rlib_add_datasource_array, NULL)
+	ZEND_FE(rlib_add_datasource_xml, NULL)
 	ZEND_FE(rlib_add_query_as, NULL)
 	ZEND_FE(rlib_graph_add_bg_region, NULL)
 	ZEND_FE(rlib_graph_clear_bg_region, NULL)
@@ -238,6 +240,24 @@ ZEND_FUNCTION(rlib_add_datasource_array) {
 	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);
 	
 	result = rlib_add_datasource_php_array(rip->r, estrdup(datasource_name));
+	RETURN_LONG(result);
+}
+
+ZEND_FUNCTION(rlib_add_datasource_xml) {
+	zval *z_rip = NULL;
+	gint datasource_length;
+	gchar *datasource_name;
+	rlib_inout_pass *rip;
+	gint id = -1;
+	gint result = 0;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &z_rip,
+		&datasource_name, &datasource_length) == FAILURE) {
+		return;
+	}
+	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);
+	
+	result = rlib_add_datasource_xml(rip->r, estrdup(datasource_name));
 	RETURN_LONG(result);
 }
 

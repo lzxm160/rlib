@@ -1,4 +1,22 @@
 2005-04-24  Bob Doan  <bdoan@sicompos.com>
+            Jeremy Lee <jlee@platinumtel.com> 
+            Warren Smith <wsmith@platinumtel.com>
+				
+	* bindings/interfaces/librlib.java: new XML Input DataSource
+	* bindings/interfaces/librlib.py: likewise
+	* bindings/interfaces/librlibJNI.java: likewise
+	* bindings/java/java.c: likewise
+	* bindings/php/php.c: likewise
+	* bindings/python/python.c: likewise
+	* libsrc/Makefile.am: likewise
+	* libsrc/datasource.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/rlib.i: likewise
+	* libsrc/xml_data_source.c: likewise
+	* src/examples/php/data.xml: likewise
+	* src/examples/php/xml.php: likewise
+
+2005-04-24  Bob Doan  <bdoan@sicompos.com>
 	* bindings/interfaces/librlib.java: Resync bindsing w/ new API
 	* bindings/interfaces/librlib.py: likewise
 	* bindings/interfaces/librlibJNI.java: likewise

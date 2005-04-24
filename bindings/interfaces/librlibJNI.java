@@ -12,6 +12,7 @@ class librlibJNI {
   public final static native int rlib_add_datasource_mysql(long jarg1, String jarg2, String jarg3, String jarg4, String jarg5, String jarg6);
   public final static native int rlib_add_datasource_postgre(long jarg1, String jarg2, String jarg3);
   public final static native int rlib_add_datasource_odbc(long jarg1, String jarg2, String jarg3, String jarg4, String jarg5);
+  public final static native long rlib_add_datasource_xml(long jarg1, long jarg2);
   public final static native int rlib_add_query_as(long jarg1, String jarg2, String jarg3, String jarg4);
   public final static native int rlib_add_report(long jarg1, String jarg2);
   public final static native int rlib_add_report_from_buffer(long jarg1, String jarg2);

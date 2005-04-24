@@ -25,6 +25,10 @@ public class librlib {
     return librlibJNI.rlib_add_datasource_odbc(SWIGTYPE_p_rlib.getCPtr(r), input_name, source, user, password);
   }
 
+  public static SWIGTYPE_p_gint rlib_add_datasource_xml(SWIGTYPE_p_rlib r, SWIGTYPE_p_gchar input_name) {
+    return new SWIGTYPE_p_gint(librlibJNI.rlib_add_datasource_xml(SWIGTYPE_p_rlib.getCPtr(r), SWIGTYPE_p_gchar.getCPtr(input_name)), true);
+  }
+
   public static int rlib_add_query_as(SWIGTYPE_p_rlib r, String input_source, String sql, String name) {
     return librlibJNI.rlib_add_query_as(SWIGTYPE_p_rlib.getCPtr(r), input_source, sql, name);
   }

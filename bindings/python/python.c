@@ -684,8 +684,10 @@ SWIG_Python_InstallConstants(PyObject *d, swig_const_info constants[]) {
 /* -------- TYPES TABLE (BEGIN) -------- */
 
 #define  SWIGTYPE_p_rlib swig_types[0] 
-#define  SWIGTYPE_p_f_p_rlib_p_void__int swig_types[1] 
-static swig_type_info *swig_types[3];
+#define  SWIGTYPE_p_gint swig_types[1] 
+#define  SWIGTYPE_p_gchar swig_types[2] 
+#define  SWIGTYPE_p_f_p_rlib_p_void__int swig_types[3] 
+static swig_type_info *swig_types[5];
 
 /* -------- TYPES TABLE (END) -------- */
 
@@ -772,6 +774,31 @@ static PyObject *_wrap_rlib_add_datasource_odbc(PyObject *self, PyObject *args) 
     result = (int)rlib_add_datasource_odbc(arg1,arg2,arg3,arg4,arg5);
     
     resultobj = PyInt_FromLong((long)result);
+    return resultobj;
+    fail:
+    return NULL;
+}
+
+
+static PyObject *_wrap_rlib_add_datasource_xml(PyObject *self, PyObject *args) {
+    PyObject *resultobj;
+    rlib *arg1 = (rlib *) 0 ;
+    gchar *arg2 = (gchar *) 0 ;
+    gint result;
+    PyObject * obj0 = 0 ;
+    PyObject * obj1 = 0 ;
+    
+    if(!PyArg_ParseTuple(args,(char *)"OO:rlib_add_datasource_xml",&obj0,&obj1)) goto fail;
+    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    if ((SWIG_ConvertPtr(obj1,(void **) &arg2, SWIGTYPE_p_gchar,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    result = rlib_add_datasource_xml(arg1,arg2);
+    
+    {
+        gint * resultptr;
+        resultptr = (gint *) malloc(sizeof(gint));
+        memmove(resultptr, &result, sizeof(gint));
+        resultobj = SWIG_NewPointerObj((void *) resultptr, SWIGTYPE_p_gint, 1);
+    }
     return resultobj;
     fail:
     return NULL;
@@ -1227,6 +1254,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"rlib_add_datasource_mysql", _wrap_rlib_add_datasource_mysql, METH_VARARGS },
 	 { (char *)"rlib_add_datasource_postgre", _wrap_rlib_add_datasource_postgre, METH_VARARGS },
 	 { (char *)"rlib_add_datasource_odbc", _wrap_rlib_add_datasource_odbc, METH_VARARGS },
+	 { (char *)"rlib_add_datasource_xml", _wrap_rlib_add_datasource_xml, METH_VARARGS },
 	 { (char *)"rlib_add_query_as", _wrap_rlib_add_query_as, METH_VARARGS },
 	 { (char *)"rlib_add_report", _wrap_rlib_add_report, METH_VARARGS },
 	 { (char *)"rlib_add_report_from_buffer", _wrap_rlib_add_report_from_buffer, METH_VARARGS },
@@ -1258,10 +1286,14 @@ static PyMethodDef SwigMethods[] = {
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
 static swig_type_info _swigt__p_rlib[] = {{"_p_rlib", 0, "rlib *", 0},{"_p_rlib"},{0}};
+static swig_type_info _swigt__p_gint[] = {{"_p_gint", 0, "gint *", 0},{"_p_gint"},{0}};
+static swig_type_info _swigt__p_gchar[] = {{"_p_gchar", 0, "gchar *", 0},{"_p_gchar"},{0}};
 static swig_type_info _swigt__p_f_p_rlib_p_void__int[] = {{"_p_f_p_rlib_p_void__int", 0, "int (*)(rlib *,void *)", 0},{"_p_f_p_rlib_p_void__int"},{0}};
 
 static swig_type_info *swig_types_initial[] = {
 _swigt__p_rlib, 
+_swigt__p_gint, 
+_swigt__p_gchar, 
 _swigt__p_f_p_rlib_p_void__int, 
 0
 };

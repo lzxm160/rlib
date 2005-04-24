@@ -39,6 +39,8 @@ rlib_add_datasource_postgre = _librlib.rlib_add_datasource_postgre
 
 rlib_add_datasource_odbc = _librlib.rlib_add_datasource_odbc
 
+rlib_add_datasource_xml = _librlib.rlib_add_datasource_xml
+
 rlib_add_query_as = _librlib.rlib_add_query_as
 
 rlib_add_report = _librlib.rlib_add_report
