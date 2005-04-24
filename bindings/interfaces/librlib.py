@@ -77,15 +77,13 @@ rlib_set_output_parameter = _librlib.rlib_set_output_parameter
 
 rlib_set_output_encoding = _librlib.rlib_set_output_encoding
 
-rlib_set_database_encoding = _librlib.rlib_set_database_encoding
-
 rlib_set_datasource_encoding = _librlib.rlib_set_datasource_encoding
-
-rlib_set_parameter_encoding = _librlib.rlib_set_parameter_encoding
-
-rlib_set_encodings = _librlib.rlib_set_encodings
 
 rlib_free = _librlib.rlib_free
 
 rlib_version = _librlib.rlib_version
+
+rlib_graph_add_bg_region = _librlib.rlib_graph_add_bg_region
+
+rlib_graph_clear_bg_region = _librlib.rlib_graph_clear_bg_region
 

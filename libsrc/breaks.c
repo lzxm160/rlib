@@ -158,7 +158,7 @@ void rlib_reset_variables_on_break(rlib *r, struct rlib_part *part, struct rlib_
 
 	for(e = report->variables; e != NULL; e=e->next) {
 		struct rlib_report_variable *rv = e->data;
-		if(rv->xml_resetonbreak != NULL && rv->xml_resetonbreak[0] != '\0' && !strcmp(rv->xml_resetonbreak, name)) {
+		if(rv->xml_resetonbreak != NULL && rv->xml_resetonbreak[0] != '\0' && !strcmp((char *)rv->xml_resetonbreak, name)) {
 			if(rv->type == RLIB_REPORT_VARIABLE_COUNT) {
 				RLIB_VARIABLE_CA(rv)->count = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->count, 0);
 			} else if(rv->type == RLIB_REPORT_VARIABLE_SUM) {
@@ -209,7 +209,7 @@ void rlib_break_all_below_in_reverse_order(rlib *r, struct rlib_part *part, stru
 				rlib_navigate_next(r, r->current_result);
 		}
 
-		rlib_reset_variables_on_break(r, part, report, rb->xml_name);
+		rlib_reset_variables_on_break(r, part, report, (gchar *)rb->xml_name);
 		rlib_process_expression_variables(r, report);
 		if (rlib_execute_as_boolean(r, rb->newpage_code, &t))
 			newpage = t;

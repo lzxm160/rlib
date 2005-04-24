@@ -28,12 +28,9 @@
 #include <ctype.h>
 #include "config.h"
 
-#ifndef RLIB_WIN32
-#include <langinfo.h>
-#endif
-
 #include "rlib.h"
 #include "pcode.h"
+#include "rlib_langinfo.h"
 
 #ifndef RADIXCHAR
 #define RADIXCHAR DECIMAL_POINT
@@ -311,7 +308,7 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, struct rlib_part *part, st
 		o->value = memresult;
 	} else if((rvar = rlib_resolve_rlib_variable(r, str))) {
 		o->type = OPERAND_RLIB_VARIABLE;
-		o->value = (void *)rvar;
+		o->value = GINT_TO_POINTER(rvar);
 	} else if((metadata = g_hash_table_lookup(r->input_metadata, str)) != NULL && look_at_metadata == TRUE) {  
 		o->type = OPERAND_METADATA;
 		o->value = metadata;

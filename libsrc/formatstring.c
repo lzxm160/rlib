@@ -27,17 +27,13 @@
 #include <time.h>
 #include "config.h"
 
-#ifndef RLIB_WIN32
-#include <langinfo.h>
-#endif
-
 #ifdef RLIB_HAVE_MONETARY_H 
 #include <monetary.h>
 #endif
 
-#include "config.h"
 #include "rlib.h"
 #include "pcode.h"
+#include "rlib_langinfo.h"
 
 
 /*
@@ -173,7 +169,11 @@ gint rlib_number_sprintf(gchar *dest, gchar *fmtstr, const struct rlib_value *rv
 
 static gint rlib_format_string_default(rlib *r, struct rlib_report_field *rf, struct rlib_value *rval, gchar *buf) {
 	if(RLIB_VALUE_IS_NUMBER(rval)) {
+#ifdef _64BIT_
+		sprintf(buf, "%ld", RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(rval)));
+#else
 		sprintf(buf, "%lld", RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(rval)));
+#endif
 	} else if(RLIB_VALUE_IS_STRING(rval)) {
 		if(RLIB_VALUE_GET_AS_STRING(rval) == NULL)
 			buf[0] = 0;

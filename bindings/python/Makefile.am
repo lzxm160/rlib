@@ -19,9 +19,15 @@
 ## Report bugs to rlib-devel@lists.sourceforge.net
 ##
 ## Process this file with automake to produce Makefile.in
-lib_LTLIBRARIES = librlib.la
+AM_CFLAGS = -I${top_srcdir}/libsrc $(RLIB_CFLAGS) $(PYTHON_CFLAGS) -fno-strict-aliasing
+pythonlibdir = $(PYTHON_EXTENSION_DIR)
+pythonlib_LTLIBRARIES = librlib.la
 librlib_la_SOURCES = python.c 
-librlib_la_LIBADD = -L${top_builddir}/libsrc/ -lr $(RLIB_LIBS)
-INCLUDES = -I${top_srcdir}/libsrc/ $(RLIB_CFLAGS) $(PYTHON_CFLAGS) -fno-strict-aliasing
-librlib_la_LDFLAGS = -release $(RLIB_VERSION)
-libdir = $(PYTHON_EXTENSION_DIR)
+librlib_la_LIBADD = $(top_builddir)/libsrc/libr.la $(RLIB_LIBS)
+DEF_FILE=librlibpython.def
+if WIN32
+def_ldflags=-Wl,--output-def,$(DEF_FILE) -module -export-dynamic -avoid-version
+endif
+librlib_la_LDFLAGS = \
+	-version-info $(RLIB_LT_CURRENT):$(RLIB_LT_REVISION):$(RLIB_LT_AGE) \
+	$(def_ldflags)

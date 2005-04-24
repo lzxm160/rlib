@@ -8,8 +8,6 @@
  * interface file instead. 
  * ----------------------------------------------------------------------------- */
 
-#include "config.h"
-
 #define SWIGPYTHON
 
 #include "Python.h"
@@ -728,7 +726,7 @@ static PyObject *_wrap_rlib_add_datasource_mysql(PyObject *self, PyObject *args)
     char *arg6 ;
     int result;
     PyObject * obj0 = 0 ;
-#if HAVE_MYSQL
+    
     if(!PyArg_ParseTuple(args,(char *)"Osssss:rlib_add_datasource_mysql",&obj0,&arg2,&arg3,&arg4,&arg5,&arg6)) goto fail;
     if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
     result = (int)rlib_add_datasource_mysql(arg1,arg2,arg3,arg4,arg5,arg6);
@@ -736,7 +734,6 @@ static PyObject *_wrap_rlib_add_datasource_mysql(PyObject *self, PyObject *args)
     resultobj = PyInt_FromLong((long)result);
     return resultobj;
     fail:
-#endif
     return NULL;
 }
 
@@ -748,7 +745,6 @@ static PyObject *_wrap_rlib_add_datasource_postgre(PyObject *self, PyObject *arg
     char *arg3 ;
     int result;
     PyObject * obj0 = 0 ;
-#if HAVE_POSTGRE
     
     if(!PyArg_ParseTuple(args,(char *)"Oss:rlib_add_datasource_postgre",&obj0,&arg2,&arg3)) goto fail;
     if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
@@ -757,7 +753,6 @@ static PyObject *_wrap_rlib_add_datasource_postgre(PyObject *self, PyObject *arg
     resultobj = PyInt_FromLong((long)result);
     return resultobj;
     fail:
-#endif
     return NULL;
 }
 
@@ -771,7 +766,7 @@ static PyObject *_wrap_rlib_add_datasource_odbc(PyObject *self, PyObject *args) 
     char *arg5 ;
     int result;
     PyObject * obj0 = 0 ;
-#if HAVE_ODBC    
+    
     if(!PyArg_ParseTuple(args,(char *)"Ossss:rlib_add_datasource_odbc",&obj0,&arg2,&arg3,&arg4,&arg5)) goto fail;
     if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
     result = (int)rlib_add_datasource_odbc(arg1,arg2,arg3,arg4,arg5);
@@ -779,7 +774,6 @@ static PyObject *_wrap_rlib_add_datasource_odbc(PyObject *self, PyObject *args) 
     resultobj = PyInt_FromLong((long)result);
     return resultobj;
     fail:
-#endif	 
     return NULL;
 }
 
@@ -1138,7 +1132,6 @@ static PyObject *_wrap_rlib_set_output_encoding(PyObject *self, PyObject *args) 
 }
 
 
-
 static PyObject *_wrap_rlib_set_datasource_encoding(PyObject *self, PyObject *args) {
     PyObject *resultobj;
     rlib *arg1 = (rlib *) 0 ;
@@ -1189,6 +1182,46 @@ static PyObject *_wrap_rlib_version(PyObject *self, PyObject *args) {
 }
 
 
+static PyObject *_wrap_rlib_graph_add_bg_region(PyObject *self, PyObject *args) {
+    PyObject *resultobj;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    char *arg3 ;
+    char *arg4 ;
+    float arg5 ;
+    float arg6 ;
+    int result;
+    PyObject * obj0 = 0 ;
+    
+    if(!PyArg_ParseTuple(args,(char *)"Osssff:rlib_graph_add_bg_region",&obj0,&arg2,&arg3,&arg4,&arg5,&arg6)) goto fail;
+    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    result = (int)rlib_graph_add_bg_region(arg1,arg2,arg3,arg4,arg5,arg6);
+    
+    resultobj = PyInt_FromLong((long)result);
+    return resultobj;
+    fail:
+    return NULL;
+}
+
+
+static PyObject *_wrap_rlib_graph_clear_bg_region(PyObject *self, PyObject *args) {
+    PyObject *resultobj;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    int result;
+    PyObject * obj0 = 0 ;
+    
+    if(!PyArg_ParseTuple(args,(char *)"Os:rlib_graph_clear_bg_region",&obj0,&arg2)) goto fail;
+    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    result = (int)rlib_graph_clear_bg_region(arg1,arg2);
+    
+    resultobj = PyInt_FromLong((long)result);
+    return resultobj;
+    fail:
+    return NULL;
+}
+
+
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"rlib_init", _wrap_rlib_init, METH_VARARGS },
 	 { (char *)"rlib_add_datasource_mysql", _wrap_rlib_add_datasource_mysql, METH_VARARGS },
@@ -1216,6 +1249,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"rlib_set_datasource_encoding", _wrap_rlib_set_datasource_encoding, METH_VARARGS },
 	 { (char *)"rlib_free", _wrap_rlib_free, METH_VARARGS },
 	 { (char *)"rlib_version", _wrap_rlib_version, METH_VARARGS },
+	 { (char *)"rlib_graph_add_bg_region", _wrap_rlib_graph_add_bg_region, METH_VARARGS },
+	 { (char *)"rlib_graph_clear_bg_region", _wrap_rlib_graph_clear_bg_region, METH_VARARGS },
 	 { NULL, NULL }
 };
 

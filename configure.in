@@ -20,13 +20,20 @@ dnl Report bugs to rlib-devel@lists.sourceforge.net
 dnl
 dnl Process this file with autoconf to produce a configure script.
 
-
 AC_INIT(libsrc/rlib.h)
+AC_CANONICAL_SYSTEM
 AM_INIT_AUTOMAKE(rlib, 1.3.3)
 AM_MAINTAINER_MODE
-AC_DISABLE_STATIC
+
 RLIB_VERSION=1.3.3
 AC_SUBST(RLIB_VERSION)
+
+RLIB_LT_CURRENT=4
+RLIB_LT_AGE=3
+RLIB_LT_REVISION=3
+AC_SUBST(RLIB_LT_CURRENT)
+AC_SUBST(RLIB_LT_REVISION)
+AC_SUBST(RLIB_LT_AGE)
 
 dnl Checks for programs.
 AC_PROG_CC
@@ -34,10 +41,18 @@ AC_PROG_MAKE_SET
 AC_PROG_INSTALL
 
 AC_LIBTOOL_DLOPEN
-AC_LIBLTDL_CONVENIENCE
-AC_PROG_LIBTOOL
+AC_DISABLE_STATIC
+AC_LIBTOOL_WIN32_DLL
+AM_PROG_LIBTOOL
+dnl AC_LIBLTDL_CONVENIENCE
 AC_SUBST(INCLTDL)
 AC_SUBST(LIBLTDL)
+
+AC_HAVE_HEADERS(langinfo.h,
+	AC_DEFINE(HAVE_LANGINFO_H, 1, [We have standard locale langinfo]),)
+
+AC_HAVE_HEADERS(sys/time.h,
+	AC_DEFINE(HAVE_SYS_TIME_H, 1, [We have standard sys/time.h]),)
 
 dnl Checks for libraries.
 AC_CHECK_LIB(c, exit)
@@ -56,6 +71,79 @@ AC_SUBST(LIBGLIB_CFLAGS)
 PKG_CHECK_MODULES(LIBGMODULE, gmodule-2.0 >= 0.0.1)
 AC_SUBST(LIBGMODULE_LIBS)
 AC_SUBST(LIBGMODULE_CFLAGS)
+
+case "$target" in
+  *-*-cygwin*|*-*-mingw*)
+	ac_save_CFLAGS="$CFLAGS"
+	CFLAGS="$CFLAGS -mms-bitfields -c conftest.$ac_ext"
+	AC_MSG_CHECKING([whether $CC supports -mms-bitfields])
+	echo "int some_variable = 0;" > conftest.$ac_ext
+	compiler_ms_bitfields=no
+	AC_TRY_COMPILE([], [int some_variable = 0;], [dnl
+		# The compiler can only warn and ignore the option if not recognized
+		# So say no if there are warnings
+		if test -s conftest.err; then
+			compiler_ms_bitfields=no
+		else
+			compiler_ms_bitfields=yes
+		fi
+	])
+	AC_MSG_RESULT($compiler_ms_bitfields)
+	CFLAGS="$ac_save_CFLAGS"
+
+	if test "$compiler_ms_bitfields" = "no"; then
+		ac_save_CFLAGS="$CFLAGS"
+		CFLAGS="$CFLAGS -fnative-struct -c conftest.$ac_ext"
+		AC_MSG_CHECKING([whether $CC supports -fnative-struct])
+		echo "int some_variable = 0;" > conftest.$ac_ext
+		compiler_native_struct=no
+		AC_TRY_COMPILE([], [int some_variable = 0;], [dnl
+			# The compiler can only warn and ignore the option if not recognized
+			# So say no if there are warnings
+			if test -s conftest.err; then
+				compiler_native_struct=no
+			else
+				compiler_native_struct=yes
+			fi
+		])
+		AC_MSG_RESULT($compiler_native_struct)
+		CFLAGS="$ac_save_CFLAGS"
+	fi
+	if test $compiler_ms_bitfields=yes; then
+		CFLAGS="$CFLAGS -mms-bitfields"
+	else
+		if test $compiler_native_struct=yes; then
+			CFLAGS="$CFLAGS -fnative_struct"
+		fi
+	fi
+
+dnl Enable WIN32 on MingW or Cygwin in mno-cygwin mode
+	case "$target" in
+		*-*-mingw32*)
+			enable_win32=yes
+		;;
+		*-*-cygwin*)
+			AC_EGREP_CPP(pattern,
+			[#ifdef WIN32
+			yes
+			#endif],
+			enable_win32=yes, enable_win32=no)
+		;;
+	esac
+	LDFLAGS="-no-undefined $LDFLAGS"
+	;;
+  *)
+	enable_win32=no
+	case $target_cpu in
+		x86_64|sparc64)
+			AC_DEFINE(_64BIT_, 1, [We compile for a 64-bit CPU])
+			;;
+		*)
+			;;
+	esac
+	;;
+esac
+AM_CONDITIONAL(WIN32, test x$enable_win32 = "xyes")
 
 AC_ARG_ENABLE(mysql,              [  --disable-mysql         disable mysql backend],,enable_mysql=yes)
 MYSQL_CFLAGS=""
@@ -112,13 +200,69 @@ fi
 odbcdir=""
 if test $enable_odbc = yes
 then
+    if test x$enable_win32 = xyes ; then
+	AC_MSG_CHECKING([whether <sql.h> needs  <windows.h>])
+	AC_TRY_COMPILE([#include <sql.h>], [], sql_h_needs_windows_h=no,
+		AC_TRY_COMPILE([#define WIN32_LEAN_AND_MEAN 1
+#include <windows.h>
+#include <sql.h>], [], sql_h_needs_windows_h=yes,
+			AC_MSG_ERROR([don't know how to compile <sql.h>])
+		))
+	AC_MSG_RESULT([$sql_h_needs_windows_h])
+
+	ac_save_LIBS="$LIBS"
+	LIBS="$LIBS -lodbc32"
+
+	AC_MSG_CHECKING([for SQLAllocHandle in -lodbc])
+	if test $sql_h_needs_windows_h = yes; then
+		AC_DEFINE([NEED_WINDOWS_H], [1], [We are compiling under Windows])
+		AC_TRY_LINK([#define WIN32_LEAN_AND_MEAN 1
+#include <windows.h>
+#include <sql.h>],
+		[SQLHENV hEnv;
+SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);],
+		[have_odbc32=yes],
+		[AC_MSG_ERROR([Can't find ODBC libs])])
+	else
+		AC_TRY_LINK([#include <sql.h>],
+		[SQLHENV hEnv;
+SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);],
+		[have_odbc32=yes],
+		[AC_MSG_ERROR([Can't find ODBC libs])])
+	fi
+
+	AC_MSG_RESULT($have_odbc32)
+	if test $have_odbc32=yes; then
+		AC_DEFINE(HAVE_ODBC,1,[Build with ODBC support])
+		ODBC_CFLAGS=""
+		ODBC_LIBS="-lodbc32"
+	else
+		enable_odbc=no
+		AC_MSG_WARN(ODBC input method is not going to be used)
+	fi
+        LIBS="$ac_save_LIBS"
+    else
 	AC_MSG_CHECKING(for ODBC files)
-	for d in $dir /usr /usr/local
+	for d in $dir $libdir /usr /usr/local
 	do
+		if test -f $d/libodbc.so -a -f $d/../include/sql.h
+		then
+			AC_MSG_RESULT(found ODBC in $d)
+			odbclib="-lodbc"
+			odbcdir=$d
+			break
+		fi
 		if test -f $d/lib/libodbc.so -a -f $d/include/sql.h
 		then
 			AC_MSG_RESULT(found ODBC in $d)
 			odbclib="-lodbc"
+			odbcdir=$d
+			break
+		fi
+		if test -f $d/libiodbc.so -a -f $d/../include/sql.h
+		then
+			AC_MSG_RESULT(found iODBC in $d)
+			odbclib="-liodbc"
 			odbcdir=$d
 			break
 		fi
@@ -139,6 +283,7 @@ then
 		ODBC_CFLAGS="-I${odbcdir}/include"
 		ODBC_LIBS="-L${odbcdir}/lib ${odbclib}"
 	fi
+    fi
 fi
 AM_CONDITIONAL(HAVE_ODBC, test x$enable_odbc = xyes)
 AC_SUBST(ODBC_CFLAGS)
@@ -347,25 +492,26 @@ fi
 AC_SUBST(RLIB_WARNINGS)
 AC_SUBST(RLIB_WERROR)
 
-RLIB_WIN32=""
-AC_ARG_ENABLE(win32,              [  --enable-win32       build on windows],enable_win32="$enableval",enable_win32=no)
+dnl Windows build is decided automatically by AC_CANONICAL_SYSTEM above
 if test x$enable_win32 = xyes; then
 	RLIB_WIN32="-mno-cygwin"
 	AC_DEFINE(RLIB_WIN32,1,[WIN32 flags])
-
 fi
 AC_SUBST(RLIB_WIN32)
 
 AC_CHECK_HEADER([monetary.h],
 	[AC_DEFINE([RLIB_HAVE_MONETARY_H], [], [Money])], [])
 
-RLIB_CFLAGS="-Wall -Wchar-subscripts $LIBXML_CFLAGS $LIBGLIB_CFLAGS $LIBGMODULE_CFLAGS $MYSQL_CFLAGS $POSTGRE_CFLAGS $ODBC_CFLAGS $GD_CFLAGS $RLIB_WIN32"
+dnl -D_GNU_SOURCE is needed.
+dnl For llabs(), -D_ISOC99_SOURCE is enough,
+dnl but e.g. strcasecmp is a GNU extension.
+RLIB_CFLAGS="-D_GNU_SOURCE -Wall -Wchar-subscripts $LIBXML_CFLAGS $LIBGLIB_CFLAGS $LIBGMODULE_CFLAGS $MYSQL_CFLAGS $POSTGRE_CFLAGS $ODBC_CFLAGS $GD_CFLAGS $RLIB_WIN32"
 RLIB_LIBS="$LIBXML_LIBS $LIBGLIB_LIBS $LIBGMODULE_LIBS $MYSQL_LIBS $POSTGRE_LIBS $ODBC_LIBS $ICONVLIBS $GD_LDFLAGS $GD_LIBS $GD_LINK "
 
 AC_SUBST(RLIB_CFLAGS)
 AC_SUBST(RLIB_LIBS)
 
-RPDF_CFLAGS="$LIBGLIB_CFLAGS $LIBGMODULE_CFLAGS $RLIB_WIN32"
+RPDF_CFLAGS="-D_GNU_SOURCE $LIBGLIB_CFLAGS $LIBGMODULE_CFLAGS $RLIB_WIN32"
 RPDF_LIBS="$LIBGLIB_LIBS $LIBGMODULE_LIBS"
 AC_SUBST(RPDF_CFLAGS)
 AC_SUBST(RPDF_LIBS)
@@ -382,7 +528,14 @@ fi
 
 AC_ARG_ENABLE(crash,              [  --disable-crash       disable crash detection],enable_memdebug="$enableval",enable_crash=yes)
 if test x$enable_crash = xyes; then
+    AC_HAVE_HEADERS(sys/resource.h,
+	[AC_DEFINE(HAVE_SYS_RESOURCE_H, 1, [We have standard sys/resource.h])
+	 have_sys_res_h=yes], have_sys_res_h=no)
+    if test x$have_sys_res_h = xyes; then
 	AC_DEFINE(ENABLE_CRASH,1,[ENABLE CRASH DETECTION])
+    else
+	AC_MSG_WARN(Crash detection disabled because of missing sys/resource.h.)
+    fi
 fi
 
 AC_ARG_ENABLE(utf8,              [  --enable-utf8       enable utf8],enable_utf8=no,enable_utf8=yes)

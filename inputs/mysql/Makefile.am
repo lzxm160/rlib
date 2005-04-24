@@ -20,11 +20,15 @@
 ##
 ## Process this file with automake to produce Makefile.in
 
+AM_CFLAGS = $(RLIB_CFLAGS) $(RLIB_WERROR) -I${top_srcdir}/libsrc
+mysqlincludedir=$(includedir)/rlib
 lib_LTLIBRARIES = libr-mysql.la
 libr_mysql_la_SOURCES = mysql.c
-
 libr_mysql_la_LIBADD = $(RLIB_LIBS) 
-
-INCLUDES = $(RLIB_CFLAGS) $(RLIB_WERROR) -I${top_srcdir}/libsrc/
-libr_mysql_la_LDFLAGS = -release $(RLIB_VERSION)
-includedir=$(prefix)/include/rlib
+DEF_FILE=libr-mysql.def
+if WIN32
+def_ldflags=-Wl,--output-def,$(DEF_FILE) -module -export-dynamic -avoid-version
+endif
+libr_mysql_la_LDFLAGS = \
+	-version-info $(RLIB_LT_CURRENT):$(RLIB_LT_REVISION):$(RLIB_LT_AGE) \
+	$(def_ldflags)

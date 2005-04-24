@@ -1,12 +1,12 @@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
-includedir=@includedir@/
+includedir=@includedir@
 
 Name: rlib
 Description: Report Generation Library
 Version: @VERSION@
 Requires:libxml-2.0
-Libs: -L${libdir} -lr @RLIB_LIBS@ -lcpdf 
+Libs: -L${libdir} -lr @RLIB_LIBS@
 Cflags: -I${includedir}/rlib
 

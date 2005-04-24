@@ -22,6 +22,10 @@
  */
  
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include "rpdf.h"
 
 static void callback_test(gchar *data, gint len, gpointer user_data) {
@@ -58,7 +62,7 @@ int main(int argc, char **argv) {
 	rpdf_fill(pdf);
 	rpdf_stroke(pdf); 
 
-//	rpdf_image(pdf, 1, 1, 100, 100, RPDF_IMAGE_PNG, "test.png");
+//	rpdf_image(pdf, 1, 1, 200, 200, RPDF_IMAGE_JPEG, "geologo.jpg");
 
 	rpdf_new_page(pdf, RPDF_PAPER_LETTER, RPDF_PORTRAIT);
 	rpdf_set_font(pdf, "Times-Italic", "MacRomanEncoding", 30.0);

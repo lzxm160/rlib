@@ -26,14 +26,17 @@
  *
  */
  
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <sys/time.h>
- #include <sys/types.h>
+#include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h>
+#endif
 #include <glib.h>
 
 #include "config.h"
@@ -42,6 +45,7 @@
 
 #ifdef HAVE_GD
 static char *unique_file_name(gchar *buf, gchar *image_directory) {
+#ifdef HAVE_SYS_TIME_H
 	struct timeval tv;
 	gint pid = getpid();
 	static gint counter;
@@ -51,6 +55,12 @@ static char *unique_file_name(gchar *buf, gchar *image_directory) {
 		sprintf(buf, "%s/RLIB_IMAGE_FILE_%d_%ld_%ld_%d.png", image_directory, pid, tv.tv_sec, tv.tv_usec, counter++);
 	else
 		sprintf(buf, "RLIB_IMAGE_FILE_%d_%ld_%ld_%d.png", pid, tv.tv_sec, tv.tv_usec, counter++);
+#else
+	/* tempnam() accepts NULL as directory name and it's a standard
+	 * part of <stdio.h>. Most importantly, it also exists under MingW.
+	 */
+	sprintf(buf, "%s.png", tempnam(image_directory, "RLIB_IMAGE_FILE_XXXXX"));
+#endif
 	return buf;
 }
 
@@ -77,7 +87,7 @@ struct rlib_gd * rlib_gd_new(gint width, gint height, gchar *image_directory) {
 	int fd;
 	int i;
 	
-	bzero(rgd, sizeof(struct rlib_gd));
+	memset(rgd, 0, sizeof(struct rlib_gd));
 	
 	for(i=0;i<gdMaxColors;i++)
 		rgd->color_pool[i] = -1;
@@ -120,14 +130,14 @@ int rlib_gd_spool(struct rlib_gd *rgd) {
 int rlib_gd_text(struct rlib_gd *rgd, char *text, int x, int y, gboolean rotate, gboolean bold) {
 	if(bold) {
 		if(rotate)
-			gdImageStringUp(rgd->im, gdFontMediumBold,	x,	y,	text, rgd->black);
+			gdImageStringUp(rgd->im, gdFontMediumBold,	x,	y,	(unsigned char *)text, rgd->black);
 		else
-			gdImageString(rgd->im, gdFontMediumBold, x,	y,	text, rgd->black);
+			gdImageString(rgd->im, gdFontMediumBold, x,	y,	(unsigned char *)text, rgd->black);
 	} else {
 		if(rotate)
-			gdImageStringUp(rgd->im, gdFontMedium,	x,	y,	text, rgd->black);
+			gdImageStringUp(rgd->im, gdFontMedium,	x,	y,	(unsigned char *)text, rgd->black);
 		else
-			gdImageString(rgd->im, gdFontMedium, x,	y,	text, rgd->black);	
+			gdImageString(rgd->im, gdFontMedium, x,	y,	(unsigned char *)text, rgd->black);	
 	}		
 	return TRUE;
 }
@@ -211,15 +221,15 @@ struct rlib_gd * rlib_gd_new(gint width, gint height, gchar *image_directory) {
 	return NULL;
 }
 
-int rlib_gd_text(struct rlib_gd *rgd, char *text, int x, int y, int rotate) {
+int rlib_gd_text(struct rlib_gd *rgd, char *text, int x, int y, int rotate, gboolean bold) {
 	return TRUE;
 }
 
-int rlib_gd_get_string_width(struct rlib_gd *rgd, char *text) {
+int rlib_gd_get_string_width(struct rlib_gd *rgd, char *text, gboolean bold) {
 	return 0;
 }
 
-int rlib_gd_get_string_height(struct rlib_gd *rgd) {
+int rlib_gd_get_string_height(struct rlib_gd *rgd, gboolean bold) {
 	return 0;
 }
 

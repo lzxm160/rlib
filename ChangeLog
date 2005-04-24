@@ -1,3 +1,60 @@
+2005-04-24  Bob Doan  <bdoan@sicompos.com>
+	* bindings/interfaces/librlib.java: Resync bindsing w/ new API
+	* bindings/interfaces/librlib.py: likewise
+	* bindings/interfaces/librlibJNI.java: likewise
+	* bindings/java/java.c: likewise
+	* bindings/perl/perl.c: likewise
+	* bindings/python/python.c: likewise
+	* rpdf/rpdf.c: Image height now points to height and not width
+	* libsrc/charencoder.c: case return in non utf8 mode to suppress warnings
+	* AUTHORS: Add Zoltan
+
+2005-04-24  Zoltan Boszormenyi <zboszor@dunaweb.hu>
+
+	reviewed by:  Bob Doan  <bdoan@sicompos.com>
+
+	* autogen.sh: Fix libtool init
+	* bindings/java/Makefile.am: Don't override stuff we shouldn't / build win32 dll
+	* bindings/perl/Makefile.am: Don't override stuff we shouldn't / build win32 dll
+	* bindings/php/Makefile.am: Don't override stuff we shouldn't / build win32 dll
+	* bindings/php/array_data_source.c: win32 port
+	* bindings/python/Makefile.am: Don't override stuff we shouldn't / build win32 dll
+	* configure.in: Autodetect win32, additional cleanup
+	* inputs/mysql/Makefile.am: Don't override stuff we shouldn't / build win32 dll
+	* inputs/mysql/mysql.c: win32 port
+	* inputs/odbc/Makefile.am: Don't override stuff we shouldn't / build win32 dll
+	* inputs/odbc/odbc.c: win32 port / Make it actually work 
+	* inputs/postgre/Makefile.am: Don't override stuff we shouldn't / build win32 dll
+	* inputs/postgre/postgre.c:win32 port
+	* libsrc/Makefile.am: Don't override stuff we shouldn't / build win32 dll
+	* libsrc/api.c: Correct the order of paramaters passed to utf8 encoding
+	* libsrc/breaks.c: Cast variables to suppress warnings
+	* libsrc/charencoder.c: win32 port
+	* libsrc/formatstring.c: 64 bit port
+	* libsrc/fxp.c: remove llabs prototype
+	* libsrc/gd.c: win32 port / sync non gd support api w/ gd support api
+	* libsrc/graphing.c: win32 port
+	* libsrc/layout.c: likewise
+	* libsrc/load.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/pcode.c: likewise
+	* libsrc/pcode_op_functions.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/rlib_langinfo.c: new for win32 support  (FROM N. Durner )
+	* libsrc/rlib_langinfo.h: likewise (FROM N. Durner )
+	* libsrc/save.c: win32 port
+	* libsrc/util.c: likewise
+	* libsrc/value.c: likewise
+	* rlib.pc.in: no cpdf
+	* rpdf/Makefile.am: Don't override stuff we shouldn't / build win32 dll
+	* rpdf/rpdf.c: win32 port
+	* rpdf/test.c: likewise
+	* src/Makefile.am: Don't override stuff we shouldn't / build win32 dll
+	* src/examples/c/Makefile.am: Don't override stuff we shouldn't / build win32 dll
+	* tests/Makefile.am: Don't override stuff we shouldn't / build win32 dll
+
 2005-04-22  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/resolution.c: don't r_strlen the string, strlen to get they byte count, look up memory variables correctly
 

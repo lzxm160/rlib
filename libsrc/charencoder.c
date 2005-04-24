@@ -32,17 +32,15 @@
 #include <string.h>
 #include <locale.h>
 #include "config.h"
-#ifndef RLIB_WIN32
-#include <langinfo.h>
-#endif
 #include <errno.h>
 
 #include "rlib.h"
 #include "rlib_input.h"
+#include "rlib_langinfo.h"
 
 GIConv rlib_charencoder_new(const gchar *to_codeset, const gchar *from_codeset) {
 #ifdef DISABLE_UTF8
-	return -1;
+	return (GIConv)-1;
 #else
 	return g_iconv_open(to_codeset, from_codeset);
 #endif	

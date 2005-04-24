@@ -118,7 +118,7 @@ static gint rlib_postgre_last(gpointer input_ptr, gpointer result_ptr) {
 
 static gchar * rlib_postgre_get_field_value_as_string(gpointer input_ptr, gpointer result_ptr, gpointer field_ptr) {
 	struct rlib_postgre_results *results = result_ptr;
-	gint field = (gint)field_ptr;
+	gint field = GPOINTER_TO_INT(field_ptr);
 	field -= 1;
 	return PQgetvalue(results->result, results->row, field);
 }
@@ -128,7 +128,7 @@ static gpointer rlib_postgre_resolve_field_pointer(gpointer input_ptr, gpointer 
 	gint i=0;
 	for (i = 0; i < results->tot_fields; i++)
 		if(!strcmp(PQfname(results->result, i), name)) {
-			return (gpointer)results->fields[i];
+			return GINT_TO_POINTER(results->fields[i]);
 		}
 	return NULL;
 }

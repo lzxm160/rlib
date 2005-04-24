@@ -32,14 +32,11 @@
 
 #include "config.h"
 
-#ifndef RLIB_WIN32
-#include <langinfo.h>
-#endif
-
 #include "config.h"
 #include "rlib.h"
 #include "pcode.h"
 #include "rlib_input.h"
+#include "rlib_langinfo.h"
 
 #define STATE_NONE		0
 #define STATE_BGCOLOR	1
@@ -115,12 +112,12 @@ gfloat rlib_layout_estimate_string_width_from_extra_data(rlib *r, struct rlib_li
 	return rtn_width;
 }
 
-static gchar *rlib_encode_text(rlib *r, gchar *text, gchar *result, gint result_len) {
+static gchar *rlib_encode_text(rlib *r, gchar *text, gchar *result, gsize result_len) {
 	if (text == NULL) {
 		r_error("rlib_encode_text called with NULL text");
 		result = "!ERR_ENC1";
 	} else {
-		gint len = strlen(text);
+		gsize len = strlen(text);
 		gchar *tmp = result;
 		rlib_charencoder_convert(r->output_encoder, &text, &len, &tmp, &result_len);
 		if (result == NULL) {

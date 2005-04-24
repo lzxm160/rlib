@@ -118,7 +118,7 @@ static void rpdf_finalize_objects(gpointer data, gpointer user_data) {
 	struct rpdf *pdf = user_data;
 	pdf->object_count++;
 	
-	pdf->xref = g_slist_append(pdf->xref, (gpointer)pdf->size);
+	pdf->xref = g_slist_append(pdf->xref, GINT_TO_POINTER(pdf->size));
 	sprintf(buf, "%d 0 obj\n", pdf->object_count);
 	rpdf_out_string(pdf, buf);
 	if(object->put_wrapper)
@@ -136,7 +136,7 @@ static void rpdf_finalize_objects(gpointer data, gpointer user_data) {
 }
 
 static void rpdf_finalize_xref(gpointer data, gpointer user_data) {
-	gint spot = (gint)data;
+	gint spot = GPOINTER_TO_INT(data);
 	struct rpdf *pdf = user_data;
 	gchar buf[128];
 	sprintf(buf, "%010d 00000 n \n", spot);
@@ -313,7 +313,7 @@ static void rpdf_make_page_image_obj(gpointer data, gpointer user_data) {
 	obj = obj_printf(obj, "/Subtype /Image\n");	
 	obj = obj_printf(obj, "/Name /IMrpdf%d\n", image->number);
 	obj = obj_printf(obj, "/Width %d\n", jpeg->width);
-	obj = obj_printf(obj, "/Height %d\n", jpeg->width);
+	obj = obj_printf(obj, "/Height %d\n", jpeg->height);
 	obj = obj_printf(obj, "/Filter /DCTDecode\n");
 	obj = obj_printf(obj, "/BitsPerComponent %d\n", jpeg->precision);
 	obj = obj_printf(obj, "/ColorSpace /");
@@ -815,8 +815,10 @@ static void jpeg_process_SOFn(gchar *stream, gint *spot, gint size, gint marker,
 	info->height = stream_read_two_bytes(stream, spot, size);
 	info->width = stream_read_two_bytes(stream, spot, size);
 	info->components = stream_read_byte(stream, spot, size);
-	if(length != (guint)(8 + info->components * 3)) // bad image...
+	if(length != (guint)(8 + info->components * 3)) {
+		fprintf(stderr, "BAD IMAGE\n");
 		return;
+	}
 	*spot = *spot + (3 * info->components);
 }
 
@@ -884,9 +886,6 @@ gboolean rpdf_image(struct rpdf *pdf, gdouble x, gdouble y, gdouble width, gdoub
 			fprintf(stderr, "Unknown filter method\n");
 		if(stream_read_byte(image->data, &read_spot, size) != 0)
 			fprintf(stderr, "Interlacing not supported\n");
-			
-fprintf(stderr, "WIDTH = %ld\n", stream_read_long(image->data,&read_spot,size));
-fprintf(stderr, "HEIGHT = %ld\n", stream_read_long(image->data,&read_spot,size));
 			
 	} else if(image_type == RPDF_IMAGE_JPEG) {
 		struct rpdf_image_jpeg *jpeg_info = g_new0(struct rpdf_image_jpeg, 1);

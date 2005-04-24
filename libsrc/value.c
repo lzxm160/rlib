@@ -42,7 +42,7 @@ const gchar *rlib_var_get_string(rlib_var *v) {
 		return v->value.ch;
 		break;
 	case RLIB_VAR_REF:
-		return v->value.ref;
+		return (gchar *)v->value.ref;
 		break;
 	default:
 		r_error("rlib_var not a string");

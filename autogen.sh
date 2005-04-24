@@ -104,6 +104,7 @@ do
       if grep "^AM_PROG_LIBTOOL" configure.in >/dev/null; then
 	echo "Running libtoolize..."
 	libtoolize --force --copy
+#	perl -pi.bak -e "s#need_relink=yes#need_relink=no#" ltmain.sh
       fi
 
       echo "Running $ACLOCAL $aclocalinclude ..."
@@ -115,7 +116,7 @@ do
       fi
 
       echo "Running $AUTOMAKE --gnu $am_opt ..."
-      $AUTOMAKE --add-missing --gnu $am_opt
+      $AUTOMAKE --add-missing --copy --gnu $am_opt
 
       echo "Running autoconf ..."
       autoconf

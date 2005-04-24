@@ -22,10 +22,10 @@
 
 noinst_PROGRAMS = example
 
-INCLUDES = $(RLIB_CFLAGS) -I${top_srcdir}/libsrc/  
+AM_CFLAGS = $(RLIB_CFLAGS) -I${top_srcdir}/libsrc
 
 example_SOURCES= example.c
-example_LDADD = -L${top_builddir}/libsrc/ -L${top_builddir}/inputs/mysql/ $(RLIB_LIBS) -lr -lr-mysql
+example_LDADD = $(top_builddir)/libsrc/libr.la $(top_builddir)/inputs/mysql/libr-mysql.la $(RLIB_LIBS)
 
 noinst_SCRIPTS = products.xml
 

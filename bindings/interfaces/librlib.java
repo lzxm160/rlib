@@ -101,20 +101,8 @@ public class librlib {
     librlibJNI.rlib_set_output_encoding(SWIGTYPE_p_rlib.getCPtr(r), encoding);
   }
 
-  public static void rlib_set_database_encoding(SWIGTYPE_p_rlib r, String encoding) {
-    librlibJNI.rlib_set_database_encoding(SWIGTYPE_p_rlib.getCPtr(r), encoding);
-  }
-
   public static int rlib_set_datasource_encoding(SWIGTYPE_p_rlib r, String input_name, String encoding) {
     return librlibJNI.rlib_set_datasource_encoding(SWIGTYPE_p_rlib.getCPtr(r), input_name, encoding);
-  }
-
-  public static void rlib_set_parameter_encoding(SWIGTYPE_p_rlib r, String encoding) {
-    librlibJNI.rlib_set_parameter_encoding(SWIGTYPE_p_rlib.getCPtr(r), encoding);
-  }
-
-  public static void rlib_set_encodings(SWIGTYPE_p_rlib r, String outputencoding, String dbencoding, String paramencoding) {
-    librlibJNI.rlib_set_encodings(SWIGTYPE_p_rlib.getCPtr(r), outputencoding, dbencoding, paramencoding);
   }
 
   public static int rlib_free(SWIGTYPE_p_rlib r) {
@@ -123,6 +111,14 @@ public class librlib {
 
   public static String rlib_version() {
     return librlibJNI.rlib_version();
+  }
+
+  public static int rlib_graph_add_bg_region(SWIGTYPE_p_rlib r, String graph_name, String region_label, String color, float start, float end) {
+    return librlibJNI.rlib_graph_add_bg_region(SWIGTYPE_p_rlib.getCPtr(r), graph_name, region_label, color, start, end);
+  }
+
+  public static int rlib_graph_clear_bg_region(SWIGTYPE_p_rlib r, String graph_name) {
+    return librlibJNI.rlib_graph_clear_bg_region(SWIGTYPE_p_rlib.getCPtr(r), graph_name);
   }
 
 }

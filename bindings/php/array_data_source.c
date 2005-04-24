@@ -93,7 +93,7 @@ static gint rlib_php_array_last(gpointer input_ptr, gpointer result_ptr) {
 
 static gchar * rlib_php_array_get_field_value_as_string(gpointer input_ptr, gpointer result_ptr, gpointer field_ptr) {
 	struct rlib_php_array_results *result = result_ptr;
-	int which_field = (int)field_ptr -1;
+	int which_field = GPOINTER_TO_INT(field_ptr) - 1;
 	if(result->rows <= 1)
 		return "";
 
@@ -106,7 +106,7 @@ static gpointer rlib_php_array_resolve_field_pointer(gpointer input_ptr, gpointe
 	for(i=0;i<result->cols;i++) {
 		if(strcmp(name, result->data[i]) == 0) {
 			i++;
-			return (gpointer)i;
+			return GINT_TO_POINTER(i);
 		}
 	}
 	return NULL;

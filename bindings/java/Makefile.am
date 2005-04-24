@@ -19,8 +19,14 @@
 ## Report bugs to rlib-devel@lists.sourceforge.net
 ##
 ## Process this file with automake to produce Makefile.in
+AM_CFLAGS = -I${top_srcdir}/libsrc $(RLIB_CFLAGS) $(JAVA_CFLAGS) -fno-strict-aliasing
 lib_LTLIBRARIES = librlibjava.la
 librlibjava_la_SOURCES = java.c 
-librlibjava_la_LIBADD = -L${top_builddir}/libsrc/ -lr $(RLIB_LIBS)
-INCLUDES = -I${top_srcdir}/libsrc/ $(RLIB_CFLAGS) $(JAVA_CFLAGS) -fno-strict-aliasing
-librlibjava_la_LDFLAGS = -release $(RLIB_VERSION)
+librlibjava_la_LIBADD = $(top_builddir)/libsrc/libr.la $(RLIB_LIBS)
+DEF_FILE=librlibjava.def
+if WIN32
+def_ldflags=-Wl,--output-def,$(DEF_FILE) -module -export-dynamic -avoid-version
+endif
+librlibjava_la_LDFLAGS = \
+	-version-info $(RLIB_LT_CURRENT):$(RLIB_LT_REVISION):$(RLIB_LT_AGE) \
+	$(def_ldflags)

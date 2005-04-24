@@ -29,15 +29,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include "config.h"
-
-#ifndef RLIB_WIN32
-#include <langinfo.h>
-#endif
-
-#include "config.h"
 #include "rlib.h"
 #include "pcode.h"
 #include "rlib_input.h"
+#include "rlib_langinfo.h"
 
 #define FONTPOINT 	10.0
 
@@ -471,7 +466,7 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 	gfloat at_least = 0.0, origional_position_top = 0;
 	gint iterations;
 
-	report->query_code = rlib_infix_to_pcode(r, part, report, report->xml_query, TRUE);
+	report->query_code = rlib_infix_to_pcode(r, part, report, (gchar *)report->xml_query, TRUE);
 	r->current_result = 0;
 	if(report->query_code != NULL) {
 		rlib_execute_as_string(r, report->query_code, query, MAXSTRLEN);
@@ -689,7 +684,7 @@ gint rlib_evaulate_single_report_variables(rlib *r, struct rlib_part *part) {
 				char query[MAXSTRLEN];
 				gint i;
 
-				report->query_code = rlib_infix_to_pcode(r, part, report, report->xml_query, TRUE);
+				report->query_code = rlib_infix_to_pcode(r, part, report, (gchar *)report->xml_query, TRUE);
 				r->current_result = 0;
 				if(report->query_code != NULL) {
 					rlib_execute_as_string(r, report->query_code, query, MAXSTRLEN);

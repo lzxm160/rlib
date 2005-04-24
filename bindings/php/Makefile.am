@@ -19,9 +19,15 @@
 ## Report bugs to rlib-devel@lists.sourceforge.net
 ##
 ## Process this file with automake to produce Makefile.in
-lib_LTLIBRARIES = librlib.la
+AM_CFLAGS = -I${top_srcdir}/libsrc $(RLIB_CFLAGS) $(PHP_CFLAGS) $(RLIB_WERROR)
+phplibdir = $(PHP_EXTENSION_DIR)
+phplib_LTLIBRARIES = librlib.la
 librlib_la_SOURCES = environment.c php.c array_data_source.c rlib_php.h
-librlib_la_LIBADD = -L${top_builddir}/libsrc/ -lr $(RLIB_LIBS)
-INCLUDES = -I${top_srcdir}/libsrc/ $(RLIB_CFLAGS) $(PHP_CFLAGS) $(RLIB_WERROR)
-librlib_la_LDFLAGS = -release $(RLIB_VERSION)
-libdir = $(PHP_EXTENSION_DIR)
+librlib_la_LIBADD = $(top_builddir)/libsrc/libr.la $(RLIB_LIBS)
+DEF_FILE=librlibphp.def
+if WIN32
+def_ldflags=-Wl,--output-def,$(DEF_FILE) -module -export-dynamic -avoid-version
+endif
+librlib_la_LDFLAGS = \
+	-version-info $(RLIB_LT_CURRENT):$(RLIB_LT_REVISION):$(RLIB_LT_AGE) \
+	$(def_ldflags)

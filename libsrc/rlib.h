@@ -45,11 +45,6 @@
 
 #define RLIB_ENCODING "UTF-8"
 
-
-//man 3 llabs says the prototype is in stdlib.. no it aint!
-long long int llabs(long long int j);
-double trunc(double x);
- 
 #ifndef TRUE
 #define TRUE	1
 #endif

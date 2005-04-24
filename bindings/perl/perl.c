@@ -146,6 +146,7 @@ SWIG_TypeRegister(swig_type_info *ti) {
 }
 
 /* Check the typename */
+#if 0
 SWIGRUNTIME(swig_type_info *) 
 SWIG_TypeCheck(char *c, swig_type_info *ty) {
   swig_type_info *s;
@@ -170,6 +171,7 @@ SWIG_TypeCheck(char *c, swig_type_info *ty) {
   } while (s && (s != ty->next));
   return 0;
 }
+#endif
 
 /* Cast a pointer up an inheritance hierarchy */
 SWIGRUNTIME(void *) 
@@ -179,6 +181,7 @@ SWIG_TypeCast(swig_type_info *ty, void *ptr) {
 }
 
 /* Dynamic pointer casting. Down an inheritance hierarchy */
+#if 0
 SWIGRUNTIME(swig_type_info *) 
 SWIG_TypeDynamicCast(swig_type_info *ty, void **ptr) {
   swig_type_info *lastty = ty;
@@ -189,14 +192,18 @@ SWIG_TypeDynamicCast(swig_type_info *ty, void **ptr) {
   }
   return lastty;
 }
+#endif
 
 /* Return the name associated with this type */
+#if 0
 SWIGRUNTIME(const char *)
 SWIG_TypeName(const swig_type_info *ty) {
   return ty->name;
 }
+#endif
 
 /* Search for a swig_type_info structure */
+#if 0
 SWIGRUNTIME(swig_type_info *)
 SWIG_TypeQuery(const char *name) {
   swig_type_info *ty = swig_type_list;
@@ -207,6 +214,7 @@ SWIG_TypeQuery(const char *name) {
   }
   return 0;
 }
+#endif
 
 /* Set the clientdata field for a type */
 SWIGRUNTIME(void)
@@ -244,6 +252,7 @@ SWIG_PackData(char *c, void *ptr, int sz) {
 }
 
 /* Unpack binary data from a string */
+#if 0
 SWIGRUNTIME(char *)
 SWIG_UnpackData(char *c, void *ptr, int sz) {
   register unsigned char uu = 0;
@@ -265,6 +274,7 @@ SWIG_UnpackData(char *c, void *ptr, int sz) {
   }
   return c;
 }
+#endif
 
 #endif
 
@@ -573,12 +583,14 @@ SWIG_Perl_MakePtr(SWIG_MAYBE_PERL_OBJECT SV *sv, void *ptr, swig_type_info *t, i
   }
 }
 
+#if 0
 SWIGRUNTIME(SV *)
 SWIG_Perl_NewPointerObj(SWIG_MAYBE_PERL_OBJECT void *ptr, swig_type_info *t, int flags) {
   SV *result = sv_newmortal();
   SWIG_MakePtr(result, ptr, t, flags);
   return result;
 }
+#endif
 
 SWIGRUNTIME(void)
   SWIG_Perl_MakePackedObj(SWIG_MAYBE_PERL_OBJECT SV *sv, void *ptr, int sz, swig_type_info *type) {
@@ -592,6 +604,7 @@ SWIGRUNTIME(void)
 }
 
 /* Convert a packed value value */
+#if 0
 SWIGRUNTIME(int)
 SWIG_Perl_ConvertPacked(SWIG_MAYBE_PERL_OBJECT SV *obj, void *ptr, int sz, swig_type_info *ty, int flags) {
   swig_type_info *tc;
@@ -609,17 +622,21 @@ SWIG_Perl_ConvertPacked(SWIG_MAYBE_PERL_OBJECT SV *obj, void *ptr, int sz, swig_
   }
   return 0;
 }
+#endif
 
 SWIGRUNTIME(void)
 SWIG_Perl_SetError(SWIG_MAYBE_PERL_OBJECT const char *error) {
   if (error) sv_setpv(perl_get_sv("@", TRUE), error);
 }
 
+#if 0
 SWIGRUNTIME(void)
 SWIG_Perl_SetErrorSV(SWIG_MAYBE_PERL_OBJECT SV *error) {
   if (error) sv_setsv(perl_get_sv("@", TRUE), error);
 }
+#endif
 
+#if 0
 SWIGRUNTIME(void)
 SWIG_Perl_SetErrorf(const char *fmt, ...) {
   va_list args;
@@ -627,6 +644,7 @@ SWIG_Perl_SetErrorf(const char *fmt, ...) {
   sv_vsetpvfn(perl_get_sv("@", TRUE), fmt, strlen(fmt), &args, Null(SV**), 0, Null(bool*));
   va_end(args);
 }
+#endif
 
 #endif
 
@@ -797,12 +815,14 @@ public:
 #else
 #define MAGIC_CLASS
 #endif
+#if 0
 SWIGCLASS_STATIC int swig_magic_readonly(pTHX_ SV *sv, MAGIC *mg) {
     MAGIC_PPERL
     sv = sv; mg = mg;
     croak("Value is read-only.");
     return 0;
 }
+#endif
 
 
 #ifdef PERL_OBJECT
@@ -1694,51 +1714,50 @@ extern "C"
 
 XS(SWIG_init) {
     dXSARGS;
-    int i;
     static int _init = 0;
     if (!_init) {
-        for (i = 0; swig_types_initial[i]; i++) {
-            swig_types[i] = SWIG_TypeRegister(swig_types_initial[i]);
+        for (items = 0; swig_types_initial[items]; items++) {
+            swig_types[items] = SWIG_TypeRegister(swig_types_initial[items]);
         }	
         _init = 1;
     }
     
     /* Install commands */
-    for (i = 0; swig_commands[i].name; i++) {
-        newXS((char*) swig_commands[i].name,swig_commands[i].wrapper, (char*)__FILE__);
+    for (items = 0; swig_commands[items].name; items++) {
+        newXS((char*) swig_commands[items].name,swig_commands[items].wrapper, (char*)__FILE__);
     }
     
     /* Install variables */
-    for (i = 0; swig_variables[i].name; i++) {
+    for (items = 0; swig_variables[items].name; items++) {
         SV *sv;
-        sv = perl_get_sv((char*) swig_variables[i].name, TRUE | 0x2);
-        if (swig_variables[i].type) {
-            SWIG_MakePtr(sv,(void *)1, *swig_variables[i].type,0);
+        sv = perl_get_sv((char*) swig_variables[items].name, TRUE | 0x2);
+        if (swig_variables[items].type) {
+            SWIG_MakePtr(sv,(void *)1, *swig_variables[items].type,0);
         } else {
             sv_setiv(sv,(IV) 0);
         }
-        swig_create_magic(sv, (char *) swig_variables[i].name, swig_variables[i].set, swig_variables[i].get); 
+        swig_create_magic(sv, (char *) swig_variables[items].name, swig_variables[items].set, swig_variables[items].get); 
     }
     
     /* Install constant */
-    for (i = 0; swig_constants[i].type; i++) {
+    for (items = 0; swig_constants[items].type; items++) {
         SV *sv;
-        sv = perl_get_sv((char*)swig_constants[i].name, TRUE | 0x2);
-        switch(swig_constants[i].type) {
+        sv = perl_get_sv((char*)swig_constants[items].name, TRUE | 0x2);
+        switch(swig_constants[items].type) {
             case SWIG_INT:
-            sv_setiv(sv, (IV) swig_constants[i].lvalue);
+            sv_setiv(sv, (IV) swig_constants[items].lvalue);
             break;
             case SWIG_FLOAT:
-            sv_setnv(sv, (double) swig_constants[i].dvalue);
+            sv_setnv(sv, (double) swig_constants[items].dvalue);
             break;
             case SWIG_STRING:
-            sv_setpv(sv, (char *) swig_constants[i].pvalue);
+            sv_setpv(sv, (char *) swig_constants[items].pvalue);
             break;
             case SWIG_POINTER:
-            SWIG_MakePtr(sv, swig_constants[i].pvalue, *(swig_constants[i].ptype),0);
+            SWIG_MakePtr(sv, swig_constants[items].pvalue, *(swig_constants[items].ptype),0);
             break;
             case SWIG_BINARY:
-            SWIG_MakePackedObj(sv, swig_constants[i].pvalue, swig_constants[i].lvalue, *(swig_constants[i].ptype));
+            SWIG_MakePackedObj(sv, swig_constants[items].pvalue, swig_constants[items].lvalue, *(swig_constants[items].ptype));
             break;
             default:
             break;

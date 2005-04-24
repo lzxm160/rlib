@@ -31,10 +31,9 @@ class librlibJNI {
   public final static native int rlib_set_locale(long jarg1, String jarg2);
   public final static native void rlib_set_output_parameter(long jarg1, String jarg2, String jarg3);
   public final static native void rlib_set_output_encoding(long jarg1, String jarg2);
-  public final static native void rlib_set_database_encoding(long jarg1, String jarg2);
   public final static native int rlib_set_datasource_encoding(long jarg1, String jarg2, String jarg3);
-  public final static native void rlib_set_parameter_encoding(long jarg1, String jarg2);
-  public final static native void rlib_set_encodings(long jarg1, String jarg2, String jarg3, String jarg4);
   public final static native int rlib_free(long jarg1);
   public final static native String rlib_version();
+  public final static native int rlib_graph_add_bg_region(long jarg1, String jarg2, String jarg3, String jarg4, float jarg5, float jarg6);
+  public final static native int rlib_graph_clear_bg_region(long jarg1, String jarg2);
 }

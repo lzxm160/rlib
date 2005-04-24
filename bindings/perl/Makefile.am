@@ -20,12 +20,16 @@
 ##
 ## Process this file with automake to produce Makefile.in
 
+AM_CFLAGS = -I${top_srcdir}/libsrc $(RLIB_CFLAGS) $(PERL_CFLAGS) -D_GNU_SOURCE -fno-strict-aliasing
 lib_LTLIBRARIES = librlibperl.la
 librlibperl_la_SOURCES = perl.c 
-librlibperl_la_LIBADD = -L${top_builddir}/libsrc/ -lr $(RLIB_LIBS)
-INCLUDES = -I${top_srcdir}/libsrc/ $(RLIB_CFLAGS) $(PERL_CFLAGS) -D_GNU_SOURCE -fno-strict-aliasing
-librlibperl_la_LDFLAGS = -release $(RLIB_VERSION)
-
-
+librlibperl_la_LIBADD = $(top_builddir)/libsrc/libr.la $(RLIB_LIBS)
+DEF_FILE=librlibperl.def
+if WIN32
+def_ldflags=-Wl,--output-def,$(DEF_FILE) -module -export-dynamic -avoid-version
+endif
+librlibperl_la_LDFLAGS = \
+	-version-info $(RLIB_LT_CURRENT):$(RLIB_LT_REVISION):$(RLIB_LT_AGE) \
+	$(def_ldflags)
 
 ## libdir = $(PERL_EXTENSION_DIR)

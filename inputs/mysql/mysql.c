@@ -154,7 +154,7 @@ static gint rlib_mysql_last(gpointer input_ptr, gpointer result_ptr) {
 
 static gchar * rlib_mysql_get_field_value_as_string(gpointer input_ptr, gpointer result_ptr, gpointer field_ptr) {
 	struct rlib_mysql_results *result = result_ptr;
-	gint field = (gint)field_ptr;
+	gint field = GPOINTER_TO_INT(field_ptr);
 	if(result_ptr == NULL)
 		return "";
 	field -= 1;
@@ -170,7 +170,7 @@ static gpointer rlib_mysql_resolve_field_pointer(gpointer input_ptr, gpointer re
 	mysql_field_seek(results->result, 0);
 	while((field = mysql_fetch_field(results->result))) {
 		if(!strcmp(field->name, name)) {
-			return (void *)results->fields[x];
+			return GINT_TO_POINTER(results->fields[x]);
 		}
 		x++;
 	}

@@ -17,10 +17,17 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+
+#include "config.h"
  
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+
+#if NEED_WINDOWS_H
+#define WIN32_LEAN_AND_MEAN 1
+#include <windows.h>
+#endif
 
 #include <sql.h>
 #include <sqlext.h>
@@ -49,11 +56,8 @@ struct rlib_odbc_results {
 	gint tot_fields;
 	gint total_size;
 	gint isdone;
-	gint state_previous;
 	struct odbc_fields *fields;
 	struct odbc_field_values *values;
-	struct odbc_field_values *more_values;
-	struct odbc_field_values *save_values;
 };
 
 struct _private {
@@ -66,8 +70,8 @@ gpointer rlib_odbc_connect(gpointer input_ptr, gchar *source, gchar *user, gchar
 	gint V_OD_erg;
 	SQLINTEGER	V_OD_err;
 	SQLSMALLINT	V_OD_mlen;
-	gchar V_OD_stat[10]; 
-	gchar V_OD_msg[200];
+	SQLCHAR		V_OD_stat[10]; 
+	SQLCHAR		V_OD_msg[200];
 
 	V_OD_erg=SQLAllocHandle(SQL_HANDLE_ENV,SQL_NULL_HANDLE,&INPUT_PRIVATE(input)->V_OD_Env);
 	if ((V_OD_erg != SQL_SUCCESS) && (V_OD_erg != SQL_SUCCESS_WITH_INFO)) {
@@ -117,8 +121,8 @@ static SQLHSTMT * rlib_odbc_query(gpointer input_ptr, gchar *query) {
 	SQLHSTMT V_OD_hstmt;
 	SQLINTEGER	V_OD_err;
 	SQLSMALLINT	V_OD_mlen;
-	gchar V_OD_stat[10]; 
-	gchar V_OD_msg[200];
+	SQLCHAR		V_OD_stat[10]; 
+	SQLCHAR		V_OD_msg[200];
 	gint V_OD_erg;
 
 	V_OD_erg=SQLAllocHandle(SQL_HANDLE_STMT, INPUT_PRIVATE(input)->V_OD_hdbc, &V_OD_hstmt);
@@ -131,7 +135,7 @@ static SQLHSTMT * rlib_odbc_query(gpointer input_ptr, gchar *query) {
 		return NULL;
 	}
 
-	V_OD_erg=SQLExecDirect(V_OD_hstmt, query, SQL_NTS);
+	V_OD_erg=SQLExecDirect(V_OD_hstmt, (SQLCHAR *)query, SQL_NTS);
 	if ((V_OD_erg != SQL_SUCCESS) && (V_OD_erg != SQL_SUCCESS_WITH_INFO)) {
 		fprintf(stderr, "Error Select %d\n",V_OD_erg);
 		SQLGetDiagRec(SQL_HANDLE_DBC, INPUT_PRIVATE(input)->V_OD_hdbc,1, V_OD_stat, &V_OD_err, V_OD_msg,100,&V_OD_mlen);
@@ -144,12 +148,12 @@ static SQLHSTMT * rlib_odbc_query(gpointer input_ptr, gchar *query) {
 	return V_OD_hstmt;
 }
 
-gint odbc_read_next(gpointer result_ptr) {
+static gint odbc_read_first(gpointer result_ptr) {
 	struct rlib_odbc_results *results = result_ptr;
 	gint V_OD_erg;
 	gint i;
 	SQLINTEGER ind;
-	if(SQL_SUCCEEDED(( V_OD_erg = SQLFetch (results->V_OD_hstmt)))) {
+	if(SQL_SUCCEEDED(( V_OD_erg = SQLFetchScroll (results->V_OD_hstmt, SQL_FETCH_FIRST, 0)))) {
 		for (i=0;i<results->tot_fields;i++)
 			V_OD_erg = SQLGetData (results->V_OD_hstmt, i+1, SQL_C_CHAR, results->values[i].value, results->values[i].len+1, &ind);
 		return TRUE;
@@ -161,28 +165,27 @@ static gint rlib_odbc_first(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_odbc_results *result = result_ptr;
 	result->row = 0;
 	result->isdone = FALSE;
-	result->state_previous = FALSE;
-	return odbc_read_next(result_ptr);
+	return odbc_read_first(result_ptr);
 }
 
-static void copy_to_from(struct rlib_odbc_results *results, struct odbc_field_values *to, struct odbc_field_values *from) {
+static gint odbc_read_next(gpointer result_ptr) {
+	struct rlib_odbc_results *results = result_ptr;
+	gint V_OD_erg;
 	gint i;
-	for(i=0;i<results->tot_fields;i++) {
-		memcpy(to->value, from->value, from->len+1);
+	SQLINTEGER ind;
+	if(SQL_SUCCEEDED(( V_OD_erg = SQLFetchScroll (results->V_OD_hstmt, SQL_FETCH_NEXT, 0)))) {
+		for (i=0;i<results->tot_fields;i++)
+			V_OD_erg = SQLGetData (results->V_OD_hstmt, i+1, SQL_C_CHAR, results->values[i].value, results->values[i].len+1, &ind);
+		return TRUE;
 	}
+	return FALSE;
 }
 
 static int rlib_odbc_next(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_odbc_results *results = result_ptr;
 
 	if(results->row+1 < results->tot_rows) {
-		if(results->state_previous) {
-			results->state_previous = FALSE;
-			copy_to_from(results, results->values, results->save_values);
-		} else {
-			copy_to_from(results, results->more_values, results->values);
-			odbc_read_next(result_ptr);
-		}
+		odbc_read_next(result_ptr);
 		results->row++;
 		results->isdone = FALSE;
 		return TRUE;
@@ -196,23 +199,48 @@ static gint rlib_odbc_isdone(gpointer input_ptr, gpointer result_ptr) {
 	return result->isdone;
 }
 
+static gint odbc_read_prior(gpointer result_ptr) {
+	struct rlib_odbc_results *results = result_ptr;
+	gint V_OD_erg;
+	gint i;
+	SQLINTEGER ind;
+	if(SQL_SUCCEEDED(( V_OD_erg = SQLFetchScroll (results->V_OD_hstmt, SQL_FETCH_PRIOR, 0)))) {
+		for (i=0;i<results->tot_fields;i++)
+			V_OD_erg = SQLGetData (results->V_OD_hstmt, i+1, SQL_C_CHAR, results->values[i].value, results->values[i].len+1, &ind);
+		return TRUE;
+	}
+	return FALSE;
+}
+
 static gint rlib_odbc_previous(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_odbc_results *results = result_ptr;
 
 	if(results->row-1 > 0) {
+		odbc_read_prior(result_ptr);
 		results->row--;
 		results->isdone = FALSE;
-		results->state_previous = TRUE;
-		copy_to_from(results, results->save_values, results->values);
-		copy_to_from(results, results->values, results->more_values);
 		return TRUE;
 	}
 	results->isdone = TRUE;
 	return FALSE;
 }
 
+static gint odbc_read_last(gpointer result_ptr) {
+	struct rlib_odbc_results *results = result_ptr;
+	gint V_OD_erg;
+	gint i;
+	SQLINTEGER ind;
+	if(SQL_SUCCEEDED(( V_OD_erg = SQLFetchScroll (results->V_OD_hstmt, SQL_FETCH_LAST, 0)))) {
+		for (i=0;i<results->tot_fields;i++)
+			V_OD_erg = SQLGetData (results->V_OD_hstmt, i+1, SQL_C_CHAR, results->values[i].value, results->values[i].len+1, &ind);
+		return TRUE;
+	}
+	return FALSE;
+}
+
 static gint rlib_odbc_last(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_odbc_results *result = result_ptr;
+	odbc_read_last(result_ptr);
 	result->row = result->tot_rows-1;
 	result->isdone = FALSE;
 	return TRUE;
@@ -257,8 +285,6 @@ gpointer odbc_new_result_from_query(gpointer input_ptr, gchar *query) {
 
 	results->fields = g_malloc(sizeof(struct odbc_fields) * ncols);
 	results->values = g_malloc(sizeof(struct odbc_field_values) * ncols);
-	results->more_values = g_malloc(sizeof(struct odbc_field_values) * ncols);
-	results->save_values = g_malloc(sizeof(struct odbc_field_values) * ncols);
 
 	results->total_size = 0;
 	for(i=0;i<ncols;i++) {
@@ -266,13 +292,9 @@ gpointer odbc_new_result_from_query(gpointer input_ptr, gchar *query) {
 		SQLSMALLINT name_length;
 		V_OD_erg = SQLDescribeCol( V_OD_hstmt, i+1,	name, sizeof( name ), &name_length, NULL, &col_size, NULL, NULL );
 		results->fields[i].col = i;
-		strcpy(results->fields[i].name, name);
+		strcpy(results->fields[i].name, (char *)name);
 		results->values[i].len = col_size;
 		results->values[i].value = g_malloc(col_size+1);
-		results->more_values[i].len = col_size;
-		results->more_values[i].value = g_malloc(col_size+1);
-		results->save_values[i].len = col_size;
-		results->save_values[i].value = g_malloc(col_size+1);
 		results->total_size += col_size+1;
 	}
 
@@ -290,13 +312,9 @@ static void rlib_odbc_rlib_free_result(gpointer input_ptr, gpointer result_ptr) 
 	SQLFreeHandle(SQL_HANDLE_STMT,results->V_OD_hstmt);
 	for(i=0;i<results->tot_fields;i++) {
 		g_free(results->values[i].value);
-		g_free(results->more_values[i].value);
-		g_free(results->save_values[i].value);
 	}
 	g_free(results->fields);
 	g_free(results->values);
-	g_free(results->more_values);
-	g_free(results->save_values);
 	g_free(results);
 }
 

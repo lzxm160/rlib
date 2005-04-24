@@ -20,6 +20,8 @@
 ##
 ## Process this file with automake to produce Makefile.in
 
+AM_CFLAGS = $(RLIB_CFLAGS) -I${top_srcdir}/libsrc
+
 if HAVE_MYSQL
 MYSQL_INPUT=test1 test3
 endif
@@ -32,13 +34,11 @@ noinst_PROGRAMS = \
 	$(MYSQL_INPUT) \
 	$(POSTGRE_INPUT)
 
-INCLUDES = $(RLIB_CFLAGS) -I${top_srcdir}/libsrc/  
-
 test1_SOURCES= test1.c
-test1_LDADD = -L${top_builddir}/libsrc/ $(RLIB_LIBS) -lr
+test1_LDADD = $(top_builddir)/libsrc/libr.la $(RLIB_LIBS)
 
 test2_SOURCES= test2.c
-test2_LDADD = -L${top_builddir}/libsrc/ $(RLIB_LIBS) -lr
+test2_LDADD = $(top_builddir)/libsrc/libr.la $(RLIB_LIBS)
 
 test3_SOURCES= test3.c
-test3_LDADD = -L${top_builddir}/libsrc/ $(RLIB_LIBS) -lr
+test3_LDADD = $(top_builddir)/libsrc/libr.la $(RLIB_LIBS)

@@ -26,16 +26,16 @@
 #include <stdarg.h>
 #include <time.h>
 #include "config.h"
-#ifndef RLIB_WIN32
+#ifdef HAVE_SYS_RESOURCE_H
 #include <sys/resource.h>
 #endif
 #include <locale.h>
 
 #include "rlib.h"
 
-//man 3 llabs says the prototype is in stdlib.. no it aint!
-gint64 llabs(gint64 j);
-
+#ifndef LC_MESSAGES
+#define LC_MESSAGES 5
+#endif
 
 #ifndef LC_PAPER
 #define LC_PAPER 7
@@ -69,9 +69,7 @@ int locale_codes[] = {
 	LC_ALL,
 	LC_COLLATE,
 	LC_CTYPE,
-#ifndef RLIB_WIN32
 	LC_MESSAGES,
-#endif
 	LC_MONETARY,
 	LC_NUMERIC,
 	LC_TIME,
@@ -84,7 +82,7 @@ int locale_codes[] = {
 	-1
 };
 
-#ifndef RLIB_WIN32
+#ifdef HAVE_SYS_RESOURCE_H
 #ifdef ENABLE_CRASH
 static void myFaultHandler (gint signum, siginfo_t *si, gpointer aptr) {
 	struct rlimit rlim;
@@ -102,7 +100,7 @@ static void myFaultHandler (gint signum, siginfo_t *si, gpointer aptr) {
 static gint useMyHandler = TRUE;
 
 void init_signals() {
-#ifndef RLIB_WIN32
+#ifdef HAVE_SYS_RESOURCE_H
 #ifdef ENABLE_CRASH
 	struct sigaction sa;
 	if (useMyHandler) {
@@ -125,8 +123,6 @@ gint rutil_enableSignalHandler(gint trueorfalse) {
 	useMyHandler = trueorfalse;
 	return whatitwas;
 }
-
-gint vasprintf(gchar **, const gchar *, va_list);
 
 gchar *strlwrexceptquoted (char *s) {
 	gchar c; 

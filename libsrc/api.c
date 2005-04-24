@@ -30,13 +30,9 @@
 #include <locale.h>
 #include "config.h"
 
-#ifndef RLIB_WIN32
-#include <langinfo.h>
-#endif
-
-#include "config.h"
 #include "rlib.h"
 #include "rlib_input.h"
+#include "rlib_langinfo.h"
 
 #ifndef CODESET
 #define CODESET _NL_CTYPE_CODESET_NAME
@@ -404,7 +400,7 @@ gint rlib_set_datasource_encoding(rlib *r, gchar *input_name, gchar *encoding) {
 	for (i=0;i<r->inputs_count;i++) {
 		tif = r->inputs[i].input;
 		if (strcmp(r->inputs[i].name, input_name) == 0) {
-			tif->info.encoder = rlib_charencoder_new(encoding, "UTF-8");
+			tif->info.encoder = rlib_charencoder_new("UTF-8", encoding);
 			return 0;
 		}
 	}

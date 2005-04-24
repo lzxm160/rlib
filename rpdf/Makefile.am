@@ -20,20 +20,26 @@
 ##
 ## Process this file with automake to produce Makefile.in
 
+rpdfincludedir=$(includedir)/rlib
+rpdfinclude_HEADERS = rpdf.h
+
+AM_CFLAGS = $(RPDF_CFLAGS) $(RLIB_WERROR)
+
 lib_LTLIBRARIES = librpdf.la
 librpdf_la_SOURCES = rpdf.c rpdf.h 
 
-librpdf_la_LIBADD = $(RPDF_LIBS) 
+librpdf_la_LIBADD = $(DYNAMIC_LD_LIBS) $(RPDF_LIBS) 
 
-INCLUDES = $(RPDF_CFLAGS) $(RLIB_WERROR)
+DEF_FILE=librpdf.def
+if WIN32
+def_ldflags=-Wl,--output-def,$(DEF_FILE) -export-dynamic -avoid-version
+endif
 
-include_HEADERS = rpdf.h
-
-librpdf_la_LDFLAGS = -release $(RLIB_VERSION)
-
-includedir=$(prefix)/include/rlib
+librpdf_la_LDFLAGS = \
+	-version-info $(RLIB_LT_CURRENT):$(RLIB_LT_REVISION):$(RLIB_LT_AGE) \
+	$(def_ldflags)
 
 noinst_PROGRAMS = test
 
 test_SOURCES= test.c
-test_LDADD = -lrpdf
+test_LDADD = librpdf.la -lm

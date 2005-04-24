@@ -896,9 +896,17 @@ gint rlib_pcode_operator_str(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	v3 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1) && RLIB_VALUE_IS_NUMBER(v2) && RLIB_VALUE_IS_NUMBER(v3)) {
 		if(RLIB_VALUE_GET_AS_NUMBER(v1) > 0)
+#ifdef _64BIT_
+			sprintf(fmtstring, "%%%ld.%ldd", RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v2)), RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v1)));
+#else
 			sprintf(fmtstring, "%%%lld.%lldd", RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v2)), RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v1)));
+#endif
 		else
+#ifdef _64BIT_
+			sprintf(fmtstring, "%%%ld", RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v2)));
+#else
 			sprintf(fmtstring, "%%%lld", RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v2)));
+#endif
 		rlib_number_sprintf(dest, fmtstring, v3, 0);
 		rlib_value_free(v1);
 		rlib_value_free(v2);

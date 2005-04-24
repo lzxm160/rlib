@@ -32,14 +32,19 @@ libr_la_SOURCES = parsexml.c reportgen.c layout.c graphing.c api.c resolution.c 
 	charencoder.c charencoder.h rlib_gd.h \
 	datetime.c datetime.h value.c value.h $(GD_FILES)
 
-libr_la_LIBADD = $(RLIB_LIBS) -L${top_builddir}/rpdf/ -lrpdf
+libr_la_LIBADD = $(RLIB_LIBS) $(top_builddir)/rpdf/librpdf.la
 
-INCLUDES = $(RLIB_CFLAGS) $(RLIB_WERROR) -I../rpdf
+DEF_FILE=libr.def
+if WIN32
+def_ldflags=-Wl,--output-def,$(DEF_FILE) -export-dynamic -avoid-version
+endif
 
-include_HEADERS = rlib.h rlib_input.h charencoder.h datetime.h\
+libr_la_LDFLAGS = \
+	-version-info $(RLIB_LT_CURRENT):$(RLIB_LT_REVISION):$(RLIB_LT_AGE) \
+	$(def_ldflags)
+
+rlibincludedir=$(includedir)/rlib
+rlibinclude_HEADERS = rlib.h rlib_input.h charencoder.h datetime.h\
 	util.h value.h
 
-libr_la_LDFLAGS = -release $(RLIB_VERSION)
-
-
-includedir=$(prefix)/include/rlib
+AM_CFLAGS = $(RLIB_CFLAGS) $(RLIB_WERROR) -I../rpdf
