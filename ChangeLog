@@ -1,3 +1,7 @@
+2005-04-25  Zoltan Boszormenyi <zboszor@dunaweb.hu>
+	* rpdf/rpdf.c: fix extern variables for static linking on win32
+	* rpdf/rpdf.h: likewise
+
 2005-04-24  Bob Doan  <bdoan@sicompos.com>
             Jeremy Lee <jlee@platinumtel.com> 
             Warren Smith <wsmith@platinumtel.com>
