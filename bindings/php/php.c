@@ -41,6 +41,7 @@ ZEND_FUNCTION(rlib_add_datasource_xml);
 ZEND_FUNCTION(rlib_add_query_as);
 ZEND_FUNCTION(rlib_graph_add_bg_region);
 ZEND_FUNCTION(rlib_graph_clear_bg_region);
+ZEND_FUNCTION(rlib_graph_set_x_minor_tick);
 ZEND_FUNCTION(rlib_add_resultset_follower);
 ZEND_FUNCTION(rlib_add_resultset_follower_n_to_1);
 ZEND_FUNCTION(rlib_add_report);
@@ -77,6 +78,7 @@ zend_function_entry rlib_functions[] =
 	ZEND_FE(rlib_add_query_as, NULL)
 	ZEND_FE(rlib_graph_add_bg_region, NULL)
 	ZEND_FE(rlib_graph_clear_bg_region, NULL)
+	ZEND_FE(rlib_graph_set_x_minor_tick, NULL)
 	ZEND_FE(rlib_add_resultset_follower, NULL)
 	ZEND_FE(rlib_add_resultset_follower_n_to_1, NULL)
 	ZEND_FE(rlib_add_report, NULL)
@@ -294,6 +296,23 @@ ZEND_FUNCTION(rlib_graph_add_bg_region) {
 	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
 
 	rlib_graph_add_bg_region(rip->r, graph_name, region_label, color, start, end);
+}
+
+ZEND_FUNCTION(rlib_graph_set_x_minor_tick) {
+	zval *z_rip = NULL;
+	gint whatever;
+	gchar *graph_name, *x_value;
+	rlib_inout_pass *rip;
+	gint id = -1;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss", &z_rip, 
+		&graph_name, &whatever, &x_value, &whatever) == FAILURE) {
+		return;
+	}
+	
+	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
+
+	rlib_graph_set_x_minor_tick(rip->r, graph_name, x_value);
 }
 
 ZEND_FUNCTION(rlib_graph_clear_bg_region) {

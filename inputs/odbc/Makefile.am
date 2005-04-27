@@ -27,7 +27,7 @@ libr_odbc_la_SOURCES = odbc.c
 libr_odbc_la_LIBADD = $(RLIB_LIBS) 
 DEF_FILE=libr-odbc.def
 if WIN32
-def_ldflags=-Wl,--output-def,$(DEF_FILE) -module -export-dynamic -avoid-version
+def_ldflags=-Wl,--output-def,$(DEF_FILE) -module -avoid-version
 endif
 libr_odbc_la_LDFLAGS = \
 	-version-info $(RLIB_LT_CURRENT):$(RLIB_LT_REVISION):$(RLIB_LT_AGE) \

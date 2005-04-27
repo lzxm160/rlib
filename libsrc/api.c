@@ -408,6 +408,14 @@ gint rlib_set_datasource_encoding(rlib *r, gchar *input_name, gchar *encoding) {
 	return -1;
 }
 
+gint rlib_graph_set_x_minor_tick(rlib *r, gchar *graph_name, gchar *x_value) {
+	struct rlib_graph_x_minor_tick *gmt = g_new0(struct rlib_graph_x_minor_tick, 1);
+	gmt->graph_name = g_strdup(graph_name);
+	gmt->x_value = g_strdup(x_value);
+	r->graph_minor_x_ticks = g_slist_append(r->graph_minor_x_ticks, gmt);
+	return TRUE;
+}
+
 gint rlib_graph_add_bg_region(rlib *r, gchar *graph_name, gchar *region_label, gchar *color, gfloat start, gfloat end) {
 	struct rlib_graph_region *gr = g_new0(struct rlib_graph_region, 1);
 	gr->graph_name = g_strdup(graph_name);

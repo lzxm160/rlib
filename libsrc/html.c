@@ -33,6 +33,7 @@
 
 #define TEXT 1
 #define DELAY 2
+#define BOTTOM_PAD 8
 
 struct _packet {
 	char type;
@@ -64,11 +65,11 @@ struct _graph {
 	gint top;
 	gint y_iterations;
 	gint intersection;
-	gint x_tick_width;
+	gfloat x_tick_width;
 	gint x_iterations;
 	gint x_start;
 	gint y_start;
-	gint x_labels_are_up;
+	gint vertical_x_label;
 	gboolean x_axis_labels_are_under_tick;
 	gboolean has_legend_bg_color;
 	struct rlib_rgb legend_bg_color;
@@ -82,6 +83,7 @@ struct _graph {
 	gint orig_data_plot_count;
 	gint current_region;
 	gboolean bold_titles;
+	gboolean *minor_ticks;
 };
 
 struct _private {
@@ -582,6 +584,11 @@ static void html_graph_set_bold_titles(rlib *r, gboolean bold_titles) {
 	graph->bold_titles = bold_titles;
 }
 
+static void html_graph_set_minor_ticks(rlib *r, gboolean *minor_ticks) {
+	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
+	graph->minor_ticks = minor_ticks;
+}
+
 
 static void html_graph_x_axis_title(rlib *r, gchar *title) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
@@ -626,47 +633,85 @@ static void html_draw_regions(gpointer data, gpointer user_data) {
 	}	
 }
 
+static void html_graph_label_x_get_variables(rlib *r, gint iteration, gchar *label, gint *left, gint *y_start, gint string_width) {
+	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
+	*left = graph->x_start + (graph->x_tick_width * iteration);
+	*y_start = graph->y_start;
+	
+	if(string_width == 0)
+		string_width = rlib_gd_get_string_width(OUTPUT_PRIVATE(r)->rgd, label, FALSE);
+
+	if(graph->vertical_x_label) {
+		*y_start += graph->x_label_width;
+	} else {
+		*left += (graph->x_tick_width - string_width) / 2;
+		*y_start += (BOTTOM_PAD/2);
+	}
+
+	if(graph->x_axis_labels_are_under_tick) {
+		if(graph->vertical_x_label) {
+			*left -= rlib_gd_get_string_height(OUTPUT_PRIVATE(r)->rgd, FALSE) / 2;
+		} else {
+			*left -= (graph->x_tick_width / 2);
+		}
+		*y_start += graph->intersection;
+	}
+
+}
+
 static void html_graph_do_grid(rlib *r, gboolean just_a_box) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
-
-	graph->width -= (graph->y_axis_title_left + + graph->y_axis_title_right + graph->y_label_width_left + graph->intersection);
+	gint i;
+	gint last_left = 0 - graph->x_label_width;
 	
-
+	graph->width -= (graph->y_axis_title_left + + graph->y_axis_title_right + graph->y_label_width_left + graph->intersection);
 	if(graph->y_label_width_right > 0)
 		graph->width -= (graph->y_label_width_right + graph->intersection);
 
-	
 	graph->top = graph->title_height*1.1;
 	graph->height -= (graph->title_height + graph->intersection + graph->x_axis_label_height);
-
 
 	if(graph->x_iterations != 0) {
 		if(graph->x_axis_labels_are_under_tick) {
 			if(graph->x_iterations <= 1)
 				graph->x_tick_width = 0;
 			else
-				graph->x_tick_width = graph->width/(graph->x_iterations-1);
+				graph->x_tick_width = (gfloat)graph->width/((gfloat)graph->x_iterations-1.0);
 		} else
-			graph->x_tick_width = graph->width/graph->x_iterations;
+			graph->x_tick_width = (gfloat)graph->width/(gfloat)graph->x_iterations;
 	}
 	
 	graph->x_start = graph->y_axis_title_left + graph->intersection;
 	graph->y_start = graph->whole_graph_height - graph->x_axis_label_height;
 
-	if(graph->x_label_width > graph->x_tick_width) {
-		graph->x_labels_are_up = TRUE;
+
+	graph->x_start += graph->y_label_width_left;
+
+	for(i=0;i<graph->x_iterations;i++) {
+		gint left,y_start,string_width=graph->x_label_width;
+		if(graph->minor_ticks[i] == FALSE) {
+			html_graph_label_x_get_variables(r, i, NULL, &left, &y_start, string_width); 
+			if(left < (last_left+graph->x_label_width)) {
+				graph->vertical_x_label = TRUE;
+				break;
+			}
+			last_left = left;
+		}
+	}
+
+	if(graph->vertical_x_label) {
+		graph->vertical_x_label = TRUE;
 		graph->y_start -= graph->x_label_width;	
 		graph->height -= graph->x_label_width;
 		graph->y_start -= rlib_gd_get_string_width(OUTPUT_PRIVATE(r)->rgd, "w", FALSE);
 	} else {
-		graph->x_labels_are_up = FALSE;
+		graph->vertical_x_label = FALSE;
 		if(graph->x_label_width != 0) {
-			graph->y_start -= rlib_gd_get_string_height(OUTPUT_PRIVATE(r)->rgd, FALSE);
-			graph->height -= rlib_gd_get_string_height(OUTPUT_PRIVATE(r)->rgd, FALSE);
+			graph->y_start -= rlib_gd_get_string_height(OUTPUT_PRIVATE(r)->rgd, FALSE)+BOTTOM_PAD;
+			graph->height -= rlib_gd_get_string_height(OUTPUT_PRIVATE(r)->rgd, FALSE)+BOTTOM_PAD;
 		}
 	}
 	
-	graph->x_start += graph->y_label_width_left;
 	graph->just_a_box = just_a_box;
 
 	if(!just_a_box) {
@@ -679,13 +724,25 @@ static void html_graph_tick_x(rlib *r) {
 	gint i;
 	gint spot;
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
+	gint div = 1;
+	gint iterations = graph->x_iterations;
+	
 
-	for(i=0;i<graph->x_iterations;i++) {
-		spot = graph->x_start + ((graph->x_tick_width)*i);
-		if(graph->draw_x)
-			rlib_gd_line(OUTPUT_PRIVATE(r)->rgd, spot, graph->y_start+(graph->intersection), spot, graph->y_start - graph->height, graph->grid_color);
+	if(!graph->x_axis_labels_are_under_tick)
+		iterations++;
+
+	for(i=0;i<iterations;i++) {
+
+		if(graph->minor_ticks[i] == TRUE)
+			div = 2;
 		else
-			rlib_gd_line(OUTPUT_PRIVATE(r)->rgd, spot, graph->y_start+(graph->intersection), spot, graph->y_start, graph->grid_color);
+			div = 1;
+
+		spot = graph->x_start + ((graph->x_tick_width)*i);
+		if(graph->draw_x && graph->minor_ticks[i] == FALSE)
+			rlib_gd_line(OUTPUT_PRIVATE(r)->rgd, spot, graph->y_start+(graph->intersection/div), spot, graph->y_start - graph->height, graph->grid_color);
+		else
+			rlib_gd_line(OUTPUT_PRIVATE(r)->rgd, spot, graph->y_start+(graph->intersection/div), spot, graph->y_start, graph->grid_color);
 	}
 
 }
@@ -706,27 +763,11 @@ static void html_graph_hint_label_x(rlib *r, gchar *label) {
 
 static void html_graph_label_x(rlib *r, gint iteration, gchar *label) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
-	gint left = graph->x_start + (graph->x_tick_width * iteration);
-	gint y_start = graph->y_start;
+	gint left, y_start;
 
+	html_graph_label_x_get_variables(r, iteration, label, &left, &y_start, 0);
 
-
-	if(graph->x_labels_are_up) {
-		y_start += graph->x_label_width;
-	} else {
-		left += (graph->x_tick_width - rlib_gd_get_string_width(OUTPUT_PRIVATE(r)->rgd, label, FALSE)) / 2;
-	}
-
-	if(graph->x_axis_labels_are_under_tick) {
-		if(graph->x_labels_are_up) {
-			left -= rlib_gd_get_string_height(OUTPUT_PRIVATE(r)->rgd, FALSE) / 2;
-		} else {
-			left -= (graph->x_tick_width / 2);
-		}
-		y_start += graph->intersection;
-	}
-
-	rlib_gd_text(OUTPUT_PRIVATE(r)->rgd, label, left, y_start, graph->x_labels_are_up, FALSE);
+	rlib_gd_text(OUTPUT_PRIVATE(r)->rgd, label, left, y_start, graph->vertical_x_label, FALSE);
 }
 
 static void html_graph_tick_y(rlib *r, gint iterations) {
@@ -845,8 +886,8 @@ static void html_graph_plot_pie(rlib *r, gfloat start, gfloat end, gboolean offs
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
 	gfloat start_angle = 360.0 * start;
 	gfloat end_angle = 360.0 * end;
-	gfloat x = graph->x_start + (graph->width / 2);
-	gfloat y = graph->y_start - (graph->height / 2);
+	gfloat x = (graph->width / 2);
+	gfloat y = graph->top + ((graph->height-graph->legend_height) / 2);
 	gfloat radius = 0;
 	gfloat offset_factor = 0;
 	gfloat rads;
@@ -854,15 +895,13 @@ static void html_graph_plot_pie(rlib *r, gfloat start, gfloat end, gboolean offs
 	start_angle += 90;
 	end_angle += 90;
 
-	if(graph->width < graph->height)
-		radius = graph->width / 2;
+	if(graph->width < (graph->height-graph->legend_height))
+		radius = graph->width / 2.2;
 	else
-		radius = graph->height /2 ;
+		radius = (graph->height-graph->legend_height) / 2.2;
 
 	if(offset)
 		offset_factor = radius * .1;
-	else	
-		offset_factor = radius *.01;
 
 	rads = (((start_angle+end_angle)/2.0))*3.1415927/180.0;
 	x += offset_factor * cosf(rads);
@@ -1077,6 +1116,7 @@ void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT(r)->graph_set_legend_orientation = html_graph_set_legend_orientation;	
 	OUTPUT(r)->graph_set_draw_x_y = html_graph_set_draw_x_y;
 	OUTPUT(r)->graph_set_bold_titles = html_graph_set_bold_titles;
+	OUTPUT(r)->graph_set_minor_ticks = html_graph_set_minor_ticks;
 	OUTPUT(r)->graph_set_grid_color = html_graph_set_grid_color;
 	OUTPUT(r)->graph_x_axis_title = html_graph_x_axis_title;
 	OUTPUT(r)->graph_y_axis_title = html_graph_y_axis_title;

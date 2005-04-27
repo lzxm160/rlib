@@ -480,6 +480,12 @@ struct rlib_part {
 	gint landscape;
 };
 
+struct rlib_graph_x_minor_tick {
+	gchar *graph_name;
+	gchar *x_value;
+};
+
+
 struct rlib_graph_region {
 	gchar *graph_name;
 	gchar *region_label;
@@ -713,6 +719,7 @@ struct rlib {
 	struct input_filters inputs[MAX_INPUT_FILTERS];
 	struct environment_filter *environment;
 	GSList *graph_regions;
+	GSList *graph_minor_x_ticks;
 };
 typedef struct rlib rlib;
 
@@ -784,6 +791,7 @@ struct output_filter {
 	void (*graph_set_legend_orientation)(rlib *r, gint orientation);
 	void (*graph_set_draw_x_y)(rlib *r, gboolean draw_x, gboolean draw_y);
 	void (*graph_set_bold_titles)(rlib *r, gboolean bold_titles);
+	void (*graph_set_minor_ticks)(rlib *r, gboolean *ticks);
 	void (*graph_set_grid_color)(rlib *r, struct rlib_rgb *);
 	void (*graph_x_axis_title)(rlib *r, gchar *title);
 	void (*graph_y_axis_title)(rlib *r, gchar side, gchar *title);
@@ -857,6 +865,7 @@ void rlib_set_output_encoding(rlib *r, const char *encoding);
 void rlib_set_output_parameter(rlib *r, gchar *parameter, gchar *value);
 gint rlib_graph_add_bg_region(rlib *r, gchar *graph_name, gchar *region_label, gchar *color, gfloat start, gfloat end);
 gint rlib_graph_clear_bg_region(rlib *r, gchar *graph_name);
+gint rlib_graph_set_x_minor_tick(rlib *r, gchar *graph_name, gchar *x_value);
 
 /***** PROTOTYPES: parsexml.c *************************************************/
 struct rlib_part * parse_part_file(rlib *r, gchar *filename, gchar type);

@@ -195,6 +195,7 @@ static void rlib_graph_label_y_axis(rlib *r, gint side, gboolean for_real, gint 
 #define POSITIVE 1
 #define POSITIVE_AND_NEGATIVE 2
 #define NEGATIVE 3
+#define MAX_X_TICKS 2000
 
 gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat left_margin_offset, gfloat *top_margin_offset) {
 	struct rlib_graph_plot *plot;
@@ -234,13 +235,15 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	gboolean divide_iterations = TRUE;
 	gboolean should_label_under_tick = FALSE;
 	gfloat value = 0;
-	gint did_set = FALSE;
+	gint did_set[2] = {FALSE, FALSE};
 	gint *goodIncs = goodIncs_normal;
 	gint numGoodIncs = numGoodIncs_normal;
 	gint left_axis_decimal_hint=-1, right_axis_decimal_hint=-1;
 	gboolean disabled, tmp_disabled;
 	left_margin_offset += part->left_margin;
+	gboolean minor_tick[MAX_X_TICKS];
 
+	memset(minor_tick, 0, sizeof(gboolean)*MAX_X_TICKS);
 		
 	if(rlib_execute_as_float(r, graph->width_code, &tmp))
 		graph_width = tmp;
@@ -352,7 +355,17 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 				if(rlib_execute_as_string(r, plot->axis_code, axis, MAXSTRLEN)) {
 					if(strcmp(axis, "x") == 0) {
 						if(rlib_execute_as_string(r, plot->field_code, x_axis_label, MAXSTRLEN)) {
-							OUTPUT(r)->graph_hint_label_x(r, x_axis_label);
+							GSList *list;
+							gboolean display = TRUE;
+							for(list = r->graph_minor_x_ticks;list != NULL; list=list->next) {
+								struct rlib_graph_x_minor_tick *gmt = list->data;
+								if(strcmp(name, gmt->graph_name) == 0 && strcmp(x_axis_label, gmt->x_value) == 0) {
+									display = FALSE;
+									minor_tick[row_count] = TRUE;
+								}								
+							}
+							if(display)
+								OUTPUT(r)->graph_hint_label_x(r, x_axis_label);
 						}																
 				
 					} else if(strcmp(axis, "y") == 0) {
@@ -371,9 +384,9 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 							if(rlib_execute_as_string(r, plot->label_code, legend_label, MAXSTRLEN)) {
 								OUTPUT(r)->graph_hint_legend(r, legend_label);
 							}
-							if(row_count == 0 && did_set == FALSE) {
+							if(row_count == 0 && did_set[side] == FALSE) {
 								y_min[side] = y_max[side] = y_value;
-								did_set = TRUE;
+								did_set[side] = TRUE;
 							}
 							
 							if(is_percent_graph(graph_type) || is_pie_graph(graph_type)) {
@@ -514,6 +527,8 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 
 	OUTPUT(r)->graph_set_title(r, title);
 	
+	OUTPUT(r)->graph_set_minor_ticks(r, minor_tick);
+	
 	if(!is_pie_graph(graph_type)) {
 		OUTPUT(r)->graph_x_axis_title(r, x_axis_title);
 		OUTPUT(r)->graph_y_axis_title(r, RLIB_SIDE_LEFT, y_axis_title);
@@ -572,9 +587,11 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 				plot = list->data;
 				if(rlib_execute_as_string(r, plot->axis_code, axis, MAXSTRLEN)) {
 					if(strcmp(axis, "x") == 0) {
-						if(rlib_execute_as_string(r, plot->field_code, x_axis_label, MAXSTRLEN)) {
-							OUTPUT(r)->graph_label_x(r, row_count, x_axis_label);
-						}																
+						if(minor_tick[row_count] == FALSE) {
+							if(rlib_execute_as_string(r, plot->field_code, x_axis_label, MAXSTRLEN)) {
+								OUTPUT(r)->graph_label_x(r, row_count, x_axis_label);
+							}																
+						}
 					} else if(strcmp(axis, "y") == 0) {
 						disabled = FALSE;
 						if(rlib_execute_as_boolean(r, plot->disabled_code, &tmp_disabled))

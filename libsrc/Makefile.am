@@ -30,13 +30,14 @@ libr_la_SOURCES = parsexml.c reportgen.c layout.c graphing.c api.c resolution.c 
 	pdf.c html.c txt.c datasource.c csv.c ralloc.c environment.c free.c \
 	navigation.c save.c load.c axis.c xml_data_source.c \
 	rlib_input.h pcode.h ralloc.h rlib.h charencoder.c charencoder.h rlib_gd.h \
-	datetime.c datetime.h value.c value.h $(GD_FILES)
+	datetime.c datetime.h value.c value.h rlib_langinfo.c rlib_langinfo.h \
+	$(GD_FILES)
 
 libr_la_LIBADD = $(RLIB_LIBS) $(top_builddir)/rpdf/librpdf.la
 
 DEF_FILE=libr.def
 if WIN32
-def_ldflags=-Wl,--output-def,$(DEF_FILE) -export-dynamic -avoid-version
+def_ldflags=-Wl,--output-def,$(DEF_FILE) -avoid-version
 endif
 
 libr_la_LDFLAGS = \

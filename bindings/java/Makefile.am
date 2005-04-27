@@ -25,7 +25,7 @@ librlibjava_la_SOURCES = java.c
 librlibjava_la_LIBADD = $(top_builddir)/libsrc/libr.la $(RLIB_LIBS)
 DEF_FILE=librlibjava.def
 if WIN32
-def_ldflags=-Wl,--output-def,$(DEF_FILE) -module -export-dynamic -avoid-version
+def_ldflags=-Wl,--output-def,$(DEF_FILE) -module -avoid-version
 endif
 librlibjava_la_LDFLAGS = \
 	-version-info $(RLIB_LT_CURRENT):$(RLIB_LT_REVISION):$(RLIB_LT_AGE) \

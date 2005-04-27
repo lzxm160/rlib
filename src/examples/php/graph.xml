@@ -12,50 +12,6 @@
 		</Output>
 	</PageHeader>		
 
-	<pr>
-		<pd width="48">
-			<Report fontSize="12" orientation="landscape">
-				<Graph type="'row'" subtype="'normal'" width="370" height="250" title="'Normal Bar Charts!'" x_axis_title="'i can label a x axis'" y_axis_title="'y axis'">
-					<Plot axis="'x'" field="name"/>
-					<Plot axis="'y'" field="val(ty_sales)" label="'Sales'"/>
-				</Graph>
-
-			</Report>
-		</pd>
-		<pd width="2"/>
-		<pd width="48">
-			<Report fontSize="12" orientation="landscape">
-				<Graph type="'row'" subtype="'normal'" width="370" height="250" title="'Test 2'">
-					<Plot axis="'x'" field="name"/>
-					<Plot axis="'y'" field="val(ty_sales)" label="'TY Salesg"/>
-					<Plot axis="'y'" field="val(ly_sales)" label="'LY Sales'"/>
-					<Plot axis="'y'" field="val(projection)" label="'Projection'"/>
-				</Graph>
-
-			</Report>
-		</pd>
-	</pr>
-	<pr>
-		<pd width="48">
-			<Report fontSize="12" orientation="landscape">
-				<Graph type="'row'" subtype="'normal'" width="370" height="250" title="'Test 3'">
-					<Plot axis="'x'" field="name"/>
-					<Plot axis="'y'" field="val(sold)" label="'Sold'"/>
-				</Graph>
-			</Report>
-		</pd>
-		<pd width="2"/>
-		<pd width="48">
-			<Report fontSize="12" orientation="landscape">
-				<Graph type="'row'" subtype="'normal'" width="370" height="250" title="'Test 4'">
-					<Plot axis="'x'" field="name"/>
-					<Plot axis="'y'" field="val(negative)" label="'A Really Long Label Foo!'"/>
-				</Graph>
-
-			</Report>
-		</pd>
-	</pr>
-
 
 	<pr>
 		<pd width="98">
@@ -101,13 +57,10 @@
 			</Report>
 		</pd>
 	</pr>
-
-
-
 	<pr newpage="yes">
 		<pd width="48">
 			<Report fontSize="12" orientation="landscape" query="'pie_data'">
-				<Graph type="'pie'" subtype="'normal'" width="370" height="250" title="'Pie Charts (Bob Kratz Emotions)'">
+				<Graph type="'pie'" subtype="'normal'" width="370" height="250" title="'Pie Charts (Bob Kratz Emotions)'" legend_bg_color="'0xe5e5e5'" legend_orientation="'bottom'">
 					<Plot axis="'y'" field="val(value)" label="emotion"/>
 				</Graph>
 			</Report>
@@ -141,6 +94,90 @@
 			</Report>
 		</pd>
 	</pr>
+	<pr>
+		<pd width="48">
+			<Report fontSize="12" orientation="landscape" query="'pie_data'">
+				<Graph type="'pie'" subtype="'normal'" width="370" height="250" title="'Pie Charts (Bob Kratz Emotions)'" legend_bg_color="'0xe5e5e5'" legend_orientation="'right'">
+					<Plot axis="'y'" field="val(value)" label="emotion"/>
+				</Graph>
+			</Report>
+		</pd>
+		<pd width="2"/>
+		<pd width="48">
+			<Report fontSize="12" orientation="landscape" query="'pie_data'">
+				<Detail>
+					<FieldHeaders>
+						<Output>
+							<HorizontalLine size="1" bgcolor="'black'"/>
+							<Line bgcolor="'0xe5e5e5'">
+								<literal width="10" col="1">Emotion</literal>
+								<literal width="1"/>
+								<literal width="5" col="1">Value</literal>
+							</Line>
+							<HorizontalLine size="1" bgcolor="'black'"/>
+							<HorizontalLine size="4" bgcolor="'white'"/>
+						</Output>
+					</FieldHeaders>		
+					<FieldDetails>
+						<Output>
+							<Line bgcolor="iif(r.detailcnt%2,'0xe5e5e5','white')">
+								<field value="emotion" width="10" align="left" col="1"/>
+								<literal width="1"/>
+								<field value="value" width="5" align="left" col="1"/>
+							</Line>
+						</Output>
+					</FieldDetails>
+				</Detail>
+			</Report>
+		</pd>
+	</pr>
+	
+	<pr newpage="yes">
+		<pd width="48">
+			<Report fontSize="12" orientation="landscape">
+				<Graph type="'row'" subtype="'normal'" width="370" height="250" title="'Normal Bar Charts!'" x_axis_title="'i can label a x axis'" y_axis_title="'y axis'">
+					<Plot axis="'x'" field="name"/>
+					<Plot axis="'y'" field="val(ty_sales)" label="'Sales'"/>
+				</Graph>
+
+			</Report>
+		</pd>
+		<pd width="2"/>
+		<pd width="48">
+			<Report fontSize="12" orientation="landscape">
+				<Graph type="'row'" subtype="'normal'" width="370" height="250" title="'Test 2'">
+					<Plot axis="'x'" field="name"/>
+					<Plot axis="'y'" field="val(ty_sales)" label="'TY Salesg"/>
+					<Plot axis="'y'" field="val(ly_sales)" label="'LY Sales'"/>
+					<Plot axis="'y'" field="val(projection)" label="'Projection'"/>
+				</Graph>
+
+			</Report>
+		</pd>
+	</pr>
+	<pr>
+		<pd width="48">
+			<Report fontSize="12" orientation="landscape">
+				<Graph type="'row'" subtype="'normal'" width="370" height="250" title="'Test 3'">
+					<Plot axis="'x'" field="name"/>
+					<Plot axis="'y'" field="val(sold)" label="'Sold'"/>
+				</Graph>
+			</Report>
+		</pd>
+		<pd width="2"/>
+		<pd width="48">
+			<Report fontSize="12" orientation="landscape">
+				<Graph type="'row'" subtype="'normal'" width="370" height="250" title="'Test 4'">
+					<Plot axis="'x'" field="name"/>
+					<Plot axis="'y'" field="val(negative)" label="'A Really Long Label Foo!'"/>
+				</Graph>
+
+			</Report>
+		</pd>
+	</pr>
+
+
+
 
 	<pr>
 		<pd width="48">

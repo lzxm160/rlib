@@ -1,3 +1,23 @@
+2005-04-27  Bob Doan  <bdoan@sicompos.com>
+	* bindings/php/php.c: Support Minor graph ticks, more graphing cleanup
+	* libsrc/api.c: likewise
+	* libsrc/graphing.c: likewise
+	* libsrc/html.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/rlib.h: likewise
+	* src/examples/php/graph.xml: likewise
+
+2005-04-27 Zoltan Boszormenyi <zboszor@dunaweb.hu>
+	* bindings/java/Makefile.am: Remove -export-dynamic 
+	* bindings/perl/Makefile.am: likewise
+	* bindings/php/Makefile.am: likewise
+	* bindings/python/Makefile.am: likewise
+	* inputs/mysql/Makefile.am: likewise
+	* inputs/odbc/Makefile.am: likewise
+	* inputs/postgre/Makefile.am: likewise
+	* libsrc/Makefile.am: liewise
+	* rpdf/Makefile.am: likewise
+
 2005-04-25  Zoltan Boszormenyi <zboszor@dunaweb.hu>
 	* rpdf/rpdf.c: fix extern variables for static linking on win32
 	* rpdf/rpdf.h: likewise

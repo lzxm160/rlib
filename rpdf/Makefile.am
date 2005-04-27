@@ -32,7 +32,7 @@ librpdf_la_LIBADD = $(DYNAMIC_LD_LIBS) $(RPDF_LIBS)
 
 DEF_FILE=librpdf.def
 if WIN32
-def_ldflags=-Wl,--output-def,$(DEF_FILE) -export-dynamic -avoid-version
+def_ldflags=-Wl,--output-def,$(DEF_FILE) -avoid-version
 endif
 
 librpdf_la_LDFLAGS = \

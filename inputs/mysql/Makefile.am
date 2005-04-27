@@ -27,7 +27,7 @@ libr_mysql_la_SOURCES = mysql.c
 libr_mysql_la_LIBADD = $(RLIB_LIBS) 
 DEF_FILE=libr-mysql.def
 if WIN32
-def_ldflags=-Wl,--output-def,$(DEF_FILE) -module -export-dynamic -avoid-version
+def_ldflags=-Wl,--output-def,$(DEF_FILE) -module -avoid-version
 endif
 libr_mysql_la_LDFLAGS = \
 	-version-info $(RLIB_LT_CURRENT):$(RLIB_LT_REVISION):$(RLIB_LT_AGE) \
