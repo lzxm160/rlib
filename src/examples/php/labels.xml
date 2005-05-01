@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE report >
+<Report fontSize="14" orientation="landscape" detail_columns="3" bottomMargin=".1">
+	<Alternate>
+		<NoData>
+			<Output>
+				<Line fontSize="12">
+					<literal>NO DATA</literal>
+				</Line>		
+			</Output>
+		</NoData>
+	</Alternate>
+	<Detail>
+		<FieldDetails>
+			<Output>
+				<Line>
+					<field value="name" width="30"/>
+				</Line>
+				<Line>
+					<field value="address1" width="30"/>
+				</Line>
+				<Line>
+					<field value="address2" width="30"/>
+				</Line>
+				<Line>
+					<field value="city" width="15"/>
+					<literal width="1"/>
+					<field value="state" width="2"/>
+					<literal width="1"/>
+					<field value="zip" width="9"/>
+				</Line>
+				<Line/>				
+				<Line/>				
+				<Line/>				
+			</Output>
+		</FieldDetails>
+	</Detail>
+
+</Report>

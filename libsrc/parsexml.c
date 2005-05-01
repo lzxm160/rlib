@@ -510,6 +510,7 @@ static void parse_report(rlib *r, struct rlib_part *part, struct rlib_report *re
 	report->xml_orientation = xmlGetProp(cur, (const xmlChar *) "orientation");
 	report->xml_top_margin = xmlGetProp(cur, (const xmlChar *) "topMargin");
 	report->xml_left_margin = xmlGetProp(cur, (const xmlChar *) "leftMargin");
+	report->xml_detail_columns = xmlGetProp(cur, (const xmlChar *) "detail_columns");
 	report->xml_bottom_margin = xmlGetProp(cur, (const xmlChar *) "bottomMargin");
 	report->xml_height = xmlGetProp(cur, (const xmlChar *) "height");
 	report->xml_iterations = xmlGetProp(cur, (const xmlChar *) "iterations");

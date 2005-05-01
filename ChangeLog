@@ -1,3 +1,16 @@
+2005-04-30  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/Makefile.am: support multiple detail columns in a report
+	* libsrc/free.c: likewise
+	* libsrc/html.c: likewise
+	* libsrc/layout.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+	* src/examples/php/Makefile.am: examples are fun
+	* src/examples/php/labels.php: likewise
+	* src/examples/php/labels.xml: likewise
+
 2005-04-27  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/php.c: Support Minor graph ticks, more graphing cleanup
 	* libsrc/api.c: likewise

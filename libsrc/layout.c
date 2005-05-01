@@ -740,6 +740,15 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 			rlib_position = &part->position_top[page-1];
 		my_left_margin = part->left_margin;
 	}
+	
+	if(report != NULL) {
+		if(report->detail_columns > 1) {
+			gfloat paper_width = (rlib_layout_get_page_width(r, part) - (part->left_margin * 2)) / report->detail_columns;
+
+			my_left_margin += (r->detail_line_count % report->detail_columns) * paper_width;
+		
+		}	
+	}
 
 	for(j=0;j<roa->count;j++) {
 		struct rlib_report_output *ro = roa->data[j];

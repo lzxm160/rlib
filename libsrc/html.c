@@ -472,7 +472,7 @@ static void rlib_html_set_working_page(rlib *r, struct rlib_part *part, gint pag
 }
 
 static void rlib_html_start_tr(rlib *r) {
-	print_text(r, "<table><tr> <!-- REAL TR -->", FALSE);
+	print_text(r, "<table><tr>", FALSE);
 }
 
 static void rlib_html_end_tr(rlib *r) {
@@ -1068,6 +1068,7 @@ void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT(r)->do_grouptext = FALSE;	
 	OUTPUT(r)->paginate = FALSE;
 	OUTPUT(r)->trim_links = FALSE;
+	OUTPUT(r)->table_around_multiple_detail_columns = TRUE;
 	
 	OUTPUT(r)->get_string_width = rlib_html_get_string_width;
 	OUTPUT(r)->print_text = rlib_html_print_text;

@@ -367,7 +367,6 @@ static void rlib_process_variables(rlib *r, struct rlib_report *report) {
 				r_error("rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_HIGHEST\n");
 		}
 	}
-	
 }
 
 static void rlib_evaluate_report_attributes(rlib *r, struct rlib_report *report) {
@@ -395,6 +394,10 @@ static void rlib_evaluate_report_attributes(rlib *r, struct rlib_report *report)
 		report->pages_across = t;
 	if (rlib_execute_as_int(r, report->suppress_page_header_first_page_code, &t))
 		report->suppress_page_header_first_page = t;
+	
+	report->detail_columns = 1;
+	if (rlib_execute_as_int(r, report->detail_columns_code, &t))
+		report->detail_columns = t;
 }
 
 static void rlib_evaluate_break_attributes(rlib *r, struct rlib_report *report) {
@@ -526,6 +529,14 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 				if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
 					while (1) {
 						gint output_count = 0;
+						gfloat position_top = report->position_top[0];
+						
+						if(report->detail_columns > 1 && r->detail_line_count == 0) {
+							if(OUTPUT(r)->table_around_multiple_detail_columns) {
+								OUTPUT(r)->start_tr(r);
+							}
+						}
+						
 						if(!processed_variables) {
 							rlib_process_input_metadata(r);
 							rlib_process_variables(r, report);
@@ -537,6 +548,12 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 						if(rlib_end_page_if_line_wont_fit(r, part, report, report->detail.fields))
 							rlib_force_break_headers(r, part, report);
 
+						if(report->detail_columns > 1) {
+							if(OUTPUT(r)->table_around_multiple_detail_columns) {
+								OUTPUT(r)->start_td(r, part, 0, 0, 0, 0, 0, NULL);
+							}
+						}
+						
 						if(OUTPUT(r)->do_break)
 							output_count = rlib_layout_report_output(r, part, report, report->detail.fields, FALSE);
 						else
@@ -556,6 +573,27 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 						rlib_evaluate_break_attributes(r, report);
 						rlib_handle_break_footers(r, part, report);
 						processed_variables = FALSE;
+
+						if(report->detail_columns > 1) {
+							if(OUTPUT(r)->table_around_multiple_detail_columns) {
+								OUTPUT(r)->end_td(r);
+							}
+						}
+
+						
+						if(report->detail_columns > 1) {
+							if(r->detail_line_count % report->detail_columns != 0) {
+								if(report->position_top[0] > position_top)
+									report->position_top[0] = position_top;
+								else
+									report->position_top[0] = position_top = part->position_top[0];
+							} else {
+								if(OUTPUT(r)->table_around_multiple_detail_columns) {
+									OUTPUT(r)->end_tr(r);
+									OUTPUT(r)->start_tr(r);
+								}
+							}
+						}						
 					}
 				}
 				rlib_navigate_last(r, r->current_result);

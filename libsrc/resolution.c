@@ -327,6 +327,7 @@ void rlib_resolve_report_fields(rlib *r, struct rlib_part *part, struct rlib_rep
 	report->height_code = rlib_infix_to_pcode(r, part, report, (gchar *)report->xml_height, TRUE);
 	report->iterations = 1;
 	report->iterations_code = rlib_infix_to_pcode(r, part, report, (gchar *)report->xml_iterations, TRUE);
+	report->detail_columns_code = rlib_infix_to_pcode(r, part, report, (gchar *)report->xml_detail_columns, TRUE);
 
 	if (rlib_execute_as_float(r, report->pages_across_code, &f))
 		report->pages_across = f;

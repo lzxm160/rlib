@@ -588,6 +588,7 @@ struct rlib_report {
 	xmlChar *xml_left_margin;
 	xmlChar *xml_bottom_margin;
 	xmlChar *xml_pages_across;
+	xmlChar *xml_detail_columns;
 	xmlChar *xml_suppress_page_header_first_page;
 	xmlChar *xml_height;
 	xmlChar *xml_iterations;
@@ -601,6 +602,7 @@ struct rlib_report {
 
 	gint orientation;
 	gint font_size;
+	gint detail_columns;
 	gfloat top_margin;
 	gfloat bottom_margin;
 	gfloat left_margin;
@@ -625,6 +627,7 @@ struct rlib_report {
 	struct rlib_pcode *font_size_code;
 	struct rlib_pcode *query_code;
 	struct rlib_pcode *orientation_code;
+	struct rlib_pcode *detail_columns_code;
 	struct rlib_pcode *height_code;
 	struct rlib_pcode *top_margin_code;
 	struct rlib_pcode *left_margin_code;
@@ -743,6 +746,7 @@ struct output_filter {
 	gboolean do_break;
 	gboolean do_grouptext;
 	gboolean trim_links;
+	gboolean table_around_multiple_detail_columns;
 	gint paginate;
 	gfloat (*get_string_width)(rlib *, char *);
 	void (*print_text)(rlib *, float, float, char *, int, int);
