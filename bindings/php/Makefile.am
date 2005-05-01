@@ -21,13 +21,13 @@
 ## Process this file with automake to produce Makefile.in
 AM_CFLAGS = -I${top_srcdir}/libsrc $(RLIB_CFLAGS) $(PHP_CFLAGS) $(RLIB_WERROR)
 phplibdir = $(PHP_EXTENSION_DIR)
-phplib_LTLIBRARIES = librlib.la
-librlib_la_SOURCES = environment.c php.c array_data_source.c rlib_php.h
-librlib_la_LIBADD = $(top_builddir)/libsrc/libr.la $(RLIB_LIBS)
-DEF_FILE=librlibphp.def
+phplib_LTLIBRARIES = rlib.la
+rlib_la_SOURCES = environment.c php.c array_data_source.c rlib_php.h
+rlib_la_LIBADD = $(top_builddir)/libsrc/libr.la $(RLIB_LIBS)
+DEF_FILE=rlibphp.def
 if WIN32
-def_ldflags=-Wl,--output-def,$(DEF_FILE) -module -avoid-version
+def_ldflags=-Wl,--output-def,$(DEF_FILE)
 endif
-librlib_la_LDFLAGS = \
+rlib_la_LDFLAGS = \
 	-version-info $(RLIB_LT_CURRENT):$(RLIB_LT_REVISION):$(RLIB_LT_AGE) \
-	$(def_ldflags)
+	$(def_ldflags) -module -avoid-version

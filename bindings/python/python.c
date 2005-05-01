@@ -685,19 +685,18 @@ SWIG_Python_InstallConstants(PyObject *d, swig_const_info constants[]) {
 
 #define  SWIGTYPE_p_rlib swig_types[0] 
 #define  SWIGTYPE_p_gint swig_types[1] 
-#define  SWIGTYPE_p_gchar swig_types[2] 
-#define  SWIGTYPE_p_f_p_rlib_p_void__int swig_types[3] 
-static swig_type_info *swig_types[5];
+#define  SWIGTYPE_p_f_p_rlib_p_void__int swig_types[2] 
+static swig_type_info *swig_types[4];
 
 /* -------- TYPES TABLE (END) -------- */
 
 
 /*-----------------------------------------------
-              @(target):= _librlib.so
+              @(target):= _rlib.so
   ------------------------------------------------*/
-#define SWIG_init    initlibrlib
+#define SWIG_init    init_rlib
 
-#define SWIG_name    "librlib"
+#define SWIG_name    "_rlib"
 
 #include <rlib.h>
  
@@ -783,14 +782,12 @@ static PyObject *_wrap_rlib_add_datasource_odbc(PyObject *self, PyObject *args) 
 static PyObject *_wrap_rlib_add_datasource_xml(PyObject *self, PyObject *args) {
     PyObject *resultobj;
     rlib *arg1 = (rlib *) 0 ;
-    gchar *arg2 = (gchar *) 0 ;
+    char *arg2 ;
     gint result;
     PyObject * obj0 = 0 ;
-    PyObject * obj1 = 0 ;
     
-    if(!PyArg_ParseTuple(args,(char *)"OO:rlib_add_datasource_xml",&obj0,&obj1)) goto fail;
+    if(!PyArg_ParseTuple(args,(char *)"Os:rlib_add_datasource_xml",&obj0,&arg2)) goto fail;
     if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
-    if ((SWIG_ConvertPtr(obj1,(void **) &arg2, SWIGTYPE_p_gchar,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
     result = rlib_add_datasource_xml(arg1,arg2);
     
     {
@@ -1287,13 +1284,11 @@ static PyMethodDef SwigMethods[] = {
 
 static swig_type_info _swigt__p_rlib[] = {{"_p_rlib", 0, "rlib *", 0},{"_p_rlib"},{0}};
 static swig_type_info _swigt__p_gint[] = {{"_p_gint", 0, "gint *", 0},{"_p_gint"},{0}};
-static swig_type_info _swigt__p_gchar[] = {{"_p_gchar", 0, "gchar *", 0},{"_p_gchar"},{0}};
 static swig_type_info _swigt__p_f_p_rlib_p_void__int[] = {{"_p_f_p_rlib_p_void__int", 0, "int (*)(rlib *,void *)", 0},{"_p_f_p_rlib_p_void__int"},{0}};
 
 static swig_type_info *swig_types_initial[] = {
 _swigt__p_rlib, 
 _swigt__p_gint, 
-_swigt__p_gchar, 
 _swigt__p_f_p_rlib_p_void__int, 
 0
 };

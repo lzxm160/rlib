@@ -417,13 +417,14 @@ if test x$enable_perl = xyes; then
 		enable_perl=no
 		echo "*** WARNING: PERL NOT FOUND IN PATH."
 	else
-		perl_where="`$PERL_CONFIG -e 'use Config; print $Config{archlib};'`/CORE"
-		PERL_CFLAGS="-I $perl_where"
+		perl_where="`$PERL_CONFIG -e 'use Config; print $Config{archlib};'`"
+		PERL_CFLAGS="-I ${perl_where}/CORE"
+		PERL_EXTENSION_DIR="${perl_where}"
 	fi
 fi
 AM_CONDITIONAL(HAVE_PERL, test x$enable_perl = xyes)
 AC_SUBST(PERL_CFLAGS)
-
+AC_SUBST(PERL_EXTENSION_DIR)
 
 
 dnl check for iconv.h
@@ -571,6 +572,7 @@ inputs/postgre/Makefile
 tests/Makefile
 doc/Makefile
 doc/IMAGES/Makefile
+rlib.spec
 ])
 
 

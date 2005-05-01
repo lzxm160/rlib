@@ -146,7 +146,6 @@ SWIG_TypeRegister(swig_type_info *ti) {
 }
 
 /* Check the typename */
-#if 0
 SWIGRUNTIME(swig_type_info *) 
 SWIG_TypeCheck(char *c, swig_type_info *ty) {
   swig_type_info *s;
@@ -171,7 +170,6 @@ SWIG_TypeCheck(char *c, swig_type_info *ty) {
   } while (s && (s != ty->next));
   return 0;
 }
-#endif
 
 /* Cast a pointer up an inheritance hierarchy */
 SWIGRUNTIME(void *) 
@@ -181,7 +179,6 @@ SWIG_TypeCast(swig_type_info *ty, void *ptr) {
 }
 
 /* Dynamic pointer casting. Down an inheritance hierarchy */
-#if 0
 SWIGRUNTIME(swig_type_info *) 
 SWIG_TypeDynamicCast(swig_type_info *ty, void **ptr) {
   swig_type_info *lastty = ty;
@@ -192,18 +189,14 @@ SWIG_TypeDynamicCast(swig_type_info *ty, void **ptr) {
   }
   return lastty;
 }
-#endif
 
 /* Return the name associated with this type */
-#if 0
 SWIGRUNTIME(const char *)
 SWIG_TypeName(const swig_type_info *ty) {
   return ty->name;
 }
-#endif
 
 /* Search for a swig_type_info structure */
-#if 0
 SWIGRUNTIME(swig_type_info *)
 SWIG_TypeQuery(const char *name) {
   swig_type_info *ty = swig_type_list;
@@ -214,7 +207,6 @@ SWIG_TypeQuery(const char *name) {
   }
   return 0;
 }
-#endif
 
 /* Set the clientdata field for a type */
 SWIGRUNTIME(void)
@@ -252,7 +244,6 @@ SWIG_PackData(char *c, void *ptr, int sz) {
 }
 
 /* Unpack binary data from a string */
-#if 0
 SWIGRUNTIME(char *)
 SWIG_UnpackData(char *c, void *ptr, int sz) {
   register unsigned char uu = 0;
@@ -274,7 +265,6 @@ SWIG_UnpackData(char *c, void *ptr, int sz) {
   }
   return c;
 }
-#endif
 
 #endif
 
@@ -583,14 +573,12 @@ SWIG_Perl_MakePtr(SWIG_MAYBE_PERL_OBJECT SV *sv, void *ptr, swig_type_info *t, i
   }
 }
 
-#if 0
 SWIGRUNTIME(SV *)
 SWIG_Perl_NewPointerObj(SWIG_MAYBE_PERL_OBJECT void *ptr, swig_type_info *t, int flags) {
   SV *result = sv_newmortal();
   SWIG_MakePtr(result, ptr, t, flags);
   return result;
 }
-#endif
 
 SWIGRUNTIME(void)
   SWIG_Perl_MakePackedObj(SWIG_MAYBE_PERL_OBJECT SV *sv, void *ptr, int sz, swig_type_info *type) {
@@ -604,7 +592,6 @@ SWIGRUNTIME(void)
 }
 
 /* Convert a packed value value */
-#if 0
 SWIGRUNTIME(int)
 SWIG_Perl_ConvertPacked(SWIG_MAYBE_PERL_OBJECT SV *obj, void *ptr, int sz, swig_type_info *ty, int flags) {
   swig_type_info *tc;
@@ -622,21 +609,17 @@ SWIG_Perl_ConvertPacked(SWIG_MAYBE_PERL_OBJECT SV *obj, void *ptr, int sz, swig_
   }
   return 0;
 }
-#endif
 
 SWIGRUNTIME(void)
 SWIG_Perl_SetError(SWIG_MAYBE_PERL_OBJECT const char *error) {
   if (error) sv_setpv(perl_get_sv("@", TRUE), error);
 }
 
-#if 0
 SWIGRUNTIME(void)
 SWIG_Perl_SetErrorSV(SWIG_MAYBE_PERL_OBJECT SV *error) {
   if (error) sv_setsv(perl_get_sv("@", TRUE), error);
 }
-#endif
 
-#if 0
 SWIGRUNTIME(void)
 SWIG_Perl_SetErrorf(const char *fmt, ...) {
   va_list args;
@@ -644,7 +627,6 @@ SWIG_Perl_SetErrorf(const char *fmt, ...) {
   sv_vsetpvfn(perl_get_sv("@", TRUE), fmt, strlen(fmt), &args, Null(SV**), 0, Null(bool*));
   va_end(args);
 }
-#endif
 
 #endif
 
@@ -782,15 +764,16 @@ static void _swig_create_magic(CPerlObj *pPerl, SV *sv, const char *name, int (C
 /* -------- TYPES TABLE (BEGIN) -------- */
 
 #define  SWIGTYPE_p_rlib swig_types[0] 
-#define  SWIGTYPE_p_f_p_rlib_p_void__int swig_types[1] 
-static swig_type_info *swig_types[3];
+#define  SWIGTYPE_p_gint swig_types[1] 
+#define  SWIGTYPE_p_f_p_rlib_p_void__int swig_types[2] 
+static swig_type_info *swig_types[4];
 
 /* -------- TYPES TABLE (END) -------- */
 
-#define SWIG_init    boot_librlib
+#define SWIG_init    boot_rlib
 
-#define SWIG_name   "librlibc::boot_librlib"
-#define SWIG_prefix "librlibc::"
+#define SWIG_name   "rlibc::boot_rlib"
+#define SWIG_prefix "rlibc::"
 
 #ifdef __cplusplus
 extern "C"
@@ -809,20 +792,18 @@ SWIGEXPORT(void) SWIG_init (CV *cv, CPerlObj *);
 #include <rlib.h>
  
 #ifdef PERL_OBJECT
-#define MAGIC_CLASS _wrap_librlib_var::
-class _wrap_librlib_var : public CPerlObj {
+#define MAGIC_CLASS _wrap_rlib_var::
+class _wrap_rlib_var : public CPerlObj {
 public:
 #else
 #define MAGIC_CLASS
 #endif
-#if 0
 SWIGCLASS_STATIC int swig_magic_readonly(pTHX_ SV *sv, MAGIC *mg) {
     MAGIC_PPERL
     sv = sv; mg = mg;
     croak("Value is read-only.");
     return 0;
 }
-#endif
 
 
 #ifdef PERL_OBJECT
@@ -959,6 +940,40 @@ XS(_wrap_rlib_add_datasource_odbc) {
         
         ST(argvi) = sv_newmortal();
         sv_setiv(ST(argvi++), (IV) result);
+        XSRETURN(argvi);
+        fail:
+        ;
+    }
+    croak(Nullch);
+}
+
+
+XS(_wrap_rlib_add_datasource_xml) {
+    {
+        rlib *arg1 = (rlib *) 0 ;
+        char *arg2 ;
+        gint result;
+        int argvi = 0;
+        dXSARGS;
+        
+        if ((items < 2) || (items > 2)) {
+            SWIG_croak("Usage: rlib_add_datasource_xml(r,input_name);");
+        }
+        {
+            if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
+                SWIG_croak("Type error in argument 1 of rlib_add_datasource_xml. Expected _p_rlib");
+            }
+        }
+        if (!SvOK((SV*) ST(1))) arg2 = 0;
+        else arg2 = (char *) SvPV(ST(1), PL_na);
+        result = rlib_add_datasource_xml(arg1,arg2);
+        
+        {
+            gint * resultobj = (gint *) malloc(sizeof(gint));
+            memmove(resultobj, &result, sizeof(gint));
+            ST(argvi) = sv_newmortal();
+            SWIG_MakePtr(ST(argvi++), (void *) resultobj, SWIGTYPE_p_gint, 0|SWIG_OWNER);
+        }
         XSRETURN(argvi);
         fail:
         ;
@@ -1654,14 +1669,88 @@ XS(_wrap_rlib_version) {
 }
 
 
+XS(_wrap_rlib_graph_add_bg_region) {
+    {
+        rlib *arg1 = (rlib *) 0 ;
+        char *arg2 ;
+        char *arg3 ;
+        char *arg4 ;
+        float arg5 ;
+        float arg6 ;
+        int result;
+        int argvi = 0;
+        dXSARGS;
+        
+        if ((items < 6) || (items > 6)) {
+            SWIG_croak("Usage: rlib_graph_add_bg_region(r,graph_name,region_label,color,start,end);");
+        }
+        {
+            if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
+                SWIG_croak("Type error in argument 1 of rlib_graph_add_bg_region. Expected _p_rlib");
+            }
+        }
+        if (!SvOK((SV*) ST(1))) arg2 = 0;
+        else arg2 = (char *) SvPV(ST(1), PL_na);
+        if (!SvOK((SV*) ST(2))) arg3 = 0;
+        else arg3 = (char *) SvPV(ST(2), PL_na);
+        if (!SvOK((SV*) ST(3))) arg4 = 0;
+        else arg4 = (char *) SvPV(ST(3), PL_na);
+        arg5 = (float) SvNV(ST(4));
+        
+        arg6 = (float) SvNV(ST(5));
+        
+        result = (int)rlib_graph_add_bg_region(arg1,arg2,arg3,arg4,arg5,arg6);
+        
+        ST(argvi) = sv_newmortal();
+        sv_setiv(ST(argvi++), (IV) result);
+        XSRETURN(argvi);
+        fail:
+        ;
+    }
+    croak(Nullch);
+}
+
+
+XS(_wrap_rlib_graph_clear_bg_region) {
+    {
+        rlib *arg1 = (rlib *) 0 ;
+        char *arg2 ;
+        int result;
+        int argvi = 0;
+        dXSARGS;
+        
+        if ((items < 2) || (items > 2)) {
+            SWIG_croak("Usage: rlib_graph_clear_bg_region(r,graph_name);");
+        }
+        {
+            if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
+                SWIG_croak("Type error in argument 1 of rlib_graph_clear_bg_region. Expected _p_rlib");
+            }
+        }
+        if (!SvOK((SV*) ST(1))) arg2 = 0;
+        else arg2 = (char *) SvPV(ST(1), PL_na);
+        result = (int)rlib_graph_clear_bg_region(arg1,arg2);
+        
+        ST(argvi) = sv_newmortal();
+        sv_setiv(ST(argvi++), (IV) result);
+        XSRETURN(argvi);
+        fail:
+        ;
+    }
+    croak(Nullch);
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
 static swig_type_info _swigt__p_rlib[] = {{"_p_rlib", 0, "rlib *", 0},{"_p_rlib"},{0}};
+static swig_type_info _swigt__p_gint[] = {{"_p_gint", 0, "gint *", 0},{"_p_gint"},{0}};
 static swig_type_info _swigt__p_f_p_rlib_p_void__int[] = {{"_p_f_p_rlib_p_void__int", 0, "int (*)(rlib *,void *)", 0},{"_p_f_p_rlib_p_void__int"},{0}};
 
 static swig_type_info *swig_types_initial[] = {
 _swigt__p_rlib, 
+_swigt__p_gint, 
 _swigt__p_f_p_rlib_p_void__int, 
 0
 };
@@ -1679,32 +1768,35 @@ static swig_variable_info swig_variables[] = {
 {0}
 };
 static swig_command_info swig_commands[] = {
-{"librlibc::rlib_init", _wrap_rlib_init},
-{"librlibc::rlib_add_datasource_mysql", _wrap_rlib_add_datasource_mysql},
-{"librlibc::rlib_add_datasource_postgre", _wrap_rlib_add_datasource_postgre},
-{"librlibc::rlib_add_datasource_odbc", _wrap_rlib_add_datasource_odbc},
-{"librlibc::rlib_add_query_as", _wrap_rlib_add_query_as},
-{"librlibc::rlib_add_report", _wrap_rlib_add_report},
-{"librlibc::rlib_add_report_from_buffer", _wrap_rlib_add_report_from_buffer},
-{"librlibc::rlib_execute", _wrap_rlib_execute},
-{"librlibc::rlib_get_content_type_as_text", _wrap_rlib_get_content_type_as_text},
-{"librlibc::rlib_spool", _wrap_rlib_spool},
-{"librlibc::rlib_set_output_format", _wrap_rlib_set_output_format},
-{"librlibc::rlib_add_resultset_follower_n_to_1", _wrap_rlib_add_resultset_follower_n_to_1},
-{"librlibc::rlib_add_resultset_follower", _wrap_rlib_add_resultset_follower},
-{"librlibc::rlib_set_output_format_from_text", _wrap_rlib_set_output_format_from_text},
-{"librlibc::rlib_get_output", _wrap_rlib_get_output},
-{"librlibc::rlib_get_output_length", _wrap_rlib_get_output_length},
-{"librlibc::rlib_signal_connect", _wrap_rlib_signal_connect},
-{"librlibc::rlib_signal_connect_string", _wrap_rlib_signal_connect_string},
-{"librlibc::rlib_query_refresh", _wrap_rlib_query_refresh},
-{"librlibc::rlib_add_parameter", _wrap_rlib_add_parameter},
-{"librlibc::rlib_set_locale", _wrap_rlib_set_locale},
-{"librlibc::rlib_set_output_parameter", _wrap_rlib_set_output_parameter},
-{"librlibc::rlib_set_output_encoding", _wrap_rlib_set_output_encoding},
-{"librlibc::rlib_set_datasource_encoding", _wrap_rlib_set_datasource_encoding},
-{"librlibc::rlib_free", _wrap_rlib_free},
-{"librlibc::rlib_version", _wrap_rlib_version},
+{"rlibc::rlib_init", _wrap_rlib_init},
+{"rlibc::rlib_add_datasource_mysql", _wrap_rlib_add_datasource_mysql},
+{"rlibc::rlib_add_datasource_postgre", _wrap_rlib_add_datasource_postgre},
+{"rlibc::rlib_add_datasource_odbc", _wrap_rlib_add_datasource_odbc},
+{"rlibc::rlib_add_datasource_xml", _wrap_rlib_add_datasource_xml},
+{"rlibc::rlib_add_query_as", _wrap_rlib_add_query_as},
+{"rlibc::rlib_add_report", _wrap_rlib_add_report},
+{"rlibc::rlib_add_report_from_buffer", _wrap_rlib_add_report_from_buffer},
+{"rlibc::rlib_execute", _wrap_rlib_execute},
+{"rlibc::rlib_get_content_type_as_text", _wrap_rlib_get_content_type_as_text},
+{"rlibc::rlib_spool", _wrap_rlib_spool},
+{"rlibc::rlib_set_output_format", _wrap_rlib_set_output_format},
+{"rlibc::rlib_add_resultset_follower_n_to_1", _wrap_rlib_add_resultset_follower_n_to_1},
+{"rlibc::rlib_add_resultset_follower", _wrap_rlib_add_resultset_follower},
+{"rlibc::rlib_set_output_format_from_text", _wrap_rlib_set_output_format_from_text},
+{"rlibc::rlib_get_output", _wrap_rlib_get_output},
+{"rlibc::rlib_get_output_length", _wrap_rlib_get_output_length},
+{"rlibc::rlib_signal_connect", _wrap_rlib_signal_connect},
+{"rlibc::rlib_signal_connect_string", _wrap_rlib_signal_connect_string},
+{"rlibc::rlib_query_refresh", _wrap_rlib_query_refresh},
+{"rlibc::rlib_add_parameter", _wrap_rlib_add_parameter},
+{"rlibc::rlib_set_locale", _wrap_rlib_set_locale},
+{"rlibc::rlib_set_output_parameter", _wrap_rlib_set_output_parameter},
+{"rlibc::rlib_set_output_encoding", _wrap_rlib_set_output_encoding},
+{"rlibc::rlib_set_datasource_encoding", _wrap_rlib_set_datasource_encoding},
+{"rlibc::rlib_free", _wrap_rlib_free},
+{"rlibc::rlib_version", _wrap_rlib_version},
+{"rlibc::rlib_graph_add_bg_region", _wrap_rlib_graph_add_bg_region},
+{"rlibc::rlib_graph_clear_bg_region", _wrap_rlib_graph_clear_bg_region},
 {0,0}
 };
 
@@ -1714,50 +1806,51 @@ extern "C"
 
 XS(SWIG_init) {
     dXSARGS;
+    int i;
     static int _init = 0;
     if (!_init) {
-        for (items = 0; swig_types_initial[items]; items++) {
-            swig_types[items] = SWIG_TypeRegister(swig_types_initial[items]);
+        for (i = 0; swig_types_initial[i]; i++) {
+            swig_types[i] = SWIG_TypeRegister(swig_types_initial[i]);
         }	
         _init = 1;
     }
     
     /* Install commands */
-    for (items = 0; swig_commands[items].name; items++) {
-        newXS((char*) swig_commands[items].name,swig_commands[items].wrapper, (char*)__FILE__);
+    for (i = 0; swig_commands[i].name; i++) {
+        newXS((char*) swig_commands[i].name,swig_commands[i].wrapper, (char*)__FILE__);
     }
     
     /* Install variables */
-    for (items = 0; swig_variables[items].name; items++) {
+    for (i = 0; swig_variables[i].name; i++) {
         SV *sv;
-        sv = perl_get_sv((char*) swig_variables[items].name, TRUE | 0x2);
-        if (swig_variables[items].type) {
-            SWIG_MakePtr(sv,(void *)1, *swig_variables[items].type,0);
+        sv = perl_get_sv((char*) swig_variables[i].name, TRUE | 0x2);
+        if (swig_variables[i].type) {
+            SWIG_MakePtr(sv,(void *)1, *swig_variables[i].type,0);
         } else {
             sv_setiv(sv,(IV) 0);
         }
-        swig_create_magic(sv, (char *) swig_variables[items].name, swig_variables[items].set, swig_variables[items].get); 
+        swig_create_magic(sv, (char *) swig_variables[i].name, swig_variables[i].set, swig_variables[i].get); 
     }
     
     /* Install constant */
-    for (items = 0; swig_constants[items].type; items++) {
+    for (i = 0; swig_constants[i].type; i++) {
         SV *sv;
-        sv = perl_get_sv((char*)swig_constants[items].name, TRUE | 0x2);
-        switch(swig_constants[items].type) {
+        sv = perl_get_sv((char*)swig_constants[i].name, TRUE | 0x2);
+        switch(swig_constants[i].type) {
             case SWIG_INT:
-            sv_setiv(sv, (IV) swig_constants[items].lvalue);
+            sv_setiv(sv, (IV) swig_constants[i].lvalue);
             break;
             case SWIG_FLOAT:
-            sv_setnv(sv, (double) swig_constants[items].dvalue);
+            sv_setnv(sv, (double) swig_constants[i].dvalue);
             break;
             case SWIG_STRING:
-            sv_setpv(sv, (char *) swig_constants[items].pvalue);
+            sv_setpv(sv, (char *) swig_constants[i].pvalue);
             break;
             case SWIG_POINTER:
-            SWIG_MakePtr(sv, swig_constants[items].pvalue, *(swig_constants[items].ptype),0);
+            SWIG_MakePtr(sv, swig_constants[i].pvalue, *(swig_constants[i].ptype),0);
             break;
             case SWIG_BINARY:
-            SWIG_MakePackedObj(sv, swig_constants[items].pvalue, swig_constants[items].lvalue, *(swig_constants[items].ptype));
+            SWIG_MakePackedObj(sv, swig_constants[i].pvalue, swig_constants[i].lvalue, *(swig_constants[i].ptype));
             break;
             default:
             break;

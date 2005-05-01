@@ -73,7 +73,7 @@ static void SWIG_JavaThrowException(JNIEnv *jenv, SWIG_JavaExceptionCodes code, 
 extern "C" {
 #endif
 
-JNIEXPORT jlong JNICALL Java_librlibJNI_rlib_1init(JNIEnv *jenv, jclass jcls) {
+JNIEXPORT jlong JNICALL Java_rlibJNI_rlib_1init(JNIEnv *jenv, jclass jcls) {
     jlong jresult = 0 ;
     rlib *result;
     
@@ -86,7 +86,7 @@ JNIEXPORT jlong JNICALL Java_librlibJNI_rlib_1init(JNIEnv *jenv, jclass jcls) {
 }
 
 
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1datasource_1mysql(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5, jstring jarg6) {
+JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1add_1datasource_1mysql(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5, jstring jarg6) {
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;
@@ -156,7 +156,7 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1datasource_1mysql(JNIEnv *jenv
 }
 
 
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1datasource_1postgre(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3) {
+JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1add_1datasource_1postgre(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3) {
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;
@@ -193,7 +193,7 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1datasource_1postgre(JNIEnv *je
 }
 
 
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1datasource_1odbc(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5) {
+JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1add_1datasource_1odbc(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5) {
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;
@@ -252,16 +252,22 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1datasource_1odbc(JNIEnv *jenv,
 }
 
 
-JNIEXPORT jlong JNICALL Java_librlibJNI_rlib_1add_1datasource_1xml(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
+JNIEXPORT jlong JNICALL Java_rlibJNI_rlib_1add_1datasource_1xml(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
     jlong jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
-    gchar *arg2 = (gchar *) 0 ;
+    char *arg2 ;
     gint result;
     
     (void)jenv;
     (void)jcls;
     arg1 = *(rlib **)&jarg1; 
-    arg2 = *(gchar **)&jarg2; 
+    {
+        arg2 = 0;
+        if (jarg2) {
+            arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
+            if (!arg2) return 0;
+        }
+    }
     result = rlib_add_datasource_xml(arg1,arg2);
     
     {
@@ -269,11 +275,14 @@ JNIEXPORT jlong JNICALL Java_librlibJNI_rlib_1add_1datasource_1xml(JNIEnv *jenv,
         memmove(resultptr, &result, sizeof(gint));
         *(gint **)&jresult = resultptr;
     }
+    {
+        if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, arg2); 
+    }
     return jresult;
 }
 
 
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1query_1as(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
+JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1add_1query_1as(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;
@@ -321,7 +330,7 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1query_1as(JNIEnv *jenv, jclass
 }
 
 
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1report(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
+JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1add_1report(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;
@@ -347,7 +356,7 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1report(JNIEnv *jenv, jclass jc
 }
 
 
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1report_1from_1buffer(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
+JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1add_1report_1from_1buffer(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;
@@ -373,7 +382,7 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1report_1from_1buffer(JNIEnv *j
 }
 
 
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1execute(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1execute(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     int result;
@@ -388,7 +397,7 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1execute(JNIEnv *jenv, jclass jcls, 
 }
 
 
-JNIEXPORT jstring JNICALL Java_librlibJNI_rlib_1get_1content_1type_1as_1text(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+JNIEXPORT jstring JNICALL Java_rlibJNI_rlib_1get_1content_1type_1as_1text(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jstring jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     char *result;
@@ -405,7 +414,7 @@ JNIEXPORT jstring JNICALL Java_librlibJNI_rlib_1get_1content_1type_1as_1text(JNI
 }
 
 
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1spool(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1spool(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     int result;
@@ -420,7 +429,7 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1spool(JNIEnv *jenv, jclass jcls, jl
 }
 
 
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1set_1output_1format(JNIEnv *jenv, jclass jcls, jlong jarg1, jint jarg2) {
+JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1set_1output_1format(JNIEnv *jenv, jclass jcls, jlong jarg1, jint jarg2) {
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     int arg2 ;
@@ -437,7 +446,7 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1set_1output_1format(JNIEnv *jenv, j
 }
 
 
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1resultset_1follower_1n_1to_11(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5) {
+JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1add_1resultset_1follower_1n_1to_11(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jstring jarg5) {
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;
@@ -496,7 +505,7 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1resultset_1follower_1n_1to_11(
 }
 
 
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1resultset_1follower(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3) {
+JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1add_1resultset_1follower(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3) {
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;
@@ -533,7 +542,7 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1resultset_1follower(JNIEnv *je
 }
 
 
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1set_1output_1format_1from_1text(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
+JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1set_1output_1format_1from_1text(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;
@@ -559,7 +568,7 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1set_1output_1format_1from_1text(JNI
 }
 
 
-JNIEXPORT jstring JNICALL Java_librlibJNI_rlib_1get_1output(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+JNIEXPORT jstring JNICALL Java_rlibJNI_rlib_1get_1output(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jstring jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     char *result;
@@ -576,7 +585,7 @@ JNIEXPORT jstring JNICALL Java_librlibJNI_rlib_1get_1output(JNIEnv *jenv, jclass
 }
 
 
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1get_1output_1length(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1get_1output_1length(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     int result;
@@ -591,7 +600,7 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1get_1output_1length(JNIEnv *jenv, j
 }
 
 
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1signal_1connect(JNIEnv *jenv, jclass jcls, jlong jarg1, jint jarg2, jlong jarg3, jlong jarg4) {
+JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1signal_1connect(JNIEnv *jenv, jclass jcls, jlong jarg1, jint jarg2, jlong jarg3, jlong jarg4) {
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     int arg2 ;
@@ -612,7 +621,7 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1signal_1connect(JNIEnv *jenv, jclas
 }
 
 
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1signal_1connect_1string(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jlong jarg3, jlong jarg4) {
+JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1signal_1connect_1string(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jlong jarg3, jlong jarg4) {
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;
@@ -642,7 +651,7 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1signal_1connect_1string(JNIEnv *jen
 }
 
 
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1query_1refresh(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1query_1refresh(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     int result;
@@ -657,7 +666,7 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1query_1refresh(JNIEnv *jenv, jclass
 }
 
 
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1parameter(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3) {
+JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1add_1parameter(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3) {
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;
@@ -694,7 +703,7 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1add_1parameter(JNIEnv *jenv, jclass
 }
 
 
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1set_1locale(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
+JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1set_1locale(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;
@@ -720,7 +729,7 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1set_1locale(JNIEnv *jenv, jclass jc
 }
 
 
-JNIEXPORT void JNICALL Java_librlibJNI_rlib_1set_1output_1parameter(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3) {
+JNIEXPORT void JNICALL Java_rlibJNI_rlib_1set_1output_1parameter(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3) {
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;
     char *arg3 ;
@@ -753,7 +762,7 @@ JNIEXPORT void JNICALL Java_librlibJNI_rlib_1set_1output_1parameter(JNIEnv *jenv
 }
 
 
-JNIEXPORT void JNICALL Java_librlibJNI_rlib_1set_1output_1encoding(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
+JNIEXPORT void JNICALL Java_rlibJNI_rlib_1set_1output_1encoding(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;
     
@@ -775,7 +784,7 @@ JNIEXPORT void JNICALL Java_librlibJNI_rlib_1set_1output_1encoding(JNIEnv *jenv,
 }
 
 
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1set_1datasource_1encoding(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3) {
+JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1set_1datasource_1encoding(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3) {
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;
@@ -812,7 +821,7 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1set_1datasource_1encoding(JNIEnv *j
 }
 
 
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1free(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1free(JNIEnv *jenv, jclass jcls, jlong jarg1) {
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     int result;
@@ -827,7 +836,7 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1free(JNIEnv *jenv, jclass jcls, jlo
 }
 
 
-JNIEXPORT jstring JNICALL Java_librlibJNI_rlib_1version(JNIEnv *jenv, jclass jcls) {
+JNIEXPORT jstring JNICALL Java_rlibJNI_rlib_1version(JNIEnv *jenv, jclass jcls) {
     jstring jresult = 0 ;
     char *result;
     
@@ -842,7 +851,7 @@ JNIEXPORT jstring JNICALL Java_librlibJNI_rlib_1version(JNIEnv *jenv, jclass jcl
 }
 
 
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1graph_1add_1bg_1region(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jfloat jarg5, jfloat jarg6) {
+JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1graph_1add_1bg_1region(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3, jstring jarg4, jfloat jarg5, jfloat jarg6) {
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;
@@ -894,7 +903,7 @@ JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1graph_1add_1bg_1region(JNIEnv *jenv
 }
 
 
-JNIEXPORT jint JNICALL Java_librlibJNI_rlib_1graph_1clear_1bg_1region(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
+JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1graph_1clear_1bg_1region(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;

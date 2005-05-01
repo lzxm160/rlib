@@ -104,7 +104,7 @@ do
       if grep "^AM_PROG_LIBTOOL" configure.in >/dev/null; then
 	echo "Running libtoolize..."
 	libtoolize --force --copy
-#	perl -pi.bak -e "s#need_relink=yes#need_relink=no#" ltmain.sh
+	perl -pi.bak -e "s#need_relink=yes#need_relink=no#" ltmain.sh
       fi
 
       echo "Running $ACLOCAL $aclocalinclude ..."

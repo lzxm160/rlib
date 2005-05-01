@@ -133,7 +133,7 @@ static gint rlib_xml_last(gpointer input_ptr, gpointer result_ptr) {
 
 static gchar * rlib_xml_get_field_value_as_string(gpointer input_ptr, gpointer result_ptr, gpointer field_ptr) {
 	struct rlib_xml_results *result = result_ptr;
-	gint field_index = (gint)field_ptr;
+	gint field_index = GPOINTER_TO_INT(field_ptr);
 	xmlNodePtr col;
 	xmlNodePtr field_value;
 
@@ -156,7 +156,7 @@ static gchar * rlib_xml_get_field_value_as_string(gpointer input_ptr, gpointer r
 	if (field_value == NULL)
 		return "";
 
-	return field_value->xmlChildrenNode->content;
+	return (gchar *)field_value->xmlChildrenNode->content;
 }
 
 static gpointer rlib_xml_resolve_field_pointer(gpointer input_ptr, gpointer result_ptr, gchar *name) { 
@@ -168,8 +168,8 @@ static gpointer rlib_xml_resolve_field_pointer(gpointer input_ptr, gpointer resu
 		if (xmlStrcmp(field->name, (const xmlChar *) "field") == 0) {
 			++field_index;
 
-			if (xmlStrcmp(field->xmlChildrenNode->content, name) == 0)
-				return (void *)field_index;
+			if (xmlStrcmp(field->xmlChildrenNode->content, (const xmlChar *)name) == 0)
+				return GINT_TO_POINTER(field_index);
 		}
 	}
 

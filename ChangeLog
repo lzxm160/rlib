@@ -1,3 +1,29 @@
+2005-05-01  Zoltan Boszormenyi <zboszor@dunaweb.hu>
+	* autogen.sh: Don't relink
+	* bindings/interfaces/Makefile.am: I decided that the "-module -avoid-version" linker options should
+         be unconditional on all bindings, and omit the "lib" prefix and the
+         binding name suffix, because this will cause the least namespace
+         confusion. E.g. you can use "use rlib;" with PERL, etc. Now all
+         binding shared modules are named rlib.so. This is not a problem as
+         they are compiled and installed in different directories.
+	* bindings/interfaces/librlib.pm: likewise
+	* bindings/interfaces/librlib.py: likewise
+	* bindings/interfaces/rlib.pm: likewise
+	* bindings/interfaces/rlib.py: likewise
+	* bindings/java/java.c: likewise
+	* bindings/perl/Makefile.am: likewise
+	* bindings/perl/perl.c: likewise
+	* bindings/php/Makefile.am: likewise
+	* bindings/python/Makefile.am: likewise
+	* bindings/python/python.c: likewise
+	* configure.in: likewise
+	* inputs/mysql/Makefile.am: likewise
+	* inputs/odbc/Makefile.am: likewise
+	* inputs/postgre/Makefile.am: likewise
+	* libsrc/rlib.i: likewise
+	* libsrc/xml_data_source.c: 64bit/ windows compile fixes
+	* rlib.spec.in: new RPM Spec file
+
 2005-04-30  Bob Doan  <bdoan@sicompos.com>
 	* src/examples/php/Makefile.am: My spelling sucks
 

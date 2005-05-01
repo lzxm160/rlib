@@ -27,4 +27,4 @@ products.xml:
 
 CLEANFILES = *.xml 
 
-EXTRADIST=example.pm
+EXTRADIST=example.pm xml.pm

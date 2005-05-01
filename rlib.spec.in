@@ -1,0 +1,133 @@
+%define phpextdir %(echo "`php-config --extension-dir`")
+%define pythonver %(echo "`python -c 'import sys; print sys.version[:3]'`")
+%define pythonextdir %(echo "`python -c 'from distutils import sysconfig; print sysconfig.get_python_lib(1,0)'`")
+%define perlextdir %(echo "`perl -e 'use Config; print $Config{archlib};'`")
+
+Summary: RLIB is a reporting engine/library.
+Name: rlib
+Version: @VERSION@
+Release: 1
+Copyright: GPL
+Group: System/Libraries
+Source: %name-%{version}.tar.gz
+BuildRequires: mysql-devel, perl, php-devel, postgresql-devel, python-devel, unixODBC-devel
+BuildRoot: /var/tmp/%name-%{version}-root
+
+%description
+RLIB is a reporting engine/library.  To find out about all it can do visit:
+http://rlib.sicompos.com
+
+%package devel
+Summary: RLIB headers and static lib
+Group: System/Libraries
+Requires: %{name} = %{version}
+
+%description devel
+Headers and static lib for RLIB, a reporting engine/library.
+To find out about all it can do visit: http://rlib.sicompos.com
+
+%package mysql
+Summary: RLIB native MySQL datasource
+Group: System/Libraries
+Requires: %{name} = %{version}
+
+%description mysql
+Native PostgreSQL datasource for RLIB, a reporting engine/library.
+To find out about all it can do visit: http://rlib.sicompos.com
+
+%package odbc
+Summary: RLIB ODBC datasource
+Group: System/Libraries
+Requires: %{name} = %{version}
+
+%description odbc
+ODBC datasource for RLIB, a reporting engine/library.
+To find out about all it can do visit: http://rlib.sicompos.com
+
+%package perl
+Summary: RLIB PERL extension
+Group: System/Libraries
+Requires: %{name} = %{version}
+
+%description perl
+PERL extension for RLIB, a reporting engine/library.
+To find out about all it can do visit: http://rlib.sicompos.com
+
+%package php
+Summary: RLIB PHP extension
+Group: System/Libraries
+Requires: %{name} = %{version}
+
+%description php
+PHP extension for RLIB, a reporting engine/library.
+To find out about all it can do visit: http://rlib.sicompos.com
+
+%package postgres
+Summary: RLIB native PostgreSQL datasource
+Group: System/Libraries
+Requires: %{name} = %{version}
+
+%description postgres
+Native PostgreSQL datasource for RLIB, a reporting engine/library.
+To find out about all it can do visit: http://rlib.sicompos.com
+
+%package python
+Summary: RLIB Python extension
+Group: System/Libraries
+Requires: %{name} = %{version}
+
+%description python
+Python extension for RLIB, a reporting engine/library.
+To find out about all it can do visit: http://rlib.sicompos.com
+
+%prep
+%setup
+
+%configure --enable-utf8 --with-pythonver=%{pythonver}
+
+%build
+make
+
+%install
+[ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
+%makeinstall \
+	PERL_EXTENSION_DIR=$RPM_BUILD_ROOT%{perlextdir} \
+	PHP_EXTENSION_DIR=$RPM_BUILD_ROOT%{phpextdir} \
+	PYTHON_EXTENSION_DIR=$RPM_BUILD_ROOT%{pythonextdir}
+
+%clean
+[ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(-, root, root)
+
+%doc AUTHORS ChangeLog HACKING INSTALL NEWS README README-JPEG doc/book.pdf
+%{_prefix}/bin/rlibc
+%{_libdir}/libr.so.*
+%{_libdir}/librpdf.so.*
+
+%files devel
+%{_libdir}/*.la
+%{_libdir}/librpdf.so
+%{_libdir}/libr.so
+%{_libdir}/pkgconfig/*
+%dir %{_includedir}/rlib
+%{_includedir}/rlib/*.h
+
+%files mysql
+%{_libdir}/libr-mysql.so
+
+%files odbc
+%{_libdir}/libr-odbc.so
+
+%files postgres
+%{_libdir}/libr-postgre.so
+
+%files perl
+%{perlextdir}/*
+
+%files php
+%{phpextdir}/*
+
+%files python
+%{pythonextdir}/*

@@ -20,14 +20,14 @@
 ##
 ## Process this file with automake to produce Makefile.in
 AM_CFLAGS = -I${top_srcdir}/libsrc $(RLIB_CFLAGS) $(PYTHON_CFLAGS) -fno-strict-aliasing
-pythonlibdir = $(PYTHON_EXTENSION_DIR)
-pythonlib_LTLIBRARIES = librlib.la
-librlib_la_SOURCES = python.c 
-librlib_la_LIBADD = $(top_builddir)/libsrc/libr.la $(RLIB_LIBS)
-DEF_FILE=librlibpython.def
+pythondir = $(PYTHON_EXTENSION_DIR)
+python_LTLIBRARIES = _rlib.la
+_rlib_la_SOURCES = python.c 
+_rlib_la_LIBADD = $(top_builddir)/libsrc/libr.la $(RLIB_LIBS)
+DEF_FILE=rlibpython.def
 if WIN32
-def_ldflags=-Wl,--output-def,$(DEF_FILE) -module -avoid-version
+def_ldflags=-Wl,--output-def,$(DEF_FILE)
 endif
-librlib_la_LDFLAGS = \
+_rlib_la_LDFLAGS = \
 	-version-info $(RLIB_LT_CURRENT):$(RLIB_LT_REVISION):$(RLIB_LT_AGE) \
-	$(def_ldflags)
+	$(def_ldflags) -module -avoid-version
