@@ -20,7 +20,7 @@
 ##
 ## Process this file with automake to produce Makefile.in
 
-EXTRA_DIST = AUTHORS CVS HACKING install-sh README README-JPEG rlib.pc.in 
+EXTRA_DIST = AUTHORS CVS HACKING install-sh README README-JPEG rlib.pc.in  rlib.spec.in
 
 if HAVE_DOC
 DOC_DIR=doc
