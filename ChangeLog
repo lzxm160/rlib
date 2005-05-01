@@ -1,4 +1,7 @@
 2005-04-30  Bob Doan  <bdoan@sicompos.com>
+	* src/examples/php/Makefile.am: My spelling sucks
+
+2005-04-30  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/Makefile.am: support multiple detail columns in a report
 	* libsrc/free.c: likewise
 	* libsrc/html.c: likewise
