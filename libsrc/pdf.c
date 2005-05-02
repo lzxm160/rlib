@@ -89,6 +89,7 @@ struct _graph {
 	gboolean bold_titles;
 	gboolean *minor_ticks;
 	gboolean vertical_x_label;
+	gfloat last_left_x_label;
 };
 
 struct _private {
@@ -633,7 +634,6 @@ static void pdf_graph_label_x_get_variables(rlib *r, gint iteration, gchar *labe
 
 }
 
-
 static void pdf_graph_do_grid(rlib *r, gboolean just_a_box) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
 	gint i;
@@ -672,6 +672,10 @@ static void pdf_graph_do_grid(rlib *r, gboolean just_a_box) {
 			if(left < (last_left+graph->x_label_width)) {
 				graph->vertical_x_label = TRUE;
 				break;
+			}
+			if(left + graph->x_label_width > graph->left + graph->width_before_legend) {
+				graph->vertical_x_label = TRUE;
+				break;	
 			}
 			last_left = left;
 		}
@@ -765,10 +769,20 @@ static void pdf_graph_label_x(rlib *r, gint iteration, gchar *label) {
 	gfloat left = 0;
 	gfloat y_offset = 0;
 	gfloat string_width = 0;
+	gfloat height = RLIB_GET_LINE(r->current_font_point);
+	gboolean doit = TRUE;
 
 	pdf_graph_label_x_get_variables(r, iteration, label, &left, &y_offset, &rotation, &string_width);
+
+	if(graph->vertical_x_label) {
+		if(graph->last_left_x_label + height > left)
+			doit = FALSE;
+		else
+			graph->last_left_x_label = left;	
+	}
 	
-	pdf_print_text(r, left, graph->y_start - y_offset, label, rotation);
+	if(doit)
+		pdf_print_text(r, left, graph->y_start - y_offset, label, rotation);
 }
 
 static void pdf_graph_tick_y(rlib *r, gint iterations) {

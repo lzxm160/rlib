@@ -287,8 +287,12 @@ gint rlib_fetch_first_rows(rlib *r) {
 	gint i;
 	gint result = TRUE;
 	for(i=0;i<r->queries_count;i++) {
-		if(INPUT(r,i)->first(INPUT(r,i), r->results[i].result) == FALSE) {
+		if(r->results[i].result == NULL) {
 			result = FALSE;
+		} else {
+			if(INPUT(r,i)->first(INPUT(r,i), r->results[i].result) == FALSE) {
+				result = FALSE;
+			}
 		}
 	}
 	return result;

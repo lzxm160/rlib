@@ -412,6 +412,17 @@ gint rlib_graph_set_x_minor_tick(rlib *r, gchar *graph_name, gchar *x_value) {
 	struct rlib_graph_x_minor_tick *gmt = g_new0(struct rlib_graph_x_minor_tick, 1);
 	gmt->graph_name = g_strdup(graph_name);
 	gmt->x_value = g_strdup(x_value);
+	gmt->by_name = TRUE;
+	r->graph_minor_x_ticks = g_slist_append(r->graph_minor_x_ticks, gmt);
+	return TRUE;
+}
+
+gint rlib_graph_set_x_minor_tick_by_location(rlib *r, gchar *graph_name, gint location) {
+	struct rlib_graph_x_minor_tick *gmt = g_new0(struct rlib_graph_x_minor_tick, 1);
+	gmt->by_name = FALSE;
+	gmt->location = location;
+	gmt->graph_name = g_strdup(graph_name);
+	gmt->x_value = NULL;
 	r->graph_minor_x_ticks = g_slist_append(r->graph_minor_x_ticks, gmt);
 	return TRUE;
 }

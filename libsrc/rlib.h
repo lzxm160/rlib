@@ -481,8 +481,10 @@ struct rlib_part {
 };
 
 struct rlib_graph_x_minor_tick {
+	gboolean by_name;
 	gchar *graph_name;
 	gchar *x_value;
+	gint location;
 };
 
 
@@ -870,7 +872,7 @@ void rlib_set_output_parameter(rlib *r, gchar *parameter, gchar *value);
 gint rlib_graph_add_bg_region(rlib *r, gchar *graph_name, gchar *region_label, gchar *color, gfloat start, gfloat end);
 gint rlib_graph_clear_bg_region(rlib *r, gchar *graph_name);
 gint rlib_graph_set_x_minor_tick(rlib *r, gchar *graph_name, gchar *x_value);
-
+gint rlib_graph_set_x_minor_tick_by_location(rlib *r, gchar *graph_name, gint location);
 /***** PROTOTYPES: parsexml.c *************************************************/
 struct rlib_part * parse_part_file(rlib *r, gchar *filename, gchar type);
 struct rlib_report_output * report_output_new(gint type, gpointer data);

@@ -42,6 +42,7 @@ ZEND_FUNCTION(rlib_add_query_as);
 ZEND_FUNCTION(rlib_graph_add_bg_region);
 ZEND_FUNCTION(rlib_graph_clear_bg_region);
 ZEND_FUNCTION(rlib_graph_set_x_minor_tick);
+ZEND_FUNCTION(rlib_graph_set_x_minor_tick_by_location);
 ZEND_FUNCTION(rlib_add_resultset_follower);
 ZEND_FUNCTION(rlib_add_resultset_follower_n_to_1);
 ZEND_FUNCTION(rlib_add_report);
@@ -79,6 +80,7 @@ zend_function_entry rlib_functions[] =
 	ZEND_FE(rlib_graph_add_bg_region, NULL)
 	ZEND_FE(rlib_graph_clear_bg_region, NULL)
 	ZEND_FE(rlib_graph_set_x_minor_tick, NULL)
+	ZEND_FE(rlib_graph_set_x_minor_tick_by_location, NULL)
 	ZEND_FE(rlib_add_resultset_follower, NULL)
 	ZEND_FE(rlib_add_resultset_follower_n_to_1, NULL)
 	ZEND_FE(rlib_add_report, NULL)
@@ -313,6 +315,24 @@ ZEND_FUNCTION(rlib_graph_set_x_minor_tick) {
 	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
 
 	rlib_graph_set_x_minor_tick(rip->r, graph_name, x_value);
+}
+
+ZEND_FUNCTION(rlib_graph_set_x_minor_tick_by_location) {
+	zval *z_rip = NULL;
+	gint whatever;
+	gchar *graph_name;
+	gdouble location;
+	rlib_inout_pass *rip;
+	gint id = -1;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsd", &z_rip, 
+		&graph_name, &whatever, &location) == FAILURE) {
+		return;
+	}
+	
+	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
+
+	rlib_graph_set_x_minor_tick_by_location(rip->r, graph_name, location);
 }
 
 ZEND_FUNCTION(rlib_graph_clear_bg_region) {

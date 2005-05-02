@@ -359,9 +359,18 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 							gboolean display = TRUE;
 							for(list = r->graph_minor_x_ticks;list != NULL; list=list->next) {
 								struct rlib_graph_x_minor_tick *gmt = list->data;
-								if(strcmp(name, gmt->graph_name) == 0 && strcmp(x_axis_label, gmt->x_value) == 0) {
-									display = FALSE;
-									minor_tick[row_count] = TRUE;
+								if(strcmp(name, gmt->graph_name) == 0) {
+									if(gmt->by_name == TRUE) {
+										if(strcmp(x_axis_label, gmt->x_value) == 0) {
+											display = FALSE;
+											minor_tick[row_count] = TRUE;
+										}
+									} else {
+										if(row_count == gmt->location) {
+											display = FALSE;
+											minor_tick[row_count] = TRUE;			
+										}
+									}
 								}								
 							}
 							if(display)

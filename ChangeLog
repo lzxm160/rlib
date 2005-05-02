@@ -1,3 +1,13 @@
+2005-05-02  Bob Doan  <bdoan@sicompos.com>
+	* bindings/php/php.c: new api to set minor ticks by location
+	* libsrc/api.c:  likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/rlib.i: likewise
+	* libsrc/graphing.c: likewise
+	* libsrc/html.c: make sure x axis labels don't go off right edge of graph also be smart if there are vertical x labels don't let them overwrite each other
+	* libsrc/pdf.c: likewise
+	* libsrc/reportgen.c: try harder not to crash
+
 2005-05-01  Bob Doan  <bdoan@sicompos.com>
 	* Makefile.am: Add the spec file to the extra dist
 

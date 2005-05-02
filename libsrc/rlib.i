@@ -52,3 +52,5 @@ int rlib_free(rlib *r);
 char *rlib_version(void);
 int rlib_graph_add_bg_region(rlib *r, char *graph_name, char *region_label, char *color, float start, float end);
 int rlib_graph_clear_bg_region(rlib *r, char *graph_name);
+int rlib_graph_set_x_minor_tick(rlib *r, char *graph_name, char *x_value);
+int rlib_graph_set_x_minor_tick_by_location(rlib *r, char *graph_name, int location);

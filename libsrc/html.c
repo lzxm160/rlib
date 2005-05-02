@@ -84,6 +84,7 @@ struct _graph {
 	gint current_region;
 	gboolean bold_titles;
 	gboolean *minor_ticks;
+	gint last_left_x_label;
 };
 
 struct _private {
@@ -695,6 +696,11 @@ static void html_graph_do_grid(rlib *r, gboolean just_a_box) {
 				graph->vertical_x_label = TRUE;
 				break;
 			}
+			if(left + graph->x_label_width > graph->whole_graph_width) {
+				graph->vertical_x_label = TRUE;
+				break;	
+			}
+			
 			last_left = left;
 		}
 	}
@@ -764,10 +770,22 @@ static void html_graph_hint_label_x(rlib *r, gchar *label) {
 static void html_graph_label_x(rlib *r, gint iteration, gchar *label) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
 	gint left, y_start;
+	gboolean doit = TRUE;
+	gint height = rlib_gd_get_string_height(OUTPUT_PRIVATE(r)->rgd, FALSE);
 
 	html_graph_label_x_get_variables(r, iteration, label, &left, &y_start, 0);
 
-	rlib_gd_text(OUTPUT_PRIVATE(r)->rgd, label, left, y_start, graph->vertical_x_label, FALSE);
+
+	if(graph->vertical_x_label) {
+		if(graph->last_left_x_label + height > left)
+			doit = FALSE;
+		else
+			graph->last_left_x_label = left;	
+	}
+
+
+	if(doit)
+		rlib_gd_text(OUTPUT_PRIVATE(r)->rgd, label, left, y_start, graph->vertical_x_label, FALSE);
 }
 
 static void html_graph_tick_y(rlib *r, gint iterations) {
