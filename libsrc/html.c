@@ -895,7 +895,10 @@ static void html_graph_plot_line(rlib *r, gchar side, gint iteration, gfloat p1_
 		p1_start -= (real_height * graph->height);
 		p2_start -= (real_height * graph->height);
 	}
-	rlib_gd_set_thickness(OUTPUT_PRIVATE(r)->rgd, 3);
+	if(graph->x_iterations < 90)	
+		rlib_gd_set_thickness(OUTPUT_PRIVATE(r)->rgd, 2);
+	else
+		rlib_gd_set_thickness(OUTPUT_PRIVATE(r)->rgd, 1);
 	rlib_gd_line(OUTPUT_PRIVATE(r)->rgd, left, p1_start - (graph->height * p1_height), left+graph->x_tick_width, p2_start - (graph->height * p2_height), color);
 	rlib_gd_set_thickness(OUTPUT_PRIVATE(r)->rgd, 1);
 }

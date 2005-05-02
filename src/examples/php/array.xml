@@ -38,7 +38,7 @@
 			<BreakHeader>
 				<Output>
 					<Line>
-						<field value="group" width="20" align="left" col="1"/>					
+						<field value="val(group)" width="20" format="'%.2d'" align="left" col="1"/>					
 					</Line>
 				</Output>								
 			</BreakHeader>

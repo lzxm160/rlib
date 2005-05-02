@@ -1,3 +1,8 @@
+2005-05-02  Mike Roth  <mroth@sicompos.com>
+	* libsrc/html.c: if number or point < 90 use width=2, > 90 use width=1 for line plots
+	* src/examples/php/array.php: nothing
+	* src/examples/php/array.xml: nothing
+
 2005-05-02  Bob Doan  <bdoan@sicompos.com>
 	* bindings/interfaces/Makefile.am: add interfaces to extradist
 	* doc/basictraining.sgm: manual improvements
