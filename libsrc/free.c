@@ -185,6 +185,7 @@ void rlib_free_report(rlib *r, struct rlib_report *report) {
 	rlib_pcode_free(report->pages_across_code);
 	rlib_pcode_free(report->suppress_page_header_first_page_code);
 	rlib_pcode_free(report->detail_columns_code);
+	rlib_pcode_free(report->column_pad_code);
 	
 	rlib_free_output(r, report->report_header);
 	rlib_free_output(r, report->page_header);

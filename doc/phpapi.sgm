@@ -52,15 +52,16 @@
 			This function is only available if rlib is compiled with odbc support.
 		</para>
 	</sect1>
-	<sect1>
-		<title>rlib_datasource_set_decoding</title>
+ 	<sect1>
+		<title>rlib_add_datasource_xml</title>
 		<para>
-			rlib_datasource_set_decoding(<emphasis>rlib</emphasis>, datasource_name, decoding)
+			rlib_add_datasource_xml(<emphasis>rlib * rlib_ptr</emphasis>, datasource_name)
 		</para>
 		<para>
-			Set the decoding method for your datasource if its not already ISO8859-1
+			Adds a XML datasource to RLIB.  Pass XML files to rlib instead of queries.
 		</para>
 	</sect1>	
+
 	<sect1>
 		<title>rlib_add_query_as</title>
 		<para>
@@ -76,13 +77,16 @@
 	<sect1>
 		<title>rlib_add_report</title>
 		<para>
-			rlib_add_report(<emphasis>rlib</emphasis>, rlib_xml_file, [rlib_query_name])
+			rlib_add_report(<emphasis>rlib</emphasis>, rlib_xml_file)
 		</para>
 		<para>
 			A report is added to the report execution queue but not compiled at this time.
 		</para>
+	</sect1>
+	<sect1>
+		<title>rlib_add_report_from_buffer</title>
 		<para>
-			rlib_query_name [OPTIONAL] - The name of the rlib_query to use in the main loop of the report
+			rlib_add_report_from_buffer(<emphasis>rlib</emphasis>, xml_in_memory)
 		</para>
 	</sect1>
 	<sect1>
@@ -114,6 +118,42 @@
 			defaults to html and sends out error messages.
 		</para>
 	</sect1>
+ 	<sect1>
+	  <title>rlib_signal_connect</title>
+	  <para>
+		  rlib_signal_connect(<emphasis>rlib * rlib_ptr</emphasis>, int signal_number, callback_function);
+	  </para>
+	  <para>
+		  Connect a user callback function to a RLIB Signal.  This is usally to manuipulate data and then refresh the datasource.
+	  </para>
+  </sect1>
+  <sect1>
+	  <title>rlib_signal_connect_string</title>
+	  <para>
+		  rlib_signal_connect(<emphasis>rlib * rlib_ptr</emphasis>, signal_name, callback_function);		  
+	  </para>
+	  <para>
+		  Connect a user callback function to a RLIB Signal.  This is usally to manuipulate data and then refresh the datasource.
+	  </para>
+  </sect1>
+  <sect1>
+	  <title>rlib_query_refresh</title>
+	  <para>
+		  rlib_query_refresh(<emphasis>rlib * rlib_ptr</emphasis>);
+	  </para>
+	  <para>
+		  Causes RLIB to refresh all queries and put the row pointer back at the 1st row.
+	  </para>
+  </sect1>
+  <sect1>
+	  <title>rlib_set_output_parameter</title>
+	  <para>
+		  rlib_set_output_parameter(<emphasis>rlib * rlib_ptr</emphasis>, char *parameter, char *value);
+	  </para>
+	  <para>
+		  Set an output paramteter.  SEE OUTPUT PARAMETERS.
+	  </para>
+  </sect1>
 	<sect1>
 		<title>rlib_spool</title>
 		<para>
@@ -154,6 +194,17 @@
 		</para>
 	</sect1>
 	<sect1>
+		<title>rlib_add_resultset_follower_n_to_1</title>
+		<para>
+			rlib_add_resultset_follower(<emphasis>rlib</emphasis>, leader, leader_field, follower, follower_field)
+		</para>
+		<para>
+			Adds the ability to have more then one main loop query.  leader and follower are the names of
+			the queries you set in rlib_add_query_as.  The leader_fields and follower_fields are normal RLIB expressions.
+			Use this feature when the rows in the datasets are uneven and needs to be linked together using a common criteria.
+		</para>
+	</sect1>
+	<sect1>
 		<title>rlib_version</title>
 		<para>
 			rlib_version()
@@ -182,13 +233,15 @@
 		</para>
 	</sect1>
 
-	<sect1>
-		<title>rlib_set_pdf_font(<emphasis>rlib</emphasis>, encodingstring, fontnamestring)</title>
-		<para>
-			Sets the output character encoding for the indicated report.
-			If this is not set or encoding is NULL or a null string, the <emphasis>default rlib encoding is used</emphasis>.
-		</para>
-	</sect1>
+ 	<sect1>
+		<title>rlib_set_datasource_encoding(<emphasis>rlib</emphasis>, input_name, encoding)</title>
+ 		<para>
+			Sets the output character encoding, overriding any encoding that is set in the current Locale.
+			By default RLIB will use the character encoding indicated in the current Locale settings.
+			All reports will use this encoding unless overriden by a call to rlib_set_report_output_encoding.
+			If the encoding is NULL, or a null string, the output will be left in UTF-8 encoding.
+ 		</para>
+ 	</sect1>
 
 	<sect1>
 		<title>rlib_set_locale(<emphasis>rlibr</emphasis>, locale string)</title>
@@ -202,6 +255,34 @@
 		</para>
 	</sect1>
 
+  <sect1>
+	  <title>rlib_graph_add_bg_region(<emphasis>rlib *rlib_ptr</emphasis>,char *graph_name, char *region_label, char *color, float start, float end)</title>
+	  <para>
+		  Add a region of color with a label to a graph.  Useful when the X axis is time and you want to indicate an event occured over that time.
+	  </para>
+  </sect1>
+
+  <sect1>
+	  <title>rlib_graph_clear_bg_region(<emphasis>rlib *rlib_ptr</emphasis>,char *graph_name)</title>
+	  <para>
+		  Remove regions. (Use if you are iterating graphs and have different X axis values)
+	  </para>
+  </sect1>
+
+  <sect1>
+	  <title>rlib_graph_set_x_minor_tick(<emphasis>rlib *rlib_ptr</emphasis>,char *graph_name, char *x_value)</title>
+	  <para>
+		  Set a x value on a graph as a minor tick
+	  </para>
+  </sect1>
+
+  <sect1>
+	  <title>rlib_graph_set_x_minor_tick_by_location(<emphasis>rlib *rlib_ptr</emphasis>,char *graph_name, int location)</title>
+	  <para>
+		  Set a x value on a graph as a minor tick.  Location starts at 0.
+	  </para>
+  </sect1>
+
 	<sect1>
 		<title>SAMPLE</title>
 		<para>
@@ -209,7 +290,7 @@
 		</para>
 		<para>
 			<programlisting>
-dl ("librlib.so");
+dl ("rlib.so");
 $query = "SELECT * FROM plu";
 $rlib =	rlib_init();
 rlib_add_datasource_mysql($rlib, "mysql", "localhost", "user", "password", "database");

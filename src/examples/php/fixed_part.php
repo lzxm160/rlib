@@ -1,4 +1,4 @@
-<? dl ("librlib.so");
+<? dl ("rlib.so");
 
 	function callback() {
 		global $rlib;

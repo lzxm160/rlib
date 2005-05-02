@@ -1,4 +1,30 @@
 2005-05-02  Bob Doan  <bdoan@sicompos.com>
+	* bindings/interfaces/Makefile.am: add interfaces to extradist
+	* doc/basictraining.sgm: manual improvements
+	* doc/capi.sgm: likewise
+	* doc/examples.sgm: likewise
+	* doc/phpapi.sgm: likewise
+	* libsrc/free.c:  add column_pad atrribute
+	* libsrc/layout.c:  likewise
+	* libsrc/parsexml.c:  likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+	* src/examples/php/array.php: load rlib.so not librlib.so
+	* src/examples/php/example.php: likewise
+	* src/examples/php/fixed_part.php: likewise
+	* src/examples/php/flow_part.php: likewise
+	* src/examples/php/follower.php: likewise
+	* src/examples/php/graph.php: likewise
+	* src/examples/php/hungary.php: likewise
+	* src/examples/php/images.php: likewise
+	* src/examples/php/labels.php: likewise
+	* src/examples/php/labels.xml: likewise
+	* src/examples/php/odbc.php: likewise
+	* src/examples/php/pages_across.php: likewise
+	* src/examples/php/xml.php: test new mailing labels features
+
+2005-05-02  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/php.c: new api to set minor ticks by location
 	* libsrc/api.c:  likewise
 	* libsrc/rlib.h: likewise

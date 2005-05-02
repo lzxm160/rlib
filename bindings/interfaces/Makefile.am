@@ -20,7 +20,7 @@
 ##
 ## Process this file with automake to produce Makefile.in
 
-EXTRA_DIST = librlib.java librlibJNI.java SWIGTYPE_p_f_p_rlib_p_void__int.java SWIGTYPE_p_rlib.java SWIGTYPE_p_void.java
+EXTRA_DIST = rlib.pm rlib.py librlib.java librlibJNI.java SWIGTYPE_p_f_p_rlib_p_void__int.java SWIGTYPE_p_rlib.java SWIGTYPE_p_void.java
 
 perldir = $(PERL_EXTENSION_DIR)
 perl_DATA = rlib.pm

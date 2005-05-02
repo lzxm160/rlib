@@ -165,6 +165,41 @@ dtos(database.somedatefield)-7
 			for each break.  It should also be noted here that RLIB knows how much room is left on a page.  It will not start a break at
 			the bottom of a page if at least 1 data line will fit.  Instead it will end the page and start the break on the next page.
 		</para>
+		
+		<para>
+			Breaks are defined using the <emphasis>Break</emphasis> tag.  Breaks happen when the <emphasis>BreakField</emphasis> value changes.
+			The break name is important form RLIB variables.  The name can be given to the variable <emphasis>resetonbreak</emphasis> paramater.
+		</para>
+
+		<programlisting>
+&lt;Breaks&gt;	
+	&lt;Break name="break0" newpage="no" headernewpage="yes"&gt;
+		&lt;BreakHeader&gt;
+			&lt;Output&gt;
+				&lt;Line&gt;
+					&lt;field value="group" width="20" align="left" col="1"/&gt;					
+				&lt;/Line&gt;
+			&lt;/Output&gt;								
+		&lt;/BreakHeader&gt;
+		&lt;BreakFields&gt;
+			&lt;BreakField value="group"/&gt;
+		&lt;/BreakFields&gt;
+		&lt;BreakFooter&gt;
+			&lt;Output&gt;
+				&lt;HorizontalLine size="4" bgcolor="'white'"/&gt;
+				&lt;HorizontalLine size="2" bgcolor="'black'"/&gt;
+				&lt;HorizontalLine size="4" bgcolor="'white'"/&gt;
+				&lt;Line&gt;
+					&lt;field value="group" width="20" align="left" col="1"/&gt;					
+				&lt;/Line&gt;
+				&lt;HorizontalLine size="4" bgcolor="'white'"/&gt;
+				&lt;HorizontalLine size="2" bgcolor="'black'"/&gt;
+				&lt;HorizontalLine size="4" bgcolor="'white'"/&gt;
+			&lt;/Output&gt;
+		&lt;/BreakFooter&gt;
+	&lt;/Break&gt;
+&lt;/Breaks&gt;				
+		</programlisting>
 	
 	</sect1>
 	<sect1>
@@ -307,6 +342,21 @@ dtos(database.somedatefield)-7
 			paperType - defines the type of paper you are targeting with your report.  This field is a STRING Expression.
 			values are: 'LETTER', 'LEGAL', 'A4', 'B5', 'C5', 'DL', 'EXECUTIVE', 'COMM10', 'MONARCH', and 'FILM35MM'
 		</para>	
+		<para>
+			detail_columns - How many "columns" of detaul outputs will be printed per row of data.  Useful for mailing labels.
+		</para>	
+		<para>
+			xml_column_pad - Extra space between columns.  Useful for mailing labels
+		</para>	
+		<para>
+			iterations - How many times the report should be run.  Useful if using callbacks the refresh the datasource when using fixed part layouts.
+		</para>	
+		<para>
+			pagesAcross - How many pages across a report is (Normally 1).  When using this feature you need to specify page=x in the &lt;Output&gt; tag.
+		</para>	
+		<para>
+			suppressPageHeaderFirstPage - Suppress the page Header on the 1st Page.
+		</para>	
 	</sect1>
 	<sect1>
 		<title>Output</title>
@@ -382,6 +432,9 @@ dtos(database.somedatefield)-7
 		</para>	
 		<para>
 			bgcolor - expS background color 
+		</para>	
+		<para>
+			link - expS .. a url to link to
 		</para>	
 		<para>
 			link - expS .. a url to link to

@@ -1,4 +1,4 @@
-<? dl ("librlib.so");
+<? dl ("rlib.so");
 	$data[0][0] = "first_name";
 	$data[0][1] = "last_name";
 	$data[0][2] = "color";

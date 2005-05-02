@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE report >
-<Report fontSize="14" orientation="landscape" detail_columns="3" bottomMargin=".1">
+<Report fontSize="13" orientation="portrait" detail_columns="3" column_pad=".1" bottomMargin=".05" topMargin=".42" leftMargin=".10">
 	<Alternate>
 		<NoData>
 			<Output>
@@ -14,24 +14,23 @@
 		<FieldDetails>
 			<Output>
 				<Line>
-					<field value="name" width="30"/>
+					<field value="name" width="22"/>
 				</Line>
 				<Line>
-					<field value="address1" width="30"/>
+					<field value="address1" width="22"/>
 				</Line>
 				<Line>
-					<field value="address2" width="30"/>
+					<field value="address2" width="22"/>
 				</Line>
 				<Line>
-					<field value="city" width="15"/>
+					<field value="city" width="13"/>
 					<literal width="1"/>
 					<field value="state" width="2"/>
 					<literal width="1"/>
-					<field value="zip" width="9"/>
+					<field value="zip" width="5"/>
 				</Line>
 				<Line/>				
-				<Line/>				
-				<Line/>				
+				<HorizontalLine size="10" bgcolor="'white'"/>
 			</Output>
 		</FieldDetails>
 	</Detail>

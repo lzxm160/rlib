@@ -745,7 +745,7 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 		if(report->detail_columns > 1) {
 			gfloat paper_width = (rlib_layout_get_page_width(r, part) - (part->left_margin * 2)) / report->detail_columns;
 
-			my_left_margin += (r->detail_line_count % report->detail_columns) * paper_width;
+			my_left_margin += ((r->detail_line_count % report->detail_columns) * paper_width) + ((r->detail_line_count % report->detail_columns) * report->column_pad);
 		
 		}	
 	}

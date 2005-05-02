@@ -402,6 +402,11 @@ static void rlib_evaluate_report_attributes(rlib *r, struct rlib_report *report)
 	report->detail_columns = 1;
 	if (rlib_execute_as_int(r, report->detail_columns_code, &t))
 		report->detail_columns = t;
+
+	report->column_pad = 0;
+	if (rlib_execute_as_float(r, report->column_pad_code, &f))
+		report->column_pad = f;
+
 }
 
 static void rlib_evaluate_break_attributes(rlib *r, struct rlib_report *report) {
