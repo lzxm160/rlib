@@ -1,3 +1,10 @@
+2005-05-03  Bob Doan  <bdoan@sicompos.com>
+	* AUTHORS: Add peoples
+	* NEWS: RELEASE TIME
+	* configure.in: Cranberries
+	* libsrc/api.c: Don't suggest UTF8 charset in non utf8 mode
+	* src/examples/php/array.php: spanish chars
+
 2005-05-02  Mike Roth  <mroth@sicompos.com>
 	* libsrc/html.c: if number or point < 90 use width=2, > 90 use width=1 for line plots
 	* src/examples/php/array.php: nothing

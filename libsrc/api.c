@@ -203,7 +203,11 @@ gchar * rlib_get_content_type_as_text(rlib *r) {
 		if(r->format == RLIB_CONTENT_TYPE_CSV) {
 			return RLIB_WEB_CONTENT_TYPE_CSV;
 		} else {
+#if DISABLE_UTF8		
+			const char *charset = "ISO-8859-1";
+#else
 			const char *charset = r->output_encoder_name != NULL ? r->output_encoder_name: "UTF-8";
+#endif
 			if(r->format == RLIB_CONTENT_TYPE_HTML) {
 				g_snprintf(buf, sizeof(buf), RLIB_WEB_CONTENT_TYPE_HTML, charset);
 				return buf;
