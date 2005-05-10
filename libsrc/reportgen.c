@@ -504,6 +504,7 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 			rlib_layout_report_output(r, part, report, report->alternate.nodata, FALSE);
 		} else {
 			rlib_init_variables(r, report);
+			rlib_navigate_first(r, r->current_result);
 			rlib_process_variables(r, report);
 			rlib_process_input_metadata(r);
 
@@ -534,7 +535,7 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 				top_margin_offset += report->position_top[0] - top;
 			} else {
 				rlib_fetch_first_rows(r);
-
+				
 				if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
 					while (1) {
 						gint output_count = 0;

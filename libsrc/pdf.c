@@ -548,8 +548,8 @@ static void pdf_graph_x_axis_title(rlib *r, gchar *title) {
 		graph->height_offset += RLIB_GET_LINE(r->current_font_point) / 2.0;
 	else {
 		gfloat title_width = pdf_get_string_width(r, title);
-		graph->height_offset += (RLIB_GET_LINE(r->current_font_point) * 1.5);
-		pdf_print_text(r, graph->left + ((graph->width-title_width)/2.0), graph->bottom+graph->height_offset - RLIB_GET_LINE(r->current_font_point), title, 0);
+		graph->height_offset += (RLIB_GET_LINE(r->current_font_point) * 2);
+		pdf_print_text(r, graph->left + ((graph->width-title_width)/2.0), graph->bottom+graph->height_offset - (RLIB_GET_LINE(r->current_font_point)*1.3), title, 0);
 	}
 
 	if(graph->bold_titles)

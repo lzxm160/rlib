@@ -1,3 +1,9 @@
+2005-05-10  Bob Doan  <bdoan@sicompos.com>
+	* configure.in: 13.4
+	* libsrc/navigation.c: fix followers
+	* libsrc/reportgen.c: likewise
+	* libsrc/pdf.c: a little more padding between x_axis_title and the graph
+
 2005-05-03  Bob Doan  <bdoan@sicompos.com>
 	* AUTHORS: Add peoples
 	* NEWS: RELEASE TIME
