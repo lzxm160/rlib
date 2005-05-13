@@ -339,6 +339,7 @@ static void rlib_html_start_report(rlib *r, struct rlib_part *part) {
 	gchar buf[MAXSTRLEN];
 	gchar *meta;
 	gchar *link;
+    	gchar *suppress_head;
 	gint pages_across = part->pages_across;
 
 	OUTPUT_PRIVATE(r)->top = g_new0(GSList *, pages_across);
@@ -347,21 +348,29 @@ static void rlib_html_start_report(rlib *r, struct rlib_part *part) {
 	link = g_hash_table_lookup(r->output_parameters, "trim_links");
 	if(link != NULL)
 		OUTPUT(r)->trim_links = TRUE;
-	sprintf(buf, "<head>\n<style type=\"text/css\">\n");
-	print_text(r, buf, FALSE);
-	sprintf(buf, "pre { margin:0; padding:0; margin-top:0; margin-bottom:0;}\n");
-	print_text(r, buf, FALSE);
-	print_text(r, "DIV { position: absolute; left: 0; }\n", FALSE);
-	print_text(r, "TABLE { border: 0; cellspacing: 0; cellpadding: 0; width: 100%; }\n", FALSE);
-	print_text(r, "</style>\n", FALSE);
+
+    	suppress_head = g_hash_table_lookup(r->output_parameters, "suppress_head");
+    	if(suppress_head == NULL) {
+
+    		sprintf(buf, "<head>\n<style type=\"text/css\">\n");
+    		print_text(r, buf, FALSE);
+    		sprintf(buf, "pre { margin:0; padding:0; margin-top:0; margin-bottom:0;}\n");
+    		print_text(r, buf, FALSE);
+    		print_text(r, "DIV { position: absolute; left: 0; }\n", FALSE);
+    		print_text(r, "TABLE { border: 0; cellspacing: 0; cellpadding: 0; width: 100%; }\n", FALSE);
+    		print_text(r, "</style>\n", FALSE);
 	
-	meta = g_hash_table_lookup(r->output_parameters, "meta");
-	if(meta != NULL)
-		print_text(r, meta, FALSE);
-		
-	print_text(r, "</head>\n", FALSE);
-	
-	print_text(r, "<body><table><tr><td><pre>", FALSE);	
+    		meta = g_hash_table_lookup(r->output_parameters, "meta");
+    		if(meta != NULL)
+    			print_text(r, meta, FALSE);
+    		
+    		print_text(r, "</head>\n", FALSE);
+    		print_text(r, "<body>\n", FALSE);
+
+    	}
+
+    	print_text(r, "<table><tr><td><pre>", FALSE);
+
 }
 
 static void rlib_html_end_part(rlib *r, struct rlib_part *part) {

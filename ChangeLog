@@ -1,3 +1,6 @@
+2005-05-13  Shannon Weyrick <sweyrick@roadsend.com>
+	* libsrc/html.c: Ability to suppress HEAD and BODY in html
+
 2005-05-13  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/graphing.c: Better default colors for line graphs
 	* libsrc/html.c: pretier X axis labels, make sure that the last x axis line is a full line and not a minor tick.
