@@ -669,7 +669,7 @@ static void pdf_graph_do_grid(rlib *r, gboolean just_a_box) {
 		gfloat left,y_offset, rotation, string_width=graph->x_label_width;
 		if(graph->minor_ticks[i] == FALSE) {
 			pdf_graph_label_x_get_variables(r, i, NULL, &left, &y_offset, &rotation, &string_width); 
-			if(left < (last_left+graph->x_label_width)) {
+			if(left < (last_left+graph->x_label_width+pdf_get_string_width(r, "W"))) {
 				graph->vertical_x_label = TRUE;
 				break;
 			}
@@ -734,7 +734,7 @@ static void pdf_graph_tick_x(rlib *r) {
 
 	for(i=0;i<iterations;i++) {
 		spot = graph->x_start + ((graph->x_tick_width)*i);
-		if(graph->minor_ticks[i] == TRUE) {
+		if(graph->minor_ticks[i] == TRUE && i != (iterations-1)) {
 			pdf_graph_draw_line(r, spot, graph->y_start-(graph->intersection/2), spot, graph->y_start, NULL);
 		} else {
 			if(graph->draw_x)

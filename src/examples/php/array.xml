@@ -27,6 +27,10 @@
 				<literal bold="yes" italics="yes">Test Report (Bold and Italics)</literal>
 			</Line>
 			<Line fontSize="11">
+				<literal bold="yes" italics="yes">Whee: </literal>
+				<field format="'%.5d'" value="abs(-5.3333)" width="10"/>
+			</Line>
+			<Line fontSize="11">
 				<literal bold="yes" italics="yes">BOO: </literal>
 				<field value="'mike is a silly pants'" width="10"/>
 			</Line>

@@ -40,7 +40,7 @@
 	rlib_add_datasource_array($rlib, "local_array");
 	rlib_add_query_as($rlib, "local_array", "data", "data");
 	rlib_add_report($rlib, "array.xml");
-	rlib_set_output_format_from_text($rlib, "html");
+	rlib_set_output_format_from_text($rlib, "pdf");
 	rlib_execute($rlib);
 	header(rlib_get_content_type($rlib));
 	rlib_spool($rlib);

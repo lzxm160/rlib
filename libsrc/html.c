@@ -692,7 +692,7 @@ static void html_graph_do_grid(rlib *r, gboolean just_a_box) {
 		gint left,y_start,string_width=graph->x_label_width;
 		if(graph->minor_ticks[i] == FALSE) {
 			html_graph_label_x_get_variables(r, i, NULL, &left, &y_start, string_width); 
-			if(left < (last_left+graph->x_label_width)) {
+			if(left < (last_left+graph->x_label_width+rlib_gd_get_string_width(OUTPUT_PRIVATE(r)->rgd, "W", FALSE))) {
 				graph->vertical_x_label = TRUE;
 				break;
 			}
@@ -745,7 +745,7 @@ static void html_graph_tick_x(rlib *r) {
 			div = 1;
 
 		spot = graph->x_start + ((graph->x_tick_width)*i);
-		if(graph->draw_x && graph->minor_ticks[i] == FALSE)
+		if(graph->draw_x && (graph->minor_ticks[i] == FALSE || i == iterations-1))
 			rlib_gd_line(OUTPUT_PRIVATE(r)->rgd, spot, graph->y_start+(graph->intersection/div), spot, graph->y_start - graph->height, graph->grid_color);
 		else
 			rlib_gd_line(OUTPUT_PRIVATE(r)->rgd, spot, graph->y_start+(graph->intersection/div), spot, graph->y_start, graph->grid_color);
