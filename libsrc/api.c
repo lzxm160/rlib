@@ -31,6 +31,7 @@
 #include "config.h"
 
 #include "rlib.h"
+#include "pcode.h"
 #include "rlib_input.h"
 #include "rlib_langinfo.h"
 
@@ -292,6 +293,20 @@ gint rlib_get_output_length(rlib *r) {
 gboolean rlib_signal_connect(rlib *r, gint signal_number, gboolean (*signal_function)(rlib *, gpointer), gpointer data) {	
 	r->signal_functions[signal_number].signal_function = (gpointer)signal_function;
 	r->signal_functions[signal_number].data = data;
+	return TRUE;
+}
+
+gboolean rlib_add_function(rlib *r, gchar *function_name, gboolean (*function)(rlib *,  struct rlib_value_stack *, struct rlib_value *this_field_value, gpointer user_data), gpointer user_data) {	
+	struct rlib_pcode_operator *rpo = g_new0(struct rlib_pcode_operator, 1);
+	rpo->tag = g_strconcat(function_name, "(", NULL);	
+	rpo->taglen = strlen(rpo->tag);
+	rpo->precedence = 0;
+	rpo->is_op = TRUE;
+	rpo->opnum = 999999;
+	rpo->is_function = TRUE;
+	rpo->execute = function;
+	rpo->user_data = user_data;
+	r->pcode_functions = g_slist_append(r->pcode_functions, rpo);
 	return TRUE;
 }
 

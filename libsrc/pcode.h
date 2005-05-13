@@ -104,22 +104,18 @@
 #define OP_EVAL 	57
 
 
-struct rlib_value_stack {
-	int count;
-	struct rlib_value values[100];
-};
-
 #define PCODE_PUSH	1
 #define PCODE_EXECUTE	2
 
 struct rlib_pcode_operator {
-      char *tag;			// What I expect to find in the infix string
-      int taglen;		
-      int precedence; 
-		int is_op;
-		int opnum;
-		int is_function;
-		int	(*execute)(rlib *r, struct rlib_value_stack *, struct rlib_value *this_field_value);
+	gchar *tag;			// What I expect to find in the infix string
+	gint taglen;		
+	gint precedence; 
+	gint is_op;
+	gint opnum;
+	gint is_function;
+	gint	(*execute)(rlib *r, struct rlib_value_stack *, struct rlib_value *this_field_value, gpointer user_data);
+	gpointer user_data;
 };
 
 struct rlib_pcode_instruction {
@@ -176,59 +172,59 @@ struct rlib_value * rlib_value_new_string(struct rlib_value *rval, char *value);
 struct rlib_value * rlib_value_new_date(struct rlib_value *rval, struct rlib_datetime *date);
 void rlib_pcode_dump(struct rlib_pcode *p, int offset);
 
-int rlib_pcode_operator_multiply(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_add(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_subtract(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_divide(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_mod(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_pow(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_lt(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_lte(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_gt(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_gte(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_eql(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_noteql(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_and(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_or(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_abs(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_ceil(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_floor(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_round(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_sin(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_cos(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_ln(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_exp(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_atan(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_sqrt(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_fxpval(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_val(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_str(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_stod(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_tstod(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_iif(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_dtos(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_dtosf(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_year(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_month(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_day(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_upper(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_lower(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_proper(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_stodt(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_isnull(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_dim(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_wiy(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_wiyo(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_date(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_left(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_right(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_substring(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_dateof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_timeof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_chgdateof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_chgtimeof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_gettimeinsecs(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_settimeinsecs(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_format(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_stodtsql(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
-int rlib_pcode_operator_eval(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
+int rlib_pcode_operator_multiply(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_add(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_subtract(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_divide(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_mod(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_pow(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_lt(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_lte(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_gt(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_gte(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_eql(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_noteql(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_and(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_or(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_abs(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_ceil(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_floor(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_round(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_sin(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_cos(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_ln(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_exp(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_atan(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_sqrt(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_fxpval(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_val(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_str(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_stod(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_tstod(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_iif(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_dtos(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_dtosf(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_year(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_month(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_day(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_upper(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_lower(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_proper(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_stodt(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_isnull(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_dim(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_wiy(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_wiyo(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_date(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_left(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_right(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_substring(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_dateof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_timeof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_chgdateof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_chgtimeof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_gettimeinsecs(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_settimeinsecs(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_format(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_stodtsql(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_eval(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);

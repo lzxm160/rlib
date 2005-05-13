@@ -74,7 +74,7 @@ gint rlib_pcode_add(rlib_var_stack *rvs) {
 	}
 }
 
-gint rlib_pcode_operator_add(rlib *r, struct rlib_var_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_add(rlib *r, struct rlib_var_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2;
 	struct rlib_var_stack *vs = r->stack;
 	v1 = rlib_var_stack_pop(vs);
@@ -129,7 +129,7 @@ gint rlib_pcode_operator_add(rlib *r, struct rlib_var_stack *vs, struct rlib_val
 #endif
 		
 		
-gint rlib_pcode_operator_add(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_add(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	v2 = rlib_value_stack_pop(vs);
@@ -179,7 +179,7 @@ gint rlib_pcode_operator_add(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 }
 
 
-gint rlib_pcode_operator_subtract(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_subtract(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	v2 = rlib_value_stack_pop(vs);
@@ -235,7 +235,7 @@ gint rlib_pcode_operator_subtract(rlib *r, struct rlib_value_stack *vs, struct r
 	return FALSE;
 }
 
-gint rlib_pcode_operator_multiply(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_multiply(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	v2 = rlib_value_stack_pop(vs);
@@ -255,7 +255,7 @@ gint rlib_pcode_operator_multiply(rlib *r, struct rlib_value_stack *vs, struct r
 	return FALSE;
 }
 
-gint rlib_pcode_operator_divide(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_divide(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	v2 = rlib_value_stack_pop(vs);
@@ -275,7 +275,7 @@ gint rlib_pcode_operator_divide(rlib *r, struct rlib_value_stack *vs, struct rli
 	return FALSE;	
 }
 
-gint rlib_pcode_operator_mod(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_mod(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	v2 = rlib_value_stack_pop(vs);
@@ -295,7 +295,7 @@ gint rlib_pcode_operator_mod(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	return FALSE;		
 }
 
-gint rlib_pcode_operator_pow(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_pow(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	v2 = rlib_value_stack_pop(vs);
@@ -316,7 +316,7 @@ gint rlib_pcode_operator_pow(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 }
 
 
-gint rlib_pcode_operator_lte(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_lte(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	v2 = rlib_value_stack_pop(vs);
@@ -365,7 +365,7 @@ gint rlib_pcode_operator_lte(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 }
 
 
-gint rlib_pcode_operator_lt(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_lt(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	v2 = rlib_value_stack_pop(vs);
@@ -413,7 +413,7 @@ gint rlib_pcode_operator_lt(rlib *r, struct rlib_value_stack *vs, struct rlib_va
 	return FALSE;		
 }
 
-gint rlib_pcode_operator_gte(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_gte(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	v2 = rlib_value_stack_pop(vs);
@@ -459,7 +459,7 @@ gint rlib_pcode_operator_gte(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	return FALSE;		
 }
 
-gint rlib_pcode_operator_gt(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_gt(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	v2 = rlib_value_stack_pop(vs);
@@ -505,7 +505,7 @@ gint rlib_pcode_operator_gt(rlib *r, struct rlib_value_stack *vs, struct rlib_va
 	return FALSE;		
 }
 
-gint rlib_pcode_operator_eql(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_eql(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	v2 = rlib_value_stack_pop(vs);
@@ -556,7 +556,7 @@ gint rlib_pcode_operator_eql(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	return FALSE;		
 }
 
-gint rlib_pcode_operator_noteql(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_noteql(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	v2 = rlib_value_stack_pop(vs);
@@ -602,7 +602,7 @@ gint rlib_pcode_operator_noteql(rlib *r, struct rlib_value_stack *vs, struct rli
 	return FALSE;		
 }
 
-gint rlib_pcode_operator_and(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_and(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	v2 = rlib_value_stack_pop(vs);
@@ -644,7 +644,7 @@ gint rlib_pcode_operator_and(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	return FALSE;		
 }
 
-gint rlib_pcode_operator_or(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_or(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	v2 = rlib_value_stack_pop(vs);
@@ -685,7 +685,7 @@ gint rlib_pcode_operator_or(rlib *r, struct rlib_value_stack *vs, struct rlib_va
 }
 
 
-gint rlib_pcode_operator_abs(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_abs(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
  	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1)) {
@@ -700,7 +700,7 @@ gint rlib_pcode_operator_abs(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	return FALSE;
 }
 
-gint rlib_pcode_operator_ceil(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_ceil(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
  	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1)) {
@@ -718,7 +718,7 @@ gint rlib_pcode_operator_ceil(rlib *r, struct rlib_value_stack *vs, struct rlib_
 	return FALSE;
 }
 
-gint rlib_pcode_operator_floor(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_floor(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
  	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1)) {
@@ -734,7 +734,7 @@ gint rlib_pcode_operator_floor(rlib *r, struct rlib_value_stack *vs, struct rlib
 	return FALSE;
 }
 
-gint rlib_pcode_operator_round(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_round(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
  	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1)) {
@@ -756,7 +756,7 @@ gint rlib_pcode_operator_round(rlib *r, struct rlib_value_stack *vs, struct rlib
 	return FALSE;
 }
 
-gint rlib_pcode_operator_sin(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_sin(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
  	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1)) {
@@ -772,7 +772,7 @@ gint rlib_pcode_operator_sin(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	return FALSE;
 }
 
-gint rlib_pcode_operator_cos(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_cos(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
  	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1)) {
@@ -788,7 +788,7 @@ gint rlib_pcode_operator_cos(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	return FALSE;
 }
 
-gint rlib_pcode_operator_ln(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_ln(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
  	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1)) {
@@ -804,7 +804,7 @@ gint rlib_pcode_operator_ln(rlib *r, struct rlib_value_stack *vs, struct rlib_va
 	return FALSE;
 }
 
-gint rlib_pcode_operator_exp(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_exp(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
  	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1)) {
@@ -820,7 +820,7 @@ gint rlib_pcode_operator_exp(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	return FALSE;
 }
 
-gint rlib_pcode_operator_atan(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_atan(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
  	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1)) {
@@ -836,7 +836,7 @@ gint rlib_pcode_operator_atan(rlib *r, struct rlib_value_stack *vs, struct rlib_
 	return FALSE;
 }
 
-gint rlib_pcode_operator_sqrt(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_sqrt(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
  	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1)) {
@@ -852,7 +852,7 @@ gint rlib_pcode_operator_sqrt(rlib *r, struct rlib_value_stack *vs, struct rlib_
 	return FALSE;
 }
 
-gint rlib_pcode_operator_fxpval(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_fxpval(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	v2 = rlib_value_stack_pop(vs);
@@ -871,7 +871,7 @@ gint rlib_pcode_operator_fxpval(rlib *r, struct rlib_value_stack *vs, struct rli
 	return FALSE;
 }
 
-gint rlib_pcode_operator_val(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_val(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_STRING(v1)) {
@@ -887,7 +887,7 @@ gint rlib_pcode_operator_val(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 }
 
 //TODO: REVISIT THIS
-gint rlib_pcode_operator_str(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_str(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	gchar fmtstring[20];
 	gchar dest[30];
 	struct rlib_value *v1, *v2, *v3, rval_rtn;
@@ -921,7 +921,6 @@ gint rlib_pcode_operator_str(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	rlib_value_stack_push(vs, rlib_value_new_error(&rval_rtn));		
 	return FALSE;
 }
-
 
 static gint rlib_pcode_operator_stod_common(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, int which) {
 	struct rlib_value *v1, rval_rtn;
@@ -983,15 +982,15 @@ static gint rlib_pcode_operator_stod_common(rlib *r, struct rlib_value_stack *vs
 	return FALSE;
 }
 
-gint rlib_pcode_operator_stod(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_stod(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	return rlib_pcode_operator_stod_common(r, vs, this_field_value, 0);
 }
 
-gint rlib_pcode_operator_tstod(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_tstod(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	return rlib_pcode_operator_stod_common(r, vs, this_field_value, 1);
 }
 
-gboolean rlib_pcode_operator_iif(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gboolean rlib_pcode_operator_iif(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	gboolean thisresult = FALSE;
 	struct rlib_value *v1;
 	v1 = rlib_value_stack_pop(vs);
@@ -1051,7 +1050,7 @@ static gboolean rlib_pcode_operator_dtos_common(rlib *r, struct rlib_value_stack
 }
 
 
-gboolean rlib_pcode_operator_dateof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gboolean rlib_pcode_operator_dateof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value rval_rtn, *v1;
 	
 	v1 = rlib_value_stack_pop(vs);
@@ -1069,7 +1068,7 @@ gboolean rlib_pcode_operator_dateof(rlib *r, struct rlib_value_stack *vs, struct
 }
 
 
-gboolean rlib_pcode_operator_timeof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gboolean rlib_pcode_operator_timeof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value rval_rtn, *v1;
 	
 	v1 = rlib_value_stack_pop(vs);
@@ -1091,7 +1090,7 @@ gboolean rlib_pcode_operator_timeof(rlib *r, struct rlib_value_stack *vs, struct
 * function setdateof(date1, date2) - makes date of date1 = date of date2.
 * 	time of date1 is unchanged.
 */
-gint rlib_pcode_operator_chgdateof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_chgdateof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	v2 = rlib_value_stack_pop(vs);
@@ -1112,7 +1111,7 @@ gint rlib_pcode_operator_chgdateof(rlib *r, struct rlib_value_stack *vs, struct 
 }
 
 
-gint rlib_pcode_operator_chgtimeof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_chgtimeof(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	v2 = rlib_value_stack_pop(vs);
@@ -1133,7 +1132,7 @@ gint rlib_pcode_operator_chgtimeof(rlib *r, struct rlib_value_stack *vs, struct 
 }
 
 
-gboolean rlib_pcode_operator_gettimeinsecs(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gboolean rlib_pcode_operator_gettimeinsecs(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value rval_rtn, *v1;
 	
 	v1 = rlib_value_stack_pop(vs);
@@ -1151,7 +1150,7 @@ gboolean rlib_pcode_operator_gettimeinsecs(rlib *r, struct rlib_value_stack *vs,
 }
 
 
-gint rlib_pcode_operator_settimeinsecs(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_settimeinsecs(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, rval_rtn;
 	v2 = rlib_value_stack_pop(vs);
 	v1 = rlib_value_stack_pop(vs);
@@ -1172,12 +1171,12 @@ gint rlib_pcode_operator_settimeinsecs(rlib *r, struct rlib_value_stack *vs, str
 }
 
 
-gboolean rlib_pcode_operator_dtos(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gboolean rlib_pcode_operator_dtos(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	return rlib_pcode_operator_dtos_common(r, vs, this_field_value, "%Y-%m-%d");
 }
 
 
-gboolean rlib_pcode_operator_dtosf(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gboolean rlib_pcode_operator_dtosf(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value rval_rtn, *v1 = rlib_value_stack_pop(vs);
 	gboolean result = FALSE;
 	if (RLIB_VALUE_IS_STRING(v1)) {
@@ -1199,7 +1198,7 @@ gboolean rlib_pcode_operator_dtosf(rlib *r, struct rlib_value_stack *vs, struct 
 /*
 * Generic format function format(object, formatstring)
 */
-gboolean rlib_pcode_operator_format(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gboolean rlib_pcode_operator_format(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, rval_rtn;
 	v2 = rlib_value_stack_pop(vs);
 	v1 = rlib_value_stack_pop(vs);
@@ -1252,7 +1251,7 @@ gboolean rlib_pcode_operator_format(rlib *r, struct rlib_value_stack *vs, struct
 }
 
 
-gint rlib_pcode_operator_year(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_year(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_DATE(v1)) {
@@ -1268,7 +1267,7 @@ gint rlib_pcode_operator_year(rlib *r, struct rlib_value_stack *vs, struct rlib_
 }
 
 
-gint rlib_pcode_operator_month(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_month(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_DATE(v1)) {
@@ -1283,7 +1282,7 @@ gint rlib_pcode_operator_month(rlib *r, struct rlib_value_stack *vs, struct rlib
 	return FALSE;
 }
 
-gint rlib_pcode_operator_day(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_day(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_DATE(v1)) {
@@ -1298,7 +1297,7 @@ gint rlib_pcode_operator_day(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	return FALSE;
 }
 
-gint rlib_pcode_operator_upper(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_upper(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_STRING(v1)) {
@@ -1314,7 +1313,7 @@ gint rlib_pcode_operator_upper(rlib *r, struct rlib_value_stack *vs, struct rlib
 	return FALSE;
 }
 
-gint rlib_pcode_operator_lower(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_lower(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_STRING(v1)) {
@@ -1331,7 +1330,7 @@ gint rlib_pcode_operator_lower(rlib *r, struct rlib_value_stack *vs, struct rlib
 }
 
 
-gint rlib_pcode_operator_left(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_left(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	v2 = rlib_value_stack_pop(vs);
@@ -1354,7 +1353,7 @@ gint rlib_pcode_operator_left(rlib *r, struct rlib_value_stack *vs, struct rlib_
 	return FALSE;
 }
 
-gint rlib_pcode_operator_right(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_right(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	v2 = rlib_value_stack_pop(vs);
@@ -1378,7 +1377,7 @@ gint rlib_pcode_operator_right(rlib *r, struct rlib_value_stack *vs, struct rlib
 	return FALSE;
 }
 
-gint rlib_pcode_operator_substring(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_substring(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, *v3, rval_rtn;
 	v1 = rlib_value_stack_pop(vs); // the new size
 	v2 = rlib_value_stack_pop(vs); // the start idx
@@ -1410,7 +1409,7 @@ gint rlib_pcode_operator_substring(rlib *r, struct rlib_value_stack *vs, struct 
 	return FALSE;
 }
 
-gint rlib_pcode_operator_proper(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_proper(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_STRING(v1)) {
@@ -1432,7 +1431,7 @@ gint rlib_pcode_operator_proper(rlib *r, struct rlib_value_stack *vs, struct rli
 	return FALSE;
 }
 
-gint rlib_pcode_operator_stodt(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_stodt(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_STRING(v1)) {
@@ -1453,7 +1452,7 @@ gint rlib_pcode_operator_stodt(rlib *r, struct rlib_value_stack *vs, struct rlib
 	return FALSE;
 }
 
-gint rlib_pcode_operator_stodtsql(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_stodtsql(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_STRING(v1)) {
@@ -1474,7 +1473,7 @@ gint rlib_pcode_operator_stodtsql(rlib *r, struct rlib_value_stack *vs, struct r
 	return FALSE;
 }
 
-gint rlib_pcode_operator_isnull(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_isnull(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_STRING(v1)) {
@@ -1489,7 +1488,7 @@ gint rlib_pcode_operator_isnull(rlib *r, struct rlib_value_stack *vs, struct rli
 	return FALSE;
 }
 
-gint rlib_pcode_operator_dim(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_dim(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_DATE(v1)) {
@@ -1505,7 +1504,7 @@ gint rlib_pcode_operator_dim(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	return FALSE;
 }
 
-gint rlib_pcode_operator_wiy(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_wiy(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_DATE(v1)) {
@@ -1521,7 +1520,7 @@ gint rlib_pcode_operator_wiy(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	return FALSE;
 }
 
-gint rlib_pcode_operator_wiyo(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_wiyo(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, rval_rtn;
 	v2 = rlib_value_stack_pop(vs);
 	v1 = rlib_value_stack_pop(vs);
@@ -1544,7 +1543,7 @@ gint rlib_pcode_operator_wiyo(rlib *r, struct rlib_value_stack *vs, struct rlib_
 	return FALSE;
 }
 
-gint rlib_pcode_operator_date(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_date(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_datetime dt;
 	struct rlib_value rval_rtn;
 	struct tm *tmp = localtime(&r->now);
@@ -1555,7 +1554,7 @@ gint rlib_pcode_operator_date(rlib *r, struct rlib_value_stack *vs, struct rlib_
 	return TRUE;
 }
 
-gint rlib_pcode_operator_eval(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint rlib_pcode_operator_eval(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(v1 != NULL) {

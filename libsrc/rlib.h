@@ -148,6 +148,11 @@ struct rlib_value {
 	gint free;
 };
 
+struct rlib_value_stack {
+	int count;
+	struct rlib_value values[100];
+};
+
 struct rlib_element {
 	gint type;
 	gpointer data;
@@ -697,6 +702,7 @@ struct rlib {
 	GHashTable *parameters;
 	GHashTable *output_parameters;
 	GHashTable *input_metadata;
+	GSList *pcode_functions;
 	
 	GIConv output_encoder;		
 	gchar *output_encoder_name;
@@ -876,6 +882,8 @@ gint rlib_graph_add_bg_region(rlib *r, gchar *graph_name, gchar *region_label, g
 gint rlib_graph_clear_bg_region(rlib *r, gchar *graph_name);
 gint rlib_graph_set_x_minor_tick(rlib *r, gchar *graph_name, gchar *x_value);
 gint rlib_graph_set_x_minor_tick_by_location(rlib *r, gchar *graph_name, gint location);
+gboolean rlib_add_function(rlib *r, gchar *function_name, gboolean (*function)(rlib *,  struct rlib_value_stack *, struct rlib_value *this_field_value, gpointer user_data), gpointer user_data);
+
 /***** PROTOTYPES: parsexml.c *************************************************/
 struct rlib_part * parse_part_file(rlib *r, gchar *filename, gchar type);
 struct rlib_report_output * report_output_new(gint type, gpointer data);

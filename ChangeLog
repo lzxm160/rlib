@@ -1,3 +1,13 @@
+2005-05-13  Bob Doan  <bdoan@sicompos.com>
+	* bindings/php/php.c: Ability to add custom functions to the R engine
+	* libsrc/api.c: likewise
+	* libsrc/pcode.c: likewise
+	* libsrc/pcode.h: likewise
+	* libsrc/pcode_op_functions.c: likewise
+	* libsrc/rlib.h: likewise
+	* src/examples/php/array.php: likewise
+	* src/examples/php/array.xml: likewise
+
 2005-05-13  Shannon Weyrick <sweyrick@roadsend.com>
 	* libsrc/html.c: Ability to suppress HEAD and BODY in html
 

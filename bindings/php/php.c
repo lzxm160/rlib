@@ -22,6 +22,7 @@
 #include <php.h>
 
 #include "rlib.h"
+#include "pcode.h"
 #include "rlib_php.h"
 
 /*
@@ -49,6 +50,7 @@ ZEND_FUNCTION(rlib_add_report);
 ZEND_FUNCTION(rlib_add_report_from_buffer);
 ZEND_FUNCTION(rlib_query_refresh);
 ZEND_FUNCTION(rlib_signal_connect);
+ZEND_FUNCTION(rlib_add_function);
 ZEND_FUNCTION(rlib_set_output_format_from_text);
 ZEND_FUNCTION(rlib_execute);
 ZEND_FUNCTION(rlib_spool);
@@ -87,6 +89,7 @@ zend_function_entry rlib_functions[] =
 	ZEND_FE(rlib_add_report_from_buffer, NULL)
 	ZEND_FE(rlib_query_refresh, NULL)
 	ZEND_FE(rlib_signal_connect, NULL)
+	ZEND_FE(rlib_add_function, NULL)
 	ZEND_FE(rlib_set_output_format_from_text, NULL)
 	ZEND_FE(rlib_execute, NULL)
 	ZEND_FE(rlib_spool, NULL)
@@ -458,6 +461,83 @@ ZEND_FUNCTION(rlib_signal_connect) {
 	ZVAL_STRING(z_function_name, function, 1);
 	
 	rlib_signal_connect_string(rip->r, signal, default_callback, z_function_name);
+}
+
+struct both {
+	zval *z_function_name;
+	gint params;
+};
+
+gboolean default_function(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
+	struct both *b = user_data;
+	zval ***params = emalloc(b->params);
+	int i;
+	zval *retval;
+	struct rlib_value rval_rtn;
+	
+	for(i=0;i<b->params;i++) {
+		struct rlib_value *v = rlib_value_stack_pop(vs);
+		if(RLIB_VALUE_IS_STRING(v)) {
+			params[i] = emalloc(sizeof(gpointer));
+			MAKE_STD_ZVAL(*params[i]);
+			(*params[i])->type = IS_STRING;
+			(*params[i])->value.str.len = strlen(RLIB_VALUE_GET_AS_STRING(v));
+			(*params[i])->value.str.val = estrdup(RLIB_VALUE_GET_AS_STRING(v));
+			rlib_value_free(v);
+		} else if(RLIB_VALUE_IS_NUMBER(v)) {
+			params[i] = emalloc(sizeof(gpointer));
+			MAKE_STD_ZVAL(*params[i]);
+			(*params[i])->type = IS_DOUBLE;
+			(*params[i])->value.dval = (double)RLIB_VALUE_GET_AS_NUMBER(v) / (double)RLIB_DECIMAL_PRECISION;
+			rlib_value_free(v);
+		}
+	
+	}
+
+	if(call_user_function_ex(CG(function_table), NULL, b->z_function_name, &retval, b->params, params, 0, NULL TSRMLS_CC) == FAILURE) {
+	   return FALSE;
+	}
+
+	if( Z_TYPE_P(retval) == IS_STRING )	
+		rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, estrdup(Z_STRVAL_P(retval))));
+	else if( Z_TYPE_P(retval) == IS_LONG ) {	
+		gint64 result = Z_LVAL_P(retval)*RLIB_DECIMAL_PRECISION;
+		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, result));
+	} else if( Z_TYPE_P(retval) == IS_DOUBLE ) {	
+		gint64 result = (gdouble)Z_DVAL_P(retval)*(gdouble)RLIB_DECIMAL_PRECISION;
+		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, result));
+	} else {
+		rlib_value_stack_push(vs, rlib_value_new_error(&rval_rtn));		
+	}
+
+	return TRUE;
+}
+
+ZEND_FUNCTION(rlib_add_function) {
+	zval *z_rip = NULL;
+	zval *z_function_name;
+	rlib_inout_pass *rip;
+	gint id = -1;
+	gchar *function, *name;
+	gint whatever;
+	gdouble paramaters;
+	
+	struct both *b;
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rssd", &z_rip, &name, &whatever, &function, &whatever, &paramaters) == FAILURE)
+		return;
+	
+	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
+
+
+	MAKE_STD_ZVAL(z_function_name);
+	ZVAL_STRING(z_function_name, function, 1);
+	
+	b = emalloc(sizeof(struct both));
+
+	b->z_function_name = z_function_name;
+	b->params = (int)paramaters;
+	
+	rlib_add_function(rip->r, name, default_function, b);
 }
 
 ZEND_FUNCTION(rlib_set_output_format_from_text) {

@@ -40,9 +40,20 @@
 	rlib_add_datasource_array($rlib, "local_array");
 	rlib_add_query_as($rlib, "local_array", "data", "data");
 	rlib_add_report($rlib, "array.xml");
+	rlib_add_function($rlib, "bobdoan", "bobdoan", 1);
+	rlib_add_function($rlib, "mikeroth", "mike_roth", 2);
 	rlib_set_output_format_from_text($rlib, "pdf");
 	rlib_execute($rlib);
 	header(rlib_get_content_type($rlib));
 	rlib_spool($rlib);
 	rlib_free($rlib);
+	
+	function mike_roth($a, $b) {
+		return "pancakes are yummier then $a and $b";
+	}
+
+	function bobdoan($a) {
+		return strtoupper($a);
+	}
+	
 ?>

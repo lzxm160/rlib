@@ -49,67 +49,68 @@
 */
 
 struct rlib_pcode_operator rlib_pcode_verbs[] = {
-      {"+",		 	1, 2,	TRUE,	OP_ADD,		FALSE,	rlib_pcode_operator_add},
-      {"-",		 	1, 2,	TRUE,	OP_SUB,		FALSE,	rlib_pcode_operator_subtract},
-      {"*",		 	1, 4, TRUE,	OP_MUL,		FALSE,	rlib_pcode_operator_multiply},
-      {"/",		 	1, 4,	TRUE,	OP_DIV,		FALSE,	rlib_pcode_operator_divide},
-      {"%",  	 	1, 4,	TRUE,	OP_MOD,		FALSE,	rlib_pcode_operator_mod},
-      {"^",		 	1, 4,	TRUE,	OP_POW,		FALSE,	rlib_pcode_operator_pow},
-      {"<=",	 	2, 6,	TRUE,	OP_LTE,		FALSE,	rlib_pcode_operator_lte},
-      {"<",		 	1, 6,	TRUE,	OP_LT,		FALSE,	rlib_pcode_operator_lt},
-      {">=",	 	2, 6,	TRUE,	OP_GTE,		FALSE,	rlib_pcode_operator_gte},
-      {">",		 	1, 6,	TRUE,	OP_GT,		FALSE,	rlib_pcode_operator_gt},
-      {"==",	 	2, 6,	TRUE,	OP_EQL,		FALSE,	rlib_pcode_operator_eql},
-      {"!=",	 	2, 6,	TRUE,	OP_NOTEQL,	FALSE,	rlib_pcode_operator_noteql},
-      {"&&",	 	2, 5,	TRUE,	OP_AND,		FALSE,	rlib_pcode_operator_and},
-      {"||",	 	2, 5,	TRUE,	OP_OR,		FALSE,	rlib_pcode_operator_or},
-      {"(",		 	1, 0,	FALSE,OP_LPERN,	FALSE,	NULL},
-      {")",		 	1, 99,FALSE,OP_RPERN,	FALSE,	NULL},
-      {",",		 	1, 99,FALSE,OP_COMMA,	FALSE,	NULL},
-      {"abs(",	 	4, 0,	TRUE,	OP_ABS,		TRUE,		rlib_pcode_operator_abs},
-      {"ceil(", 	5, 0,	TRUE,	OP_CEIL, 	TRUE, 	rlib_pcode_operator_ceil},
-      {"floor(",	6, 0,	TRUE,	OP_FLOOR,	TRUE, 	rlib_pcode_operator_floor},
-      {"round(",	6, 0,	TRUE,	OP_ROUND,	TRUE, 	rlib_pcode_operator_round},
-      {"sin(",	 	4, 0,	TRUE,	OP_SIN,		TRUE, 	rlib_pcode_operator_sin},
-      {"cos(",	 	4, 0,	TRUE,	OP_COS,		TRUE, 	rlib_pcode_operator_cos},
-      {"ln(", 	 	3, 0,	TRUE,	OP_LN,		TRUE,		rlib_pcode_operator_ln},
-      {"exp(",	 	4, 0,	TRUE,	OP_EXP,		TRUE,		rlib_pcode_operator_exp},
-      {"atan(", 	5, 0,	TRUE,	OP_ATAN, 	TRUE, 	rlib_pcode_operator_atan},
-      {"sqrt(", 	5, 0,	TRUE,	OP_SQRT, 	TRUE,		rlib_pcode_operator_sqrt},
-      {"fxpval(", 7, 0,	TRUE,	OP_FXPVAL, 	TRUE, 	rlib_pcode_operator_fxpval},
-      {"val(", 	4, 0,	TRUE,	OP_VAL,  	TRUE,		rlib_pcode_operator_val},
-      {"str(", 	4, 0,	TRUE,	OP_STR,  	TRUE, 	rlib_pcode_operator_str},
-      {"stod(", 	5, 0,	TRUE,	OP_STOD,  	TRUE,		rlib_pcode_operator_stod},
-		{"iif(",  	4, 0, TRUE,	OP_IIF,		TRUE, 	rlib_pcode_operator_iif},
-      {"dtos(", 	5, 0,	TRUE,	OP_DTOS,  	TRUE, 	rlib_pcode_operator_dtos},
-      {"year(", 	5, 0,	TRUE,	OP_YEAR,  	TRUE, 	rlib_pcode_operator_year},
-      {"month(", 	6, 0,	TRUE,	OP_MONTH,  	TRUE, 	rlib_pcode_operator_month},
-      {"day(", 	4, 0,	TRUE,	OP_DAY,  	TRUE, 	rlib_pcode_operator_day},
-      {"upper(", 	6, 0,	TRUE,	OP_UPPER,  	TRUE, 	rlib_pcode_operator_upper},
-      {"lower(", 	6, 0,	TRUE,	OP_LOWER,  	TRUE, 	rlib_pcode_operator_lower},
-		{"left(", 	5, 0,	TRUE,	OP_LEFT, 	TRUE, 	rlib_pcode_operator_left},
-		{"right(", 	6, 0,	TRUE,	OP_LEFT, 	TRUE, 	rlib_pcode_operator_right},
-		{"mid(", 	4, 0, TRUE,	OP_LEFT, 	TRUE, 	rlib_pcode_operator_substring},
-      {"proper(", 7, 0,	TRUE,	OP_PROPER, 	TRUE,		rlib_pcode_operator_proper},
-      {"stodt(", 	6, 0,	TRUE,	OP_STOD,  	TRUE, 	rlib_pcode_operator_stodt},
-      {"stodtsql(", 9, 0,	TRUE,	OP_STODSQL,  	TRUE, 	rlib_pcode_operator_stodtsql},
-      {"isnull(",	7, 0,	TRUE,	OP_ISNULL, 	TRUE, 	rlib_pcode_operator_isnull},
-      {"dim(", 	4, 0,	TRUE,	OP_DIM,  	TRUE, 	rlib_pcode_operator_dim},
-      {"wiy(", 	4, 0,	TRUE,	OP_WIY,  	TRUE, 	rlib_pcode_operator_wiy},
-      {"wiyo(", 	5, 0,	TRUE,	OP_WIYO,  	TRUE, 	rlib_pcode_operator_wiyo},
-      {"date(", 	5, 0,	TRUE,	OP_DATE,  	TRUE, 	rlib_pcode_operator_date},
-      {"tstod(", 	6, 0,	TRUE,	OP_TSTOD,  	TRUE, 	rlib_pcode_operator_tstod},
-      {"dtosf(", 	6, 0,	TRUE,	OP_DTOSF,  	TRUE, 	rlib_pcode_operator_dtosf},
-      {"dateof(", 7, 0,	TRUE,	OP_DATEOF,  	TRUE, 	rlib_pcode_operator_dateof},
-      {"timeof(", 7, 0,	TRUE,	OP_TIMEOF,  	TRUE, 	rlib_pcode_operator_timeof},
-      {"chgdateof(", 	10, 0,	TRUE,	OP_CHGDATEOF,  	TRUE, 	rlib_pcode_operator_chgdateof},
-      {"chgtimeof(", 	10, 0,	TRUE,	OP_CHGTIMEOF,  	TRUE, 	rlib_pcode_operator_chgtimeof},
-		{"gettimeinsecs(", 	14, 0,	TRUE,	OP_GETTIMESECS,  	TRUE, 	rlib_pcode_operator_gettimeinsecs},
-      {"settimeinsecs(", 	14, 0,	TRUE,	OP_SETTIMESECS,  	TRUE, 	rlib_pcode_operator_settimeinsecs},
-      {"format(", 	7, 0,	TRUE,	OP_FORMAT,  	TRUE, 	rlib_pcode_operator_format},
-      {"eval(", 	5, 0,	TRUE,	OP_EVAL,  	TRUE, 	rlib_pcode_operator_eval},
+      {"+",		 	1, 2,	TRUE,	OP_ADD,		FALSE,	rlib_pcode_operator_add, NULL},
+      {"-",		 	1, 2,	TRUE,	OP_SUB,		FALSE,	rlib_pcode_operator_subtract, NULL},
+      {"*",		 	1, 4, TRUE,	OP_MUL,		FALSE,	rlib_pcode_operator_multiply, NULL},
+      {"/",		 	1, 4,	TRUE,	OP_DIV,		FALSE,	rlib_pcode_operator_divide, NULL},
+      {"%",  	 	1, 4,	TRUE,	OP_MOD,		FALSE,	rlib_pcode_operator_mod, NULL},
+      {"^",		 	1, 4,	TRUE,	OP_POW,		FALSE,	rlib_pcode_operator_pow, NULL},
+      {"<=",	 	2, 6,	TRUE,	OP_LTE,		FALSE,	rlib_pcode_operator_lte, NULL},
+      {"<",		 	1, 6,	TRUE,	OP_LT,		FALSE,	rlib_pcode_operator_lt, NULL},
+      {">=",	 	2, 6,	TRUE,	OP_GTE,		FALSE,	rlib_pcode_operator_gte, NULL},
+      {">",		 	1, 6,	TRUE,	OP_GT,		FALSE,	rlib_pcode_operator_gt, NULL},
+      {"==",	 	2, 6,	TRUE,	OP_EQL,		FALSE,	rlib_pcode_operator_eql, NULL},
+      {"!=",	 	2, 6,	TRUE,	OP_NOTEQL,	FALSE,	rlib_pcode_operator_noteql, NULL},
+      {"&&",	 	2, 5,	TRUE,	OP_AND,		FALSE,	rlib_pcode_operator_and, NULL},
+      {"||",	 	2, 5,	TRUE,	OP_OR,		FALSE,	rlib_pcode_operator_or, NULL},
+      {"(",		 	1, 0,	FALSE,OP_LPERN,	FALSE,	NULL, NULL},
+      {")",		 	1, 99,FALSE,OP_RPERN,	FALSE,	NULL, NULL},
+      {",",		 	1, 99,FALSE,OP_COMMA,	FALSE,	NULL, NULL},
+      {"abs(",	 	4, 0,	TRUE,	OP_ABS,		TRUE,		rlib_pcode_operator_abs, NULL},
+      {"ceil(", 	5, 0,	TRUE,	OP_CEIL, 	TRUE, 	rlib_pcode_operator_ceil, NULL},
+      {"floor(",	6, 0,	TRUE,	OP_FLOOR,	TRUE, 	rlib_pcode_operator_floor, NULL},
+      {"round(",	6, 0,	TRUE,	OP_ROUND,	TRUE, 	rlib_pcode_operator_round, NULL},
+      {"sin(",	 	4, 0,	TRUE,	OP_SIN,		TRUE, 	rlib_pcode_operator_sin, NULL},
+      {"cos(",	 	4, 0,	TRUE,	OP_COS,		TRUE, 	rlib_pcode_operator_cos, NULL},
+      {"ln(", 	 	3, 0,	TRUE,	OP_LN,		TRUE,		rlib_pcode_operator_ln, NULL},
+      {"exp(",	 	4, 0,	TRUE,	OP_EXP,		TRUE,		rlib_pcode_operator_exp, NULL},
+      {"atan(", 	5, 0,	TRUE,	OP_ATAN, 	TRUE, 	rlib_pcode_operator_atan, NULL},
+      {"sqrt(", 	5, 0,	TRUE,	OP_SQRT, 	TRUE,		rlib_pcode_operator_sqrt, NULL},
+      {"fxpval(", 7, 0,	TRUE,	OP_FXPVAL, 	TRUE, 	rlib_pcode_operator_fxpval, NULL},
+      {"val(", 	4, 0,	TRUE,	OP_VAL,  	TRUE,		rlib_pcode_operator_val, NULL},
+      {"str(", 	4, 0,	TRUE,	OP_STR,  	TRUE, 	rlib_pcode_operator_str, NULL},
+      {"stod(", 	5, 0,	TRUE,	OP_STOD,  	TRUE,		rlib_pcode_operator_stod, NULL},
+		{"iif(",  	4, 0, TRUE,	OP_IIF,		TRUE, 	rlib_pcode_operator_iif, NULL},
+      {"dtos(", 	5, 0,	TRUE,	OP_DTOS,  	TRUE, 	rlib_pcode_operator_dtos, NULL},
+      {"year(", 	5, 0,	TRUE,	OP_YEAR,  	TRUE, 	rlib_pcode_operator_year, NULL},
+      {"month(", 	6, 0,	TRUE,	OP_MONTH,  	TRUE, 	rlib_pcode_operator_month, NULL},
+      {"day(", 	4, 0,	TRUE,	OP_DAY,  	TRUE, 	rlib_pcode_operator_day, NULL},
+      {"upper(", 	6, 0,	TRUE,	OP_UPPER,  	TRUE, 	rlib_pcode_operator_upper, NULL},
+      {"lower(", 	6, 0,	TRUE,	OP_LOWER,  	TRUE, 	rlib_pcode_operator_lower, NULL},
+		{"left(", 	5, 0,	TRUE,	OP_LEFT, 	TRUE, 	rlib_pcode_operator_left, NULL},
+		{"right(", 	6, 0,	TRUE,	OP_LEFT, 	TRUE, 	rlib_pcode_operator_right, NULL},
+		{"mid(", 	4, 0, TRUE,	OP_LEFT, 	TRUE, 	rlib_pcode_operator_substring, NULL},
+      {"proper(", 7, 0,	TRUE,	OP_PROPER, 	TRUE,		rlib_pcode_operator_proper, NULL},
+      {"stodt(", 	6, 0,	TRUE,	OP_STOD,  	TRUE, 	rlib_pcode_operator_stodt, NULL},
+      {"stodtsql(", 9, 0,	TRUE,	OP_STODSQL,  	TRUE, 	rlib_pcode_operator_stodtsql, NULL},
+      {"isnull(",	7, 0,	TRUE,	OP_ISNULL, 	TRUE, 	rlib_pcode_operator_isnull, NULL},
+      {"dim(", 	4, 0,	TRUE,	OP_DIM,  	TRUE, 	rlib_pcode_operator_dim, NULL},
+      {"wiy(", 	4, 0,	TRUE,	OP_WIY,  	TRUE, 	rlib_pcode_operator_wiy, NULL},
+      {"wiyo(", 	5, 0,	TRUE,	OP_WIYO,  	TRUE, 	rlib_pcode_operator_wiyo, NULL},
+      {"date(", 	5, 0,	TRUE,	OP_DATE,  	TRUE, 	rlib_pcode_operator_date, NULL},
+      {"tstod(", 	6, 0,	TRUE,	OP_TSTOD,  	TRUE, 	rlib_pcode_operator_tstod, NULL},
+      {"dtosf(", 	6, 0,	TRUE,	OP_DTOSF,  	TRUE, 	rlib_pcode_operator_dtosf, NULL},
+      {"dateof(", 7, 0,	TRUE,	OP_DATEOF,  	TRUE, 	rlib_pcode_operator_dateof, NULL},
+      {"timeof(", 7, 0,	TRUE,	OP_TIMEOF,  	TRUE, 	rlib_pcode_operator_timeof, NULL},
+      {"chgdateof(", 	10, 0,	TRUE,	OP_CHGDATEOF,  	TRUE, 	rlib_pcode_operator_chgdateof, NULL},
+      {"chgtimeof(", 	10, 0,	TRUE,	OP_CHGTIMEOF,  	TRUE, 	rlib_pcode_operator_chgtimeof, NULL},
+		{"gettimeinsecs(", 	14, 0,	TRUE,	OP_GETTIMESECS,  	TRUE, 	rlib_pcode_operator_gettimeinsecs, NULL},
+      {"settimeinsecs(", 	14, 0,	TRUE,	OP_SETTIMESECS,  	TRUE, 	rlib_pcode_operator_settimeinsecs, NULL},
+      {"format(", 	7, 0,	TRUE,	OP_FORMAT,  	TRUE, 	rlib_pcode_operator_format, NULL},
+      {"eval(", 	5, 0,	TRUE,	OP_EVAL,  	TRUE, 	rlib_pcode_operator_eval, NULL},
+      {"eval(", 	5, 0,	TRUE,	OP_EVAL,  	TRUE, 	rlib_pcode_operator_eval, NULL},
 
-      { NULL, 	 	0, 0, FALSE,-1,			TRUE,		NULL}
+      { NULL, 	 	0, 0, FALSE,-1,			TRUE,		NULL, NULL}
 };
 
 void rlib_pcode_free(struct rlib_pcode *code) {
@@ -141,10 +142,11 @@ struct rlib_operator_stack {
 	struct rlib_pcode_operator *op[200];
 };
 
-struct rlib_pcode_operator * rlib_find_operator(gchar *ptr, struct rlib_operator_stack *os, struct rlib_pcode *p, int have_operand) {
+static struct rlib_pcode_operator * rlib_find_operator(rlib *r, gchar *ptr, struct rlib_operator_stack *os, struct rlib_pcode *p, int have_operand) {
 	gint len = strlen(ptr);
 	struct rlib_pcode_operator *op;
 	op = rlib_pcode_verbs;
+	GSList *list;
 	while(op && op->tag != NULL) {
 		if(len >= op->taglen) {
 			if(!strncmp(ptr, op->tag, op->taglen)) {
@@ -156,6 +158,14 @@ struct rlib_pcode_operator * rlib_find_operator(gchar *ptr, struct rlib_operator
 			}
 		}
 		op++;
+	}
+	for(list=r->pcode_functions;list != NULL; list=list->next) {
+		op = list->data;
+		if(len >= op->taglen) {
+			if(!strncmp(ptr, op->tag, op->taglen)) {
+				return op;
+			}
+		}
 	}
 	return NULL;
 }
@@ -517,7 +527,7 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, struct rlib_part *part, struct 
 				break;
 		}
 		
-		if(!instr && !indate && (op=rlib_find_operator(moving_ptr, &os, pcodes, moving_ptr != op_pointer))) {
+		if(!instr && !indate && (op=rlib_find_operator(r, moving_ptr, &os, pcodes, moving_ptr != op_pointer))) {
 			if(moving_ptr != op_pointer) {
 				memcpy(operand, op_pointer, moving_ptr - op_pointer);
 				operand[moving_ptr - op_pointer] = '\0';
@@ -796,7 +806,7 @@ gint execute_pcode(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs
 		} else if(code->instructions[i].instruction == PCODE_EXECUTE) {
 			struct rlib_pcode_operator *o = code->instructions[i].value;
 			if(o->execute != NULL) {
-				o->execute(r, vs, this_field_value);
+				o->execute(r, vs, this_field_value, o->user_data);
 			}
 		}
 	}
