@@ -1,3 +1,9 @@
+2005-05-15  Bob Doan  Bob Doan  <bdoan@sicompos.com>
+	* configure.in: csharp examples
+	* src/examples/Makefile.am: likewise
+	* src/examples/csharp/Makefile.am: likewise
+	* src/examples/csharp/example.cs: likewise
+
 2005-05-15 Zoltan Boszormenyi <zboszor@dunaweb.hu>
 	* libsrc/formatstring.c: Fix PDF/Locale Problems
 	* libsrc/pdf.c: likewise

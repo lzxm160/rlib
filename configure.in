@@ -600,6 +600,7 @@ src/examples/php/Makefile
 src/examples/python/Makefile
 src/examples/java/Makefile
 src/examples/perl/Makefile
+src/examples/csharp/Makefile
 bindings/Makefile
 bindings/php/Makefile
 bindings/python/Makefile

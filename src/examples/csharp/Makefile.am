@@ -1,4 +1,4 @@
-## bin/Makefile.am for RLIB
+## src/examples/csharp/Makefile.am for RLIB
 
 ## Copyright (c) 2003-2005 SICOM Systems Inc (bdoan@sicompos.com)
 ## rlib is free software; you can redistribute it and/or modify
@@ -20,33 +20,11 @@
 ##
 ## Process this file with automake to produce Makefile.in
 
-if HAVE_PHP
-PHP_EXAMPLES=php
-endif
+noinst_SCRIPTS = products.xml
 
-if HAVE_PYTHON
-PYTHON_EXAMPLES=python
-endif
+products.xml: 
+	cp ../common/products.xml .
 
-if HAVE_JAVA
-JAVA_EXAMPLES=java
-endif
+CLEANFILES = *.xml 
 
-if HAVE_PERL
-PERL_EXAMPLES=perl
-endif
-
-if HAVE_CSHARP
-CSHARP_EXAMPLES=csharp
-endif
-
-SUBDIRS = \
-	common \
-	c \
-	$(PHP_EXAMPLES) \
-	$(PYTHON_EXAMPLES) \
-	$(JAVA_EXAMPLES) \
-	$(PERL_EXAMPLES) \
-	$(CSHARP_EXAMPLES) 
-
-EXTRA_DIST = README
+EXTRADIST=example.cs 
