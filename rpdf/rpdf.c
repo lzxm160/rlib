@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <locale.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -448,10 +449,13 @@ struct rpdf *rpdf_new() {
 gboolean rpdf_finalize(struct rpdf *pdf) {
 	gint i, save_size;
 	gchar *obj = NULL;
+	char  *saved_locale;
 	gchar buf[128];
 	rpdf_out_string(pdf, pdf->header);
 	g_hash_table_foreach(pdf->fonts, rpdf_number_fonts, pdf);
 	
+	saved_locale = strdup(setlocale(LC_ALL, NULL));
+	setlocale(LC_ALL, "C");
 	obj = obj_printf(NULL, "/Type /Catalog\n");
 	obj = obj_printf(obj, "/Pages 3 0 R\n"); 
 	obj = obj_printf(obj, "/Outlines 2 0 R\n"); 
@@ -627,6 +631,8 @@ gboolean rpdf_finalize(struct rpdf *pdf) {
 	sprintf(buf, "startxref\n%d\n", save_size);
 	rpdf_out_string(pdf, buf);
 	rpdf_out_string(pdf, "%%EOF\n");
+	setlocale(LC_ALL, saved_locale);
+	free(saved_locale);
 	return TRUE;
 }
 

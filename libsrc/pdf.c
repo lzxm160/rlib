@@ -26,8 +26,6 @@
 #include "rlib.h"
 #include "rpdf.h"
 
-#define PDFLOCALE	"en_US"
-#define USEPDFLOCALE	1
 #define MAX_PDF_PAGES 500
 
 #define BOLD 1
@@ -111,15 +109,8 @@ static gfloat pdf_get_string_width(rlib *r, gchar *text) {
 
 static void pdf_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *text, gfloat orientation) {
 	struct rpdf *pdf = OUTPUT_PRIVATE(r)->pdf;
-#if USEPDFLOCALE
-	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
-#endif
 
 	rpdf_text(pdf, left_origin, bottom_origin, orientation, text);
-
-#if USEPDFLOCALE
-	setlocale(LC_NUMERIC, tlocale);
-#endif
 }
 
 static void pdf_rpdf_callback(gchar *data, gint len, void *user_data) {
@@ -147,9 +138,6 @@ static void pdf_print_text_API(rlib *r, gfloat left_origin, gfloat bottom_origin
 
 
 static void pdf_set_fg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {
-#if USEPDFLOCALE
-	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
-#endif
 	if(OUTPUT_PRIVATE(r)->current_color.r != red || OUTPUT_PRIVATE(r)->current_color.g != green 
 	|| OUTPUT_PRIVATE(r)->current_color.b != blue) {
 		if(red != -1 && green != -1 && blue != -1 )
@@ -158,15 +146,9 @@ static void pdf_set_fg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {
 		OUTPUT_PRIVATE(r)->current_color.g = green;
 		OUTPUT_PRIVATE(r)->current_color.b = blue;	
 	}
-#if USEPDFLOCALE
-	setlocale(LC_NUMERIC, tlocale);
-#endif
 }
 
 static void pdf_drawbox(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, struct rlib_rgb *color) {
-#if USEPDFLOCALE
-	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
-#endif
 	if(!(color->r == 1.0 && color->g == 1.0 && color->b == 1.0)) {
 		//the - PDF_PIXEL seems to get around decimal percision problems.. but should investigate this a bit further	
 		OUTPUT(r)->set_bg_color(r, color->r, color->g, color->b);
@@ -174,27 +156,15 @@ static void pdf_drawbox(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloa
 		rpdf_fill(OUTPUT_PRIVATE(r)->pdf);
 		OUTPUT(r)->set_bg_color(r, 0, 0, 0);
 	}
-#if USEPDFLOCALE
-	setlocale(LC_NUMERIC, tlocale);
-#endif
 }
 
 static void pdf_hr(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
 struct rlib_rgb *color, gfloat indent, gfloat length) {
-#if USEPDFLOCALE
-	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
-#endif
 	how_tall = how_tall / RLIB_PDF_DPI;
 	pdf_drawbox(r, left_origin, bottom_origin, how_long, how_tall, color);
-#if USEPDFLOCALE
-	setlocale(LC_NUMERIC, tlocale);
-#endif
 }
 
 static void pdf_start_boxurl(rlib *r, struct rlib_part *part, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url, gint backwards) {
-#if USEPDFLOCALE
-	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
-#endif
 	if(part->landscape) {
 		gfloat new_left = rlib_layout_get_page_width(r, part)-left_origin-how_long;
 		gfloat new_bottom = bottom_origin;
@@ -204,23 +174,14 @@ static void pdf_start_boxurl(rlib *r, struct rlib_part *part, gfloat left_origin
 		gfloat new_bottom = bottom_origin;
 		rpdf_link(OUTPUT_PRIVATE(r)->pdf, new_left, new_bottom, new_left+how_long, new_bottom+how_tall, url);
 	}
-#if USEPDFLOCALE
-	setlocale(LC_NUMERIC, tlocale);
-#endif
 }
 
 static void pdf_line_image(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *nname, gchar *type, gfloat nwidth, 
 gfloat nheight) {
-#if USEPDFLOCALE
-	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
-#endif
 	gint realtype=RPDF_IMAGE_JPEG;
 	rpdf_image(OUTPUT_PRIVATE(r)->pdf, left_origin, bottom_origin, nwidth, nheight, realtype, nname);
 
 	OUTPUT(r)->set_bg_color(r, 0, 0, 0);
-#if USEPDFLOCALE
-	setlocale(LC_NUMERIC, tlocale);
-#endif
 }
 
 static void pdf_set_font_point_actual(rlib *r, gint point) {
@@ -262,9 +223,6 @@ static void pdf_set_font_point(rlib *r, gint point) {
 }
 	
 static void pdf_start_new_page(rlib *r, struct rlib_part *part) {
-#if USEPDFLOCALE
-	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
-#endif
 	gint i=0;
 	gint pages_across = part->pages_across;
 	gchar paper_type[40];
@@ -284,88 +242,46 @@ static void pdf_start_new_page(rlib *r, struct rlib_part *part) {
 			part->landscape = 0;
 		}
 	}
-#if USEPDFLOCALE
-	setlocale(LC_NUMERIC, tlocale);
-#endif
 }
 
 static void pdf_set_working_page(rlib *r, struct rlib_part *part, gint page) {
-#if USEPDFLOCALE
-	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
-#endif
 	gint pages_across = part->pages_across;
 	gint page_number = (r->current_page_number-1) * pages_across;
 	
 	rpdf_set_page(OUTPUT_PRIVATE(r)->pdf, page_number + page - OUTPUT_PRIVATE(r)->page_diff);
 
 	OUTPUT_PRIVATE(r)->current_page = page_number + page - OUTPUT_PRIVATE(r)->page_diff;
-#if USEPDFLOCALE
-	setlocale(LC_NUMERIC, tlocale);
-#endif
-	setlocale(LC_NUMERIC, tlocale);
 }
 
 static void pdf_set_raw_page(rlib *r, struct rlib_part *part, gint page) {
-#if USEPDFLOCALE
-	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
-#endif
-
 	OUTPUT_PRIVATE(r)->page_diff = r->current_page_number - page;
-#if USEPDFLOCALE
-	setlocale(LC_NUMERIC, tlocale);
-#endif
-	setlocale(LC_NUMERIC, tlocale);
 }
 
 
 static void pdf_init_end_page(rlib *r) {
-#if USEPDFLOCALE
-	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
-#endif
 	if(r->start_of_new_report == TRUE) {
 		r->start_of_new_report = FALSE;
 	}
-#if USEPDFLOCALE
-	setlocale(LC_NUMERIC, tlocale);
-#endif
 }
 
 static void pdf_init_output(rlib *r) {
-#if USEPDFLOCALE
-	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
-#endif
 	struct rpdf *pdf;
 
 	pdf = rpdf_new();
 	rpdf_set_title(pdf, "RLIB Report");
 	OUTPUT_PRIVATE(r)->pdf = pdf;
-#if USEPDFLOCALE
-	setlocale(LC_NUMERIC, tlocale);
-#endif
 }
 
 static void pdf_finalize_private(rlib *r) {
-#if USEPDFLOCALE
-	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
-#endif
 	int length;
 	rpdf_finalize(OUTPUT_PRIVATE(r)->pdf);
 	OUTPUT_PRIVATE(r)->buffer = rpdf_get_buffer(OUTPUT_PRIVATE(r)->pdf, &length);
 	OUTPUT_PRIVATE(r)->length = length;
-#if USEPDFLOCALE
-	setlocale(LC_NUMERIC, tlocale);
-#endif
 }
 
 static void pdf_spool_private(rlib *r) {
-#if USEPDFLOCALE
-	char *tlocale = setlocale(LC_NUMERIC, PDFLOCALE);
-#endif
 	ENVIRONMENT(r)->rlib_write_output(OUTPUT_PRIVATE(r)->buffer, OUTPUT_PRIVATE(r)->length);
 	rpdf_free(OUTPUT_PRIVATE(r)->pdf);
-#if USEPDFLOCALE
-	setlocale(LC_NUMERIC, tlocale);
-#endif
 }
 
 static void pdf_end_page(rlib *r, struct rlib_part *part) {

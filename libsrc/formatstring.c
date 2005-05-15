@@ -75,7 +75,7 @@ gint rlib_number_sprintf(gchar *dest, gchar *fmtstr, const struct rlib_value *rv
 	gint where=0;
 	gint commatize=0;
 	gchar *c;
-//	char *radixchar = nl_langinfo(RADIXCHAR);
+	char *radixchar = nl_langinfo(RADIXCHAR);
 
 	for(c=fmtstr;*c && (*c != 'd');c++) {
 		if(*c=='$') {
@@ -158,9 +158,8 @@ gint rlib_number_sprintf(gchar *dest, gchar *fmtstr, const struct rlib_value *rv
 			}
 			right /= tentothe(RLIB_FXP_PRECISION-right_pad);
 			sprintf(right_holding, fright, right);
-			dest[strlen(left_holding)] = '.';
-			strcpy((dest+strlen(left_holding))+1, right_holding);
-			dest[strlen(left_holding)+strlen(right_holding)+1]='\0';
+			strcat(dest, radixchar);
+			strcat(dest, right_holding);
 		}
 	
 	}
