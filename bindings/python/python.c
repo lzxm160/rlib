@@ -684,9 +684,8 @@ SWIG_Python_InstallConstants(PyObject *d, swig_const_info constants[]) {
 /* -------- TYPES TABLE (BEGIN) -------- */
 
 #define  SWIGTYPE_p_rlib swig_types[0] 
-#define  SWIGTYPE_p_gint swig_types[1] 
-#define  SWIGTYPE_p_f_p_rlib_p_void__int swig_types[2] 
-static swig_type_info *swig_types[4];
+#define  SWIGTYPE_p_f_p_rlib_p_void__int swig_types[1] 
+static swig_type_info *swig_types[3];
 
 /* -------- TYPES TABLE (END) -------- */
 
@@ -783,19 +782,14 @@ static PyObject *_wrap_rlib_add_datasource_xml(PyObject *self, PyObject *args) {
     PyObject *resultobj;
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;
-    gint result;
+    int result;
     PyObject * obj0 = 0 ;
     
     if(!PyArg_ParseTuple(args,(char *)"Os:rlib_add_datasource_xml",&obj0,&arg2)) goto fail;
     if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
-    result = rlib_add_datasource_xml(arg1,arg2);
+    result = (int)rlib_add_datasource_xml(arg1,arg2);
     
-    {
-        gint * resultptr;
-        resultptr = (gint *) malloc(sizeof(gint));
-        memmove(resultptr, &result, sizeof(gint));
-        resultobj = SWIG_NewPointerObj((void *) resultptr, SWIGTYPE_p_gint, 1);
-    }
+    resultobj = PyInt_FromLong((long)result);
     return resultobj;
     fail:
     return NULL;
@@ -1246,6 +1240,44 @@ static PyObject *_wrap_rlib_graph_clear_bg_region(PyObject *self, PyObject *args
 }
 
 
+static PyObject *_wrap_rlib_graph_set_x_minor_tick(PyObject *self, PyObject *args) {
+    PyObject *resultobj;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    char *arg3 ;
+    int result;
+    PyObject * obj0 = 0 ;
+    
+    if(!PyArg_ParseTuple(args,(char *)"Oss:rlib_graph_set_x_minor_tick",&obj0,&arg2,&arg3)) goto fail;
+    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    result = (int)rlib_graph_set_x_minor_tick(arg1,arg2,arg3);
+    
+    resultobj = PyInt_FromLong((long)result);
+    return resultobj;
+    fail:
+    return NULL;
+}
+
+
+static PyObject *_wrap_rlib_graph_set_x_minor_tick_by_location(PyObject *self, PyObject *args) {
+    PyObject *resultobj;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    int arg3 ;
+    int result;
+    PyObject * obj0 = 0 ;
+    
+    if(!PyArg_ParseTuple(args,(char *)"Osi:rlib_graph_set_x_minor_tick_by_location",&obj0,&arg2,&arg3)) goto fail;
+    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    result = (int)rlib_graph_set_x_minor_tick_by_location(arg1,arg2,arg3);
+    
+    resultobj = PyInt_FromLong((long)result);
+    return resultobj;
+    fail:
+    return NULL;
+}
+
+
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"rlib_init", _wrap_rlib_init, METH_VARARGS },
 	 { (char *)"rlib_add_datasource_mysql", _wrap_rlib_add_datasource_mysql, METH_VARARGS },
@@ -1276,6 +1308,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"rlib_version", _wrap_rlib_version, METH_VARARGS },
 	 { (char *)"rlib_graph_add_bg_region", _wrap_rlib_graph_add_bg_region, METH_VARARGS },
 	 { (char *)"rlib_graph_clear_bg_region", _wrap_rlib_graph_clear_bg_region, METH_VARARGS },
+	 { (char *)"rlib_graph_set_x_minor_tick", _wrap_rlib_graph_set_x_minor_tick, METH_VARARGS },
+	 { (char *)"rlib_graph_set_x_minor_tick_by_location", _wrap_rlib_graph_set_x_minor_tick_by_location, METH_VARARGS },
 	 { NULL, NULL }
 };
 
@@ -1283,12 +1317,10 @@ static PyMethodDef SwigMethods[] = {
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
 static swig_type_info _swigt__p_rlib[] = {{"_p_rlib", 0, "rlib *", 0},{"_p_rlib"},{0}};
-static swig_type_info _swigt__p_gint[] = {{"_p_gint", 0, "gint *", 0},{"_p_gint"},{0}};
 static swig_type_info _swigt__p_f_p_rlib_p_void__int[] = {{"_p_f_p_rlib_p_void__int", 0, "int (*)(rlib *,void *)", 0},{"_p_f_p_rlib_p_void__int"},{0}};
 
 static swig_type_info *swig_types_initial[] = {
 _swigt__p_rlib, 
-_swigt__p_gint, 
 _swigt__p_f_p_rlib_p_void__int, 
 0
 };

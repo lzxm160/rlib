@@ -408,6 +408,47 @@ fi
 AM_CONDITIONAL(HAVE_JAVA, test x$enable_java = xyes)
 AC_SUBST(JAVA_CFLAGS)
 
+enable_csharp=no
+CSHARP_CFLAGS=""
+AC_ARG_WITH(csharp,
+[  --with-csharp=<directory>	use CSHARP in <directory>],[
+if test $withval = no
+then
+	enable_csharp=false
+elif test $withval = yes
+then
+	dir="/usr/local"
+else
+	dir=$withval
+	enable_csharp=yes
+fi
+])
+csharpdir=""
+if test $enable_csharp = yes
+then
+	AC_MSG_CHECKING(for C SHARP files)
+	for d in $dir /usr /usr/local
+	do
+		if test -f $d/bin/mcs
+		then
+			AC_MSG_RESULT(found C SHARP in $d)
+			csharpdir=$d
+			break
+		fi
+	done
+	if test x$csharpdir = x
+	then
+		enable_csharp=no
+		AC_MSG_WARN(C SHARP bindings are not going to be used)
+	else
+		AC_DEFINE(HAVE_CSHARP,1,[Build with CSHARP support])
+		CSHARP_CFLAGS=""
+	fi
+fi
+AM_CONDITIONAL(HAVE_CSHARP, test x$enable_csharp = xyes)
+AC_SUBST(CSHARP_CFLAGS)
+
+
 perl_where=""
 PERL_CFLAGS=""
 AC_ARG_ENABLE(perl,              [  --disable-perl         disable perl],,enable_perl=yes)
@@ -564,6 +605,7 @@ bindings/php/Makefile
 bindings/python/Makefile
 bindings/perl/Makefile
 bindings/java/Makefile
+bindings/csharp/Makefile
 bindings/interfaces/Makefile
 inputs/Makefile
 inputs/mysql/Makefile
@@ -594,7 +636,7 @@ rlib-$VERSION:
     ODBC:                    ${enable_odbc}
 
    OUTPUTS:
-    PDF:                     Always (Say Hello to RPDF)
+    PDF:                     Always (Via RPDF)
     HTML:                    Always
     CSV:                     Always
     TEXT:                    Always
@@ -610,6 +652,7 @@ rlib-$VERSION:
      PYTHON version:         ${python_version}
      PYTHON entension dir:   ${PYTHON_EXTENSION_DIR}
     JAVA:                    ${enable_java}
+    CSHARP:                  ${enable_csharp}
     PERL:                    ${enable_perl}
      PERL entension dir:     ${perl_where}
 

@@ -36,9 +36,15 @@ if HAVE_PERL
 PERL_BINDINGS=perl
 endif
 
+if HAVE_CSHARP
+CSHARP_BINDINGS=csharp
+endif
+
+
 SUBDIRS = \
 	$(PHP_BINDINGS) \
 	$(PYTHON_BINDINGS) \
 	$(JAVA_BINDINGS) \
 	$(PERL_BINDINGS) \
+	$(CSHARP_BINDINGS) \
 	interfaces

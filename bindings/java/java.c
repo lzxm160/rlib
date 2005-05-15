@@ -252,11 +252,11 @@ JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1add_1datasource_1odbc(JNIEnv *jenv, jc
 }
 
 
-JNIEXPORT jlong JNICALL Java_rlibJNI_rlib_1add_1datasource_1xml(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
-    jlong jresult = 0 ;
+JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1add_1datasource_1xml(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
+    jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;
-    gint result;
+    int result;
     
     (void)jenv;
     (void)jcls;
@@ -268,13 +268,9 @@ JNIEXPORT jlong JNICALL Java_rlibJNI_rlib_1add_1datasource_1xml(JNIEnv *jenv, jc
             if (!arg2) return 0;
         }
     }
-    result = rlib_add_datasource_xml(arg1,arg2);
+    result = (int)rlib_add_datasource_xml(arg1,arg2);
     
-    {
-        gint * resultptr = (gint *) malloc(sizeof(gint));
-        memmove(resultptr, &result, sizeof(gint));
-        *(gint **)&jresult = resultptr;
-    }
+    jresult = (jint)result; 
     {
         if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, arg2); 
     }
@@ -920,6 +916,71 @@ JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1graph_1clear_1bg_1region(JNIEnv *jenv,
         }
     }
     result = (int)rlib_graph_clear_bg_region(arg1,arg2);
+    
+    jresult = (jint)result; 
+    {
+        if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, arg2); 
+    }
+    return jresult;
+}
+
+
+JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1graph_1set_1x_1minor_1tick(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3) {
+    jint jresult = 0 ;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    char *arg3 ;
+    int result;
+    
+    (void)jenv;
+    (void)jcls;
+    arg1 = *(rlib **)&jarg1; 
+    {
+        arg2 = 0;
+        if (jarg2) {
+            arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
+            if (!arg2) return 0;
+        }
+    }
+    {
+        arg3 = 0;
+        if (jarg3) {
+            arg3 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg3, 0);
+            if (!arg3) return 0;
+        }
+    }
+    result = (int)rlib_graph_set_x_minor_tick(arg1,arg2,arg3);
+    
+    jresult = (jint)result; 
+    {
+        if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, arg2); 
+    }
+    {
+        if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, arg3); 
+    }
+    return jresult;
+}
+
+
+JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1graph_1set_1x_1minor_1tick_1by_1location(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jint jarg3) {
+    jint jresult = 0 ;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    int arg3 ;
+    int result;
+    
+    (void)jenv;
+    (void)jcls;
+    arg1 = *(rlib **)&jarg1; 
+    {
+        arg2 = 0;
+        if (jarg2) {
+            arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
+            if (!arg2) return 0;
+        }
+    }
+    arg3 = (int)jarg3; 
+    result = (int)rlib_graph_set_x_minor_tick_by_location(arg1,arg2,arg3);
     
     jresult = (jint)result; 
     {

@@ -74,6 +74,8 @@ package rlib;
 *rlib_version = *rlibc::rlib_version;
 *rlib_graph_add_bg_region = *rlibc::rlib_graph_add_bg_region;
 *rlib_graph_clear_bg_region = *rlibc::rlib_graph_clear_bg_region;
+*rlib_graph_set_x_minor_tick = *rlibc::rlib_graph_set_x_minor_tick;
+*rlib_graph_set_x_minor_tick_by_location = *rlibc::rlib_graph_set_x_minor_tick_by_location;
 
 # ------- VARIABLE STUBS --------
 

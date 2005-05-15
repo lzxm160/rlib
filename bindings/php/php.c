@@ -477,18 +477,19 @@ gboolean default_function(rlib *r, struct rlib_value_stack *vs, struct rlib_valu
 	
 	for(i=0;i<b->params;i++) {
 		struct rlib_value *v = rlib_value_stack_pop(vs);
+		int spot = b->params-i-1;
 		if(RLIB_VALUE_IS_STRING(v)) {
-			params[i] = emalloc(sizeof(gpointer));
-			MAKE_STD_ZVAL(*params[i]);
-			(*params[i])->type = IS_STRING;
-			(*params[i])->value.str.len = strlen(RLIB_VALUE_GET_AS_STRING(v));
-			(*params[i])->value.str.val = estrdup(RLIB_VALUE_GET_AS_STRING(v));
+			params[spot] = emalloc(sizeof(gpointer));
+			MAKE_STD_ZVAL(*params[spot]);
+			(*params[spot])->type = IS_STRING;
+			(*params[spot])->value.str.len = strlen(RLIB_VALUE_GET_AS_STRING(v));
+			(*params[spot])->value.str.val = estrdup(RLIB_VALUE_GET_AS_STRING(v));
 			rlib_value_free(v);
 		} else if(RLIB_VALUE_IS_NUMBER(v)) {
-			params[i] = emalloc(sizeof(gpointer));
-			MAKE_STD_ZVAL(*params[i]);
-			(*params[i])->type = IS_DOUBLE;
-			(*params[i])->value.dval = (double)RLIB_VALUE_GET_AS_NUMBER(v) / (double)RLIB_DECIMAL_PRECISION;
+			params[spot] = emalloc(sizeof(gpointer));
+			MAKE_STD_ZVAL(*params[spot]);
+			(*params[spot])->type = IS_DOUBLE;
+			(*params[spot])->value.dval = (double)RLIB_VALUE_GET_AS_NUMBER(v) / (double)RLIB_DECIMAL_PRECISION;
 			rlib_value_free(v);
 		}
 	

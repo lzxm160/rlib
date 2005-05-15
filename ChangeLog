@@ -1,3 +1,27 @@
+2005-05-15  Bob Doan  <bdoan@sicompos.com>
+	* configure.in: add c#, renerate the bindings
+	* bindings/Makefile.am: likewise
+	* bindings/csharp/Makefile.am: likewise
+	* bindings/csharp/csharp.c:  likewise
+	* bindings/interfaces/Makefile.am: likewise
+	* bindings/interfaces/SWIGTYPE_p_f_p_rlib_p_void__int.cs: likewise
+	* bindings/interfaces/SWIGTYPE_p_rlib.cs: likewise
+	* bindings/interfaces/SWIGTYPE_p_void.cs: likewise
+	* bindings/interfaces/librlib.java: likewise
+	* bindings/interfaces/librlibJNI.java: likewise
+	* bindings/interfaces/rlib.cs: likewise
+	* bindings/interfaces/rlib.java:  likewise
+	* bindings/interfaces/rlib.pm: likewise
+	* bindings/interfaces/rlib.py: likewise
+	* bindings/interfaces/rlibJNI.java: 
+	* bindings/interfaces/rlibPINVOKE.cs: likewise
+	* bindings/java/java.c: likewise
+	* bindings/perl/perl.c: likewise
+	* bindings/python/python.c: likewise
+	* bindings/php/php.c: Fix order of paramaters for custom R functions
+	* libsrc/generate_bindings.sh: easily generate the bindings
+	* libsrc/rlib.i: sync
+
 2005-05-13  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/php.c: Ability to add custom functions to the R engine
 	* libsrc/api.c: likewise

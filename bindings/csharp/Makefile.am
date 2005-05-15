@@ -1,4 +1,4 @@
-## bindings/java/Makefile.am for RLIB
+## bindings/csharp/Makefile.am for RLIB
 
 ## Copyright (c) 2003 SICOM Systems Inc (bdoan@sicompos.com)
 ## rlib is free software; you can redistribute it and/or modify
@@ -19,12 +19,14 @@
 ## Report bugs to rlib-devel@lists.sourceforge.net
 ##
 ## Process this file with automake to produce Makefile.in
-
-EXTRA_DIST = rlib.pm rlib.py rlib.java  rlibJNI.java  SWIGTYPE_p_f_p_rlib_p_void__int.java  SWIGTYPE_p_rlib.java  SWIGTYPE_p_void.java \
-	rlib.cs  rlibPINVOKE.cs  SWIGTYPE_p_f_p_rlib_p_void__int.cs  SWIGTYPE_p_rlib.cs  SWIGTYPE_p_void.cs
-
-perldir = $(PERL_EXTENSION_DIR)
-perl_DATA = rlib.pm
-
-pythondir = $(PYTHON_EXTENSION_DIR)
-python_DATA = rlib.py
+AM_CFLAGS = -I${top_srcdir}/libsrc $(RLIB_CFLAGS) $(CSHARP_CFLAGS) -fno-strict-aliasing
+lib_LTLIBRARIES = librlibcsharp.la
+librlibcsharp_la_SOURCES = csharp.c 
+librlibcsharp_la_LIBADD = $(top_builddir)/libsrc/libr.la $(RLIB_LIBS)
+DEF_FILE=librlibcsharp.def
+if WIN32
+def_ldflags=-Wl,--output-def,$(DEF_FILE) -module -avoid-version
+endif
+librlibcsharp_la_LDFLAGS = \
+	-version-info $(RLIB_LT_CURRENT):$(RLIB_LT_REVISION):$(RLIB_LT_AGE) \
+	$(def_ldflags)

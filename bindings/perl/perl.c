@@ -764,9 +764,8 @@ static void _swig_create_magic(CPerlObj *pPerl, SV *sv, const char *name, int (C
 /* -------- TYPES TABLE (BEGIN) -------- */
 
 #define  SWIGTYPE_p_rlib swig_types[0] 
-#define  SWIGTYPE_p_gint swig_types[1] 
-#define  SWIGTYPE_p_f_p_rlib_p_void__int swig_types[2] 
-static swig_type_info *swig_types[4];
+#define  SWIGTYPE_p_f_p_rlib_p_void__int swig_types[1] 
+static swig_type_info *swig_types[3];
 
 /* -------- TYPES TABLE (END) -------- */
 
@@ -952,7 +951,7 @@ XS(_wrap_rlib_add_datasource_xml) {
     {
         rlib *arg1 = (rlib *) 0 ;
         char *arg2 ;
-        gint result;
+        int result;
         int argvi = 0;
         dXSARGS;
         
@@ -966,14 +965,10 @@ XS(_wrap_rlib_add_datasource_xml) {
         }
         if (!SvOK((SV*) ST(1))) arg2 = 0;
         else arg2 = (char *) SvPV(ST(1), PL_na);
-        result = rlib_add_datasource_xml(arg1,arg2);
+        result = (int)rlib_add_datasource_xml(arg1,arg2);
         
-        {
-            gint * resultobj = (gint *) malloc(sizeof(gint));
-            memmove(resultobj, &result, sizeof(gint));
-            ST(argvi) = sv_newmortal();
-            SWIG_MakePtr(ST(argvi++), (void *) resultobj, SWIGTYPE_p_gint, 0|SWIG_OWNER);
-        }
+        ST(argvi) = sv_newmortal();
+        sv_setiv(ST(argvi++), (IV) result);
         XSRETURN(argvi);
         fail:
         ;
@@ -1741,16 +1736,79 @@ XS(_wrap_rlib_graph_clear_bg_region) {
 }
 
 
+XS(_wrap_rlib_graph_set_x_minor_tick) {
+    {
+        rlib *arg1 = (rlib *) 0 ;
+        char *arg2 ;
+        char *arg3 ;
+        int result;
+        int argvi = 0;
+        dXSARGS;
+        
+        if ((items < 3) || (items > 3)) {
+            SWIG_croak("Usage: rlib_graph_set_x_minor_tick(r,graph_name,x_value);");
+        }
+        {
+            if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
+                SWIG_croak("Type error in argument 1 of rlib_graph_set_x_minor_tick. Expected _p_rlib");
+            }
+        }
+        if (!SvOK((SV*) ST(1))) arg2 = 0;
+        else arg2 = (char *) SvPV(ST(1), PL_na);
+        if (!SvOK((SV*) ST(2))) arg3 = 0;
+        else arg3 = (char *) SvPV(ST(2), PL_na);
+        result = (int)rlib_graph_set_x_minor_tick(arg1,arg2,arg3);
+        
+        ST(argvi) = sv_newmortal();
+        sv_setiv(ST(argvi++), (IV) result);
+        XSRETURN(argvi);
+        fail:
+        ;
+    }
+    croak(Nullch);
+}
+
+
+XS(_wrap_rlib_graph_set_x_minor_tick_by_location) {
+    {
+        rlib *arg1 = (rlib *) 0 ;
+        char *arg2 ;
+        int arg3 ;
+        int result;
+        int argvi = 0;
+        dXSARGS;
+        
+        if ((items < 3) || (items > 3)) {
+            SWIG_croak("Usage: rlib_graph_set_x_minor_tick_by_location(r,graph_name,location);");
+        }
+        {
+            if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
+                SWIG_croak("Type error in argument 1 of rlib_graph_set_x_minor_tick_by_location. Expected _p_rlib");
+            }
+        }
+        if (!SvOK((SV*) ST(1))) arg2 = 0;
+        else arg2 = (char *) SvPV(ST(1), PL_na);
+        arg3 = (int) SvIV(ST(2));
+        result = (int)rlib_graph_set_x_minor_tick_by_location(arg1,arg2,arg3);
+        
+        ST(argvi) = sv_newmortal();
+        sv_setiv(ST(argvi++), (IV) result);
+        XSRETURN(argvi);
+        fail:
+        ;
+    }
+    croak(Nullch);
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
 static swig_type_info _swigt__p_rlib[] = {{"_p_rlib", 0, "rlib *", 0},{"_p_rlib"},{0}};
-static swig_type_info _swigt__p_gint[] = {{"_p_gint", 0, "gint *", 0},{"_p_gint"},{0}};
 static swig_type_info _swigt__p_f_p_rlib_p_void__int[] = {{"_p_f_p_rlib_p_void__int", 0, "int (*)(rlib *,void *)", 0},{"_p_f_p_rlib_p_void__int"},{0}};
 
 static swig_type_info *swig_types_initial[] = {
 _swigt__p_rlib, 
-_swigt__p_gint, 
 _swigt__p_f_p_rlib_p_void__int, 
 0
 };
@@ -1797,6 +1855,8 @@ static swig_command_info swig_commands[] = {
 {"rlibc::rlib_version", _wrap_rlib_version},
 {"rlibc::rlib_graph_add_bg_region", _wrap_rlib_graph_add_bg_region},
 {"rlibc::rlib_graph_clear_bg_region", _wrap_rlib_graph_clear_bg_region},
+{"rlibc::rlib_graph_set_x_minor_tick", _wrap_rlib_graph_set_x_minor_tick},
+{"rlibc::rlib_graph_set_x_minor_tick_by_location", _wrap_rlib_graph_set_x_minor_tick_by_location},
 {0,0}
 };
 
