@@ -145,8 +145,8 @@ struct rlib_operator_stack {
 static struct rlib_pcode_operator * rlib_find_operator(rlib *r, gchar *ptr, struct rlib_operator_stack *os, struct rlib_pcode *p, int have_operand) {
 	gint len = strlen(ptr);
 	struct rlib_pcode_operator *op;
-	op = rlib_pcode_verbs;
 	GSList *list;
+	op = rlib_pcode_verbs;
 	while(op && op->tag != NULL) {
 		if(len >= op->taglen) {
 			if(!strncmp(ptr, op->tag, op->taglen)) {
@@ -685,8 +685,10 @@ struct rlib_value * rlib_value_dup(struct rlib_value *orig) {
 }
 
 struct rlib_value * rlib_value_dup_contents(struct rlib_value *rval) {
-	if(rval->type == RLIB_VALUE_STRING)
+	if(rval->type == RLIB_VALUE_STRING) {
 		rval->string_value = g_strdup(rval->string_value);
+		rval->free = TRUE;
+	}
 	return rval;
 }
 
@@ -735,7 +737,7 @@ struct rlib_value *this_field_value) {
 	} else if(o->type == OPERAND_DATE) {
 		return rlib_value_new(rval, RLIB_VALUE_DATE, FALSE, o->value);
 	} else if(o->type == OPERAND_FIELD) {
-		return rlib_value_new(rval, RLIB_VALUE_STRING, FALSE, rlib_resolve_field_value(r, o->value));
+		return rlib_value_new(rval, RLIB_VALUE_STRING, TRUE, rlib_resolve_field_value(r, o->value));
 	} else if(o->type == OPERAND_METADATA) { 
 		struct rlib_metadata *metadata = o->value;
 		*rval = metadata->rval_formula;

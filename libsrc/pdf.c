@@ -281,7 +281,6 @@ static void pdf_finalize_private(rlib *r) {
 
 static void pdf_spool_private(rlib *r) {
 	ENVIRONMENT(r)->rlib_write_output(OUTPUT_PRIVATE(r)->buffer, OUTPUT_PRIVATE(r)->length);
-	rpdf_free(OUTPUT_PRIVATE(r)->pdf);
 }
 
 static void pdf_end_page(rlib *r, struct rlib_part *part) {
@@ -296,6 +295,7 @@ static void pdf_end_page_again(rlib *r, struct rlib_part *part, struct rlib_repo
 }
 
 static int pdf_free(rlib *r) {
+	rpdf_free(OUTPUT_PRIVATE(r)->pdf);
 	g_free(OUTPUT_PRIVATE(r));
 	g_free(OUTPUT(r));
 	return 0;
@@ -475,11 +475,12 @@ static void pdf_graph_x_axis_title(rlib *r, gchar *title) {
 
 static void pdf_graph_y_axis_title(rlib *r, gchar side, gchar *title) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
-
+	gfloat title_width;
+	
 	if(graph->bold_titles)
 		rpdf_set_font(OUTPUT_PRIVATE(r)->pdf, font_names[1], "WinAnsiEncoding", r->current_font_point);
 
-	gfloat title_width = pdf_get_string_width(r, title);
+	title_width = pdf_get_string_width(r, title);
 	if(title[0] == 0) {
 	
 	} else {

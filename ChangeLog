@@ -1,3 +1,19 @@
+2005-06-06  William K. Volkman <wkvsf@users.sourceforge.net>
+
+	reviewed by: Bob Doan  <bdoan@sicompos.com>
+
+	* libsrc/breaks.c: fix memory leaks
+	* libsrc/datasource.c: likewise
+	* libsrc/free.c: likewise
+	* libsrc/graphing.c: likewise
+	* libsrc/navigation.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/pcode.c: likewise
+	* libsrc/pcode_op_functions.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/reportgen.c: likewise
+	* rpdf/rpdf.c: likewise
+
 2005-05-15  Bob Doan  Bob Doan  <bdoan@sicompos.com>
 	* configure.in: csharp examples
 	* src/examples/Makefile.am: likewise

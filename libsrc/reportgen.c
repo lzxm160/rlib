@@ -493,7 +493,8 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 	}
 
 	rlib_emit_signal(r, RLIB_SIGNAL_REPORT_START);
-	rlib_resolve_report_fields(r, part, report);
+	if (!part->has_only_one_report)
+		rlib_resolve_report_fields(r, part, report);
 
 	for(iterations=0;iterations<report->iterations;iterations++) {
 		if(r->queries_count <= 0 || INPUT(r,r->current_result)->first(INPUT(r,r->current_result), r->results[r->current_result].result) == FALSE) {
@@ -503,11 +504,13 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 			rlib_layout_report_output(r, part, report, report->report_header, FALSE);
 			rlib_layout_report_output(r, part, report, report->alternate.nodata, FALSE);
 		} else {
-			rlib_init_variables(r, report);
 			rlib_navigate_first(r, r->current_result);
-			rlib_process_variables(r, report);
-			rlib_process_input_metadata(r);
-
+			if (!part->has_only_one_report) {
+				rlib_init_variables(r, report);
+				rlib_process_variables(r, report);
+				rlib_process_input_metadata(r);
+			}
+			
 			processed_variables = TRUE;
 			rlib_evaluate_report_attributes(r, report);
 			rlib_set_report_from_part(r, part, report, top_margin_offset);
@@ -785,7 +788,7 @@ gint rlib_make_report(rlib *r) {
 	for(i=0;i<r->parts_count;i++) {
 		struct rlib_part *part = r->parts[i];
 		rlib_fetch_first_rows(r);
-		if(part->has_only_one_report) 
+		if(part->has_only_one_report)
 			rlib_evaulate_single_report_variables(r, part);
 
 		rlib_resolve_part_fields(r, part);

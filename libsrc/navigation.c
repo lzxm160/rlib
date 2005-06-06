@@ -66,6 +66,7 @@ static gint rlib_navigate_followers(rlib *r, gint my_leader, gint way) {
 	gint i, rtn = TRUE, bacon;
 	gint found = FALSE;
 	for(i=0;i<r->resultset_followers_count;i++) {
+		found = FALSE;
 		if(r->followers[i].leader == my_leader) {
 			if(r->followers[i].leader_code != NULL ) {
 				struct rlib_value rval_leader, rval_follower;
@@ -79,6 +80,7 @@ static gint rlib_navigate_followers(rlib *r, gint my_leader, gint way) {
 						rlib_execute_pcode(r, &rval_follower, r->followers[i].follower_code, NULL);
 						if( rvalcmp(&rval_leader,&rval_follower) == 0 )  {
 							found = TRUE;
+							
 						} 
 					} 
 					if(found == FALSE) {
@@ -94,7 +96,6 @@ static gint rlib_navigate_followers(rlib *r, gint my_leader, gint way) {
 						} while(rlib_do_followers(r, i, RLIB_NAVIGATE_NEXT) == TRUE);
 					}
 					if(!found)  {
-r_error("DOH\n");					
 						r->results[r->followers[i].follower].navigation_failed = TRUE;	
 					}
 				}

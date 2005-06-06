@@ -101,11 +101,11 @@ gint rlib_add_datasource_postgre(rlib *r, gchar *input_name, gchar *conn) {
 	f2 = rlib_postgre_connect;
 	r->inputs[r->inputs_count].input = f1();
 	postgre = f2(r->inputs[r->inputs_count].input, conn);
-	r->inputs[r->inputs_count].name = g_strdup(input_name);
 	if(postgre == NULL) {
 		rlogit("ERROR: Could not connect to POSTGRE\n");
 		return -1;
 	}
+	r->inputs[r->inputs_count].name = g_strdup(input_name);
 	r->inputs[r->inputs_count].handle = handle;
 	r->inputs[r->inputs_count].input->info.encoder = NULL;
 	r->inputs_count++;

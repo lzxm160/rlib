@@ -247,10 +247,11 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	gint numGoodIncs = numGoodIncs_normal;
 	gint left_axis_decimal_hint=-1, right_axis_decimal_hint=-1;
 	gboolean disabled, tmp_disabled;
-	left_margin_offset += part->left_margin;
 	gboolean minor_tick[MAX_X_TICKS];
 	gint max_color_pool = MAX_COLOR_POOL_NORMAL;
 	gchar **color_pool = color_pool_normal;
+
+	left_margin_offset += part->left_margin;
 
 	memset(minor_tick, 0, sizeof(gboolean)*MAX_X_TICKS);
 		

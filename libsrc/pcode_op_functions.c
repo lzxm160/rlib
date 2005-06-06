@@ -1334,7 +1334,7 @@ gint rlib_pcode_operator_left(rlib *r, struct rlib_value_stack *vs, struct rlib_
 	struct rlib_value *v1, *v2, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	v2 = rlib_value_stack_pop(vs);
-	if(RLIB_VALUE_IS_STRING(v2) && RLIB_VALUE_IS_NUMBER(v1)) {
+	if(RLIB_VALUE_IS_STRING(v2) && RLIB_VALUE_IS_NUMBER(v1) && RLIB_VALUE_GET_AS_STRING(v2) != NULL) {
 		gchar *tmp = g_strdup(RLIB_VALUE_GET_AS_STRING(v2));
 		gint n = RLIB_VALUE_GET_AS_NUMBER(v1)/RLIB_DECIMAL_PRECISION;
 		if (n >= 0) {
@@ -1357,7 +1357,7 @@ gint rlib_pcode_operator_right(rlib *r, struct rlib_value_stack *vs, struct rlib
 	struct rlib_value *v1, *v2, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	v2 = rlib_value_stack_pop(vs);
-	if(RLIB_VALUE_IS_STRING(v2) && RLIB_VALUE_IS_NUMBER(v1)) {
+	if(RLIB_VALUE_IS_STRING(v2) && RLIB_VALUE_IS_NUMBER(v1) && RLIB_VALUE_GET_AS_STRING(v2) != NULL) {
 		gchar *tmp = g_strdup(RLIB_VALUE_GET_AS_STRING(v2));
 		gint n = RLIB_VALUE_GET_AS_NUMBER(v1)/RLIB_DECIMAL_PRECISION;
 		gint len = r_strlen(tmp);

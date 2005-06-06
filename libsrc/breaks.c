@@ -243,13 +243,21 @@ void rlib_handle_break_footers(rlib *r, struct rlib_part *part, struct rlib_repo
 			struct rlib_value rval_tmp;
 			RLIB_VALUE_TYPE_NONE(&rval_tmp);
 			bf = be->data;
-			if(dobreak && (INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result) 
-				|| rvalcmp(bf->rval, rlib_execute_pcode(r, &rval_tmp, bf->code, NULL)))) {
-				dobreak=1;
+			if(dobreak) {
+			    if (INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
+				dobreak = 1;
+			    }
+			    else {
+				struct rlib_value *tmp = rlib_execute_pcode(r, &rval_tmp, bf->code, NULL);
+				if (rvalcmp(bf->rval, tmp))
+				    dobreak = 1;
+				else 
+				    dobreak = 0;
+				rlib_value_free(tmp);
+			    }
 			} else {
 				dobreak = 0;
 			}
-			rlib_value_free(&rval_tmp);
 		}
 		
 		if(dobreak) {

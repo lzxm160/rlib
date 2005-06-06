@@ -1114,10 +1114,12 @@ void rpdf_free(struct rpdf *pdf) {
 	g_free(pdf->keywords);
 	g_free(pdf->creator);
 	g_hash_table_destroy(pdf->fonts);
-	g_free(pdf->page_contents);
 	g_free(pdf->out_buffer);
-	for(i=0;i<pdf->page_count;i++)
+	for(i=0;i<pdf->page_count;i++) {
 		g_free(pdf->page_info[i]);
+		g_slist_free(pdf->page_contents[i]);
+	}
+	g_free(pdf->page_contents);
 	g_free(pdf->page_info);
 	g_slist_foreach(pdf->stream_font_destroyer, rpdf_stream_font_destroyer, NULL);
 	g_slist_free(pdf->stream_font_destroyer);	

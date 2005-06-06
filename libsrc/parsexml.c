@@ -90,6 +90,7 @@ static struct rlib_report_image * parse_image(xmlNodePtr cur) {
 static struct rlib_element * parse_line_array(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
 	struct rlib_element *e, *current;
 	e = NULL;
+	xmlChar *sp;
 	
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
@@ -97,14 +98,17 @@ static struct rlib_element * parse_line_array(xmlDocPtr doc, xmlNsPtr ns, xmlNod
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "field"))) {
 			struct rlib_report_field *f = g_new0(struct rlib_report_field, 1);
 			current = (void *)g_new0(struct rlib_element, 1);
+			sp = xmlGetProp(cur, (const xmlChar *) "value");
 #if DISABLE_UTF8
-			utf8_to_8813(f->value, (gchar *)xmlGetProp(cur, (const xmlChar *) "value"));
+			utf8_to_8813(f->value, (gchar *)sp);
 #else
-			safestrncpy(f->value, (gchar *)xmlGetProp(cur, (const xmlChar *) "value"), sizeof(f->value));
+			safestrncpy(f->value, (gchar *)sp, sizeof(f->value));
 #endif
-
+			xmlFree(sp);
 //Nevermind			//TODO: we need to utf to 8813 all string values in single quotes
-			strcpy(f->value, (const char *)xmlGetProp(cur, (const xmlChar *) "value"));
+			sp = xmlGetProp(cur, (const xmlChar *) "value");
+			strcpy(f->value, (const char *)sp);
+			xmlFree(sp);
 			f->xml_align = xmlGetProp(cur, (const xmlChar *) "align");
 			f->xml_bgcolor = xmlGetProp(cur, (const xmlChar *) "bgcolor");
 			f->xml_color = xmlGetProp(cur, (const xmlChar *) "color");
@@ -123,11 +127,13 @@ static struct rlib_element * parse_line_array(xmlDocPtr doc, xmlNsPtr ns, xmlNod
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "literal"))) {
 			struct rlib_report_literal *t = g_new0(struct rlib_report_literal, 1);
 			current = g_new0(struct rlib_element, 1);
+			sp = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 #if DISABLE_UTF8
-			utf8_to_8813(t->value, xmlNodeListGetString(doc, cur->xmlChildrenNode, 1));
+			utf8_to_8813(t->value, sp);
 #else
-			safestrncpy(t->value, (gchar *)xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), sizeof(t->value));
+			safestrncpy(t->value, (gchar *)sp, sizeof(t->value));
 #endif
+			xmlFree(sp);
 			t->xml_align = xmlGetProp(cur, (const xmlChar *) "align");
 			t->xml_bgcolor = xmlGetProp(cur, (const xmlChar *) "bgcolor");
 			t->xml_color = xmlGetProp(cur, (const xmlChar *) "color");
@@ -469,8 +475,11 @@ static void parse_metadata(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur, GHashTabl
 	metadata->xml_formula = (gchar *)xmlGetProp(cur, (const xmlChar *) "value");
 	if(name != NULL) 
 		g_hash_table_insert(ht, g_strdup(name), metadata);
-	else
-		g_free(metadata);	
+	else {
+		xmlFree(metadata->xml_formula);
+		g_free(metadata);
+	}
+	xmlFree(name);
 	return;
 }
 
@@ -505,7 +514,7 @@ static void parse_report(rlib *r, struct rlib_part *part, struct rlib_report *re
 	if(query == NULL)
 		report->xml_query = xmlGetProp(cur, (const xmlChar *) "query");
 	else
-		report->xml_query = (xmlChar *)query;
+		report->xml_query = xmlStrdup(query);
 		
 	report->xml_orientation = xmlGetProp(cur, (const xmlChar *) "orientation");
 	report->xml_top_margin = xmlGetProp(cur, (const xmlChar *) "topMargin");
@@ -516,7 +525,7 @@ static void parse_report(rlib *r, struct rlib_part *part, struct rlib_report *re
 	report->xml_height = xmlGetProp(cur, (const xmlChar *) "height");
 	report->xml_iterations = xmlGetProp(cur, (const xmlChar *) "iterations");
 
-	if(xmlGetProp(cur, (const xmlChar *) "paperType") != NULL && part->xml_paper_type == NULL)
+	if(xmlHasProp(cur, (const xmlChar *) "paperType") && part->xml_paper_type == NULL)
 		part->xml_paper_type = xmlGetProp(cur, (const xmlChar *) "paperType");
 	report->xml_pages_across = xmlGetProp(cur, (const xmlChar *) "pagesAcross");
 	report->xml_suppress_page_header_first_page = xmlGetProp(cur, (const xmlChar *) "suppressPageHeaderFirstPage");
@@ -724,19 +733,20 @@ struct rlib_part * parse_part_file(rlib *r, gchar *filename, gchar type) {
 		report->report_header = NULL;
 		report->page_footer = NULL;
 		
-		part->xml_left_margin = report->xml_left_margin;
-		part->xml_top_margin = report->xml_top_margin;
-		part->xml_bottom_margin = report->xml_bottom_margin;
-		part->xml_font_size = report->xml_font_size;
-		part->xml_orientation = report->xml_orientation;
+		part->xml_left_margin = xmlStrdup(report->xml_left_margin);
+		part->xml_top_margin = xmlStrdup(report->xml_top_margin);
+		part->xml_bottom_margin = xmlStrdup(report->xml_bottom_margin);
+		part->xml_font_size = xmlStrdup(report->xml_font_size);
+		part->xml_orientation = xmlStrdup(report->xml_orientation);
 		report->is_the_only_report = TRUE;		
 		part->has_only_one_report = TRUE;
+#if 0
 		report->xml_left_margin = NULL;
 		report->xml_top_margin = NULL;
 		report->xml_bottom_margin = NULL;
+#endif		
 		
-		
-		part->xml_pages_across = report->xml_pages_across;
+		part->xml_pages_across = xmlStrdup(report->xml_pages_across);
 		found = TRUE;
 	}
 	
@@ -750,6 +760,7 @@ struct rlib_part * parse_part_file(rlib *r, gchar *filename, gchar type) {
 		return(NULL);
 	}
 
+	xmlFreeDoc(doc);
 	
 #if DISABLE_UTF8
 	if((long)cd != -1)
