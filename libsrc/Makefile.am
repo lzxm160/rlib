@@ -49,3 +49,5 @@ rlibinclude_HEADERS = rlib.h rlib_input.h charencoder.h datetime.h\
 	util.h value.h
 
 AM_CFLAGS = $(RLIB_CFLAGS) $(RLIB_WERROR) -I../rpdf
+
+EXTRA_DIST = rlib.i generate_bindings.sh
