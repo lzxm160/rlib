@@ -17,13 +17,13 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
- 
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <mysql.h>
 #include <glib.h>
- 
+
 #include "util.h"
 #include "rlib_input.h"
 
@@ -53,34 +53,37 @@ gpointer rlib_mysql_real_connect(gpointer input_ptr, gchar *group, gchar *host, 
 
 	if(mysql == NULL)
 		return NULL;
-		
+
 	if(group != NULL) {
 		if (mysql_options(mysql,MYSQL_READ_DEFAULT_GROUP,group))
 			return NULL;
-	}		
-	
+	}
+
 	if (mysql_real_connect(mysql,
 		group == NULL ? host : mysql->options.host,
 		group == NULL ? user : mysql->options.user,
-		group == NULL ? password : mysql->options.password, 
+		group == NULL ? password : mysql->options.password,
 		group == NULL ? database : mysql->options.db,
-		group == NULL ? 0 : mysql->options.port, 
-		group == NULL ? NULL : mysql->options.unix_socket, 
+		group == NULL ? 0 : mysql->options.port,
+		group == NULL ? NULL : mysql->options.unix_socket,
 		0
 	   ) == NULL)
 		return NULL;
 
 	mysql_select_db(mysql,database);
-	
-	INPUT_PRIVATE(input)->mysql = mysql;	
+
+	INPUT_PRIVATE(input)->mysql = mysql;
 	return mysql;
 }
 
 static gint rlib_mysql_input_close(gpointer input_ptr) {
 	struct input_filter *input = input_ptr;
 	mysql_close(INPUT_PRIVATE(input)->mysql);
+#if MYSQL_VERSION_ID > 40110
+	mysql_library_end();
+#endif
 	INPUT_PRIVATE(input)->mysql = NULL;
-	
+
 	return 0;
 }
 
@@ -91,25 +94,31 @@ static MYSQL_RES * rlib_mysql_query(MYSQL *mysql, gchar *query) {
 	if(rtn == 0) {
 		result = mysql_store_result(mysql);
 		return result;
-	} 	
+	}
 	return NULL;
 }
 
 static gint rlib_mysql_first(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_mysql_results *result = result_ptr;
-	mysql_data_seek(result->result,0);
-	result->this_row = mysql_fetch_row(result->result);
-	result->previous_row = NULL;
-	result->last_row = NULL;
-	result->didprevious = FALSE;
-	result->isdone = FALSE;
-	return result->this_row != NULL ? TRUE : FALSE;
-//	return TRUE;
+	if (result) {
+		mysql_data_seek(result->result,0);
+		result->this_row = mysql_fetch_row(result->result);
+		result->previous_row = NULL;
+		result->last_row = NULL;
+		result->didprevious = FALSE;
+		result->isdone = FALSE;
+		return result->this_row != NULL ? TRUE : FALSE;
+	}
+	return FALSE;
 }
 
 static gint rlib_mysql_next(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_mysql_results *result = result_ptr;
 	MYSQL_ROW row;
+
+	if (!result)
+		return FALSE;
+	
 	if(result->didprevious == TRUE) {
 		result->didprevious = FALSE;
 		result->this_row = result->save_row;
@@ -125,27 +134,33 @@ static gint rlib_mysql_next(gpointer input_ptr, gpointer result_ptr) {
 			result->previous_row = result->this_row;
 			result->last_row = result->this_row;
 			result->isdone = TRUE;
-			return FALSE;	
+			return FALSE;
 		}
 	}
 }
 
 static gint rlib_mysql_isdone(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_mysql_results *result = result_ptr;
-	return result->isdone;
+	if (result)
+		return result->isdone;
+	else
+		return TRUE;
 }
 
 static gint rlib_mysql_previous(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_mysql_results *result = result_ptr;
-	result->save_row = result->this_row;
-	result->this_row = result->previous_row;
-	if(result->previous_row == NULL) {
-		result->didprevious = FALSE;
-		return FALSE;
-	} else {
-		result->didprevious = TRUE;
-		return TRUE;
+	if (result) {
+		result->save_row = result->this_row;
+		result->this_row = result->previous_row;
+		if(result->previous_row == NULL) {
+			result->didprevious = FALSE;
+			return FALSE;
+		} else {
+			result->didprevious = TRUE;
+			return TRUE;
+		}
 	}
+	return FALSE;
 }
 
 static gint rlib_mysql_last(gpointer input_ptr, gpointer result_ptr) {
@@ -167,12 +182,14 @@ static gpointer rlib_mysql_resolve_field_pointer(gpointer input_ptr, gpointer re
 	struct rlib_mysql_results *results = result_ptr;
 	gint x=0;
 	MYSQL_FIELD *field;
-	mysql_field_seek(results->result, 0);
-	while((field = mysql_fetch_field(results->result))) {
-		if(!strcmp(field->name, name)) {
-			return GINT_TO_POINTER(results->fields[x]);
+	if (results) {
+		mysql_field_seek(results->result, 0);
+		while((field = mysql_fetch_field(results->result))) {
+			if(!strcmp(field->name, name)) {
+				return GINT_TO_POINTER(results->fields[x]);
+			}
+			x++;
 		}
-		x++;
 	}
 	return NULL;
 }
@@ -199,9 +216,11 @@ void * mysql_new_result_from_query(gpointer input_ptr, gchar *query) {
 
 static void rlib_mysql_rlib_free_result(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_mysql_results *results = result_ptr;
-	mysql_free_result(results->result);
-	g_free(results->fields);
-	g_free(results);
+	if (results) {
+		mysql_free_result(results->result);
+		g_free(results->fields);
+		g_free(results);
+	}
 }
 
 static gint rlib_mysql_free_input_filter(gpointer input_ptr) {
@@ -218,7 +237,7 @@ static const gchar* rlib_mysql_get_error(gpointer input_ptr) {
 
 gpointer rlib_mysql_new_input_filter() {
 	struct input_filter *input;
-	
+
 	input = g_malloc(sizeof(struct input_filter));
 	input->private = g_malloc(sizeof(struct _private));
 	memset(input->private, 0, sizeof(struct _private));

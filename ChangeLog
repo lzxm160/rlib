@@ -1,3 +1,6 @@
+2005-06-12  William K. Volkman <wkvsf@users.sourceforge.net>
+	* inputs/mysql/mysql.c: Behave properly on a failed query
+
 2005-06-06  William K. Volkman <wkvsf@users.sourceforge.net>
 	* inputs/postgre/postgre.c: Behave properly on a failed query
 
