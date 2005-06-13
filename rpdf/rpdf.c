@@ -345,7 +345,7 @@ static void rpdf_make_page_stream(gpointer data, gpointer user_data) {
 static void rpdf_make_page_images(gpointer data, gpointer user_data) {
 	struct rpdf *pdf = user_data;
 	struct rpdf_images *image = data;
-	pdf->working_obj = obj_printf(pdf->working_obj, "/IMrpdf%d %d 0 R\n", image->number, 5+(pdf->page_count*2)+pdf->font_count+pdf->annot_count);
+	pdf->working_obj = obj_printf(pdf->working_obj, "/IMrpdf%d %d 0 R\n", image->number, 5+(pdf->page_count*2)+pdf->font_count+pdf->annot_count+image->number);
 }
 
 static void rpdf_make_page_image_obj(gpointer data, gpointer user_data) {

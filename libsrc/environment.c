@@ -19,12 +19,13 @@
  */
 
 #include <unistd.h>
+#include <glib.h>
 
 #include "config.h"
 #include "rlib.h"
 
 static gchar * rlib_c_resolve_memory_variable(gchar *name) {
-	return "FIXME";
+	return (gchar *)g_getenv(name);
 }
 
 static gint rlib_c_write_output(gchar *data, gint len) {
