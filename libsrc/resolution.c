@@ -174,6 +174,7 @@ rlogit("\n\n");*/
 }
 
 static void rlib_hr_resolve_pcode(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_horizontal_line * rhl) {
+	gfloat f;
 	rhl->size = 0;
 
 	if(rhl->xml_indent == NULL)
@@ -187,6 +188,10 @@ static void rlib_hr_resolve_pcode(rlib *r, struct rlib_part *part, struct rlib_r
 	rhl->bgcolor_code = rlib_infix_to_pcode(r, part, report, (gchar *)rhl->xml_bgcolor, TRUE);
 	rhl->suppress_code = rlib_infix_to_pcode(r, part, report, (gchar *)rhl->xml_suppress, TRUE);
 	rhl->size_code = rlib_infix_to_pcode(r, part, report, (gchar *)rhl->xml_size, TRUE);
+
+	if (rlib_execute_as_float(r, rhl->size_code, &f))
+		rhl->size = f;
+
 }
 
 static void rlib_image_resolve_pcode(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_image * ri) {

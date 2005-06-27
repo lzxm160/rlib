@@ -1,3 +1,8 @@
+2005-06-27  William K. Volkman <wkvsf@users.sourceforge.net>
+	* libsrc/api.c: Don't crash if execute failed
+	* libsrc/layout.c: get correct size of HR
+	* libsrc/resolution.c: likewise
+
 2005-06-27  Zoltan Boszormenyi <zboszor@dunaweb.hu>
 	* libsrc/formatstring.c: Allocate strings dynamically in rlib_number_sprintf() and
 		rlib_pcode_operator_str(). Also rlib_number_sprintf() so
@@ -108,6 +113,7 @@ was to use a 64-bit variable. Fix all those by using the abstract type
 2005-06-13  William K. Volkman <wkvsf@users.sourceforge.net>
 	* rpdf/rpdf.c: Correct references in image output.
 	* libsrc/environment.c: Enable access to environment variables.
+	* libsrc/api.c: Fix oversight in get_output if we failed to execute.
 
 2005-06-06  William K. Volkman <wkvsf@users.sourceforge.net>
 	* inputs/postgre/postgre.c: Behave properly on a failed query

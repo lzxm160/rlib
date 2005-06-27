@@ -284,11 +284,17 @@ gint rlib_set_output_format_from_text(rlib *r, gchar *name) {
 }
 
 gchar *rlib_get_output(rlib *r) {
-	return OUTPUT(r)->get_output(r);
+	if(r->did_execute) 
+		return OUTPUT(r)->get_output(r);
+	else
+		return NULL;
 }
 
 gint rlib_get_output_length(rlib *r) {
-	return OUTPUT(r)->get_output_length(r);
+	if(r->did_execute) 
+		return OUTPUT(r)->get_output_length(r);
+	else
+		return 0;
 }
 
 gboolean rlib_signal_connect(rlib *r, gint signal_number, gboolean (*signal_function)(rlib *, gpointer), gpointer data) {	
