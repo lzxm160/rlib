@@ -890,29 +890,34 @@ gint rlib_pcode_operator_val(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 //TODO: REVISIT THIS
 gint rlib_pcode_operator_str(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	gchar fmtstring[20];
-	gchar dest[30];
+	gchar *dest;
+	gint64 n1, n2;
 	struct rlib_value *v1, *v2, *v3, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	v2 = rlib_value_stack_pop(vs);
 	v3 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_NUMBER(v1) && RLIB_VALUE_IS_NUMBER(v2) && RLIB_VALUE_IS_NUMBER(v3)) {
+		n1 = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v1));
+		n2 = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v2));
 		if(RLIB_VALUE_GET_AS_NUMBER(v1) > 0)
 #ifdef _64BIT_
-			sprintf(fmtstring, "%%%ld.%ldd", RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v2)), RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v1)));
+			sprintf(fmtstring, "%%%ld.%ldd", n2, n1);
 #else
-			sprintf(fmtstring, "%%%lld.%lldd", RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v2)), RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v1)));
+			sprintf(fmtstring, "%%%lld.%lldd", n2, n1);
 #endif
 		else
 #ifdef _64BIT_
-			sprintf(fmtstring, "%%%ld", RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v2)));
+			sprintf(fmtstring, "%%%ld", n2);
 #else
-			sprintf(fmtstring, "%%%lld", RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v2)));
+			sprintf(fmtstring, "%%%lld", n2);
 #endif
+		dest = g_malloc0((gulong)(n1 + n2 + 16));
 		rlib_number_sprintf(dest, fmtstring, v3, 0);
 		rlib_value_free(v1);
 		rlib_value_free(v2);
 		rlib_value_free(v3);
 		rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, dest));
+		g_free(dest);
 		return TRUE;
 	}
 	rlib_pcode_operator_fatal_execption("str", 3, v1, v2, v3);

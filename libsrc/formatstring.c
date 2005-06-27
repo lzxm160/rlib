@@ -66,10 +66,8 @@ gint rlib_string_sprintf(gchar *dest, gchar *fmtstr, struct rlib_value *rval) {
 
 gint rlib_number_sprintf(gchar *dest, gchar *fmtstr, const struct rlib_value *rval, gint special_format) {
 	gint dec=0;
-	gint left_mul=1;
 	gint left_padzero=0;
 	gint left_pad=0;
-	gint right_mul=1;
 	gint right_padzero=1;
 	gint right_pad=0;
 	gint where=0;
@@ -88,28 +86,23 @@ gint rlib_number_sprintf(gchar *dest, gchar *fmtstr, const struct rlib_value *rv
 			where=1;
 		} else if(isdigit(*c)) {		
 			if(where==0) {
-				if(*c=='0')
-					left_padzero = 1;
-				else {
-					left_pad += (*c-'0')*left_mul;
-					left_mul *= 10;
-				}
-			
+				left_pad *= 10;
+				left_pad += (*c-'0');
 			} else {
-				if(*c=='0')
-					right_padzero = 1;
-				else {
-					right_pad += (*c-'0')*right_mul;
-					right_mul *= 10;
-				}				
+				right_pad *= 10;
+				right_pad += (*c-'0');
 			}
 		}	
 	}
+	if (!left_pad)
+		left_padzero = 1;
+	if (!right_pad)
+		right_padzero = 1;
 	if(rval != NULL) {
 		gchar fleft[20];
 		gchar fright[20];
-		gchar left_holding[20];
-		gchar right_holding[20];
+		gchar *left_holding = g_malloc0(left_pad + 16);
+		gchar *right_holding = g_malloc0(right_pad + 16);
 		gint ptr=0;
 		gint64 left, right;
 		left = RLIB_VALUE_GET_AS_NUMBER(rval) / RLIB_DECIMAL_PRECISION;
@@ -161,7 +154,8 @@ gint rlib_number_sprintf(gchar *dest, gchar *fmtstr, const struct rlib_value *rv
 			strcat(dest, radixchar);
 			strcat(dest, right_holding);
 		}
-	
+		g_free(left_holding);
+		g_free(right_holding);
 	}
 	return strlen(dest);
 }

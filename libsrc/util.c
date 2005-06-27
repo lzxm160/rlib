@@ -25,6 +25,7 @@
 #include <ctype.h>
 #include <stdarg.h>
 #include <time.h>
+#include <math.h>
 #include "config.h"
 #ifdef HAVE_SYS_RESOURCE_H
 #include <sys/resource.h>
@@ -259,22 +260,22 @@ void r_warning(const gchar *fmt, ...) {
 	return;
 }
 
-
 gint64 tentothe(gint n) {
-#if _64BIT_
-	gint64 ten[] = {1L, 10L, 100L, 1000L, 10000L, 100000L, 1000000L, 10000000L, 100000000L, 1000000000L, 10000000000L, 100000000000L, 1000000000000L};
-#else
-	gint64 ten[] = {1LL, 10LL, 100LL, 1000LL, 10000LL, 100000LL, 1000000LL, 10000000LL, 100000000LL, 1000000000LL, 10000000000LL, 100000000000LL, 1000000000000LL};
-#endif
-	return ten[n];
+	/* Previously we kept an array here with 12 elements.
+	 * double->gint64 conversion can give corrects values up to 10^18.
+	 */
+	if (n > 18)
+		return 0;
+	return (gint64)pow(10.0, (double)n);
 }
 
 gchar hextochar(gchar c) {
-	c = toupper(c);
-	if(isalpha((int)c))
-		return c-'A'+10;
+	gint	c1;
+	c1 = toupper(c);
+	if(isalpha(c1))
+		return c1-'A'+10;
 	else
-		return c-'0';
+		return c1-'0';
 
 }
 

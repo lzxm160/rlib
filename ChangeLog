@@ -1,4 +1,27 @@
 2005-06-27  Zoltan Boszormenyi <zboszor@dunaweb.hu>
+	* libsrc/formatstring.c: Allocate strings dynamically in rlib_number_sprintf() and
+		rlib_pcode_operator_str(). Also rlib_number_sprintf() so
+		it interprets decimal numbers in the correct direction.
+		Previously when it got a number format "%18.27", it interpreted
+		it as "%81.72", immediately destroying stack content, as the
+		space for the to-be-converted strings were too small and
+		allocated on the stack.
+		Fix one ((long long *)&variable) issue in the unused
+		RLIB_VALUE_GET_AS_NUMBERNP macro, too. It could cause massive
+		data corruption on 64-bit systems if used.
+	* libsrc/pcode.h: likewise
+	* libsrc/pcode_op_functions.c: likewise
+	* libsrc/util.c: likewise
+- (gint64 tentothe(gint n) does not check whether the index into the
+   local array is a correct index. Fix it by using pow(N, M).
+   Two advantages: no more bad stack access and it gives correct answer
+   for n=0...18, comparing with the previous n=0...11.
+
+- gchar hextochar(gchar c) assigned an integer (32-bit) value
+   internally   to its character parameter, possibly overwriting
+   something on the stack.
+
+2005-06-27  Zoltan Boszormenyi <zboszor@dunaweb.hu>
 
 	reviewed by: Bob Doan
 

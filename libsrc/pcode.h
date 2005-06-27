@@ -34,7 +34,7 @@
 #define RLIB_VALUE_IS_ERROR(a)	(RLIB_VALUE_GET_TYPE(a)==RLIB_VALUE_ERROR)
 #define RLIB_VALUE_IS_NONE(a)	(RLIB_VALUE_GET_TYPE(a)==RLIB_VALUE_NONE)
 #define RLIB_VALUE_GET_AS_NUMBER(a) ((a)->number_value)
-#define RLIB_VALUE_GET_AS_NUMBERNP(a) ((long long *)&a->number_value)
+#define RLIB_VALUE_GET_AS_NUMBERNP(a) (&((a)->number_value))
 #define RLIB_VALUE_GET_AS_STRING(a) ((a)->string_value)
 #define RLIB_VALUE_GET_AS_DATE(a) (a->date_value)
 #define RLIB_VALUE_GET_AS_IIF(a) ((struct rlib_pcode_if *)a->iif_value)
