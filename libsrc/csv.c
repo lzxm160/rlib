@@ -34,7 +34,7 @@ struct _private {
 	gint length;
 };
 
-static void print_text(rlib *r, gchar *text, gint backwards, gint col) {
+static void print_text(rlib *r, const gchar *text, gint backwards, gint col) {
 	if(col < MAX_COL) {
 		if(OUTPUT_PRIVATE(r)->col[col][0] == 0)
 			memcpy(OUTPUT_PRIVATE(r)->col[col], text, strlen(text)+1);
@@ -43,11 +43,11 @@ static void print_text(rlib *r, gchar *text, gint backwards, gint col) {
 	}
 }
 
-static gfloat rlib_csv_get_string_width(rlib *r, gchar *text) {
+static gfloat rlib_csv_get_string_width(rlib *r, const gchar *text) {
 	return 1;
 }
 
-static void rlib_csv_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *text, gint backwards, gint col) {
+static void rlib_csv_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, gint col) {
 	if(col) {
 		print_text(r, text, backwards, col-1);
 	}
@@ -65,7 +65,7 @@ static void rlib_csv_spool_private(rlib *r) {
 	ENVIRONMENT(r)->rlib_write_output(OUTPUT_PRIVATE(r)->top, strlen(OUTPUT_PRIVATE(r)->top));
 }
 
-static void really_print_text(rlib *r, gchar *text) {
+static void really_print_text(rlib *r, const gchar *text) {
 	gchar buf[MAXSTRLEN];
 	gchar *str_ptr;
 	gint text_size = strlen(text);

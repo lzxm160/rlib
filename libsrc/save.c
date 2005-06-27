@@ -159,13 +159,13 @@ void write_variables(gint fd, struct rlib_element *rv) {
 	write(fd, &type, sizeof(gint32));
 
 	for(e=rv; e != NULL; e=e->next) {
-		struct rlib_report_variable *rv = e->data;
+		struct rlib_report_variable *rv1 = e->data;
 		type = RLIB_FILE_VARIABLE;
 		write(fd, &type, sizeof(gint32));
-		write_xml_str(fd, (gchar *)rv->xml_name);
-		write_xml_str(fd, (gchar *)rv->xml_str_type);
-		write_xml_str(fd, (gchar *)rv->xml_value);
-		write_xml_str(fd, (gchar *)rv->xml_resetonbreak);
+		write_xml_str(fd, (gchar *)rv1->xml_name);
+		write_xml_str(fd, (gchar *)rv1->xml_str_type);
+		write_xml_str(fd, (gchar *)rv1->xml_value);
+		write_xml_str(fd, (gchar *)rv1->xml_resetonbreak);
 		type = RLIB_FILE_VARIABLE+1;
 		write(fd, &type, sizeof(gint32));
 	}

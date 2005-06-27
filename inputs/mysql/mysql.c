@@ -171,10 +171,10 @@ static gchar * rlib_mysql_get_field_value_as_string(gpointer input_ptr, gpointer
 	struct rlib_mysql_results *result = result_ptr;
 	gint field = GPOINTER_TO_INT(field_ptr);
 	if(result_ptr == NULL)
-		return "";
+		return (gchar *)"";
 	field -= 1;
 	if(result->this_row == NULL)
-		return "";
+		return (gchar *)"";
 	return result->this_row[field];
 }
 
@@ -235,7 +235,7 @@ static const gchar* rlib_mysql_get_error(gpointer input_ptr) {
 	return mysql_error(INPUT_PRIVATE(input)->mysql);
 }
 
-gpointer rlib_mysql_new_input_filter() {
+gpointer rlib_mysql_new_input_filter(void) {
 	struct input_filter *input;
 
 	input = g_malloc(sizeof(struct input_filter));

@@ -271,42 +271,42 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, struct rlib_part *part, st
 		o->type = OPERAND_DATE;
 		o->value = stod(tm_date, str);
 	} else if (!strcasecmp(str, "yes") || !strcasecmp(str, "true")) {
-		gint64 *newnum = g_malloc(sizeof(long long));
+		gint64 *newnum = g_malloc(sizeof(gint64));
 		o->type = OPERAND_NUMBER;
 		*newnum = TRUE * RLIB_DECIMAL_PRECISION;
 		o->value = newnum;
 	} else if (!strcasecmp(str, "no") || !strcasecmp(str, "false")) {
-		gint64 *newnum = g_malloc(sizeof(long long));
+		gint64 *newnum = g_malloc(sizeof(gint64));
 		o->type = OPERAND_NUMBER;
 		*newnum = FALSE  * RLIB_DECIMAL_PRECISION;
 		o->value = newnum;
 	} else if (!g_strcasecmp(str, "left")) {
-		gint64 *newnum = g_malloc(sizeof(long long));
+		gint64 *newnum = g_malloc(sizeof(gint64));
 		o->type = OPERAND_NUMBER;
 		*newnum = RLIB_ALIGN_LEFT * RLIB_DECIMAL_PRECISION;
 		o->value = newnum;
 	} else if (!g_strcasecmp(str, "right")) {
-		gint64 *newnum = g_malloc(sizeof(long long));
+		gint64 *newnum = g_malloc(sizeof(gint64));
 		o->type = OPERAND_NUMBER;
 		*newnum = RLIB_ALIGN_RIGHT * RLIB_DECIMAL_PRECISION;
 		o->value = newnum;
 	} else if (!g_strcasecmp(str, "center")) {
-		gint64 *newnum = g_malloc(sizeof(long long));
+		gint64 *newnum = g_malloc(sizeof(gint64));
 		o->type = OPERAND_NUMBER;
 		*newnum = RLIB_ALIGN_CENTER * RLIB_DECIMAL_PRECISION;
 		o->value = newnum;
 	} else if (!g_strcasecmp(str, "landscape")) {
-		gint64 *newnum = g_malloc(sizeof(long long));
+		gint64 *newnum = g_malloc(sizeof(gint64));
 		o->type = OPERAND_NUMBER;
 		*newnum = RLIB_ORIENTATION_LANDSCAPE * RLIB_DECIMAL_PRECISION;
 		o->value = newnum;
 	} else if (!g_strcasecmp(str, "portrait")) {
-		gint64 *newnum = g_malloc(sizeof(long long));
+		gint64 *newnum = g_malloc(sizeof(gint64));
 		o->type = OPERAND_NUMBER;
 		*newnum = RLIB_ORIENTATION_PORTRAIT * RLIB_DECIMAL_PRECISION;
 		o->value = newnum;
 	} else if (isdigit(*str) || (*str == '-') || (*str == '+') || (*str == '.')) {
-		gint64 *newnum = g_malloc(sizeof(long long));
+		gint64 *newnum = g_malloc(sizeof(gint64));
 		o->type = OPERAND_NUMBER;
 		*newnum = rlib_str_to_long_long(str);
 		o->value = newnum;
@@ -329,7 +329,7 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, struct rlib_part *part, st
 		o->type = OPERAND_FIELD;
 		o->value = rf;
 	} else {
-		gchar *err = "BAD_OPERAND";
+		const gchar *err = "BAD_OPERAND";
 		gchar *newstr = g_malloc(r_strlen(err)+1);
 		strcpy(newstr, err);
 		o->type = OPERAND_STRING;
@@ -351,7 +351,11 @@ void rlib_pcode_dump(struct rlib_pcode *p, gint offset) {
 			struct rlib_pcode_operand *o = p->instructions[i].value;
 			rlogit("PUSH: ");
 			if(o->type == OPERAND_NUMBER)
-				rlogit("%lld", *((long long *)o->value));
+#if _64BIT_
+				rlogit("%ld", *((gint64 *)o->value));
+#else
+				rlogit("%lld", *((gint64 *)o->value));
+#endif
 			else if(o->type == OPERAND_STRING) 
 				rlogit("%s", (char *)o->value);
 			else if(o->type == OPERAND_FIELD) {
@@ -659,12 +663,12 @@ gint rlib_value_stack_push(struct rlib_value_stack *vs, struct rlib_value *value
 struct rlib_value * rlib_value_stack_pop(struct rlib_value_stack *vs) {
 	return &vs->values[--vs->count];
 }
-struct rlib_value * rlib_value_new(struct rlib_value *rval, gint type, gint free, gpointer value) {
+struct rlib_value * rlib_value_new(struct rlib_value *rval, gint type, gint free_, gpointer value) {
 	rval->type = type;
-	rval->free = free;
+	rval->free = free_;
 
 	if(type == RLIB_VALUE_NUMBER)
-		rval->number_value = *(long long *)value;
+		rval->number_value = *(gint64 *)value;
 	if(type == RLIB_VALUE_STRING)
 		rval->string_value = value;
 	if(type == RLIB_VALUE_DATE)
@@ -710,7 +714,7 @@ struct rlib_value * rlib_value_new_number(struct rlib_value *rval, gint64 value)
 	return rlib_value_new(rval, RLIB_VALUE_NUMBER, FALSE, &value);
 }
 
-struct rlib_value * rlib_value_new_string(struct rlib_value *rval, gchar *value) {
+struct rlib_value * rlib_value_new_string(struct rlib_value *rval, const gchar *value) {
 	return rlib_value_new(rval, RLIB_VALUE_STRING, TRUE, g_strdup(value));
 }
 
@@ -747,18 +751,18 @@ struct rlib_value *this_field_value) {
 	} else if(o->type == OPERAND_RLIB_VARIABLE) {
 		gint type = ((long)o->value);
 		if(type == RLIB_RLIB_VARIABLE_PAGENO) {
-			gint64 pageno = (long long)r->current_page_number*RLIB_DECIMAL_PRECISION;
+			gint64 pageno = r->current_page_number*RLIB_DECIMAL_PRECISION;
 			return rlib_value_new_number(rval, pageno);
 		} else if(type == RLIB_RLIB_VARIABLE_TOTPAGES) {
-			gint64 pageno = (long long)(r->current_page_number)*RLIB_DECIMAL_PRECISION;
+			gint64 pageno = r->current_page_number*RLIB_DECIMAL_PRECISION;
 			return rlib_value_new_number(rval, pageno);
 		} else if(type == RLIB_RLIB_VARIABLE_VALUE) {
 			return this_field_value;
 		} else if(type == RLIB_RLIB_VARIABLE_LINENO) {
-			gint64 cln = (long long)r->current_line_number*RLIB_DECIMAL_PRECISION;
+			gint64 cln = r->current_line_number*RLIB_DECIMAL_PRECISION;
 			return rlib_value_new_number(rval, cln);				
 		} else if(type == RLIB_RLIB_VARIABLE_DETAILCNT) {
-			gint64 dcnt = (long long)r->detail_line_count * RLIB_DECIMAL_PRECISION;
+			gint64 dcnt = r->detail_line_count * RLIB_DECIMAL_PRECISION;
 			return rlib_value_new_number(rval, dcnt);				
 		} else if(type == RLIB_RLIB_VARIABLE_FORMAT) {
 			return rlib_value_new_string(rval, rlib_format_get_name(r->format));
@@ -839,8 +843,8 @@ gint rlib_execute_as_int(rlib *r, struct rlib_pcode *pcode, gint *result) {
 			*result = RLIB_VALUE_GET_AS_NUMBER((&val)) / RLIB_DECIMAL_PRECISION;
 			isok = TRUE;
 		} else {
-			gchar *whatgot = "don't know";
-			gchar *gotval = "";
+			const gchar *whatgot = "don't know";
+			const gchar *gotval = "";
 			if (RLIB_VALUE_IS_STRING((&val))) {
 				whatgot = "string";
 				gotval = RLIB_VALUE_GET_AS_STRING((&val));
@@ -863,8 +867,8 @@ gint rlib_execute_as_float(rlib *r, struct rlib_pcode *pcode, gfloat *result) {
 			*result = (gdouble)RLIB_VALUE_GET_AS_NUMBER((&val)) / (gdouble)RLIB_DECIMAL_PRECISION;
 			isok = TRUE;
 		} else {
-			gchar *whatgot = "don't know";
-			gchar *gotval = "";
+			const gchar *whatgot = "don't know";
+			const gchar *gotval = "";
 			if (RLIB_VALUE_IS_STRING((&val))) {
 				whatgot = "string";
 				gotval = RLIB_VALUE_GET_AS_STRING((&val));
@@ -898,7 +902,7 @@ gint rlib_execute_as_string(rlib *r, struct rlib_pcode *pcode, gchar *buf, gint 
 	return isok;
 }
 
-gint rlib_execute_as_int_inlist(rlib *r, struct rlib_pcode *pcode, gint *result, gchar *list[]) {
+gint rlib_execute_as_int_inlist(rlib *r, struct rlib_pcode *pcode, gint *result, const gchar *list[]) {
 	struct rlib_value val;
 	gint isok = FALSE;
 

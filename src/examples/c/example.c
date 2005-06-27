@@ -22,7 +22,7 @@
 #include <rlib_input.h>
 
 int main(int argc, char **argv) {
-	char *hostname, *username, *password, *database;
+	const char *hostname, *username, *password, *database;
 	rlib *r;
 
 	hostname = "localhost";

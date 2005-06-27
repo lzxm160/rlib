@@ -38,10 +38,10 @@ struct rlib_string {
 	gint buf_size;
 };
 
-struct rlib_string * rlib_string_new();
-void rlib_string_append(struct rlib_string *rs, gchar *str);
+struct rlib_string * rlib_string_new(void);
+void rlib_string_append(struct rlib_string *rs, const gchar *str);
 void rlib_string_free(struct rlib_string *rs);
-struct rlib_string * rlib_string_new_with_string(gchar *string);
+struct rlib_string * rlib_string_new_with_string(const gchar *string);
 
 gchar *strlwrexceptquoted (gchar *s);
 gchar *rmwhitespacesexceptquoted(gchar *s);
@@ -63,8 +63,8 @@ void rlogit_setmessagewriter(void(*writer)(const gchar *msg));
 gint rutil_enableSignalHandler(gint trueorfalse);
 gint64 tentothe(gint n);
 gchar hextochar(gchar c);
-gchar *colornames(gchar *str);
-void rlib_parsecolor(struct rlib_rgb *color, gchar *strx);
+const gchar *colornames(const gchar *str);
+void rlib_parsecolor(struct rlib_rgb *color, const gchar *strx);
 struct rlib_datetime * stod(struct rlib_datetime *tm_date, gchar *str);
 void bumpday(gint *year, gint *month, gint *day);
 void bumpdaybackwords(gint *year, gint *month, gint *day);
@@ -75,7 +75,7 @@ gint daysinmonth(gint year, gint month);
 void init_signals(void);
 void make_more_space_if_necessary(gchar **str, gint *size, gint *total_size, gint len);
 gchar *str2hex(const gchar *str);
-long long rlib_safe_atoll(char *str);
+gint64 rlib_safe_atoll(char *str);
 
 #if DISABLE_UTF8
 
@@ -101,8 +101,8 @@ long long rlib_safe_atoll(char *str);
 
 #endif
 
-void make_all_locales_utf8();
-char *make_utf8_locale(const char *encoding);
+void make_all_locales_utf8(void);
+gchar *make_utf8_locale(const gchar *encoding);
 
 #endif
 

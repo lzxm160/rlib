@@ -26,7 +26,7 @@
 #include "rlib.h"
 #include "rlib_input.h"
 
-gint rlib_add_datasource(rlib *r, gchar *input_name, struct input_filter *input) {
+gint rlib_add_datasource(rlib *r, const gchar *input_name, struct input_filter *input) {
 	r->inputs[r->inputs_count].input = input;
 	r->inputs[r->inputs_count].name = g_strdup(input_name);
 	r->inputs[r->inputs_count].handle = NULL;
@@ -35,13 +35,13 @@ gint rlib_add_datasource(rlib *r, gchar *input_name, struct input_filter *input)
 	return 0;
 }
 
-static gint rlib_add_datasource_mysql_private(rlib *r, gchar *input_name, gchar *database_group, gchar *database_host, 
-gchar *database_user, gchar *database_password, gchar *database_database) {
+static gint rlib_add_datasource_mysql_private(rlib *r, const gchar *input_name, const gchar *database_group, const gchar *database_host, 
+const gchar *database_user, const gchar *database_password, const gchar *database_database) {
 	GModule* handle;
 	gpointer rlib_mysql_new_input_filter;
 	gpointer rlib_mysql_real_connect;
 	gpointer (*f1)();
-	gpointer (*f2)(gpointer, gchar *, gchar *, gchar *, gchar*, gchar *);
+	gpointer (*f2)(gpointer, const gchar *, const gchar *, const gchar *, const gchar*, const gchar *);
 	gpointer mysql;
 
 	handle = g_module_open("libr-mysql", 2);
@@ -73,22 +73,22 @@ gchar *database_user, gchar *database_password, gchar *database_database) {
 	
 }
 
-gint rlib_add_datasource_mysql(rlib *r, gchar *input_name, gchar *database_host, gchar *database_user, gchar *database_password, 
-gchar *database_database) {
+gint rlib_add_datasource_mysql(rlib *r, const gchar *input_name, const gchar *database_host, const gchar *database_user, const gchar *database_password, 
+const gchar *database_database) {
 	return rlib_add_datasource_mysql_private(r, input_name, NULL, database_host, database_user, database_password, database_database);
 }
 
-gint rlib_add_datasource_mysql_from_group(rlib *r, gchar *input_name, gchar *group) {
+gint rlib_add_datasource_mysql_from_group(rlib *r, const gchar *input_name, const gchar *group) {
 	return rlib_add_datasource_mysql_private(r, input_name, group, NULL, NULL, NULL, NULL);
 }
 
-gint rlib_add_datasource_postgre(rlib *r, gchar *input_name, gchar *conn) {
+gint rlib_add_datasource_postgre(rlib *r, const gchar *input_name, const gchar *conn) {
 	GModule* handle;
 	gpointer rlib_postgre_new_input_filter;
 	gpointer rlib_postgre_connect;//(gpointer, gchar *)
 	gpointer postgre;
 	gpointer (*f1)();
-	gpointer (*f2)(gpointer, gchar *);
+	gpointer (*f2)(gpointer, const gchar *);
 
 	handle = g_module_open("libr-postgre", 2);
 	if (!handle) {
@@ -112,12 +112,12 @@ gint rlib_add_datasource_postgre(rlib *r, gchar *input_name, gchar *conn) {
 	return 0;
 }
 
-gint rlib_add_datasource_odbc(rlib *r, gchar *input_name, gchar *source, gchar *user, gchar *password) {
+gint rlib_add_datasource_odbc(rlib *r, const gchar *input_name, const gchar *source, const gchar *user, const gchar *password) {
 	GModule* handle;
 	gpointer rlib_odbc_new_input_filter;
 	gpointer rlib_odbc_connect;
 	gpointer (*f1)();
-	gpointer (*f2)(gpointer, gchar *, gchar *, gchar *);
+	gpointer (*f2)(gpointer, const gchar *, const gchar *, const gchar *);
 	gpointer odbc;
 	
 	handle = g_module_open("libr-odbc", 2);
@@ -142,7 +142,7 @@ gint rlib_add_datasource_odbc(rlib *r, gchar *input_name, gchar *source, gchar *
 	return 0;
 }
 
-gint rlib_add_datasource_xml(rlib *r, gchar *input_name) {
+gint rlib_add_datasource_xml(rlib *r, const gchar *input_name) {
 	gpointer xml;
 
 	r->inputs[r->inputs_count].input = rlib_xml_new_input_filter();

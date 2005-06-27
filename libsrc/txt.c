@@ -40,7 +40,7 @@ struct _private {
 	gint page_number;
 };
 
-static void print_text(rlib *r, gchar *text, gint backwards) {
+static void print_text(rlib *r, const gchar *text, gint backwards) {
 	gint current_page = OUTPUT_PRIVATE(r)->page_number;
 	struct _packet *packet = NULL;
 
@@ -69,11 +69,11 @@ static void print_text(rlib *r, gchar *text, gint backwards) {
 	}
 }
 
-static gfloat rlib_txt_get_string_width(rlib *r, gchar *text) {
+static gfloat rlib_txt_get_string_width(rlib *r, const gchar *text) {
 	return 1;
 }
 
-static void rlib_txt_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *text, gint backwards, gint col) {
+static void rlib_txt_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, gint col) {
 	print_text(r, text, backwards);
 }
 

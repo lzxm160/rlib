@@ -89,8 +89,8 @@ static struct rlib_report_image * parse_image(xmlNodePtr cur) {
 
 static struct rlib_element * parse_line_array(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
 	struct rlib_element *e, *current;
-	e = NULL;
 	xmlChar *sp;
+	e = NULL;
 	
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
@@ -514,7 +514,7 @@ static void parse_report(rlib *r, struct rlib_part *part, struct rlib_report *re
 	if(query == NULL)
 		report->xml_query = xmlGetProp(cur, (const xmlChar *) "query");
 	else
-		report->xml_query = xmlStrdup(query);
+		report->xml_query = xmlStrdup((xmlChar *)query);
 		
 	report->xml_orientation = xmlGetProp(cur, (const xmlChar *) "orientation");
 	report->xml_top_margin = xmlGetProp(cur, (const xmlChar *) "topMargin");

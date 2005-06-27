@@ -99,7 +99,7 @@ static void myFaultHandler (gint signum, siginfo_t *si, gpointer aptr) {
 
 static gint useMyHandler = TRUE;
 
-void init_signals() {
+void init_signals(void) {
 #ifdef HAVE_SYS_RESOURCE_H
 #ifdef ENABLE_CRASH
 	struct sigaction sa;
@@ -261,7 +261,11 @@ void r_warning(const gchar *fmt, ...) {
 
 
 gint64 tentothe(gint n) {
+#if _64BIT_
+	gint64 ten[] = {1L, 10L, 100L, 1000L, 10000L, 100000L, 1000000L, 10000000L, 100000000L, 1000000000L, 10000000000L, 100000000000L, 1000000000000L};
+#else
 	gint64 ten[] = {1LL, 10LL, 100LL, 1000LL, 10000LL, 100000LL, 1000000LL, 10000000LL, 100000000LL, 1000000000LL, 10000000000LL, 100000000000LL, 1000000000000LL};
+#endif
 	return ten[n];
 }
 
@@ -274,7 +278,7 @@ gchar hextochar(gchar c) {
 
 }
 
-gchar *colornames(char *str) {
+const gchar *colornames(const char *str) {
 	if(str == NULL)
 		return "0x000000";
 	if(!isalpha((int)*str))
@@ -318,8 +322,8 @@ gchar *colornames(char *str) {
 	return str;
 }
 
-void rlib_parsecolor(struct rlib_rgb *color, gchar *strx) {
-	gchar *str = colornames(strx);
+void rlib_parsecolor(struct rlib_rgb *color, const gchar *strx) {
+	const gchar *str = colornames(strx);
 	if(str != NULL && r_strlen(str) == 8) {
 		guchar r;
 		guchar g;
@@ -390,7 +394,7 @@ void make_more_space_if_necessary(gchar **str, gint *size, gint *total_size, gin
  * Parses an encoding description such as en_GB.utf8@euro into it's 3 main parts
  * en_GB, utf8 and euro. Then it recombines the parts using a "utf8" encoding.
  */
-char *make_utf8_locale(const char *encoding) {
+gchar *make_utf8_locale(const gchar *encoding) {
 	static char result[256];
 	gchar *locale, *codeset = NULL, *extra = NULL;
 	gchar buf[256];
@@ -399,7 +403,7 @@ char *make_utf8_locale(const char *encoding) {
 
 	if ((encoding == NULL) || (r_strlen(encoding) < 2)) {
 		r_warning("encoding is NULL or invalid [%s]... using en_US\n", encoding);
-		return "en_US.utf8";
+		return (char *)"en_US.utf8";
 	}
 	g_strlcpy(buf, encoding, sizeof(buf));
 	locale = buf;
@@ -416,7 +420,7 @@ char *make_utf8_locale(const char *encoding) {
 			extra = t + 1;
 		}
 	}
-	codeset = "utf8";
+	codeset = (gchar *)"utf8";
 	if (extra) {
 		g_snprintf(result, sizeof(buf), "%s.%s@%s", locale, codeset, extra);
 	} else {
@@ -425,7 +429,7 @@ char *make_utf8_locale(const char *encoding) {
 	return result;
 }
 
-void make_all_locales_utf8() {
+void make_all_locales_utf8(void) {
 	int *lc = locale_codes;
 	int i;
 	while ((i = *lc) != -1) {
@@ -454,10 +458,14 @@ gchar *str2hex(const gchar *str) {
 	return result;
 }
 
-long long rlib_safe_atoll(char *str) {
+gint64 rlib_safe_atoll(char *str) {
 	if(str == NULL)
 		return 0;
+#if _64BIT_
+	return atol(str);
+#else
 	return atoll(str);
+#endif
 }
 
 struct rlib_string * rlib_string_new() {
@@ -465,7 +473,7 @@ struct rlib_string * rlib_string_new() {
 }
 
 /* THIS IS NOT UTF8 ON PURPOSE */
-void rlib_string_append(struct rlib_string *rs, gchar *str) {
+void rlib_string_append(struct rlib_string *rs, const gchar *str) {
 	gint slen = strlen(str);
 	if((rs->slen + slen  + 1) > rs->buf_size) {
 		rs->buf_size = (rs->buf_size * 2) + slen + 1;
@@ -475,7 +483,7 @@ void rlib_string_append(struct rlib_string *rs, gchar *str) {
 	rs->slen += slen;
 }
 
-struct rlib_string * rlib_string_new_with_string(gchar *string) {
+struct rlib_string * rlib_string_new_with_string(const gchar *string) {
 	struct rlib_string *rs = rlib_string_new();
 	rlib_string_append(rs, string);
 	return rs;

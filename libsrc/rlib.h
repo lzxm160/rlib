@@ -678,8 +678,10 @@ struct rlib_resultset_followers {
 	struct rlib_pcode *follower_code;
 };
 
+struct rlib;
+typedef struct rlib rlib;
 struct rlib_signal_functions {
-	gboolean (*signal_function)(gpointer, gpointer);
+	gboolean (*signal_function)(rlib *, gpointer);
 	gpointer data;
 };
 
@@ -735,7 +737,6 @@ struct rlib {
 	GSList *graph_regions;
 	GSList *graph_minor_x_ticks;
 };
-typedef struct rlib rlib;
 
 #define INPUT(r, i) (r->results[i].input)
 #define ENVIRONMENT(r) (r->environment)
@@ -759,8 +760,8 @@ struct output_filter {
 	gboolean trim_links;
 	gboolean table_around_multiple_detail_columns;
 	gint paginate;
-	gfloat (*get_string_width)(rlib *, char *);
-	void (*print_text)(rlib *, float, float, char *, int, int);
+	gfloat (*get_string_width)(rlib *, const char *);
+	void (*print_text)(rlib *, float, float, const char *, int, int);
 	void (*print_text_delayed)(rlib *, struct rlib_delayed_extra_data *, int);
 	void (*set_fg_color)(rlib *, float, float, float);
 	void (*set_bg_color)(rlib *, float, float, float);
@@ -850,9 +851,9 @@ gint64 rlib_fxp_div(gint64 num, gint64 denom, gint places);
 /***** PROTOTYPES: api.c ******************************************************/
 rlib * rlib_init(void);
 rlib * rlib_init_with_environment(struct environment_filter *environment);
-gint rlib_add_query_as(rlib *r, gchar *input_name, gchar *sql, gchar *name);
-gint rlib_add_query_pointer_as(rlib *r, gchar *input_source, gchar *sql, gchar *name);
-gint rlib_add_report(rlib *r, gchar *name);
+gint rlib_add_query_as(rlib *r, const gchar *input_name, const gchar *sql, const gchar *name);
+gint rlib_add_query_pointer_as(rlib *r, const gchar *input_source, gchar *sql, const gchar *name);
+gint rlib_add_report(rlib *r, const gchar *name);
 gint rlib_add_report_from_buffer(rlib *r, gchar *buffer);
 gint rlib_execute(rlib *r);
 gchar * rlib_get_content_type_as_text(rlib *r);
@@ -874,7 +875,7 @@ gint rlib_set_locale(rlib *r, gchar *locale);
 void rlib_init_profiler(void);
 void rlib_dump_profile(gint profilenum, const gchar *filename);
 void rlib_trap(void); //For internals debugging only
-gchar *rlib_version(); // returns the version string.
+const gchar *rlib_version(void); // returns the version string.
 gint rlib_set_datasource_encoding(rlib *r, gchar *input_name, gchar *encoding);
 void rlib_set_output_encoding(rlib *r, const char *encoding);
 void rlib_set_output_parameter(rlib *r, gchar *parameter, gchar *value);
@@ -900,7 +901,7 @@ struct rlib_value * rlib_value_new_error(struct rlib_value *rval);
 gint rlib_execute_as_int(rlib *r, struct rlib_pcode *pcode, gint *result);
 gint rlib_execute_as_boolean(rlib *r, struct rlib_pcode *pcode, gint *result);
 gint rlib_execute_as_string(rlib *r, struct rlib_pcode *pcode, gchar *buf, gint buf_len);
-gint rlib_execute_as_int_inlist(rlib *r, struct rlib_pcode *pcode, gint *result, gchar *list[]);
+gint rlib_execute_as_int_inlist(rlib *r, struct rlib_pcode *pcode, gint *result, const gchar *list[]);
 gint rlib_execute_as_float(rlib *r, struct rlib_pcode *pcode, gfloat *result);
 void rlib_pcode_free(struct rlib_pcode *code);
 
@@ -918,8 +919,8 @@ gint rlib_make_report(rlib *r);
 gint rlib_finalize(rlib *r);
 void rlib_process_expression_variables(rlib *r, struct rlib_report *report);
 gint get_font_point(rlib *r, struct rlib_report_lines *rl);
-gint rlib_format_get_number(gchar *name);
-gchar * rlib_format_get_name(gint number);
+gint rlib_format_get_number(const gchar *name);
+const gchar * rlib_format_get_name(gint number);
 
 /***** PROTOTYPES: resolution.c ***********************************************/
 gint rlib_resolve_rlib_variable(rlib *r, gchar *name);
@@ -964,13 +965,14 @@ gpointer rlib_mysql_new_input_filter(void);
 gpointer rlib_mysql_real_connect(gpointer input_ptr, gchar *group, gchar *host, gchar *user, gchar *password, gchar *database);
 
 /***** PROTOTYPES: datasource.c ***********************************************/
-gint rlib_add_datasource(rlib *r, gchar *input_name, struct input_filter *input);
-gint rlib_add_datasource_mysql(rlib *r, gchar *input_name, gchar *database_host, gchar *database_user, gchar *database_password, 
-	gchar *database_database);
-gint rlib_add_datasource_mysql_from_group(rlib *r, gchar *input_name, gchar *group);
-gint rlib_add_datasource_postgre(rlib *r, gchar *input_name, gchar *conn);
-gint rlib_add_datasource_odbc(rlib *r, gchar *input_name, gchar *source, gchar *user, gchar *password);
-gint rlib_add_datasource_xml(rlib *r, gchar *input_name);
+gint rlib_add_datasource(rlib *r, const gchar *input_name, struct input_filter *input);
+gint rlib_add_datasource_mysql(rlib *r, const gchar *input_name, const gchar *database_host, const gchar *database_user,
+	const gchar *database_password, const gchar *database_database);
+gint rlib_add_datasource_mysql_from_group(rlib *r, const gchar *input_name, const gchar *group);
+gint rlib_add_datasource_postgre(rlib *r, const gchar *input_name, const gchar *conn);
+gint rlib_add_datasource_odbc(rlib *r, const gchar *input_name, const gchar *source,
+	const gchar *user, const gchar *password);
+gint rlib_add_datasource_xml(rlib *r, const gchar *input_name);
 
 /***** PROTOTYPES: postgre.c **************************************************/
 gpointer rlib_postgre_new_input_filter(void);
@@ -1005,5 +1007,5 @@ int adjust_limits(gdouble  dataMin, gdouble dataMax, gint denyMinEqualsAdjMin, g
 	gint* numTms, gdouble* tmi, gdouble* adjMin, gdouble* adjMax, gint *goodIncs, gint numGoodIncs);
 
 /***** PROTOTYPES: xml_data_source.c ******************************************************/
-gpointer rlib_xml_new_input_filter();
+gpointer rlib_xml_new_input_filter(void);
 gpointer rlib_xml_connect(gpointer input_ptr);

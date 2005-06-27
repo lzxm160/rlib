@@ -44,7 +44,11 @@ gint64 rlib_fxp_div(gint64 num, gint64 denom, gint places) {
 	gint64 result = 0l;
 
 	if( denom != 0L) {
+#if _64BIT_
+		if( (llabs(denom)&0xFC00000000000000L) ) {
+#else
 		if( (llabs(denom)&0xFC00000000000000LL) ) {
+#endif
 			num >>= 4;
 			denom >>= 4;
 		}

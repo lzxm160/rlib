@@ -85,7 +85,7 @@ rlib * rlib_init() {
 	return rlib_init_with_environment(NULL);
 }
 
-gint rlib_add_query_pointer_as(rlib *r, gchar *input_source, gchar *sql, gchar *name) {
+gint rlib_add_query_pointer_as(rlib *r, const gchar *input_source, gchar *sql, const gchar *name) {
 	gint i;
 	if(r->queries_count > (RLIB_MAXIMUM_QUERIES-1)) {
 		return -1;
@@ -103,8 +103,9 @@ gint rlib_add_query_pointer_as(rlib *r, gchar *input_source, gchar *sql, gchar *
 	return r->queries_count;
 }
 
-gint rlib_add_query_as(rlib *r, gchar *input_source, gchar *sql, gchar *name) {
+gint rlib_add_query_as(rlib *r, const gchar *input_source, const gchar *sql, const gchar *name) {
 	gint i;
+
 	if(r->queries_count > (RLIB_MAXIMUM_QUERIES-1))
 		return -1;
 
@@ -122,7 +123,7 @@ gint rlib_add_query_as(rlib *r, gchar *input_source, gchar *sql, gchar *name) {
 	return -1;	
 }
 
-gint rlib_add_report(rlib *r, gchar *name) {
+gint rlib_add_report(rlib *r, const gchar *name) {
 	if(r->parts_count > (RLIB_MAXIMUM_REPORTS-1)) {
 		return - 1;
 	}
@@ -202,7 +203,7 @@ gchar * rlib_get_content_type_as_text(rlib *r) {
 			return buf;
 		}
 		if(r->format == RLIB_CONTENT_TYPE_CSV) {
-			return RLIB_WEB_CONTENT_TYPE_CSV;
+			return (gchar *)RLIB_WEB_CONTENT_TYPE_CSV;
 		} else {
 #if DISABLE_UTF8		
 			const char *charset = "ISO-8859-1";
@@ -219,7 +220,7 @@ gchar * rlib_get_content_type_as_text(rlib *r) {
 		}
 	}
 	r_error("Content type code unknown");
-	return "UNNOWN";
+	return (gchar *)"UNKNOWN";
 }
 
 gint rlib_spool(rlib *r) {
@@ -291,7 +292,7 @@ gint rlib_get_output_length(rlib *r) {
 }
 
 gboolean rlib_signal_connect(rlib *r, gint signal_number, gboolean (*signal_function)(rlib *, gpointer), gpointer data) {	
-	r->signal_functions[signal_number].signal_function = (gpointer)signal_function;
+	r->signal_functions[signal_number].signal_function = signal_function;
 	r->signal_functions[signal_number].data = data;
 	return TRUE;
 }
@@ -463,20 +464,20 @@ gint rlib_graph_clear_bg_region(rlib *r, gchar *graph_name) {
 }
 
 #ifdef VERSION
-gchar *rpdf_version(void);
-gchar *rlib_version(void) {
+const gchar *rpdf_version(void);
+const gchar *rlib_version(void) {
 #if 0
 #if DISABLE_UTF8
-gchar *charset="8859-1";
+const gchar *charset="8859-1";
 #else
-gchar *charset="UTF8";
+const gchar *charset="UTF8";
 #endif
 r_debug("rlib_version: version=[%s], CHARSET=%s, RPDF=%s", VERSION, charset, rpdf_version());
 #endif
 	return VERSION;
 }
 #else
-gchar *rlib_version(void) {
+const gchar *rlib_version(void) {
 	return "Unknown";
 }
 #endif

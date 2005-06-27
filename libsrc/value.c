@@ -73,7 +73,11 @@ gint rlib_var_concat_string(rlib_var *v, const char *str) {
 gint64 rlib_var_get_number(rlib_var *v) {
 	if (v->type != RLIB_VAR_NUMBER) {
 		r_error("rlib_var not a number");
+#if _64BIT_
+		return 0L;
+#else
 		return 0LL;
+#endif
 	}
 	return v->value.num;
 }
@@ -167,7 +171,7 @@ const gchar *rlib_var_get_type_name(rlib_var *v) {
 // rlib_var_factory
 
 //Creates a new factory
-rlib_var_factory *rlib_var_factory_new() {
+rlib_var_factory *rlib_var_factory_new(void) {
 	rlib_var_factory *f = g_new0(rlib_var_factory, 1);
 	return f;
 }
@@ -331,7 +335,7 @@ void rlib_var_factory_destroy(rlib_var_factory **fptr) {
 }
 
 
-rlib_var_stack *rlib_var_stack_new() {
+rlib_var_stack *rlib_var_stack_new(void) {
 	rlib_var_stack *s = g_new0(rlib_var_stack, 1);
 	s->base = s->cur = s->stack;
 	s->max = &s->stack[MAXRLIBVARSTACK];

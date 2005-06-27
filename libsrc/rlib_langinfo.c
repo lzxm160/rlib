@@ -218,4 +218,13 @@ char *nl_langinfo(int item)
       return __langinfo;
   }
 }
+
+#else
+
+/*
+ * GCC 4.0 says: warning: ISO C forbids an empty source file
+ * Silence it.
+ */
+int	rlib_langinfo_dummy;
+
 #endif

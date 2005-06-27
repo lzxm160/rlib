@@ -142,7 +142,7 @@ int rlib_gd_text(struct rlib_gd *rgd, char *text, int x, int y, gboolean rotate,
 	return TRUE;
 }
 
-int rlib_gd_get_string_width(struct rlib_gd *rgd, gchar *text, gboolean bold) {
+int rlib_gd_get_string_width(struct rlib_gd *rgd, const gchar *text, gboolean bold) {
 	if(bold)
 		return gdFontMediumBold->w * strlen(text);
 	else
@@ -162,7 +162,7 @@ int rlib_gd_set_thickness(struct rlib_gd *rgd, int thickness) {
 }
 
 
-int rlib_gd_line(struct rlib_gd *rgd, gint x1, gint y1, gint x2, gint y2, struct rlib_rgb *color) {
+int rlib_gd_line(struct rlib_gd *rgd, gint x_1, gint y_1, gint x_2, gint y_2, struct rlib_rgb *color) {
 	gint gd_color;
 	
 	if(color != NULL)
@@ -170,7 +170,7 @@ int rlib_gd_line(struct rlib_gd *rgd, gint x1, gint y1, gint x2, gint y2, struct
 	else
 		gd_color = rgd->black;
 
-	gdImageLine(rgd->im, x1, y1, x2, y2, gd_color);	
+	gdImageLine(rgd->im, x_1, y_1, x_2, y_2, gd_color);	
 	return TRUE;
 }
 
@@ -225,7 +225,7 @@ int rlib_gd_text(struct rlib_gd *rgd, char *text, int x, int y, int rotate, gboo
 	return TRUE;
 }
 
-int rlib_gd_get_string_width(struct rlib_gd *rgd, char *text, gboolean bold) {
+int rlib_gd_get_string_width(struct rlib_gd *rgd, const char *text, gboolean bold) {
 	return 0;
 }
 
@@ -237,11 +237,11 @@ int rlib_gd_set_thickness(struct rlib_gd *rgd, int thickness) {
 	return TRUE;
 }
 
-int rlib_gd_line(struct rlib_gd *rgd, gint x1, gint y1, gint x2, gint y2, struct rlib_rgb *color) {
+int rlib_gd_line(struct rlib_gd *rgd, gint x_1, gint y_1, gint x_2, gint y_2, struct rlib_rgb *color) {
 	return TRUE;
 }
 
-int rlib_gd_rectangle(struct rlib_gd *rgd, gint x1, gint y1, gint x2, gint y2, struct rlib_rgb *color)  {
+int rlib_gd_rectangle(struct rlib_gd *rgd, gint x, gint y, gint width, gint height, struct rlib_rgb *color)  {
 	return TRUE;
 }
 

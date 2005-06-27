@@ -36,7 +36,7 @@
 #define PLOT_LINE_WIDTH 1.2
 #define GRID_LINE_WIDTH 0.5
 
-gchar *font_names[4] = { "Courier", "Courier-Bold", "Courier-Oblique", "Courier-BoldOblique" };
+const gchar *font_names[4] = { "Courier", "Courier-Bold", "Courier-Oblique", "Courier-BoldOblique" };
 
 struct _graph {
 	gdouble y_min[2];
@@ -103,11 +103,11 @@ struct _private {
 	struct _graph graph;
 };
 
-static gfloat pdf_get_string_width(rlib *r, gchar *text) {
+static gfloat pdf_get_string_width(rlib *r, const gchar *text) {
 	return rpdf_text_width(OUTPUT_PRIVATE(r)->pdf, text)/(RLIB_PDF_DPI);
 }
 
-static void pdf_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *text, gfloat orientation) {
+static void pdf_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gfloat orientation) {
 	struct rpdf *pdf = OUTPUT_PRIVATE(r)->pdf;
 
 	rpdf_text(pdf, left_origin, bottom_origin, orientation, text);
@@ -132,7 +132,7 @@ static void pdf_print_text_delayed(rlib *r, struct rlib_delayed_extra_data *dela
 	rpdf_text_callback(pdf, delayed_data->left_origin, delayed_data->bottom_orgin, 0, delayed_data->extra_data.width, pdf_rpdf_callback, delayed_data);
 }
 
-static void pdf_print_text_API(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *text, gint backwards, gint col) {
+static void pdf_print_text_API(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, gint col) {
 	pdf_print_text(r, left_origin, bottom_origin, text, 0); 
 }
 
@@ -186,7 +186,7 @@ gfloat nheight) {
 
 static void pdf_set_font_point_actual(rlib *r, gint point) {
 	char *encoding;
-	char *fontname;
+	const char *fontname;
 	int which_font = 0;
 	int result;
 	gchar *pdfdir1, *pdfdir2, *pdfencoding, *pdffontname;
@@ -851,7 +851,7 @@ static void pdf_graph_hint_legend(rlib *r, gchar *label) {
 
 	if(width > graph->legend_width)
 		graph->legend_width = width;
-};
+}
 
 static void pdf_count_regions(gpointer data, gpointer user_data) {
 	struct rlib_graph_region *gr = data;
@@ -973,7 +973,7 @@ static void pdf_graph_draw_legend_label(rlib *r, gint iteration, gchar *label, s
 	pdf_print_text(r, graph->legend_left + (w_width*2), graph->legend_top - offset, label, 0);
 }
 
-static void pdf_graph_finalize(rlib *r) {};
+static void pdf_graph_finalize(rlib *r) {}
 static void pdf_end_td(rlib *r) {}
 static void pdf_stub_line(rlib *r, int backwards) {}
 static void pdf_end_output_section(rlib *r) {}

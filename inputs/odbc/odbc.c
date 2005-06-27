@@ -332,7 +332,7 @@ static const gchar * rlib_odbc_get_error(gpointer input_ptr) {
 	return "No error information";
 }
 
-gpointer rlib_odbc_new_input_filter() {
+gpointer rlib_odbc_new_input_filter(void) {
 	struct input_filter *input;
 	input = g_malloc(sizeof(struct input_filter));
 	input->private = g_malloc(sizeof(struct _private));

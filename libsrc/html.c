@@ -105,7 +105,7 @@ struct _private {
 	struct _graph graph;
 };
 
-static void print_text(rlib *r, gchar *text, gint backwards) {
+static void print_text(rlib *r, const gchar *text, gint backwards) {
 	gint current_page = OUTPUT_PRIVATE(r)->page_number;
 	struct _packet *packet = NULL;
 
@@ -134,7 +134,7 @@ static void print_text(rlib *r, gchar *text, gint backwards) {
 	}
 }
 
-static gfloat rlib_html_get_string_width(rlib *r, gchar *text) {
+static gfloat rlib_html_get_string_width(rlib *r, const gchar *text) {
 	return 1;
 }
 
@@ -161,7 +161,7 @@ static gint convert_font_point(gint point) {
 		return 7;
 }
 
-static void rlib_html_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *text, gint backwards, gint col) {
+static void rlib_html_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, gint col) {
 	gint did_fg = 0;
 	gint did_fp = 0;
 	gchar buf_font[MAXSTRLEN];
@@ -739,7 +739,7 @@ static void html_graph_tick_x(rlib *r) {
 	gint i;
 	gint spot;
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
-	gint div = 1;
+	gint divisor = 1;
 	gint iterations = graph->x_iterations;
 	
 
@@ -749,15 +749,15 @@ static void html_graph_tick_x(rlib *r) {
 	for(i=0;i<iterations;i++) {
 
 		if(graph->minor_ticks[i] == TRUE)
-			div = 2;
+			divisor = 2;
 		else
-			div = 1;
+			divisor = 1;
 
 		spot = graph->x_start + ((graph->x_tick_width)*i);
 		if(graph->draw_x && (graph->minor_ticks[i] == FALSE || i == iterations-1))
-			rlib_gd_line(OUTPUT_PRIVATE(r)->rgd, spot, graph->y_start+(graph->intersection/div), spot, graph->y_start - graph->height, graph->grid_color);
+			rlib_gd_line(OUTPUT_PRIVATE(r)->rgd, spot, graph->y_start+(graph->intersection/divisor), spot, graph->y_start - graph->height, graph->grid_color);
 		else
-			rlib_gd_line(OUTPUT_PRIVATE(r)->rgd, spot, graph->y_start+(graph->intersection/div), spot, graph->y_start, graph->grid_color);
+			rlib_gd_line(OUTPUT_PRIVATE(r)->rgd, spot, graph->y_start+(graph->intersection/divisor), spot, graph->y_start, graph->grid_color);
 	}
 
 }
@@ -859,7 +859,7 @@ static void html_graph_hint_label_y(rlib *r, gchar side, gchar *label) {
 			graph->y_label_width_right = width;		
 	}
 
-};
+}
 
 static void html_graph_set_data_plot_count(rlib *r, gint count) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
@@ -948,7 +948,7 @@ static void html_graph_hint_legend(rlib *r, gchar *label) {
 
 	if(width > graph->legend_width)
 		graph->legend_width = width;
-};
+}
 
 static void html_count_regions(gpointer data, gpointer user_data) {
 	struct rlib_graph_region *gr = data;

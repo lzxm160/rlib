@@ -138,10 +138,10 @@ static gchar * rlib_xml_get_field_value_as_string(gpointer input_ptr, gpointer r
 	xmlNodePtr field_value;
 
 	if (result_ptr == NULL)
-		return "";
+		return (gchar *)"";
 
 	if (result->this_row == NULL)
-		return "";
+		return (gchar *)"";
 
 	field_value = NULL;
 	for (col = result->this_row->xmlChildrenNode; col != NULL && field_index > 0; col = col->next) {
@@ -154,7 +154,7 @@ static gchar * rlib_xml_get_field_value_as_string(gpointer input_ptr, gpointer r
 	}
 
 	if (field_value == NULL)
-		return "";
+		return (gchar *)"";
 
 	return (gchar *)field_value->xmlChildrenNode->content;
 }

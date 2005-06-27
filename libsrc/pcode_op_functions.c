@@ -29,7 +29,7 @@
 #include "datetime.h"
 #include "pcode.h"
 
-gchar * rlib_value_get_type_as_str(struct rlib_value *v) {
+const gchar * rlib_value_get_type_as_str(struct rlib_value *v) {
 	if(v == NULL)
 		return "(null)";
 	if(RLIB_VALUE_IS_NUMBER(v))
@@ -45,8 +45,9 @@ gchar * rlib_value_get_type_as_str(struct rlib_value *v) {
 	return "UNKNOWN";
 }
 
-static void rlib_pcode_operator_fatal_execption(gchar *operator, gint pcount, struct rlib_value *v1, struct rlib_value *v2, 
-struct rlib_value *v3) {
+static void rlib_pcode_operator_fatal_execption(const gchar *operator,
+	gint pcount, struct rlib_value *v1, struct rlib_value *v2,
+	struct rlib_value *v3) {
 	rlogit("RLIB EXPERIENCED A FATAL MATH ERROR WHILE TRYING TO PREFORM THE FOLLOWING OPERATION: %s\n", operator);
 	rlogit("\tDATA TYPES ARE [%s]", rlib_value_get_type_as_str(v1));
 	if(pcount > 1)
@@ -142,8 +143,8 @@ gint rlib_pcode_operator_add(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 			return TRUE;
 		}
 		if(RLIB_VALUE_IS_STRING(v1) && RLIB_VALUE_IS_STRING(v2)) {
-			gchar *safe1 =  RLIB_VALUE_GET_AS_STRING(v1) == NULL ? "" : RLIB_VALUE_GET_AS_STRING(v1);
-			gchar *safe2 =  RLIB_VALUE_GET_AS_STRING(v2) == NULL ? "" : RLIB_VALUE_GET_AS_STRING(v2);
+			const gchar *safe1 =  RLIB_VALUE_GET_AS_STRING(v1) == NULL ? "" : RLIB_VALUE_GET_AS_STRING(v1);
+			const gchar *safe2 =  RLIB_VALUE_GET_AS_STRING(v2) == NULL ? "" : RLIB_VALUE_GET_AS_STRING(v2);
 			gchar *newstr = g_malloc(r_strlen(safe1)+r_strlen(safe2)+1);
 			memcpy(newstr, safe2, r_strlen(safe2)+1);
 			strcat(newstr, safe1);
@@ -348,7 +349,7 @@ gint rlib_pcode_operator_lte(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	}
 	if(RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_DATE(v2)) {
 		struct rlib_datetime *t1, *t2;
-		long long val;
+		gint64 val;
 		t1 = &RLIB_VALUE_GET_AS_DATE(v1);
 		t2 = &RLIB_VALUE_GET_AS_DATE(v2);
 		val = (rlib_datetime_compare(t2, t1) <= 0)? RLIB_DECIMAL_PRECISION : 0;
@@ -397,7 +398,7 @@ gint rlib_pcode_operator_lt(rlib *r, struct rlib_value_stack *vs, struct rlib_va
 	}
 	if(RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_DATE(v2)) {
 		struct rlib_datetime *t1, *t2;
-		long long val;
+		gint64 val;
 		t1 = &RLIB_VALUE_GET_AS_DATE(v1);
 		t2 = &RLIB_VALUE_GET_AS_DATE(v2);
 		val = (rlib_datetime_compare(t2, t1) < 0)? RLIB_DECIMAL_PRECISION : 0;
@@ -443,7 +444,7 @@ gint rlib_pcode_operator_gte(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	}
 	if(RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_DATE(v2)) {
 		struct rlib_datetime *t1, *t2;
-		long long val;
+		gint64 val;
 		t1 = &RLIB_VALUE_GET_AS_DATE(v1);
 		t2 = &RLIB_VALUE_GET_AS_DATE(v2);
 		val = (rlib_datetime_compare(t2, t1) >= 0)? RLIB_DECIMAL_PRECISION : 0;
@@ -489,7 +490,7 @@ gint rlib_pcode_operator_gt(rlib *r, struct rlib_value_stack *vs, struct rlib_va
 	}
 	if(RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_DATE(v2)) {
 		struct rlib_datetime *t1, *t2;
-		long long val;
+		gint64 val;
 		t1 = &RLIB_VALUE_GET_AS_DATE(v1);
 		t2 = &RLIB_VALUE_GET_AS_DATE(v2);
 		val = (rlib_datetime_compare(t2, t1) > 0)? RLIB_DECIMAL_PRECISION : 0;
@@ -540,7 +541,7 @@ gint rlib_pcode_operator_eql(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	}
 	if(RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_DATE(v2)) {
 		struct rlib_datetime *t1, *t2;
-		long long val;
+		gint64 val;
 		t1 = &RLIB_VALUE_GET_AS_DATE(v1);
 		t2 = &RLIB_VALUE_GET_AS_DATE(v2);
 		val = (rlib_datetime_compare(t2, t1) == 0)? RLIB_DECIMAL_PRECISION : 0;
@@ -586,7 +587,7 @@ gint rlib_pcode_operator_noteql(rlib *r, struct rlib_value_stack *vs, struct rli
 	}
 	if(RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_DATE(v2)) {
 		struct rlib_datetime *t1, *t2;
-		long long val;
+		gint64 val;
 		t1 = &RLIB_VALUE_GET_AS_DATE(v1);
 		t2 = &RLIB_VALUE_GET_AS_DATE(v2);
 		val = (rlib_datetime_compare(t2, t1) != 0)? RLIB_DECIMAL_PRECISION : 0;
@@ -1030,7 +1031,7 @@ gboolean rlib_pcode_operator_iif(rlib *r, struct rlib_value_stack *vs, struct rl
 }
 
 
-static gboolean rlib_pcode_operator_dtos_common(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, char *format) {
+static gboolean rlib_pcode_operator_dtos_common(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, const char *format) {
 	struct rlib_value *v1, rval_rtn;
 	gboolean result = FALSE;
 	v1 = rlib_value_stack_pop(vs);
@@ -1204,7 +1205,7 @@ gboolean rlib_pcode_operator_format(rlib *r, struct rlib_value_stack *vs, struct
 	v1 = rlib_value_stack_pop(vs);
 	if (RLIB_VALUE_IS_STRING(v2)) {
 		gchar buf[MAXSTRLEN];
-		gchar *result = "!ERR_F_IV";
+		const gchar *result = "!ERR_F_IV";
 		gchar *fmt = RLIB_VALUE_GET_AS_STRING(v2);
 		if (*fmt == '!') {
 			++fmt;

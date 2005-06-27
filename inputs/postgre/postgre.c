@@ -193,7 +193,7 @@ static const gchar * rlib_postgre_get_error(gpointer input_ptr) {
 	return PQerrorMessage(INPUT_PRIVATE(input)->conn);
 }
 
-gpointer rlib_postgre_new_input_filter() {
+gpointer rlib_postgre_new_input_filter(void) {
 	struct input_filter *input;
 	
 	input = g_malloc(sizeof(struct input_filter));

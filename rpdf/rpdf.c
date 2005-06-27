@@ -102,7 +102,7 @@ struct _rpdf_fonts rpdf_fonts[] =  {
 
 #define DEGREE_2_RAD(x) (x*M_PI/180.0)
 
-static gchar * obj_printf(gchar *obj, gchar *fmt, ...) {
+static gchar * obj_printf(gchar *obj, const gchar *fmt, ...) {
 	va_list vl;
 	gchar *result = NULL;
 
@@ -142,7 +142,7 @@ static void rpdf_stream_append(struct rpdf *pdf, struct rpdf_stream *stream) {
 	pdf->page_contents[pdf->current_page] = g_slist_append(pdf->page_contents[pdf->current_page], stream);
 }
 
-static gboolean rpdf_out_string(struct rpdf *rpdf, gchar *output) {
+static gboolean rpdf_out_string(struct rpdf *rpdf, const gchar *output) {
 	gint size = strlen(output);
 	rpdf->out_buffer = g_realloc(rpdf->out_buffer, rpdf->size+size);
 	memcpy(rpdf->out_buffer + rpdf->size, output, size);
@@ -150,7 +150,7 @@ static gboolean rpdf_out_string(struct rpdf *rpdf, gchar *output) {
 	return TRUE;
 }
 
-static gboolean rpdf_out_binary(struct rpdf *rpdf, gchar *output, gint size) {
+static gboolean rpdf_out_binary(struct rpdf *rpdf, const gchar *output, gint size) {
 	rpdf->out_buffer = g_realloc(rpdf->out_buffer, rpdf->size+size);
 	memcpy(rpdf->out_buffer + rpdf->size, output, size);
 	rpdf->size += size;
@@ -439,7 +439,7 @@ static void rpdf_string_destroyer (gpointer data) {
 	g_free(data);
 }
 
-struct rpdf *rpdf_new() {
+struct rpdf *rpdf_new(void) {
 	struct rpdf *pdf = g_new0(struct rpdf, 1);
 	pdf->header = g_strdup_printf("%%PDF-1.3\n");
 	pdf->fonts = g_hash_table_new_full (g_str_hash, g_str_equal, rpdf_string_destroyer, NULL);	
@@ -636,23 +636,23 @@ gboolean rpdf_finalize(struct rpdf *pdf) {
 	return TRUE;
 }
 
-void rpdf_set_title(struct rpdf *pdf, gchar *title) {
+void rpdf_set_title(struct rpdf *pdf, const gchar *title) {
 	pdf->title = g_strconcat("(", title, ")", NULL);
 }	
 
-void rpdf_set_subject(struct rpdf *pdf, gchar *subject) {
+void rpdf_set_subject(struct rpdf *pdf, const gchar *subject) {
 	pdf->subject = g_strconcat("(", subject, ")", NULL);
 }	
 
-void rpdf_set_author(struct rpdf *pdf, gchar *author) {
+void rpdf_set_author(struct rpdf *pdf, const gchar *author) {
 	pdf->author = g_strconcat("(", author, ")", NULL);
 }	
 
-void rpdf_set_keywords(struct rpdf *pdf, gchar *keywords) {
+void rpdf_set_keywords(struct rpdf *pdf, const gchar *keywords) {
 	pdf->keywords = g_strconcat("(", keywords, ")", NULL);
 }	
 
-void rpdf_set_creator(struct rpdf *pdf, gchar *creator) {
+void rpdf_set_creator(struct rpdf *pdf, const gchar *creator) {
 	pdf->creator = g_strconcat("(", creator, ")", NULL);
 }	
 
@@ -675,7 +675,7 @@ gboolean rpdf_new_page(struct rpdf *pdf, gint paper, gint orientation) {
 	pdf->page_contents = g_realloc(pdf->page_contents, sizeof(gpointer) * pdf->page_count);
 	pdf->page_contents[pdf->page_count-1] = NULL;
 
-	pdf->page_info = g_realloc(pdf->page_info, 4 * pdf->page_count);
+	pdf->page_info = g_realloc(pdf->page_info, sizeof(gpointer) * pdf->page_count);
 	page_info = pdf->page_info[pdf->page_count-1] = g_new0(struct rpdf_page_info, 1);
 	page_info->paper = &rpdf_paper[paper-1];
 	page_info->orientation = orientation;
@@ -691,7 +691,7 @@ gboolean rpdf_set_page(struct rpdf *pdf, gint page) {
 	return TRUE;
 }
 
-gboolean rpdf_set_font(struct rpdf *pdf, gchar *font, gchar *encoding, gdouble size) {
+gboolean rpdf_set_font(struct rpdf *pdf, const gchar *font, const gchar *encoding, gdouble size) {
 	gint i=0;
 	gint found = FALSE;
 	struct rpdf_font_object *font_object;
@@ -768,7 +768,7 @@ gboolean rpdf_text_callback(struct rpdf *pdf, gdouble x, gdouble y, gdouble angl
 	return TRUE;
 }
 
-gboolean rpdf_text(struct rpdf *pdf, gdouble x, gdouble y, gdouble angle, gchar *text) {
+gboolean rpdf_text(struct rpdf *pdf, gdouble x, gdouble y, gdouble angle, const gchar *text) {
 	struct rpdf_stream_text *stream;
 	gint slen;
 	gint count = 0, spot=0, i;
@@ -986,7 +986,7 @@ gboolean rpdf_image(struct rpdf *pdf, gdouble x, gdouble y, gdouble width, gdoub
 	return TRUE;
 }
 
-gboolean rpdf_link(struct rpdf *pdf, gdouble start_x, gdouble start_y, gdouble end_x, gdouble end_y, gchar *url) {
+gboolean rpdf_link(struct rpdf *pdf, gdouble start_x, gdouble start_y, gdouble end_x, gdouble end_y, const gchar *url) {
 	struct rpdf_page_info *page_info = pdf->page_info[pdf->current_page];
 	struct rpdf_annots *annot = g_new0(struct rpdf_annots, 1);
 	annot->number = pdf->annot_count++;
@@ -1072,7 +1072,7 @@ gboolean rpdf_setrgbcolor(struct rpdf *pdf, gdouble r, gdouble g, gdouble b) {
 	return TRUE;
 }
 
-gdouble rpdf_text_width(struct rpdf *pdf, gchar *text) {
+gdouble rpdf_text_width(struct rpdf *pdf, const gchar *text) {
 	gint slen,i;
 	gdouble width = 0.0;
 

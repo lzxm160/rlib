@@ -51,7 +51,7 @@ struct _rlib_format_table {
 };
 
 
-gint rlib_format_get_number(gchar *name) {
+gint rlib_format_get_number(const gchar *name) {
 	int i = 0;
 	while(rlib_fomat_table[i].number != -1) {
 		if(strcasecmp(rlib_fomat_table[i].name, name) == 0)
@@ -61,7 +61,7 @@ gint rlib_format_get_number(gchar *name) {
 	return -1;
 }
 
-gchar * rlib_format_get_name(gint number) {
+const gchar * rlib_format_get_name(gint number) {
 	int i = 0;
 	while(rlib_fomat_table[i].number != -1) {
 		if(rlib_fomat_table[i].number == number)
@@ -71,7 +71,7 @@ gchar * rlib_format_get_name(gint number) {
 	return "UNKNOWN";
 }
 
-static gchar *orientations[] = {
+static const gchar *orientations[] = {
 	"",
 	"portrait",
 	"landscape",
@@ -165,7 +165,7 @@ void free_memo_lines(RVector *v) {
 #endif
 
 gint rlib_emit_signal(rlib *r, gint signal_number) {
-	gboolean (*signal_function)(rlib *, gpointer) = (gpointer)r->signal_functions[signal_number].signal_function;
+	gboolean (*signal_function)(rlib *, gpointer) = r->signal_functions[signal_number].signal_function;
 	gpointer data = r->signal_functions[signal_number].data;
 	if(signal_function != NULL) 
 		return signal_function(r, data);

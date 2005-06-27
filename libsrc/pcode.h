@@ -108,7 +108,7 @@
 #define PCODE_EXECUTE	2
 
 struct rlib_pcode_operator {
-	gchar *tag;			// What I expect to find in the infix string
+	const gchar *tag;		// What I expect to find in the infix string
 	gint taglen;		
 	gint precedence; 
 	gint is_op;
@@ -168,7 +168,7 @@ int execute_pcode(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs,
 struct rlib_value * rlib_value_stack_pop(struct rlib_value_stack *vs);
 int rlib_value_stack_push(struct rlib_value_stack *vs, struct rlib_value *value);
 struct rlib_value * rlib_value_new_number(struct rlib_value *rval, gint64 value);
-struct rlib_value * rlib_value_new_string(struct rlib_value *rval, char *value);
+struct rlib_value * rlib_value_new_string(struct rlib_value *rval, const char *value);
 struct rlib_value * rlib_value_new_date(struct rlib_value *rval, struct rlib_datetime *date);
 void rlib_pcode_dump(struct rlib_pcode *p, int offset);
 

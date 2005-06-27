@@ -49,7 +49,7 @@
 #define TEXT_LEFT 2
 #define TEXT_RIGHT 3
  
-static gchar *truefalses[] = {
+static const gchar *truefalses[] = {
 	"no",
 	"yes",
 	"false",
@@ -57,7 +57,7 @@ static gchar *truefalses[] = {
 	NULL
 };
 
-static gchar *aligns[] = {
+static const gchar *aligns[] = {
 	"left",
 	"right",
 	"center",
@@ -115,14 +115,14 @@ gfloat rlib_layout_estimate_string_width_from_extra_data(rlib *r, struct rlib_li
 static gchar *rlib_encode_text(rlib *r, gchar *text, gchar *result, gsize result_len) {
 	if (text == NULL) {
 		r_error("rlib_encode_text called with NULL text");
-		result = "!ERR_ENC1";
+		result = (gchar *)"!ERR_ENC1";
 	} else {
 		gsize len = strlen(text);
 		gchar *tmp = result;
 		rlib_charencoder_convert(r->output_encoder, &text, &len, &tmp, &result_len);
 		if (result == NULL) {
 			r_error("encode returned NULL result input was[%s], len=%d", text, r_strlen(text));
-			result = "!ERR_ENC2";
+			result = (gchar *)"!ERR_ENC2";
 		}
 	}
 	return result;
@@ -522,7 +522,7 @@ static void rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 		text = extra_data[i].formatted_string;
 
 		if(text == NULL)
-			text = "";
+			text = (gchar *)"";
 		if(extra_data[i].width == -1)
 			extra_data[i].width = r_strlen(text);
 		else {
@@ -832,12 +832,12 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 							width = rlib_layout_text_from_extra_data(r, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), &extra_data[count], TEXT_LEFT);
 							rlib_layout_output_extras_end(r, part, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), &extra_data[count]);
 						} else if(e->type == RLIB_ELEMENT_IMAGE) {
-							gfloat height = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(&extra_data[count].rval_image_height));
-							gfloat width = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(&extra_data[count].rval_image_width));
+							gfloat height1 = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(&extra_data[count].rval_image_height));
+							gfloat width1 = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(&extra_data[count].rval_image_width));
 							gchar *name = RLIB_VALUE_GET_AS_STRING(&extra_data[count].rval_image_name);
 							gchar *type = RLIB_VALUE_GET_AS_STRING(&extra_data[count].rval_image_type);
-							OUTPUT(r)->line_image(r, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), name, type, width, height);
-							width = RLIB_GET_LINE(width);
+							OUTPUT(r)->line_image(r, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), name, type, width1, height1);
+							width = RLIB_GET_LINE(width1);
 						}											
 						margin += width;
 						count++;
@@ -917,13 +917,13 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 			if(!RLIB_VALUE_IS_STRING(rval_value) || !RLIB_VALUE_IS_NUMBER(rval_width) || !RLIB_VALUE_IS_NUMBER(rval_height)) {
 				r_error("RLIB ENCOUNTERED AN ERROR PROCESSING THE BGCOLOR FOR A IMAGE\n");
 			} else {
-				gfloat height = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(rval_height));
-				gfloat width = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(rval_width));
+				gfloat height1 = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(rval_height));
+				gfloat width1 = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(rval_width));
 				gchar *name = RLIB_VALUE_GET_AS_STRING(rval_value);
 				gchar *type = RLIB_VALUE_GET_AS_STRING(rval_type);
 				output_count++;
-				OUTPUT(r)->background_image(r, my_left_margin, rlib_layout_get_next_line_by_font_point(r, part, *rlib_position, height), name, 
-					type, width, height);
+				OUTPUT(r)->background_image(r, my_left_margin, rlib_layout_get_next_line_by_font_point(r, part, *rlib_position, height1), name, 
+					type, width1, height1);
 				rlib_value_free(rval_value);
 				rlib_value_free(rval_width);
 				rlib_value_free(rval_height);

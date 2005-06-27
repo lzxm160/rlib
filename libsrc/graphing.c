@@ -48,11 +48,11 @@ int numGoodIncs_15 = 6;
 #define MAX_COLOR_POOL_NORMAL 32
 #define MAX_COLOR_POOL_LINE  24
 
-gchar *color_pool_normal[MAX_COLOR_POOL_NORMAL] = {"0x9999ff", "0x993366", "0xfcfa44", "0xccffff", "0x660066", "0xff8080", "0x0066cc", "0xccccff", "0x000080", 
+const gchar *color_pool_normal[MAX_COLOR_POOL_NORMAL] = {"0x9999ff", "0x993366", "0xfcfa44", "0xccffff", "0x660066", "0xff8080", "0x0066cc", "0xccccff", "0x000080", 
 	"0xff00ff", "0xffff00", "0x00ffff", "0x800080", "0x800000", "0x008080", "0x0000ff", "0x00ccff", "0xccffff", "0xccffcc", "0xffff99", "0x99ccff", 
 	"0xff99cc", "0xcc99ff", "0xffcc99", "0x3366ff", "0x33cccc", "0x99cc00", "0xffcc00", "0xff9900", "0xff6600", "0x666699", "0x969696"};
 
-gchar *color_pool_line[MAX_COLOR_POOL_LINE] = {"0x9999ff", "0x993366", "0xfcfa44", "0x660066", "0xff8080", "0x0066cc", "0x000080", "0xff00ff", 
+const gchar *color_pool_line[MAX_COLOR_POOL_LINE] = {"0x9999ff", "0x993366", "0xfcfa44", "0x660066", "0xff8080", "0x0066cc", "0x000080", "0xff00ff", 
 	"0xffff00", "0x800080", "0x800000", "0x008080", "0x0000ff", "0x99ccff", "0xff99cc", "0xcc99ff", "0x3366ff", "0x33cccc", "0x99cc00", "0xffcc00", 
 	"0xff9900", "0xff6600", "0x666699", "0x969696"};
 
@@ -249,7 +249,7 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	gboolean disabled, tmp_disabled;
 	gboolean minor_tick[MAX_X_TICKS];
 	gint max_color_pool = MAX_COLOR_POOL_NORMAL;
-	gchar **color_pool = color_pool_normal;
+	const gchar **color_pool = color_pool_normal;
 
 	left_margin_offset += part->left_margin;
 
@@ -368,10 +368,10 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 				if(rlib_execute_as_string(r, plot->axis_code, axis, MAXSTRLEN)) {
 					if(strcmp(axis, "x") == 0) {
 						if(rlib_execute_as_string(r, plot->field_code, x_axis_label, MAXSTRLEN)) {
-							GSList *list;
+							GSList *list1;
 							gboolean display = TRUE;
-							for(list = r->graph_minor_x_ticks;list != NULL; list=list->next) {
-								struct rlib_graph_x_minor_tick *gmt = list->data;
+							for(list1 = r->graph_minor_x_ticks;list1 != NULL; list1=list1->next) {
+								struct rlib_graph_x_minor_tick *gmt = list1->data;
 								if(strcmp(name, gmt->graph_name) == 0) {
 									if(gmt->by_name == TRUE) {
 										if(strcmp(x_axis_label, gmt->x_value) == 0) {
@@ -392,7 +392,7 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 				
 					} else if(strcmp(axis, "y") == 0) {
 						disabled = FALSE;
-						if(rlib_execute_as_boolean(r, plot->disabled_code, &tmp_disabled));
+						if(rlib_execute_as_boolean(r, plot->disabled_code, &tmp_disabled))
 							disabled = tmp_disabled;
 						if(!disabled && rlib_execute_as_float(r, plot->field_code, &y_value)) {	
 							side = RLIB_SIDE_LEFT;
@@ -526,7 +526,7 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 			if(rlib_execute_as_string(r, plot->axis_code, axis, MAXSTRLEN)) {
 				if(strcmp(axis, "y") == 0) {
 					disabled = FALSE;
-					if(rlib_execute_as_boolean(r, plot->disabled_code, &tmp_disabled));
+					if(rlib_execute_as_boolean(r, plot->disabled_code, &tmp_disabled))
 						disabled = tmp_disabled;
 					if(!disabled) {
 						if(rlib_execute_as_string(r, plot->label_code, legend_label, MAXSTRLEN)) {

@@ -659,7 +659,7 @@ ZEND_FUNCTION(rlib_set_locale) {
 }
 
 ZEND_FUNCTION(rlib_version) {
-	gchar *ver = rlib_version();
+	const gchar *ver = rlib_version();
 	RETURN_STRING(estrdup(ver), TRUE);
 }
 

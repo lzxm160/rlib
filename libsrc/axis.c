@@ -263,7 +263,7 @@ ________________________________________________________________________________
 #define HASFACTOR(x,y) ((x)==(y)*(int)((x)/(y)))
 
 
-gint localError(gchar* s) {
+gint localError(const gchar* s) {
 	r_error("%s\n",s);
 	return -1;
 }
