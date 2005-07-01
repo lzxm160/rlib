@@ -467,11 +467,11 @@ void rlib_free_results_and_queries(rlib *r) {
 
 
 gint rlib_free_follower(rlib *r ) {
-        gint i;
-        for(i=0; i<r->resultset_followers_count; i++) {
-                rlib_pcode_free(r->followers[i].leader_code);
-                rlib_pcode_free(r->followers[i].follower_code);
-        }
+	gint i;
+	for(i=0; i<r->resultset_followers_count; i++) {
+		rlib_pcode_free(r->followers[i].leader_code);
+		rlib_pcode_free(r->followers[i].follower_code);
+	}
 
 	return TRUE;
 }

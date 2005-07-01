@@ -799,7 +799,7 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 						if(extra_data[count].found_color == FALSE && extra_data[count].is_bold == FALSE && extra_data[count].is_italics == FALSE && extra_data[count].type != RLIB_ELEMENT_IMAGE) {
 							if(start_count == -1)
 								start_count = count;
-							sprintf(buf, "%s%s", buf, extra_data[count].formatted_string);
+							strcat(buf, extra_data[count].formatted_string);
 							fun_width += extra_data[count].output_width;
 						} else {
 							if(start_count != -1) {

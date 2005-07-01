@@ -1,3 +1,10 @@
+2005-07-01  Bob Doan  <bdoan@sicompos.com>
+	* inputs/mysql/mysql.c: Don't unload MySQL For now because we could be looping in RLIB
+	* libsrc/free.c: nada
+	* libsrc/layout.c: use strcat not a sprintf w/ %s%s
+	* libsrc/resolution.c: make length on HR's dynamic
+	* rpdf/rpdf.c: don't double free a gslist
+
 2005-06-27  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/resolution.c: Made length of horizontalline dynamic
 

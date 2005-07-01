@@ -182,6 +182,7 @@ static void rlib_hr_resolve_pcode(rlib *r, struct rlib_part *part, struct rlib_r
 	else
 		rhl->indent = atof((char *)rhl->xml_indent);
 
+	rhl->length_code = rlib_infix_to_pcode(r, part, report, (gchar *)rhl->xml_length, TRUE);
 	rhl->bgcolor_code = rlib_infix_to_pcode(r, part, report, (gchar *)rhl->xml_bgcolor, TRUE);
 	rhl->suppress_code = rlib_infix_to_pcode(r, part, report, (gchar *)rhl->xml_suppress, TRUE);
 	rhl->size_code = rlib_infix_to_pcode(r, part, report, (gchar *)rhl->xml_size, TRUE);

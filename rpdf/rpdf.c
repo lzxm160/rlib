@@ -559,7 +559,6 @@ gboolean rpdf_finalize(struct rpdf *pdf) {
 		rpdf_object_append(pdf, FALSE,  obj, NULL, 0);
 		g_hash_table_destroy(pdf->page_fonts);
 		g_free(pdf->page_data);
-		g_slist_free(list);
 	}
 
 	g_hash_table_foreach(pdf->fonts, rpdf_make_fonts_stream, pdf);
@@ -699,6 +698,7 @@ gboolean rpdf_set_font(struct rpdf *pdf, const gchar *font, const gchar *encodin
 	struct rpdf_page_info *page_info = pdf->page_info[pdf->current_page];
 	struct rpdf_stream *real_stream;
 	gchar *both;
+
 	while(rpdf_fonts[i].name[0] != 0) {
 		if(strcmp(rpdf_fonts[i].name, font) == 0) {
 			found = TRUE;
@@ -712,7 +712,7 @@ gboolean rpdf_set_font(struct rpdf *pdf, const gchar *font, const gchar *encodin
 	
 	both = g_strconcat(font, encoding, NULL);
 	font_object = g_hash_table_lookup(pdf->fonts, both);
-		
+
 	if(font_object == NULL) {
 		font_object = g_new0(struct rpdf_font_object, 1);
 		font_object->font = &rpdf_fonts[i];
@@ -730,6 +730,7 @@ gboolean rpdf_set_font(struct rpdf *pdf, const gchar *font, const gchar *encodin
 	stream = g_new0(struct rpdf_stream_font, 1);
 	stream->font_object = font_object;
 	stream->size = size;
+
 	real_stream = rpdf_stream_new(RPDF_TYPE_FONT, stream);
 	rpdf_stream_append(pdf, real_stream);
 	pdf->stream_font_destroyer = g_slist_prepend(pdf->stream_font_destroyer, stream);
@@ -741,6 +742,7 @@ gboolean rpdf_set_font_size(struct rpdf *pdf, gdouble size) {
 	struct rpdf_page_info *page_info = pdf->page_info[pdf->current_page];
 	struct rpdf_stream_font *stream;
 	struct rpdf_stream *real_stream;
+
 	page_info->font_size = size;
 
 	if(page_info->font == NULL)
@@ -752,6 +754,7 @@ gboolean rpdf_set_font_size(struct rpdf *pdf, gdouble size) {
 	real_stream = rpdf_stream_new(RPDF_TYPE_FONT, stream);
 	rpdf_stream_append(pdf, real_stream);
 	pdf->stream_font_destroyer = g_slist_append(pdf->stream_font_destroyer, stream);
+
 	return TRUE;
 }
 
@@ -772,6 +775,7 @@ gboolean rpdf_text(struct rpdf *pdf, gdouble x, gdouble y, gdouble angle, const 
 	struct rpdf_stream_text *stream;
 	gint slen;
 	gint count = 0, spot=0, i;
+
 	stream = g_new0(struct rpdf_stream_text, 1);
 	stream->x = x;
 	stream->y = y;
@@ -796,6 +800,7 @@ gboolean rpdf_text(struct rpdf *pdf, gdouble x, gdouble y, gdouble angle, const 
 	
 	}
 	rpdf_stream_append(pdf, rpdf_stream_new(RPDF_TYPE_TEXT, stream));
+
 	return TRUE;
 }
 
@@ -1107,6 +1112,7 @@ gchar *rpdf_get_buffer(struct rpdf *pdf, gint *length) {
 
 void rpdf_free(struct rpdf *pdf) {
 	gint i;
+
 	g_free(pdf->header);
 	g_free(pdf->title);
 	g_free(pdf->subject);
