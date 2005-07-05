@@ -152,7 +152,7 @@ void rlib_handle_break_headers(rlib *r, struct rlib_part *part, struct rlib_repo
 	}
 }
 
-//TODO: Variables need to resolve the name into a number or something.. like break numbers for more efficient compareseon
+/* TODO: Variables need to resolve the name into a number or something.. like break numbers for more efficient compareseon */
 void rlib_reset_variables_on_break(rlib *r, struct rlib_part *part, struct rlib_report *report, gchar *name) {
 	struct rlib_element *e;
 
@@ -173,8 +173,8 @@ void rlib_reset_variables_on_break(rlib *r, struct rlib_part *part, struct rlib_
 			}
 		}
 
-//		if(rv->type == RLIB_REPORT_VARIABLE_EXPRESSION)
-//			RLIB_VARIABLE_CA(rv)->count = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
+/*		if(rv->type == RLIB_REPORT_VARIABLE_EXPRESSION)
+			RLIB_VARIABLE_CA(rv)->count = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0); */
 		
 	}
 }

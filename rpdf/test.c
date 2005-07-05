@@ -35,8 +35,8 @@ static void callback_test(gchar *data, gint len, gpointer user_data) {
 int main(int argc, char **argv) {
 	struct rpdf *pdf = rpdf_new();
 	rpdf_new_page(pdf, RPDF_PAPER_LETTER, RPDF_PORTRAIT);
-//	rpdf_set_font(pdf, "Times-Italic", "MacRomanEncoding", 30.0);
-//	rpdf_text(pdf, 1.0, 10.0, 0.0, "FARK - BOB KRATZ LOVES BACON ))");
+/*	rpdf_set_font(pdf, "Times-Italic", "MacRomanEncoding", 30.0); */
+/*	rpdf_text(pdf, 1.0, 10.0, 0.0, "FARK - BOB KRATZ LOVES BACON ))"); */
 	rpdf_set_font(pdf, "Times-Italic", "MacRomanEncoding", 20.0);
 	rpdf_text(pdf, 2.0, 9.0, 0.0, "WOOT");
 	rpdf_text_callback(pdf, 2.0, 9.5, 0.0, 50, callback_test, NULL);
@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
 	rpdf_fill(pdf);
 	rpdf_stroke(pdf); 
 
-//	rpdf_image(pdf, 1, 1, 200, 200, RPDF_IMAGE_JPEG, "geologo.jpg");
+/*	rpdf_image(pdf, 1, 1, 200, 200, RPDF_IMAGE_JPEG, "geologo.jpg"); */
 
 	rpdf_new_page(pdf, RPDF_PAPER_LETTER, RPDF_PORTRAIT);
 	rpdf_set_font(pdf, "Times-Italic", "MacRomanEncoding", 30.0);
@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
 	rpdf_set_font(pdf, "Times-Italic", "MacRomanEncoding", 30.0);
 	rpdf_text(pdf, 1.0, 10.0, 0.0, "FARK - BOB KRATZ LOVES BACON ))");
 	
-//	rpdf_image(pdf, 1, 1, 100, 100, RPDF_IMAGE_JPEG, "logo.jpg");
+/*	rpdf_image(pdf, 1, 1, 100, 100, RPDF_IMAGE_JPEG, "logo.jpg"); */
 	rpdf_finalize(pdf);
 	write(1, pdf->out_buffer, pdf->size);
 	rpdf_free(pdf);	

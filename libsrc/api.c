@@ -75,7 +75,7 @@ rlib * rlib_init_with_environment(struct environment_filter *environment) {
 #if !DISABLE_UTF8
 	make_all_locales_utf8();
 #endif
-//	strcpy(r->pdf_encoding, "WinAnsiEncoding");
+/*	strcpy(r->pdf_encoding, "WinAnsiEncoding"); */
 	r->did_execute = FALSE;
 	return r;
 }

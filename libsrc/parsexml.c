@@ -105,7 +105,7 @@ static struct rlib_element * parse_line_array(xmlDocPtr doc, xmlNsPtr ns, xmlNod
 			safestrncpy(f->value, (gchar *)sp, sizeof(f->value));
 #endif
 			xmlFree(sp);
-//Nevermind			//TODO: we need to utf to 8813 all string values in single quotes
+/*Nevermind*/			/* TODO: we need to utf to 8813 all string values in single quotes */
 			sp = xmlGetProp(cur, (const xmlChar *) "value");
 			strcpy(f->value, (const char *)sp);
 			xmlFree(sp);
@@ -501,8 +501,8 @@ static void parse_metadata_item(xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur, GHas
 static void parse_report(rlib *r, struct rlib_part *part, struct rlib_report *report, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur, gchar *query) {
 	report->doc = doc;
 	report->contents = NULL;
-//	if (doc->encoding) 
-//		g_strlcpy(report->xml_encoding_name, doc->encoding, sizeof(report->xml_encoding_name));
+/*	if (doc->encoding) 
+		g_strlcpy(report->xml_encoding_name, doc->encoding, sizeof(report->xml_encoding_name)); */
 
 	while (cur && xmlIsBlankNode (cur)) 
 		cur = cur -> next;
@@ -553,7 +553,7 @@ static void parse_report(rlib *r, struct rlib_part *part, struct rlib_report *re
 			report->variables = parse_report_variables(doc, ns, cur);
 		else if ((!xmlStrcmp(cur->name, (const xmlChar *) "MetaData"))) 
 			parse_metadata_item(doc, ns, cur, r->input_metadata);
-		else if (!ignoreElement((const char *)cur->name)) //must be last
+		else if (!ignoreElement((const char *)cur->name)) /* must be last */
 			/* ignore comments, etc */
 			r_error("Unknown element [%s] in <Report>\n", cur->name);
 		cur = cur->next;
@@ -642,7 +642,7 @@ static void parse_part(rlib *r, struct rlib_part *part, xmlDocPtr doc, xmlNsPtr 
 			part->report_header = parse_report_outputs(doc, ns, cur);
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "PageFooter"))) {
 			part->page_footer = parse_report_outputs(doc, ns, cur);
-		} else if (!ignoreElement((const char *)cur->name)) //must be last
+		} else if (!ignoreElement((const char *)cur->name)) /* must be last */
 			/* ignore comments, etc */
 			r_error("Unknown element [%s] in <Part>\n", cur->name);
 		cur = cur->next;
@@ -671,7 +671,7 @@ struct rlib_part * parse_part_file(rlib *r, gchar *filename, gchar type) {
 
 #if DISABLE_UTF8
 	cd = iconv_open(ICONV_ISO, "UTF-8");
-//	cd = (void *)-1;
+/*	cd = (void *)-1; */
 #endif
 
 	if(type == RLIB_REPORT_TYPE_BUFFER) 

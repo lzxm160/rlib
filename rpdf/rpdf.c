@@ -294,7 +294,7 @@ static void rpdf_make_page_stream(gpointer data, gpointer user_data) {
 		d0 = radius * cos(t1);
 		save_x = a0;
 		save_y = b0;
-		if(total_angle < DEGREE_2_RAD(360.0)) {  //Pie Slices
+		if(total_angle < DEGREE_2_RAD(360.0)) {  /* Pie Slices */
 			sprintf(buf, "%s%.03f %.03f m\n", extra, x, y);
 			sprintf(buf, "%s%.03f %.03f l\n", buf, a0, b0);
 		} else {
@@ -313,7 +313,7 @@ static void rpdf_make_page_stream(gpointer data, gpointer user_data) {
 			c0 = c1;
 			d0 = d1;
 		}
-		if(total_angle < DEGREE_2_RAD(360.0)) { //pizza :)
+		if(total_angle < DEGREE_2_RAD(360.0)) { /* pizza :) */
 			sprintf(buf, "%s%.03f %.03f l\n", buf, x, y);
 		}
 		result = g_strdup_printf("%s", buf);

@@ -709,7 +709,7 @@ struct rlib {
 	GIConv output_encoder;		
 	gchar *output_encoder_name;
 	
-	time_t now; //set when rlib starts now will then be a constant over the time of the report
+	time_t now; /* set when rlib starts now will then be a constant over the time of the report */
 	
 	struct rlib_signal_functions signal_functions[RLIB_SIGNALS];
 	
@@ -874,8 +874,8 @@ gint rlib_add_parameter(rlib *r, const gchar *name, const gchar *value);
 gint rlib_set_locale(rlib *r, gchar *locale);
 void rlib_init_profiler(void);
 void rlib_dump_profile(gint profilenum, const gchar *filename);
-void rlib_trap(void); //For internals debugging only
-const gchar *rlib_version(void); // returns the version string.
+void rlib_trap(void); /* For internals debugging only */
+const gchar *rlib_version(void); /* returns the version string. */
 gint rlib_set_datasource_encoding(rlib *r, gchar *input_name, gchar *encoding);
 void rlib_set_output_encoding(rlib *r, const char *encoding);
 void rlib_set_output_parameter(rlib *r, gchar *parameter, gchar *value);
@@ -1001,8 +1001,8 @@ gint rlib_layout_end_page(rlib *r, struct rlib_part *part, struct rlib_report *r
 gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat left_margin_offset, gfloat *top_margin_offset);
 
 /***** PROTOTYPES: axis.c ******************************************************/
-//void rlib_graph_find_y_range(rlib *r, gdouble a, gdouble b, gdouble *y_min, gdouble *y_max, gint graph_type);
-//gint rlib_graph_num_ticks(rlib *r, gdouble a, gdouble b);
+/* void rlib_graph_find_y_range(rlib *r, gdouble a, gdouble b, gdouble *y_min, gdouble *y_max, gint graph_type); */
+/* gint rlib_graph_num_ticks(rlib *r, gdouble a, gdouble b); */
 int adjust_limits(gdouble  dataMin, gdouble dataMax, gint denyMinEqualsAdjMin, gint minTMs, gint maxTMs, 
 	gint* numTms, gdouble* tmi, gdouble* adjMin, gdouble* adjMax, gint *goodIncs, gint numGoodIncs);
 

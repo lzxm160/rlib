@@ -58,7 +58,7 @@ void r_info(const gchar *fmt, ...);
 #endif
 void r_warning(const gchar *fmt, ...);
 void r_error(const gchar *fmt, ...);
-//coming soon: void r_fatal(const gchar *fmt, ...);
+/* coming soon: void r_fatal(const gchar *fmt, ...); */
 void rlogit_setmessagewriter(void(*writer)(const gchar *msg));
 gint rutil_enableSignalHandler(gint trueorfalse);
 gint64 tentothe(gint n);

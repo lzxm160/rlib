@@ -30,7 +30,7 @@
 #include "util.h"
 
 
-//--- string functions ---
+/*--- string functions ---*/
 gboolean rlib_var_is_string(rlib_var *v) {
 	return (v->type == RLIB_VAR_STRING) || (v->type == RLIB_VAR_REF);
 }
@@ -69,7 +69,7 @@ gint rlib_var_concat_string(rlib_var *v, const char *str) {
 }
 
 
-//--- Number functions ---
+/*--- Number functions ---*/
 gint64 rlib_var_get_number(rlib_var *v) {
 	if (v->type != RLIB_VAR_NUMBER) {
 		r_error("rlib_var not a number");
@@ -121,7 +121,7 @@ gboolean rlib_var_is_number(rlib_var *v, int type) {
 }
 
 
-//--- datetime functions ---
+/*--- datetime functions ---*/
 void rlib_var_set_datetime(rlib_var *v, rlib_datetime *dt) {
 	v->type = RLIB_VAR_DATETIME;
 	v->value.dt = *dt;	
@@ -133,7 +133,7 @@ rlib_datetime *rlib_var_get_datetime(rlib_var *v) {
 }
 
 
-//--- General purpose functions ---
+/*--- General purpose functions ---*/
 gint rlib_var_get_type(rlib_var *v) {
 	return v->type;
 }
@@ -167,22 +167,23 @@ const gchar *rlib_var_get_type_name(rlib_var *v) {
 }
 
 
-//==================================================================
-// rlib_var_factory
+/*==================================================================
+  rlib_var_factory
+  ==================================================================*/
 
-//Creates a new factory
+/* Creates a new factory */
 rlib_var_factory *rlib_var_factory_new(void) {
 	rlib_var_factory *f = g_new0(rlib_var_factory, 1);
 	return f;
 }
 
 
-//ALLOCATES a new rlib_val and catalogs it for later destruction
+/* ALLOCATES a new rlib_val and catalogs it for later destruction */
 rlib_var *rlib_var_factory_alloc_new(rlib_var_factory *f, int size) {
 	rlib_var *v = g_malloc(sizeof(rlib_var) + size);
 	memset(v, 0, sizeof(rlib_var));
-	v->len = size + sizeof(union u_rlib_var); //MAX writeable length of value
-	v->alloclink = f->headalloc; //So it can be freed
+	v->len = size + sizeof(union u_rlib_var); /* MAX writeable length of value */
+	v->alloclink = f->headalloc; /* So it can be freed */
 	f->headalloc = v;
 	return v;
 }
@@ -220,34 +221,34 @@ static rlib_var *rlib_var_factory_get(rlib_var_factory *f, int size) {
 	} else {
 		rlib_var **vlast = &f->headlg;
 		rlib_var *rv = *vlast;
-		while (rv) { //See if we have one that is big enough
+		while (rv) { /* See if we have one that is big enough */
 			if (rv->len >= size) {
 				v = rv;
-				*vlast = rv->link; //Remove link from the chain
+				*vlast = rv->link; /* Remove link from the chain */
 				break;
 			} else {
 				vlast = &rv->link;
 				rv = *vlast;
 			}
 		}
-		//Nope, we have to allocate it.
+		/* Nope, we have to allocate it. */
 		if (!v) v = rlib_var_factory_alloc_new(f, size - sizeof(union u_rlib_var));
 	}
 	return v;
 }
 
 
-//Gets an appropriately sized rlib_var and copies the string to it.
+/* Gets an appropriately sized rlib_var and copies the string to it. */
 rlib_var *rlib_var_factory_new_string(rlib_var_factory *f, const gchar *str) {
 	int len = r_strlen(str) + 1;
 	rlib_var *v = rlib_var_factory_get(f, len);
-	g_strlcpy(v->value.ch, str, len); //just strcpy maybe??
+	g_strlcpy(v->value.ch, str, len); /* just strcpy maybe?? */
 	v->type = RLIB_VAR_STRING;
 	return v;
 }
 
 
-//Gets an rlib_var and sets to this number
+/* Gets an rlib_var and sets to this number */
 rlib_var *rlib_var_factory_new_number(rlib_var_factory *f, gint64 n) {
 	rlib_var *v = rlib_var_factory_get_small(f);
 	v->value.num = n;
@@ -256,7 +257,7 @@ rlib_var *rlib_var_factory_new_number(rlib_var_factory *f, gint64 n) {
 }
 
 
-//Gets an rlib_var and sets to this date-time
+/* Gets an rlib_var and sets to this date-time */
 rlib_var *rlib_var_factory_new_datetime(rlib_var_factory *f, struct rlib_datetime *dt) {
 	rlib_var *v = rlib_var_factory_get_small(f);
 	v->value.dt = *dt;
@@ -265,10 +266,12 @@ rlib_var *rlib_var_factory_new_datetime(rlib_var_factory *f, struct rlib_datetim
 }
 
 
-//Gets an rlib_var and sets it to a constant string that WILL NOT BE FREED
-//A POINTER is stored. The caller must manage the allocation /deallocation of
-//this. It must persist throughout the lifetime of the rlib_var or else big
-//problems.
+/*
+ * Gets an rlib_var and sets it to a constant string that WILL NOT BE FREED
+ * A POINTER is stored. The caller must manage the allocation /deallocation of
+ * this. It must persist throughout the lifetime of the rlib_var or else big
+ * problems.
+ */
 rlib_var *rlib_var_factory_new_reference(rlib_var_factory *f, const gchar *str) {
 	rlib_var *v = rlib_var_factory_get_small(f);
 	v->value.ref = str;
@@ -277,7 +280,7 @@ rlib_var *rlib_var_factory_new_reference(rlib_var_factory *f, const gchar *str) 
 }
 
 
-//TODO: fix this. IIFs don't belong here.
+/* TODO: fix this. IIFs don't belong here. */
 rlib_var *rlib_var_factory_new_iif(rlib_var_factory *f, const void *iif) {
 	rlib_var *v = rlib_var_factory_get_small(f);
 	v->value.iif = iif;
@@ -287,7 +290,7 @@ rlib_var *rlib_var_factory_new_iif(rlib_var_factory *f, const void *iif) {
 
 
 
-//Add an rlib_val back to the cache for re-use.
+/* Add an rlib_val back to the cache for re-use. */
 void rlib_var_factory_free_value(rlib_var_factory *f, rlib_var *v) {
 	switch (v->len) {
 	case sizeof(union u_rlib_var):
@@ -299,7 +302,7 @@ void rlib_var_factory_free_value(rlib_var_factory *f, rlib_var *v) {
 		f->headmd = v;
 		break;
 	default:
-		{ //Insert into large value list in size increasing order
+		{ /* Insert into large value list in size increasing order */
 			rlib_var **vlast = &f->headlg;
 			rlib_var *rv = *vlast;
 			gint size = v->len; 
@@ -325,7 +328,7 @@ void rlib_var_factory_destroy(rlib_var_factory **fptr) {
 	if (f) {
 		rlib_var *rv = f->headalloc;
 		rlib_var *rv2;
-		while (rv) { //FREE ALL MEMORY THAT WAS ALLOCATED
+		while (rv) { /* FREE ALL MEMORY THAT WAS ALLOCATED */
 			rv2 = rv->alloclink;
 			g_free(rv);
 			rv = rv2;
@@ -356,7 +359,7 @@ rlib_var *rlib_var_stack_pop(rlib_var_stack *s) {
 }
 
 
-//Like _pop, but DOES NOT REMOVE the TOS
+/* Like _pop, but DOES NOT REMOVE the TOS */
 rlib_var *rlib_var_stack_peek(rlib_var_stack *s) {
 	if (s->cur > s->base) return *s->cur; 
 	r_error("Stack UNDERFLOW!!!!");

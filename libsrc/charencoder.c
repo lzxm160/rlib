@@ -55,7 +55,7 @@ void rlib_charencoder_free(GIConv converter) {
 
 gint rlib_charencoder_convert(GIConv converter, gchar **inbuf, gsize *inbytes_left, gchar **outbuf, gsize *outbytes_left) {
 #ifdef DISABLE_UTF8
-	//The strlen is passed in here so we bump it by 1
+	/* The strlen is passed in here so we bump it by 1 */
 	*inbytes_left += 1;
 	memcpy(*outbuf, *inbuf, *outbytes_left < *inbytes_left ? *outbytes_left : *inbytes_left);
 	return 0;

@@ -80,7 +80,7 @@ static gint rlib_mysql_input_close(gpointer input_ptr) {
 	struct input_filter *input = input_ptr;
 	mysql_close(INPUT_PRIVATE(input)->mysql);
 #if MYSQL_VERSION_ID > 40110
-//	mysql_library_end();
+/*	mysql_library_end(); */
 #endif
 	INPUT_PRIVATE(input)->mysql = NULL;
 

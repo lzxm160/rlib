@@ -333,7 +333,7 @@ struct rlib_part * load_report(gchar *filename) {
 	gchar *ptr;
 	gchar buf[MAXSTRLEN];
 	struct rlib_report *rep;
-//	struct rlib_part *part;
+/*	struct rlib_part *part; */
 
 	fd = open(filename, O_RDONLY, 0664);
 	if(fd <= 0)
@@ -375,7 +375,7 @@ struct rlib_part * load_report(gchar *filename) {
 	
 	rep->contents = contents;
 	rep->doc = NULL;
-	//g_free(contents);
+	/*g_free(contents);*/
 	close(fd);
 	return NULL;
 }

@@ -1,4 +1,31 @@
 2005-07-05  Zoltan Boszormenyi <zboszor@dunaweb.hu>
+	* inputs/mysql/mysql.c: Use c style comments
+	* libsrc/api.c: likewise
+	* libsrc/breaks.c: likewise
+	* libsrc/charencoder.c: likewise
+	* libsrc/datetime.c: likewise
+	* libsrc/formatstring.c: likewise
+	* libsrc/free.c: likewise
+	* libsrc/graphing.c: likewise
+	* libsrc/layout.c: likewise
+	* libsrc/load.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/pcode.c: likewise
+	* libsrc/pcode.h:likewise
+	* libsrc/pcode_op_functions.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h:likewise
+	* libsrc/rlib_input.h: likewise
+	* libsrc/util.c: likewise
+	* libsrc/util.h:likewise
+	* libsrc/value.c: likewise
+	* libsrc/value.h:likewise
+	* rpdf/rpdf.c: likewise
+	* rpdf/test.c: likewise
+
+2005-07-05  Zoltan Boszormenyi <zboszor@dunaweb.hu>
 	* libsrc/datasource.c: Better way of silencing datasource plugin pointers
 
 2005-07-05  Bob Doan  <bdoan@sicompos.com>

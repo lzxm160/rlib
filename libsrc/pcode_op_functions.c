@@ -887,7 +887,7 @@ gint rlib_pcode_operator_val(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 	return FALSE;
 }
 
-//TODO: REVISIT THIS
+/* TODO: REVISIT THIS */
 gint rlib_pcode_operator_str(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	gchar fmtstring[20];
 	gchar *dest;
@@ -937,8 +937,8 @@ static gint rlib_pcode_operator_stod_common(rlib *r, struct rlib_value_stack *vs
 		int err = FALSE;
 
 		rlib_datetime_clear(&dt);
-		if (which) { //convert time
-			gint hour = 12, minute = 0, second = 0; //safe time for date only.
+		if (which) { /* convert time */
+			gint hour = 12, minute = 0, second = 0; /* safe time for date only. */
 			gchar ampm = 'a';
 
 			if (sscanf(tstr, "%2d:%2d:%2d%c", &hour, &minute, &second, &ampm) != 4) {
@@ -964,7 +964,7 @@ static gint rlib_pcode_operator_stod_common(rlib *r, struct rlib_value_stack *vs
 			if (!err) {
 				rlib_datetime_set_time(&dt, hour, minute, second);
 			}
-		} else { //convert date
+		} else { /* convert date */
 			gint year, month, day;
 			if (sscanf(tstr, "%4d-%2d-%2d", &year, &month, &day) != 3) {
 				if (sscanf(tstr, "%4d%2d%2d", &year, &month, &day) != 3) {
@@ -1193,7 +1193,7 @@ gboolean rlib_pcode_operator_dtosf(rlib *r, struct rlib_value_stack *vs, struct 
 	} else {
 		rlib_pcode_operator_fatal_execption("dtosf", 1, v1, NULL, NULL);
 		rlib_value_free(v1);
-		v1 = rlib_value_stack_pop(vs); //clear the stack
+		v1 = rlib_value_stack_pop(vs); /* clear the stack */
 		rlib_value_free(v1);
 		rlib_value_stack_push(vs, rlib_value_new_error(&rval_rtn));		
 	}
@@ -1214,7 +1214,7 @@ gboolean rlib_pcode_operator_format(rlib *r, struct rlib_value_stack *vs, struct
 		gchar *fmt = RLIB_VALUE_GET_AS_STRING(v2);
 		if (*fmt == '!') {
 			++fmt;
-			buf[MAXSTRLEN - 1] = '\0'; // Assure terminated
+			buf[MAXSTRLEN - 1] = '\0'; /* Assure terminated */
 			if(RLIB_VALUE_IS_STRING(v1)) {
 				gchar *str = RLIB_VALUE_GET_AS_STRING(v1);
 				if ((*fmt == '#') || (*fmt == '!')) {
@@ -1385,9 +1385,9 @@ gint rlib_pcode_operator_right(rlib *r, struct rlib_value_stack *vs, struct rlib
 
 gint rlib_pcode_operator_substring(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, *v3, rval_rtn;
-	v1 = rlib_value_stack_pop(vs); // the new size
-	v2 = rlib_value_stack_pop(vs); // the start idx
-	v3 = rlib_value_stack_pop(vs); //the string
+	v1 = rlib_value_stack_pop(vs); /* the new size */
+	v2 = rlib_value_stack_pop(vs); /* the start idx */
+	v3 = rlib_value_stack_pop(vs); /* the string */
 	if(RLIB_VALUE_IS_STRING(v3) && RLIB_VALUE_IS_NUMBER(v1) && RLIB_VALUE_IS_NUMBER(v2)) {
 		gchar *tmp = g_strdup(RLIB_VALUE_GET_AS_STRING(v3));
 		gint st = RLIB_VALUE_GET_AS_NUMBER(v2)/RLIB_DECIMAL_PRECISION;
@@ -1425,7 +1425,7 @@ gint rlib_pcode_operator_proper(rlib *r, struct rlib_value_stack *vs, struct rli
 		} else {
 			gchar *tmp = g_strdup(RLIB_VALUE_GET_AS_STRING(v1));
 			rlib_value_free(v1);
-//TODO: find or write a utf8 version  of strproper.
+/* TODO: find or write a utf8 version  of strproper. */
 			rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, strproper(tmp)));
 			g_free(tmp);
 			return TRUE;

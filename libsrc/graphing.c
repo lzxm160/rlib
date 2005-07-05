@@ -478,7 +478,7 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 			if((gint)y_max[RLIB_SIDE_LEFT] % y_axis_mod > 0)
 				y_max[RLIB_SIDE_LEFT] = (((gint)y_max[RLIB_SIDE_LEFT] / y_axis_mod)+1)*y_axis_mod;
 
-			if(y_axis_mod % 15 == 0) { //TIME
+			if(y_axis_mod % 15 == 0) { /* TIME */
 				goodIncs = goodIncs_15;
 				numGoodIncs = numGoodIncs_15;
 			}

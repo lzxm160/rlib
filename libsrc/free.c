@@ -237,7 +237,7 @@ void rlib_free_report(rlib *r, struct rlib_report *report) {
 	struct rlib_element *e, *prev;
 
 	if(report->doc != NULL) {
-//		xmlFreeDoc(report->doc);
+/*		xmlFreeDoc(report->doc); */
 	} else {
 		g_free(report->contents);
 	}

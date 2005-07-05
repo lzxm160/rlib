@@ -202,19 +202,19 @@ gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value
 					gchar *tfmt = formatstring + 1;
 					gboolean goodfmt = TRUE;
 					switch (*tfmt) {
-					case '$': //Format as money
+					case '$': /* Format as money */
 						if (RLIB_VALUE_IS_NUMBER(rval)) {
 							return format_money(buf, 100, tfmt + 1, RLIB_VALUE_GET_AS_NUMBER(rval));
 						}
 						++formatstring;
 						break;
-					case '#': //Format as number
+					case '#': /* Format as number */
 						if (RLIB_VALUE_IS_NUMBER(rval)) {
 							return format_number(buf, 100, tfmt + 1, RLIB_VALUE_GET_AS_NUMBER(rval));
 						}
 						++formatstring;
 						break;
-					case '@': //Format as time/date
+					case '@': /* Format as time/date */
 						if(RLIB_VALUE_IS_DATE(rval)) {
 							struct rlib_datetime *dt = &RLIB_VALUE_GET_AS_DATE(rval);
 							rlib_datetime_format(dt, buf, 100, tfmt + 1);

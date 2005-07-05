@@ -36,7 +36,7 @@
 
 #define FONTPOINT 	10.0
 
-//Not used: static struct rlib_rgb COLOR_BLACK = {0, 0, 0};
+/* Not used: static struct rlib_rgb COLOR_BLACK = {0, 0, 0}; */
 
 struct _rlib_format_table {
 	gchar name[64];
@@ -175,18 +175,19 @@ gint rlib_emit_signal(rlib *r, gint signal_number) {
 
 gint calc_memo_lines(struct rlib_report_lines *rl) {
 	struct rlib_element *e;
-//	int hasmemo;
+/*	int hasmemo; */
 	gint nlines = 0;
-//	RVector *v;
+/*	RVector *v; */
 	
 	for (e = rl->e; e != NULL; e = e->next) {
 		if (e->type == RLIB_ELEMENT_FIELD) {
-			//
-//			if (e->xml_maxlines)
-//			v = wrapMemoLines(
-//			if (e->maxlines != 1) {
-//				hasmemo = TRUE;
-//			}
+#if 0
+			if (e->xml_maxlines)
+			v = wrapMemoLines(
+			if (e->maxlines != 1) {
+				hasmemo = TRUE;
+			}
+#endif
 		}
 	}
 	return nlines;
@@ -214,7 +215,7 @@ gfloat get_output_size(rlib *r, struct rlib_report_output_array *roa) {
 		if(rd->type == RLIB_REPORT_PRESENTATION_DATA_LINE) {
 			struct rlib_report_lines *rl = rd->data;
 			total += RLIB_GET_LINE(get_font_point(r, rl));
-//Here to adjust size of memo field output.			
+/* Here to adjust size of memo field output. */
 		} else if(rd->type == RLIB_REPORT_PRESENTATION_DATA_HR) {
 			struct rlib_report_horizontal_line *rhl = rd->data;
 			total += RLIB_GET_LINE(rhl->size);		
@@ -359,13 +360,13 @@ static void rlib_process_variables(rlib *r, struct rlib_report *report) {
 				r_error("rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_AVERAGE\n");
 		} else if(rv->type == RLIB_REPORT_VARIABLE_LOWEST) {
 			if(RLIB_VALUE_IS_NUMBER(er)) {
-				if(RLIB_VALUE_GET_AS_NUMBER(er) < RLIB_VALUE_GET_AS_NUMBER(amount) || RLIB_VALUE_GET_AS_NUMBER(amount) == 0) //TODO: EVIL HACK
+				if(RLIB_VALUE_GET_AS_NUMBER(er) < RLIB_VALUE_GET_AS_NUMBER(amount) || RLIB_VALUE_GET_AS_NUMBER(amount) == 0) /* TODO: EVIL HACK */
 					RLIB_VALUE_GET_AS_NUMBER(amount) = RLIB_VALUE_GET_AS_NUMBER(er);
 			} else
 				r_error("rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_LOWEST\n");
 		} else if(rv->type == RLIB_REPORT_VARIABLE_HIGHEST) {
 			if(RLIB_VALUE_IS_NUMBER(er)) {
-				if(RLIB_VALUE_GET_AS_NUMBER(er) > RLIB_VALUE_GET_AS_NUMBER(amount) || RLIB_VALUE_GET_AS_NUMBER(amount) == 0) //TODO: EVIL HACK
+				if(RLIB_VALUE_GET_AS_NUMBER(er) > RLIB_VALUE_GET_AS_NUMBER(amount) || RLIB_VALUE_GET_AS_NUMBER(amount) == 0) /* TODO: EVIL HACK */
 					RLIB_VALUE_GET_AS_NUMBER(amount) = RLIB_VALUE_GET_AS_NUMBER(er);
 			} else
 				r_error("rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_HIGHEST\n");
@@ -805,12 +806,12 @@ gint rlib_make_report(rlib *r) {
 		rlib_emit_signal(r, RLIB_SIGNAL_REPORT_DONE);
 	}
 	
-/*
-		rlib_char_encoder_destroy(&rr->output_encoder); //Destroy if was one.
-		rlib_char_encoder_destroy(&rr->db_encoder); //Destroy if was one.
-		rlib_char_encoder_destroy(&rr->param_encoder); //Destroy if was one.
+#if 0
+		rlib_char_encoder_destroy(&rr->output_encoder); /* Destroy if was one. */
+		rlib_char_encoder_destroy(&rr->db_encoder); /* Destroy if was one. */
+		rlib_char_encoder_destroy(&rr->param_encoder); /* Destroy if was one. */
 	}
-	*/
+#endif
 	return 0;
 }
 

@@ -669,7 +669,7 @@ static void rlib_layout_find_common_properties_in_a_line(rlib *r, struct rlib_li
 	save_ptr = NULL;
 	previous_ptr = NULL;
 	state = STATE_NONE;
-//HERE	
+/* HERE	*/
 	previous_ptr = &extra_data[i];
 	for(i=0;i<count;i++) {
 		e_ptr = &extra_data[i];

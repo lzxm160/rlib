@@ -150,7 +150,7 @@ static void pdf_set_fg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {
 
 static void pdf_drawbox(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, struct rlib_rgb *color) {
 	if(!(color->r == 1.0 && color->g == 1.0 && color->b == 1.0)) {
-		//the - PDF_PIXEL seems to get around decimal percision problems.. but should investigate this a bit further	
+		/* the - PDF_PIXEL seems to get around decimal percision problems.. but should investigate this a bit further */
 		OUTPUT(r)->set_bg_color(r, color->r, color->g, color->b);
 		rpdf_rect(OUTPUT_PRIVATE(r)->pdf, left_origin, bottom_origin, how_long, how_tall-PDF_PIXEL);
 		rpdf_fill(OUTPUT_PRIVATE(r)->pdf);
@@ -287,7 +287,7 @@ static void pdf_end_page(rlib *r, struct rlib_part *part) {
 	int i;
 	for(i=0;i<part->pages_across;i++)
 		pdf_set_working_page(r, part, i);
-//	r->current_page_number++;
+/*	r->current_page_number++; */
 	r->current_line_number = 1;
 }
 
@@ -598,8 +598,8 @@ static void pdf_graph_do_grid(rlib *r, gboolean just_a_box) {
 		}
 	}
 
-	//Make more room for the x axis label is we need to rotate the text
-//	if(graph->x_label_width > (graph->x_tick_width)) {
+	/* Make more room for the x axis label is we need to rotate the text */
+/*	if(graph->x_label_width > (graph->x_tick_width)) { */
 	if(graph->vertical_x_label == TRUE) {
 		graph->height_offset += graph->x_label_width - 	RLIB_GET_LINE(r->current_font_point);
 		

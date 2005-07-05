@@ -123,7 +123,7 @@ static void rlib_datetime_format_date(struct rlib_datetime *dt, char *buf, int m
 		g_date_strftime(buf, max, fmt, &dt->date);
 	} else {
 		strcpy(buf, "");
-//		rlogit("Invalid date in format date");
+/*		rlogit("Invalid date in format date"); */
 	}
 }
 
@@ -143,7 +143,7 @@ static void rlib_datetime_format_time(struct rlib_datetime *dt, char *buf, int m
 }
 
 
-//separate format string into 2 pcs. one with date, other with time.
+/* separate format string into 2 pcs. one with date, other with time. */
 static gchar datechars[] = "aAbBcCdDeFgGhJmuUVwWxyY";
 static gchar timechars[] = "HIklMpPrRsSTXzZ";
 static void split_tdformat(gchar **datefmt, gchar **timefmt, gint *order, const gchar *fmtstr) {
@@ -164,18 +164,18 @@ static void split_tdformat(gchar **datefmt, gchar **timefmt, gint *order, const 
 		case '%':
 			t = r_nextchr(t);
 			break;
-		case 'E': //These are prefixes that moderate the next char
+		case 'E': /* These are prefixes that moderate the next char */
 		case 'O':
 			t = r_nextchr(t);
-			//supposed to fall thru - break intentionally missing
+			/* supposed to fall thru - break intentionally missing */
 		default:
 			if ((s = r_strchr(datechars, r_strlen(datechars), r_getchr(t)))) {
 				if (mode && (mode != 1)) splitpoint = pctptr;
-				if (!mode) mode = 1; //date first
+				if (!mode) mode = 1; /* date first */
 				havedate = TRUE;
 			} else if ((s = r_strchr(timechars, r_strlen(timechars), r_getchr(t)))) {
 				if (mode && (mode != 2)) splitpoint = pctptr;
-				if (!mode) mode = 2; // time first
+				if (!mode) mode = 2; /* time first */
 				havetime = TRUE;
 			}
 			t = r_nextchr(t);
@@ -183,7 +183,7 @@ static void split_tdformat(gchar **datefmt, gchar **timefmt, gint *order, const 
 		}
 	}
 	switch (mode) {
-	case 1: // date first
+	case 1: /* date first */
 		if (splitpoint) {
 			*timefmt = g_strdup(splitpoint);
 			*datefmt = g_strndup(fmtstr, splitpoint - fmtstr);
@@ -191,7 +191,7 @@ static void split_tdformat(gchar **datefmt, gchar **timefmt, gint *order, const 
 			*datefmt = g_strdup(fmtstr);
 		}
 		break;
-	case 2: // time first
+	case 2: /* time first */
 		if (splitpoint) {
 			*timefmt = g_strndup(fmtstr, splitpoint - fmtstr);
 			*datefmt = g_strdup(splitpoint);
@@ -239,7 +239,7 @@ void rlib_datetime_format(struct rlib_datetime *dt, gchar *buf, gint max, const 
 	default:
 		g_strlcpy(buf, "!ERR_DT_NO", max);
 		r_error("Datetime format has no date or no format");
-		break; // format has no date or time codes ???
+		break; /* format has no date or time codes ??? */
 	}
 	if (datefmt) g_free(datefmt);
 	if (timefmt) g_free(timefmt);
@@ -278,5 +278,5 @@ gint rlib_datetime_secsdiff(struct rlib_datetime *dt, struct rlib_datetime *dt2)
 }
 
 
-// END of rlib_datetime
+/* END of rlib_datetime */
 

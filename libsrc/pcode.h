@@ -108,7 +108,7 @@
 #define PCODE_EXECUTE	2
 
 struct rlib_pcode_operator {
-	const gchar *tag;		// What I expect to find in the infix string
+	const gchar *tag;		/* What I expect to find in the infix string */
 	gint taglen;		
 	gint precedence; 
 	gint is_op;

@@ -88,12 +88,12 @@ int locale_codes[] = {
 static void myFaultHandler (gint signum, siginfo_t *si, gpointer aptr) {
 	struct rlimit rlim;
 	rlogit("** NUTS.. WE CRASHED\n");
-	getrlimit (RLIMIT_CORE, &rlim); //POSIBLY NOT NECESSARY
-	rlim.rlim_cur = 1024000000; //NECESSARY
-	setrlimit (RLIMIT_CORE, &rlim); //NECESSARY
-	signal (SIGQUIT, SIG_DFL); //KEEP THIS!!!!!
-	kill (getpid(), SIGQUIT); //IMPORTANT
-	exit (5); //THEORETICALLY IN THEORY THIS WILL NEVER GET CALLED... but lets play it safe
+	getrlimit (RLIMIT_CORE, &rlim); /* POSSIBLY NOT NECESSARY */
+	rlim.rlim_cur = 1024000000; /* NECESSARY */
+	setrlimit (RLIMIT_CORE, &rlim); /* NECESSARY */
+	signal (SIGQUIT, SIG_DFL); /* KEEP THIS!!!!! */
+	kill (getpid(), SIGQUIT); /* IMPORTANT */
+	exit (5); /* THEORETICALLY IN THEORY THIS WILL NEVER GET CALLED... but lets play it safe */
 }
 #endif
 #endif
@@ -316,9 +316,9 @@ const gchar *colornames(const char *str) {
 		return "0x008080";
 	if(!strcasecmp(str, "aqua"))
 		return "0x00FFFF";
-	if(!strcasecmp(str, "bobkratz")) //Easter egg.. a pink color to match the shirts he wears
+	if(!strcasecmp(str, "bobkratz")) /* Easter egg.. a pink color to match the shirts he wears */
 		return "0xffc59f";
-	if(!strcasecmp(str, "everton")) //Easter egg.. an ideal background color
+	if(!strcasecmp(str, "everton")) /* Easter egg.. an ideal background color */
 		return "0xd3d3d3";
 	return str;
 }
@@ -378,7 +378,7 @@ gchar *strproper (gchar *s) {
 }
 
 
-//TODO: Change this to use a g_string instead of this.. Bob agree's
+/* TODO: Change this to use a g_string instead of this.. Bob agree's */
 void make_more_space_if_necessary(gchar **str, gint *size, gint *total_size, gint len) {
 	if(*total_size == 0) {
 		*str = g_malloc(MAXSTRLEN);
@@ -444,7 +444,7 @@ void make_all_locales_utf8(void) {
 	}
 }
 
-//For debug purposes so I can see a hex dump of certain utf8 strings.
+/* For debug purposes so I can see a hex dump of certain utf8 strings. */
 inline guint itox(guint i) { return (i < 10)?'0'+i:'A'+i-10; } 
 gchar *str2hex(const gchar *str) {
 	guint ch;

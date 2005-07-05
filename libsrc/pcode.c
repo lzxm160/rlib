@@ -210,7 +210,7 @@ gint64 rlib_str_to_long_long(gchar *str) {
 	other_side = strchr(str, decimalsep);
 	sign = strchr(str, '-')? -1 : 1;
 	if (left < 0) {
-//		sign = -1;
+/*		sign = -1; */
 		left = -left;
 	}
 	if(other_side != NULL) {
@@ -445,7 +445,7 @@ void popopstack(struct rlib_pcode *p, struct rlib_operator_stack *os, struct rli
 				}
 			}
 			if(o->tag[0] == '(' || o->is_function == TRUE) {
-				if(op->tag[0] == ',') //NEED TO PUT THE ( or FUNCTION back on the stack cause it takes more then 1 paramater
+				if(op->tag[0] == ',') /* NEED TO PUT THE ( or FUNCTION back on the stack cause it takes more then 1 paramater */
 					operator_stack_push(os, o);
 				break;
 				
@@ -538,8 +538,8 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, struct rlib_part *part, struct 
 				if(operand[0] != ')') {
 					rlib_pcode_add(pcodes, rlib_new_pcode_instruction(&rpi, PCODE_PUSH, rlib_new_operand(r, part, report, operand, look_at_metadata)));
 				}
-//				op_pointer += moving_ptr - op_pointer;
-// How about just:
+/*				op_pointer += moving_ptr - op_pointer; */
+/* How about just: */
 				op_pointer = moving_ptr;
 				found_op_last = FALSE;
 				last_op_was_function = FALSE;
