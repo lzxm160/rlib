@@ -1,3 +1,7 @@
+2005-07-05  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/datetime.c: Don't crash if we get an invalid glib date.
+	* libsrc/resolution.c: Don't crash on strcmp of NULL query names
+
 2005-07-01  Bob Doan  <bdoan@sicompos.com>
 	* inputs/mysql/mysql.c: Don't unload MySQL For now because we could be looping in RLIB
 	* libsrc/free.c: nada

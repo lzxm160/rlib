@@ -81,8 +81,12 @@ void rlib_datetime_set_date(struct rlib_datetime *dt, int y, int m, int d) {
 	GDate *t;
 	if (d && m && y) {
 		t = g_date_new_dmy(d, m, y);
-		dt->date = *t;
-		g_date_free(t);
+		if(t != NULL) {
+			dt->date = *t;
+			g_date_free(t);
+		} else {
+			memset(&dt->date, 0, sizeof(dt->date));
+		}
 	} else {
 		memset(&dt->date, 0, sizeof(dt->date));
 	}

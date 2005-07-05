@@ -84,8 +84,10 @@ gchar * rlib_resolve_field_value(rlib *r, struct rlib_resultset_field *rf) {
 gint rlib_lookup_result(rlib *r, gchar *name) {
 	gint i;
 	for(i=0;i<r->queries_count;i++) {
-		if(!strcmp(r->results[i].name, name))
-			return i;
+		if(r->results[i].name != NULL) {
+			if(!strcmp(r->results[i].name, name))
+				return i;
+		}
 	}
 	return -1;
 }
