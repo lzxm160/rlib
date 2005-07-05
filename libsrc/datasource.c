@@ -26,6 +26,19 @@
 #include "rlib.h"
 #include "rlib_input.h"
 
+typedef struct {
+	union {
+		gpointer ptr;
+		gpointer (*new_input_filter)(void);
+	} filter;
+	union {
+		gpointer ptr;
+		gpointer (*mysql_connect)(gpointer, const gchar *, const gchar *, const gchar *, const gchar*, const gchar *);
+		gpointer (*postgre_connect)(gpointer, const gchar *);
+		gpointer (*odbc_connect)(gpointer, const gchar *, const gchar *, const gchar *);
+	} connect;
+} datasource_t;
+
 gint rlib_add_datasource(rlib *r, const gchar *input_name, struct input_filter *input) {
 	r->inputs[r->inputs_count].input = input;
 	r->inputs[r->inputs_count].name = g_strdup(input_name);
@@ -38,10 +51,7 @@ gint rlib_add_datasource(rlib *r, const gchar *input_name, struct input_filter *
 static gint rlib_add_datasource_mysql_private(rlib *r, const gchar *input_name, const gchar *database_group, const gchar *database_host, 
 const gchar *database_user, const gchar *database_password, const gchar *database_database) {
 	GModule* handle;
-	gpointer rlib_mysql_new_input_filter;
-	gpointer rlib_mysql_real_connect;
-	gpointer (*f1)();
-	gpointer (*f2)(gpointer, const gchar *, const gchar *, const gchar *, const gchar*, const gchar *);
+	datasource_t	ds;
 	gpointer mysql;
 
 	handle = g_module_open("libr-mysql", 2);
@@ -50,12 +60,10 @@ const gchar *database_user, const gchar *database_password, const gchar *databas
 		return -1;
 	}
 
-	g_module_symbol(handle, "rlib_mysql_new_input_filter", (gpointer *)&rlib_mysql_new_input_filter);
-	g_module_symbol(handle, "rlib_mysql_real_connect", (gpointer *)&rlib_mysql_real_connect);
-	f1 = rlib_mysql_new_input_filter;															                                                                                                  
-	f2 = rlib_mysql_real_connect;
-	r->inputs[r->inputs_count].input = f1();
-	mysql = f2(r->inputs[r->inputs_count].input, database_group, database_host, database_user, 
+	g_module_symbol(handle, "rlib_mysql_new_input_filter", &ds.filter.ptr);
+	g_module_symbol(handle, "rlib_mysql_real_connect", &ds.connect.ptr);
+	r->inputs[r->inputs_count].input = ds.filter.new_input_filter();
+	mysql = ds.connect.mysql_connect(r->inputs[r->inputs_count].input, database_group, database_host, database_user, 
 		database_password, database_database);
 
 	if(mysql == NULL) {
@@ -84,23 +92,18 @@ gint rlib_add_datasource_mysql_from_group(rlib *r, const gchar *input_name, cons
 
 gint rlib_add_datasource_postgre(rlib *r, const gchar *input_name, const gchar *conn) {
 	GModule* handle;
-	gpointer rlib_postgre_new_input_filter;
-	gpointer rlib_postgre_connect;//(gpointer, gchar *)
+	datasource_t ds;
 	gpointer postgre;
-	gpointer (*f1)();
-	gpointer (*f2)(gpointer, const gchar *);
 
 	handle = g_module_open("libr-postgre", 2);
 	if (!handle) {
 		rlogit("Could Not Load POSTGRE Input [%s]\n", g_module_error());
 		return -1;
 	}
-	g_module_symbol(handle, "rlib_postgre_new_input_filter", &rlib_postgre_new_input_filter);
-	g_module_symbol(handle, "rlib_postgre_connect", &rlib_postgre_connect);
-	f1 = rlib_postgre_new_input_filter;
-	f2 = rlib_postgre_connect;
-	r->inputs[r->inputs_count].input = f1();
-	postgre = f2(r->inputs[r->inputs_count].input, conn);
+	g_module_symbol(handle, "rlib_postgre_new_input_filter", &ds.filter.ptr);
+	g_module_symbol(handle, "rlib_postgre_connect", &ds.connect.ptr);
+	r->inputs[r->inputs_count].input = ds.filter.new_input_filter();
+	postgre = ds.connect.postgre_connect(r->inputs[r->inputs_count].input, conn);
 	if(postgre == NULL) {
 		rlogit("ERROR: Could not connect to POSTGRE\n");
 		return -1;
@@ -114,10 +117,7 @@ gint rlib_add_datasource_postgre(rlib *r, const gchar *input_name, const gchar *
 
 gint rlib_add_datasource_odbc(rlib *r, const gchar *input_name, const gchar *source, const gchar *user, const gchar *password) {
 	GModule* handle;
-	gpointer rlib_odbc_new_input_filter;
-	gpointer rlib_odbc_connect;
-	gpointer (*f1)();
-	gpointer (*f2)(gpointer, const gchar *, const gchar *, const gchar *);
+	datasource_t ds;
 	gpointer odbc;
 	
 	handle = g_module_open("libr-odbc", 2);
@@ -125,12 +125,10 @@ gint rlib_add_datasource_odbc(rlib *r, const gchar *input_name, const gchar *sou
 		rlogit("Could Not Load ODBC Input [%s]\n", g_module_error());
 		return -1;
 	}
-	g_module_symbol(handle, "rlib_odbc_new_input_filter", (gpointer *)&rlib_odbc_new_input_filter);
-	g_module_symbol(handle, "rlib_odbc_connect", (gpointer *)&rlib_odbc_connect);
-	f1 = rlib_odbc_new_input_filter;
-	f2 = rlib_odbc_connect;
-	r->inputs[r->inputs_count].input = f1();
-	odbc = f2(r->inputs[r->inputs_count].input, source, user, password);
+	g_module_symbol(handle, "rlib_odbc_new_input_filter", &ds.filter.ptr);
+	g_module_symbol(handle, "rlib_odbc_connect", &ds.connect.ptr);
+	r->inputs[r->inputs_count].input = ds.filter.new_input_filter();
+	odbc = ds.connect.odbc_connect(r->inputs[r->inputs_count].input, source, user, password);
 	r->inputs[r->inputs_count].name = g_strdup(input_name);
 	if(odbc == NULL) {
 		rlogit("ERROR: Could not connect to ODBC\n");
