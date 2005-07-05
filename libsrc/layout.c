@@ -75,7 +75,7 @@ static struct rlib_paper paper[] = {
 	{RLIB_PAPER_COMM10, 297, 684, "COMM10"},
 	{RLIB_PAPER_MONARCH, 279, 540, "MONARCH"},
 	{RLIB_PAPER_FILM35MM, 528, 792, "FILM35MM"},
-	{0},
+	{0, 0, 0, ""},
 };
 
 struct rlib_paper * rlib_layout_get_paper(rlib *r, gint paper_type) {

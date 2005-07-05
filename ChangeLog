@@ -1,4 +1,8 @@
 2005-07-05  Zoltan Boszormenyi <zboszor@dunaweb.hu>
+	* libsrc/layout.c: Fix missing initializer warnings
+	* rpdf/rpdf.c: likewise
+
+2005-07-05  Zoltan Boszormenyi <zboszor@dunaweb.hu>
 	* inputs/mysql/mysql.c: Use c style comments
 	* libsrc/api.c: likewise
 	* libsrc/breaks.c: likewise
