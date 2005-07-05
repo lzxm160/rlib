@@ -1,3 +1,6 @@
+2005-07-05  William K. Volkman <wkvsf@users.sourceforge.net>
+	* bindings/python/python.c: Fix SWIG generated bindings for get output
+
 2005-07-05  Zoltan Boszormenyi <zboszor@dunaweb.hu>
 	* libsrc/layout.c: Fix missing initializer warnings
 	* rpdf/rpdf.c: likewise
