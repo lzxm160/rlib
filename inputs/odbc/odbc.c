@@ -51,8 +51,6 @@ struct odbc_field_values {
 struct rlib_odbc_results {
 	gchar *name;
 	SQLHSTMT V_OD_hstmt;
-	gint row;
-	gint tot_rows;
 	gint tot_fields;
 	gint total_size;
 	gint isdone;
@@ -163,7 +161,6 @@ static gint odbc_read_first(gpointer result_ptr) {
 
 static gint rlib_odbc_first(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_odbc_results *result = result_ptr;
-	result->row = 0;
 	result->isdone = FALSE;
 	return odbc_read_first(result_ptr);
 }
@@ -181,17 +178,13 @@ static gint odbc_read_next(gpointer result_ptr) {
 	return FALSE;
 }
 
-static int rlib_odbc_next(gpointer input_ptr, gpointer result_ptr) {
+static gint rlib_odbc_next(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_odbc_results *results = result_ptr;
+	gint ret;
 
-	if(results->row+1 < results->tot_rows) {
-		odbc_read_next(result_ptr);
-		results->row++;
-		results->isdone = FALSE;
-		return TRUE;
-	}
-	results->isdone = TRUE;
-	return FALSE;
+	ret = odbc_read_next(result_ptr);
+	results->isdone = !ret;
+	return ret;
 }
 
 static gint rlib_odbc_isdone(gpointer input_ptr, gpointer result_ptr) {
@@ -214,15 +207,11 @@ static gint odbc_read_prior(gpointer result_ptr) {
 
 static gint rlib_odbc_previous(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_odbc_results *results = result_ptr;
+	gint ret;
 
-	if(results->row-1 > 0) {
-		odbc_read_prior(result_ptr);
-		results->row--;
-		results->isdone = FALSE;
-		return TRUE;
-	}
-	results->isdone = TRUE;
-	return FALSE;
+	ret = odbc_read_prior(result_ptr);
+	results->isdone = !ret;
+	return ret;
 }
 
 static gint odbc_read_last(gpointer result_ptr) {
@@ -240,10 +229,10 @@ static gint odbc_read_last(gpointer result_ptr) {
 
 static gint rlib_odbc_last(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_odbc_results *result = result_ptr;
-	odbc_read_last(result_ptr);
-	result->row = result->tot_rows-1;
-	result->isdone = FALSE;
-	return TRUE;
+	gint ret;
+	ret = odbc_read_last(result_ptr);
+	result->isdone = TRUE;
+	return ret;
 }
 
 static gchar * rlib_odbc_get_field_value_as_string(gpointer input_ptr, gpointer result_ptr, gpointer field_ptr) {
@@ -269,7 +258,6 @@ gpointer odbc_new_result_from_query(gpointer input_ptr, gchar *query) {
 	SQLHSTMT V_OD_hstmt;
 	guint i;
 	SQLSMALLINT ncols;
-	SQLINTEGER nrows;
 	gint V_OD_erg;
 	SQLUINTEGER col_size;
 
@@ -299,9 +287,6 @@ gpointer odbc_new_result_from_query(gpointer input_ptr, gchar *query) {
 	}
 
 	results->tot_fields = ncols;
-	V_OD_erg=SQLRowCount(V_OD_hstmt,&nrows);
-	results->tot_rows = nrows;
-
 	return results;
 }
 

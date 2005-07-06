@@ -1,3 +1,6 @@
+2005-07-06  Zoltan Boszormenyi <zboszor@dunaweb.hu>
+	* inputs/odbc/odbc.c: Don't rely on SqlRowCount as it's not always populated by DB engines
+
 2005-07-06  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/formatstring.c: Fix formatting error when the format string has a leading zero
 	* src/examples/php/array.xml: example
