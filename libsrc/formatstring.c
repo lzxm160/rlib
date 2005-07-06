@@ -51,18 +51,15 @@ gint format_money(gchar *dest, gint max, const gchar *moneyformat, gint64 x) {
 	return (result >= 0)? strlen(dest) : 0;
 }
 
-
 gint format_number(gchar *dest, gint max, const gchar *fmt, gint64 x) {
 	double d = (((double) x) / (double)RLIB_DECIMAL_PRECISION);
 	return snprintf(dest, max - 1, fmt, d);
 }
 
-
 gint rlib_string_sprintf(gchar *dest, gchar *fmtstr, struct rlib_value *rval) {
 	gchar *value = RLIB_VALUE_GET_AS_STRING(rval);
 	return sprintf(dest, fmtstr, value);
 }
-
 
 gint rlib_number_sprintf(gchar *dest, gchar *fmtstr, const struct rlib_value *rval, gint special_format) {
 	gint dec=0;
@@ -73,19 +70,21 @@ gint rlib_number_sprintf(gchar *dest, gchar *fmtstr, const struct rlib_value *rv
 	gint where=0;
 	gint commatize=0;
 	gchar *c;
-	char *radixchar = nl_langinfo(RADIXCHAR);
+	gchar *radixchar = nl_langinfo(RADIXCHAR);
 
 	for(c=fmtstr;*c && (*c != 'd');c++) {
 		if(*c=='$') {
 			commatize=1;
 		}
-		if(*c=='%')
+		if(*c=='%') {
 			where=0;
-		else if(*c=='.') {
+		} else if(*c=='.') {
 			dec=1;
 			where=1;
 		} else if(isdigit(*c)) {		
 			if(where==0) {
+				if(left_pad == 0 && (*c-'0') == 0)
+					left_padzero = 1;
 				left_pad *= 10;
 				left_pad += (*c-'0');
 			} else {
@@ -259,7 +258,6 @@ gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value
 							if ((tchar == 'd') || (tchar == 'i') || (tchar == 'n')) {
 								if(RLIB_VALUE_IS_NUMBER(rval)) {
 									gchar tmp[50];
-
 									rlib_number_sprintf(tmp, fmtstr, rval, special_format);
 									for(j=0;j<(int)strlen(tmp);j++)
 										buf[pos++] = tmp[j];

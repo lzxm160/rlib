@@ -15,7 +15,7 @@
 			<Line fontSize="11">
 				<literal>Test Report (Normal) AND THE REPORT FORMAT IS: </literal>
 				<field value="r.format" width="10"/>
-				<field value="eval('1+2')" width="5"/>
+				<field value="2.2" format="'%02.03d'" width="10"/>
 			</Line>
 			<Line fontSize="11">
 				<literal bold="yes">Test Report (Bold)</literal>
@@ -94,7 +94,6 @@
 			</Output>
 		</FieldDetails>
 	</Detail>
-
 	<PageFooter>
 		<Output>
 			<Line>
