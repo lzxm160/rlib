@@ -1,3 +1,6 @@
+2005-07-08  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/pcode.h: Tell the compiler the number is a LL so things like r.detailcnt work past 255
+
 2005-07-06  Zoltan Boszormenyi <zboszor@dunaweb.hu>
 	* inputs/odbc/odbc.c: Don't rely on SqlRowCount as it's not always populated by DB engines
 

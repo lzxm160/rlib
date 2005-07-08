@@ -158,7 +158,7 @@ struct rlib_pcode_operand {
 	void *value;
 };
 
-#define RLIB_DECIMAL_PRECISION	10000000
+#define RLIB_DECIMAL_PRECISION	10000000LL
 #define RLIB_FXP_PRECISION 7
 
 gint format_money(gchar *dest, gint max, const gchar *moneyformat, gint64 x);
