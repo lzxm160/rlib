@@ -1,3 +1,9 @@
+2005-07-13  Mike Roth  <mroth@sicompos.com>
+
+	* bindings/php/environment.c: (rlib_php_resolve_memory_variable),
+	(rlib_php_new_environment): Nothing
+	* src/examples/php/expressions.xml: Add test expression for iif .2*10 -vs- (.2*10)
+
 2005-07-12  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/pcode.c: Fix bugs in Expressions
 	* libsrc/resolution.c: likewise

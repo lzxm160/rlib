@@ -56,6 +56,10 @@
 				<literal>SHOULD GET: true                GOT: </literal>
 				<field value="iif(3 &lt; 4, iif(1 != 2, 'true', 'false'), 'false')" width="20"/>
 			</Line>
+			<Line>
+				<literal>SHOULD GET: .2*10 == 2          GOT: </literal>
+				<field value="iif(.2*10 == 2,'2','bad')"  width="20"/>
+			</Line>
 		</Output>
 	</ReportHeader>		
 </Report>

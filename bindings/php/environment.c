@@ -26,6 +26,7 @@
 static char * rlib_php_resolve_memory_variable(char *name) {
 	void *temp;
 	zval ** data;
+
 	if (zend_hash_find(&EG(symbol_table),name,strlen(name)+1, (void *)&temp)==FAILURE) { 
 		return NULL;
 	} else {
@@ -61,6 +62,7 @@ void rlib_php_free(rlib *r) {
 
 struct environment_filter * rlib_php_new_environment() {
 	struct environment_filter *ef;
+
 	ef = emalloc(sizeof(struct environment_filter));
 
 	ef->rlib_resolve_memory_variable = rlib_php_resolve_memory_variable;
