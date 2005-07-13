@@ -286,7 +286,7 @@ gfloat nheight) {
 	gchar buf[MAXSTRLEN];
 
 	print_text(r, "<DIV>", FALSE);	
-	sprintf(buf, "<img src=\"%s\">", nname);
+    sprintf(buf, "<img src=\"%s\" width=\"%f\" height=\"%f\">", nname, nwidth, nheight);
 	print_text(r, buf, FALSE);
 	print_text(r, "</DIV>", FALSE);
 }

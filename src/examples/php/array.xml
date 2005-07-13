@@ -32,7 +32,7 @@
 			</Line>
 			<Line fontSize="11">
 				<literal bold="yes" italics="yes">BOO: </literal>
-				<field value="iif(0,')', 'HI)')" width="10"/>
+				<field value="'mike is a silly pants'" width="10"/>
 			</Line>
 			<Line fontSize="11">
 				<literal bold="yes" italics="yes">TESTING CUSTOM FUNCTION </literal>
