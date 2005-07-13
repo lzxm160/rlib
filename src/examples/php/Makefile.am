@@ -24,7 +24,7 @@ EXTRA_DIST = array2.xml array.xml fixed_part.php flow_part.php pages_across.php 
 	array.php example.php fixed_part.xml flow_part.xml pages_across.xml graph.php \
 	graph.xml odbc.php follower.php follower.xml images.xml images.php red.jpg \
 	green.jpg yellow.jpg hungary.xml hungary.php labels.php labels.xml xml.php \
-	data.xml
+	data.xml expressions.php expressions.xml
 
 noinst_SCRIPTS = products.xml
  

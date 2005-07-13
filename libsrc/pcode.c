@@ -425,7 +425,7 @@ gint operator_stack_is_all_less(struct rlib_operator_stack *os, struct rlib_pcod
 	for(i=os->count-1;i>=0;i--) {
 		if(os->op[i]->tag[0] == '(' || os->op[i]->is_function == TRUE)
 			break;
-		if(os->op[i]->precedence > op->precedence ) 
+		if(os->op[i]->precedence >= op->precedence ) 
 			return FALSE;
 	}
 	return TRUE;
@@ -538,8 +538,8 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, struct rlib_part *part, struct 
 				if(operand[0] != ')') {
 					rlib_pcode_add(pcodes, rlib_new_pcode_instruction(&rpi, PCODE_PUSH, rlib_new_operand(r, part, report, operand, look_at_metadata)));
 				}
-/*				op_pointer += moving_ptr - op_pointer; */
-/* How about just: */
+/*				op_pointer += moving_ptr - op_pointer; 
+            How about just: */
 				op_pointer = moving_ptr;
 				found_op_last = FALSE;
 				last_op_was_function = FALSE;
@@ -553,6 +553,7 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, struct rlib_part *part, struct 
 				And then idetify all the 3 inner parts, then pass in recursivly to our selfs and populate rlib_pcode_if and smaet_add_pcode that				
 */				
 				if(op->opnum == OP_IIF) {
+					gint in_a_string = FALSE;
 					gint pcount=1;
 					gint ccount=0;
 					gchar *save_ptr, *iif, *save_iif;
@@ -563,10 +564,15 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, struct rlib_part *part, struct 
 					moving_ptr +=  op->taglen;
 					save_ptr = moving_ptr;
 					while(*moving_ptr) {
-						if(*moving_ptr == '(')
-							pcount++;
-						if(*moving_ptr == ')')
-							pcount--;
+						if(*moving_ptr == '\'')
+							in_a_string = !in_a_string;
+						
+						if(in_a_string == FALSE) {
+							if(*moving_ptr == '(')
+								pcount++;
+							if(*moving_ptr == ')')
+								pcount--;
+						}
 						moving_ptr++;
 						if(pcount == 0)
 							break;
@@ -577,15 +583,16 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, struct rlib_part *part, struct 
 					iif[moving_ptr-save_ptr-1] = '\0';
 					evaulation = iif;
 					while (*iif) {
-						if (*iif == '(') 
-							iif = skip_next_closing_paren(iif + 1);
-						if (*iif == ')') {
-							*iif = '\0';
-							break;
+						if(in_a_string_in_a_iif == FALSE) {
+							if (*iif == '(') 
+								iif = skip_next_closing_paren(iif + 1);
+							if (*iif == ')') {
+								*iif = '\0';
+								break;
+							}
 						}
-						if (*iif == '\'') {
+						if (*iif == '\'')
 							in_a_string_in_a_iif = !in_a_string_in_a_iif;						
-						}
 						if (*iif == ',' && !in_a_string_in_a_iif) {
 							*iif='\0';
 							if(ccount == 0)

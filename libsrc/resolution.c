@@ -142,9 +142,9 @@ static void rlib_field_resolve_pcode(rlib *r, struct rlib_part *part, struct rli
 	rf->memo_height_code = rlib_infix_to_pcode(r, part, report, (gchar *)rf->xml_memo_height, TRUE);
 	rf->memo_wrap_chars_code = rlib_infix_to_pcode(r, part, report, (gchar *)rf->xml_memo_wrap_chars, TRUE);
 	rf->width = -1;
-/* rlogit("DUMPING PCODE FOR [%s]\n", rf->value); */
-/* rlib_pcode_dump(rf->code,0);	*/
-/* rlogit("\n\n"); */
+/*	rlogit("DUMPING PCODE FOR [%s]\n", rf->value); 
+	rlib_pcode_dump(rf->code,0);	
+	rlogit("\n\n"); */
 }
 
 static void rlib_literal_resolve_pcode(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_literal *rt) {
@@ -157,9 +157,9 @@ static void rlib_literal_resolve_pcode(rlib *r, struct rlib_part *part, struct r
 	rt->italics_code = rlib_infix_to_pcode(r, part, report, (gchar *)rt->xml_italics, TRUE);
 	rt->align_code = rlib_infix_to_pcode(r, part, report, (gchar *)rt->xml_align, TRUE);
 	rt->width = -1;
-/* rlogit("DUMPING PCODE FOR [%s]\n", rt->value); */
-/* rlib_pcode_dump(rf->code,0);	*/
-/* rlogit("\n\n"); */
+/*	rlogit("DUMPING PCODE FOR [%s]\n", rt->value); 
+	rlib_pcode_dump(rf->code,0);	
+	rlogit("\n\n"); */
 }
 
 static void rlib_break_resolve_pcode(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_break_fields *bf) {

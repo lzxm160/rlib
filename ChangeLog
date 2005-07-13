@@ -1,3 +1,11 @@
+2005-07-12  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/pcode.c: Fix bugs in Expressions
+	* libsrc/resolution.c: likewise
+	* src/examples/php/Makefile.am: some tests
+	* src/examples/php/array.xml: likewise
+	* src/examples/php/expressions.php: likewise
+	* src/examples/php/expressions.xml: likewise
+
 2005-07-08  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/pcode.h: Tell the compiler the number is a LL so things like r.detailcnt work past 255
 
@@ -49,6 +57,7 @@
 	* libsrc/datetime.c: Don't crash if we get an invalid glib date.
 	* libsrc/resolution.c: Don't crash on strcmp of NULL query names
 
+>>>>>>> 1.267
 2005-07-01  Bob Doan  <bdoan@sicompos.com>
 	* inputs/mysql/mysql.c: Don't unload MySQL For now because we could be looping in RLIB
 	* libsrc/free.c: nada

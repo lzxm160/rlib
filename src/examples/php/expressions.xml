@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<!DOCTYPE report >
+<Report fontSize="9" orientation="landscape">
+	<Alternate>
+		<NoData>
+			<Output>
+				<Line fontSize="12">
+					<literal>NO DATA???</literal>
+				</Line>		
+			</Output>
+		</NoData>
+	</Alternate>
+	<ReportHeader>
+		<Output>
+			<Line>
+				<literal>SHOULD GET: HI)                 GOT: </literal>
+				<field value="iif(0,')', 'HI)')" width="10"/>
+			</Line>
+			<Line>
+				<literal>SHOULD GET: )                   GOT: </literal>
+				<field value="iif(1,')', 'HI)')" width="10"/>
+			</Line>
+			<Line>
+				<literal>SHOULD GET: 15                  GOT: </literal>
+				<field value="1+2+3+4+5" width="10"/>
+			</Line>
+			<Line>
+				<literal>SHOULD GET: 9                   GOT: </literal>
+				<field value="(1+2)*(1+2)" width="10"/>
+			</Line>
+			<Line>
+				<literal>SHOULD GET: 7                   GOT: </literal>
+				<field value="1+2*3" width="10"/>
+			</Line>
+			<Line>
+				<literal>SHOULD GET: 50                  GOT: </literal>
+				<field value="1/2*100" width="10"/>
+			</Line>			
+			<Line>
+				<literal>SHOULD GET: 5                   GOT: </literal>
+				<field value="100/2/10" width="10"/>
+			</Line>
+			<Line>
+				<literal>SHOULD GET: bacon and eggs      GOT: </literal>
+				<field value="'bacon' + ' and ' + 'eggs'" width="20"/>
+			</Line>
+			<Line>
+				<literal>SHOULD GET: 6                   GOT: </literal>
+				<field value="1+2+val('3')" width="20"/>
+			</Line>
+			<Line>
+				<literal>SHOULD GET: four                GOT: </literal>
+				<field value="iif(val('4')==4, 'four', 'bad')" width="20"/>
+			</Line>
+			<Line>
+				<literal>SHOULD GET: true                GOT: </literal>
+				<field value="iif(3 &lt; 4, iif(1 != 2, 'true', 'false'), 'false')" width="20"/>
+			</Line>
+		</Output>
+	</ReportHeader>		
+</Report>
