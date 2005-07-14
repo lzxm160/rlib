@@ -1,3 +1,14 @@
+1.3.4
+===
+- Fix problems with followers
+- Ability to add custom function (Even from languages like PHP!)
+- New C# Bindings
+- Memory Leaks Fixed
+- Some random crashes fixed
+- Compile cleanups
+- ODBC Datasource no longer relies on SQLRowCount
+- Compiler fixes / regression testing
+
 1.3.3
 ===
 - Win32 port

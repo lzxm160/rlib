@@ -1,3 +1,6 @@
+2005-07-14  Bob Doan  <bdoan@sicompos.com>
+	* NEWS: RELEASE TIME
+
 2005-07-13  Everton Luis Berz <everton@faccat.br>
 	* libsrc/html.c: Respect width and height properties
 
