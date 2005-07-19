@@ -381,6 +381,10 @@ static void rlib_free_part_tr(rlib *r, struct rlib_part *part) {
 }
 
 void rlib_free_part(rlib *r, struct rlib_part *part) {
+
+	if(part == NULL)
+		return;
+
 	rlib_pcode_free(part->orientation_code);
 	rlib_pcode_free(part->font_size_code);
 	rlib_pcode_free(part->top_margin_code);
