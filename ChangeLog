@@ -1,4 +1,7 @@
 2005-07-19  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/pcode_op_functions.c: Don't crash on NULL values in equal
+
+2005-07-19  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/free.c: Don't crash if XML could not load
 
 2005-07-19  Bob Doan  <bdoan@sicompos.com>

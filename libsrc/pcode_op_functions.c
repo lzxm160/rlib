@@ -526,12 +526,14 @@ gint rlib_pcode_operator_eql(rlib *r, struct rlib_value_stack *vs, struct rlib_v
 		gint64 push;
 		if(RLIB_VALUE_GET_AS_STRING(v2) == NULL && RLIB_VALUE_GET_AS_STRING(v1) == NULL)
 			push = RLIB_DECIMAL_PRECISION;
-		if(RLIB_VALUE_GET_AS_STRING(v2) == NULL || RLIB_VALUE_GET_AS_STRING(v1) == NULL)
+		else if(RLIB_VALUE_GET_AS_STRING(v2) == NULL || RLIB_VALUE_GET_AS_STRING(v1) == NULL)
 			push = 0;
-		if(r_strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) == 0) {
-			push = RLIB_DECIMAL_PRECISION;
-		} else {
-			push = 0;
+		else {
+			if(r_strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) == 0) {
+				push = RLIB_DECIMAL_PRECISION;
+			} else {
+				push = 0;
+			}
 		}
 		rlib_value_free(v1);
 		rlib_value_free(v2);
