@@ -60,6 +60,12 @@
 				<literal>SHOULD GET: .2*10 == 2          GOT: </literal>
 				<field value="iif(.2*10 == 2,'2','bad')"  width="20"/>
 			</Line>
+
+			<Line >
+				<literal>SHOULD GET: WORKS               GOT: </literal>
+				<field value="iif( 2 &gt; 1 || 0 == 0,'WORKS','DONT WORKS)" width="20" /> 
+			</Line>
+
 		</Output>
 	</ReportHeader>		
 </Report>
