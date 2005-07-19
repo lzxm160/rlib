@@ -402,7 +402,7 @@ struct rlib_count_amount {
 #define RLIB_REPORT_VARIABLE_LOWEST		5
 #define RLIB_REPORT_VARIABLE_HIGHEST		6
 
-#define RLIB_VARIABLE_CA(a)	((struct rlib_count_amount *)a->data)
+#define RLIB_VARIABLE_CA(a)	(&(a->data))
 
 struct rlib_report_variable {
 	xmlChar *xml_name;
@@ -412,7 +412,7 @@ struct rlib_report_variable {
 
 	gint type;
 	struct rlib_pcode *code;
-	gpointer data;	
+	struct rlib_count_amount data;
 };
 
 struct rlib_part_load {

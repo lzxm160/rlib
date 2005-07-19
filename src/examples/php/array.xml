@@ -41,6 +41,9 @@
 			<HorizontalLine size="4" bgcolor="'white'"/>
 		</Output>
 	</ReportHeader>		
+	<Variables>
+		<Variable name="bo" value="2+3" type="expression"/>
+	</Variables>
 	<Breaks>	
 		<Break name="break0" newpage="no" headernewpage="yes">
 			<BreakHeader>
@@ -79,7 +82,7 @@
 					<literal width="1"/>
 					<literal width="20" col="3">Color</literal>
 				</Line>
-				<HorizontalLine size="1" bgcolor="'black'"/>
+				<HorizontalLine size="1" bgcolor="'black'" length="v.bo"/>
 				<HorizontalLine size="4" bgcolor="'white'"/>
 			</Output>
 		</FieldHeaders>		

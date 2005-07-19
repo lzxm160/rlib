@@ -304,23 +304,17 @@ static void rlib_init_variables(rlib *r, struct rlib_report *report) {
 	for(e = report->variables; e != NULL; e=e->next) {
 		struct rlib_report_variable *rv = e->data;
 		if(rv->type == RLIB_REPORT_VARIABLE_EXPRESSION) {
-			rv->data = g_malloc(sizeof(struct rlib_count_amount));
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		} else if(rv->type == RLIB_REPORT_VARIABLE_COUNT) {
-			rv->data = g_malloc(sizeof(struct rlib_count_amount));
 			RLIB_VARIABLE_CA(rv)->count = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->count, 0);
 		} else if(rv->type == RLIB_REPORT_VARIABLE_SUM) {
-			rv->data = g_malloc(sizeof(struct rlib_count_amount));
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		} else if(rv->type == RLIB_REPORT_VARIABLE_AVERAGE) {
-			rv->data = g_malloc(sizeof(struct rlib_count_amount));
 			RLIB_VARIABLE_CA(rv)->count = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->count, 0);
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		} else if(rv->type == RLIB_REPORT_VARIABLE_LOWEST) {
-			rv->data = g_malloc(sizeof(struct rlib_count_amount));
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		} else if(rv->type == RLIB_REPORT_VARIABLE_HIGHEST) {
-			rv->data = g_malloc(sizeof(struct rlib_count_amount));
 			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
 		}
 	}
@@ -715,6 +709,7 @@ static void rlib_layout_part_tr(rlib *r, struct rlib_part *part) {
 
 		rlib_layout_part_td(r, part, tr->part_deviations, save_page_number, save_position_top, &rrp);
 		OUTPUT(r)->end_tr(r);
+
 		
 	}	
 }
@@ -791,7 +786,6 @@ gint rlib_make_report(rlib *r) {
 		rlib_fetch_first_rows(r);
 		if(part->has_only_one_report)
 			rlib_evaulate_single_report_variables(r, part);
-
 		rlib_resolve_part_fields(r, part);
 		for(iterations=0;iterations<part->iterations;iterations++) {
 			rlib_fetch_first_rows(r);

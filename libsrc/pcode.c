@@ -49,18 +49,18 @@
 */
 
 struct rlib_pcode_operator rlib_pcode_verbs[] = {
-      {"+",		 	1, 2,	TRUE,	OP_ADD,		FALSE,	rlib_pcode_operator_add, NULL},
-      {"-",		 	1, 2,	TRUE,	OP_SUB,		FALSE,	rlib_pcode_operator_subtract, NULL},
-      {"*",		 	1, 4, TRUE,	OP_MUL,		FALSE,	rlib_pcode_operator_multiply, NULL},
-      {"/",		 	1, 4,	TRUE,	OP_DIV,		FALSE,	rlib_pcode_operator_divide, NULL},
-      {"%",  	 	1, 4,	TRUE,	OP_MOD,		FALSE,	rlib_pcode_operator_mod, NULL},
-      {"^",		 	1, 5,	TRUE,	OP_POW,		FALSE,	rlib_pcode_operator_pow, NULL},
-      {"<=",	 	2, 1,	TRUE,	OP_LTE,		FALSE,	rlib_pcode_operator_lte, NULL},
-      {"<",		 	1, 1,	TRUE,	OP_LT,		FALSE,	rlib_pcode_operator_lt, NULL},
-      {">=",	 	2, 1,	TRUE,	OP_GTE,		FALSE,	rlib_pcode_operator_gte, NULL},
-      {">",		 	1, 1,	TRUE,	OP_GT,		FALSE,	rlib_pcode_operator_gt, NULL},
-      {"==",	 	2, 1,	TRUE,	OP_EQL,		FALSE,	rlib_pcode_operator_eql, NULL},
-      {"!=",	 	2, 1,	TRUE,	OP_NOTEQL,	FALSE,	rlib_pcode_operator_noteql, NULL},
+      {"+",		 	1, 4,	TRUE,	OP_ADD,		FALSE,	rlib_pcode_operator_add, NULL},
+      {"-",		 	1, 4,	TRUE,	OP_SUB,		FALSE,	rlib_pcode_operator_subtract, NULL},
+      {"*",		 	1, 5, TRUE,	OP_MUL,		FALSE,	rlib_pcode_operator_multiply, NULL},
+      {"/",		 	1, 5,	TRUE,	OP_DIV,		FALSE,	rlib_pcode_operator_divide, NULL},
+      {"%",  	 	1, 5,	TRUE,	OP_MOD,		FALSE,	rlib_pcode_operator_mod, NULL},
+      {"^",		 	1, 6,	TRUE,	OP_POW,		FALSE,	rlib_pcode_operator_pow, NULL},
+      {"<=",	 	2, 2,	TRUE,	OP_LTE,		FALSE,	rlib_pcode_operator_lte, NULL},
+      {"<",		 	1, 2,	TRUE,	OP_LT,		FALSE,	rlib_pcode_operator_lt, NULL},
+      {">=",	 	2, 2,	TRUE,	OP_GTE,		FALSE,	rlib_pcode_operator_gte, NULL},
+      {">",		 	1, 2,	TRUE,	OP_GT,		FALSE,	rlib_pcode_operator_gt, NULL},
+      {"==",	 	2, 2,	TRUE,	OP_EQL,		FALSE,	rlib_pcode_operator_eql, NULL},
+      {"!=",	 	2, 2,	TRUE,	OP_NOTEQL,	FALSE,	rlib_pcode_operator_noteql, NULL},
       {"&&",	 	2, 1,	TRUE,	OP_AND,		FALSE,	rlib_pcode_operator_and, NULL},
       {"||",	 	2, 1,	TRUE,	OP_OR,		FALSE,	rlib_pcode_operator_or, NULL},
       {"(",		 	1, 0,	FALSE,OP_LPERN,	FALSE,	NULL, NULL},
@@ -779,27 +779,39 @@ struct rlib_value *this_field_value) {
 		gint64 val = 0;
 		struct rlib_value *count;
 		struct rlib_value *amount;
-
+		
+		
 		rv = o->value;
+
+
 		count = &RLIB_VARIABLE_CA(rv)->count;
 		amount = &RLIB_VARIABLE_CA(rv)->amount;
-		if(rv->type == RLIB_REPORT_VARIABLE_COUNT) {
-			val = RLIB_VALUE_GET_AS_NUMBER(count);
-		} else if(rv->type == RLIB_REPORT_VARIABLE_EXPRESSION) {
-			if (RLIB_VALUE_IS_STRING(amount)) {
-				gchar *strval = g_strdup(RLIB_VALUE_GET_AS_STRING(amount));
-				return rlib_value_new(rval, RLIB_VALUE_STRING, TRUE, strval);
-			} else {
+
+		if(rv->code == NULL) {
+			val = 0;			
+			r_error("Variable Resolution: Assuming 0 value for variable with a bad expression\n");
+		} else {
+			if(rv->type == RLIB_REPORT_VARIABLE_COUNT) {
+				val = RLIB_VALUE_GET_AS_NUMBER(count);
+			} else if(rv->type == RLIB_REPORT_VARIABLE_EXPRESSION) {
+				if(RLIB_VALUE_IS_ERROR(amount) || RLIB_VALUE_IS_NONE(amount)) {
+					val = 0;			
+					r_error("Variable Resolution: Assuming 0 value because rval is ERROR or NONE\n");
+				} else  if (RLIB_VALUE_IS_STRING(amount)) {
+					gchar *strval = g_strdup(RLIB_VALUE_GET_AS_STRING(amount));
+					return rlib_value_new(rval, RLIB_VALUE_STRING, TRUE, strval);
+				} else {
+					val = RLIB_VALUE_GET_AS_NUMBER(amount);
+				}
+			} else if(rv->type == RLIB_REPORT_VARIABLE_SUM) {
+				val = RLIB_VALUE_GET_AS_NUMBER(amount);
+			} else if(rv->type == RLIB_REPORT_VARIABLE_AVERAGE) {
+				val = rlib_fxp_div(RLIB_VALUE_GET_AS_NUMBER(amount), RLIB_VALUE_GET_AS_NUMBER(count), RLIB_FXP_PRECISION);
+			} else if(rv->type == RLIB_REPORT_VARIABLE_LOWEST) {
+				val = RLIB_VALUE_GET_AS_NUMBER(amount);
+			} else if(rv->type == RLIB_REPORT_VARIABLE_HIGHEST) {
 				val = RLIB_VALUE_GET_AS_NUMBER(amount);
 			}
-		} else if(rv->type == RLIB_REPORT_VARIABLE_SUM) {
-			val = RLIB_VALUE_GET_AS_NUMBER(amount);
-		} else if(rv->type == RLIB_REPORT_VARIABLE_AVERAGE) {
-			val = rlib_fxp_div(RLIB_VALUE_GET_AS_NUMBER(amount), RLIB_VALUE_GET_AS_NUMBER(count), RLIB_FXP_PRECISION);
-		} else if(rv->type == RLIB_REPORT_VARIABLE_LOWEST) {
-			val = RLIB_VALUE_GET_AS_NUMBER(amount);
-		} else if(rv->type == RLIB_REPORT_VARIABLE_HIGHEST) {
-			val = RLIB_VALUE_GET_AS_NUMBER(amount);
 		}
 		return rlib_value_new(rval, RLIB_VALUE_NUMBER, TRUE, &val);
 	} else if(o->type == OPERAND_IIF) {

@@ -170,9 +170,9 @@ static void rlib_break_resolve_pcode(rlib *r, struct rlib_part *part, struct rli
 
 static void rlib_variable_resolve_pcode(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_variable *rv) {
 	rv->code = rlib_infix_to_pcode(r, part, report, (gchar *)rv->xml_value, TRUE);
-/*rlogit("DUMPING PCODE FOR [%s]\n", rv->xml_value);
+/* rlogit("DUMPING PCODE FOR [%s]\n", rv->xml_value);
 rlib_pcode_dump(rv->code,0);	
-rlogit("\n\n");*/
+rlogit("\n\n"); */
 }
 
 static void rlib_hr_resolve_pcode(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_horizontal_line * rhl) {
@@ -318,6 +318,15 @@ void rlib_resolve_graph(rlib *r, struct rlib_part *part, struct rlib_report *rep
 void rlib_resolve_report_fields(rlib *r, struct rlib_part *part, struct rlib_report *report) {
 	struct rlib_element *e;
 	gfloat f;
+
+	if(report->variables != NULL) {
+		for(e = report->variables; e != NULL; e=e->next) {
+			struct rlib_report_variable *rv = e->data;
+			rlib_variable_resolve_pcode(r, part, report, rv);
+
+		}
+	}
+
 	report->orientation = RLIB_ORIENTATION_PORTRAIT;
 	report->orientation_code = rlib_infix_to_pcode(r, part, report, (gchar *)report->xml_orientation, TRUE);
 	report->font_size = -1;
@@ -374,13 +383,6 @@ void rlib_resolve_report_fields(rlib *r, struct rlib_part *part, struct rlib_rep
 		}
 	}
 	
-	if(report->variables != NULL) {
-		for(e = report->variables; e != NULL; e=e->next) {
-			struct rlib_report_variable *rv = e->data;
-			rlib_variable_resolve_pcode(r, part, report, rv);
-
-		}
-	}
 }
 
 void rlib_resolve_part_td(rlib *r, struct rlib_part *part, GSList *part_deviations) {

@@ -57,13 +57,16 @@
 				<field value="iif(3 &lt; 4, iif(1 != 2, 'true', 'false'), 'false')" width="20"/>
 			</Line>
 			<Line>
-				<literal>SHOULD GET: .2*10 == 2          GOT: </literal>
+				<literal>SHOULD GET: 2                   GOT: </literal>
 				<field value="iif(.2*10 == 2,'2','bad')"  width="20"/>
 			</Line>
-
 			<Line >
 				<literal>SHOULD GET: WORKS               GOT: </literal>
 				<field value="iif( 2 &gt; 1 || 0 == 0,'WORKS','DONT WORKS)" width="20" /> 
+			</Line>
+			<Line>
+				<literal>SHOULD GET: WORKS               GOT: </literal>
+				<field value="iif( 2 &gt; 1 || 0 == 2 &amp;&amp; 5 == 5 &amp;&amp; 7 &lt; 8,'WORKS','DONT WORKS)" width="20" /> 
 			</Line>
 
 		</Output>

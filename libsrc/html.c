@@ -306,7 +306,8 @@ static void rlib_html_set_font_point(rlib *r, gint point) {
 }
 
 static void rlib_html_start_new_page(rlib *r, struct rlib_part *part) {
-	r->current_page_number++;
+	if(r->current_page_number <= 0) 
+		r->current_page_number++;
 	part->position_bottom[0] = 11-part->bottom_margin;
 }
 

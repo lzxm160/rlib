@@ -319,21 +319,6 @@ void rlib_free_report(rlib *r, struct rlib_report *report) {
 
 			rlib_pcode_free(rv->code);
 
-			if(rv->data != NULL) {
-				if(rv->type == RLIB_REPORT_VARIABLE_EXPRESSION) {
-					rlib_value_free(&RLIB_VARIABLE_CA(rv)->amount);
-					g_free(RLIB_VARIABLE_CA(rv));
-				} else if(rv->type == RLIB_REPORT_VARIABLE_COUNT)
-					g_free(RLIB_VARIABLE_CA(rv));
-				else if(rv->type == RLIB_REPORT_VARIABLE_SUM)
-					g_free(RLIB_VARIABLE_CA(rv));
-				else if(rv->type == RLIB_REPORT_VARIABLE_AVERAGE)
-					g_free(RLIB_VARIABLE_CA(rv));
-				else if(rv->type == RLIB_REPORT_VARIABLE_LOWEST)
-					g_free(RLIB_VARIABLE_CA(rv));
-				else if(rv->type == RLIB_REPORT_VARIABLE_HIGHEST)
-					g_free(RLIB_VARIABLE_CA(rv));
-			}
 			xmlFree(rv->xml_name);
 			xmlFree(rv->xml_str_type);
 			xmlFree(rv->xml_value);
@@ -341,17 +326,6 @@ void rlib_free_report(rlib *r, struct rlib_report *report) {
 			g_free(rv);
 		}
 		
-/*		while(report->variables) {
-			prev = NULL;
-			for(e = report->variables; e->next != NULL; e=e->next) {
-				prev = e;
-			}
-			g_free(e);
-			if(prev != NULL)
-				prev->next = NULL;
-			else
-				break;
-		}*/
 	}
 	xmlFree(report->xml_font_size);
 	xmlFree(report->xml_query);
