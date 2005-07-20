@@ -46,7 +46,7 @@ libr_la_LDFLAGS = \
 
 rlibincludedir=$(includedir)/rlib
 rlibinclude_HEADERS = rlib.h rlib_input.h charencoder.h datetime.h\
-	util.h value.h
+	util.h value.h pcode.h
 
 AM_CFLAGS = $(RLIB_CFLAGS) $(RLIB_WERROR) -I../rpdf
 
