@@ -1,3 +1,10 @@
+2005-07-20  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/breaks.c: Fix bug where sometimes the page footer would get overridden with detail lines
+	* libsrc/layout.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/rlib.h: likewise
+	* src/examples/php/array.xml: likewise
+
 2005-07-19  William Volkman  <wkvsf@users.sourceforge.net>
 	* libsrc/Makefile.am: Modify rlibinclude_HEADERS to add pcode.h to
 	the installed headers list.

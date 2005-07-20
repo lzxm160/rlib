@@ -109,11 +109,17 @@ gchar *align_text(rlib *r, gchar *rtn, gint len, gchar *src, gint align, gint wi
 	return rtn;
 }
 	
-gint get_font_point(rlib *r, struct rlib_report_lines *rl) {
-	if(rl->font_point == -1)
-		return r->font_point;
+gint get_font_point(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_lines *rl) {
+	gint use_font_point;
+	
+	if(rl->font_point > 0)
+		use_font_point = rl->font_point;
+	else if(report != NULL && report->font_size > 0)
+		use_font_point = report->font_size;
 	else
-		return rl->font_point;
+		use_font_point = part->font_size;
+
+	return use_font_point;
 }	
 
 
@@ -197,7 +203,7 @@ void rlib_handle_page_footer(rlib *r, struct rlib_part *part, struct rlib_report
 	gint i;
 
 	for(i=0; i < report->pages_across; i++) {
-		report->bottom_size[i] = get_outputs_size(r, report->page_footer, i);
+		report->bottom_size[i] = get_outputs_size(r, part, report, report->page_footer, i);
 		report->position_bottom[i] -= report->bottom_size[i];
 	}
 
@@ -207,14 +213,14 @@ void rlib_handle_page_footer(rlib *r, struct rlib_part *part, struct rlib_report
 		report->position_bottom[i] -= report->bottom_size[i];
 }
 
-gfloat get_output_size(rlib *r, struct rlib_report_output_array *roa) {
+gfloat get_output_size(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_output_array *roa) {
 	gint j;
 	gfloat total=0;
 	for(j=0;j<roa->count;j++) {
 		struct rlib_report_output *rd = roa->data[j];
 		if(rd->type == RLIB_REPORT_PRESENTATION_DATA_LINE) {
 			struct rlib_report_lines *rl = rd->data;
-			total += RLIB_GET_LINE(get_font_point(r, rl));
+			total += RLIB_GET_LINE(get_font_point(r, part, report, rl));
 /* Here to adjust size of memo field output. */
 		} else if(rd->type == RLIB_REPORT_PRESENTATION_DATA_HR) {
 			struct rlib_report_horizontal_line *rhl = rd->data;
@@ -224,19 +230,18 @@ gfloat get_output_size(rlib *r, struct rlib_report_output_array *roa) {
 	return total;
 }
 
-gfloat get_outputs_size(rlib *r, struct rlib_element *e, gint page) {
+gfloat get_outputs_size(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_element *e, gint page) {
 	gfloat total=0;
 	struct rlib_report_output_array *roa;
 
 	for(; e != NULL; e=e->next) {
 		roa = e->data;
 		if(roa->page == -1 || roa->page == page || roa->page == -1)
-			total += get_output_size(r, roa);
+			total += get_output_size(r, part, report, roa);
 	}			
 
 	return total;
 }
-
 
 gint rlib_will_this_fit(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat total, gint page) {
 	if(OUTPUT(r)->paginate == FALSE)
@@ -257,8 +262,9 @@ gint will_outputs_fit(rlib *r, struct rlib_part *part, struct rlib_report *repor
 		return TRUE;
 	for(; e != NULL; e=e->next) {
 		roa = e->data;
-		if(page == -1 || page == roa->page || roa->page == -1)
-			size += get_output_size(r, roa);
+		if(page == -1 || page == roa->page || roa->page == -1) {
+			size += get_output_size(r, part, report, roa);
+		}
 	}			
 	return rlib_will_this_fit(r, part, report, size, page);
 }

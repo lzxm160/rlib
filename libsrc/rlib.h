@@ -910,15 +910,15 @@ void rlib_set_report_from_part(rlib *r, struct rlib_part *part, struct rlib_repo
 gchar *align_text(rlib *r, char *rtn, gint len, gchar *src, gint align, gint width);
 gint will_outputs_fit(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_element *e, gint page);
 gint rlib_will_this_fit(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat total, gint page);
-gfloat get_output_size(rlib *r, struct rlib_report_output_array *roa);
+gint get_font_point(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_lines *rl);
+gfloat get_output_size(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_output_array *roa);
 gint rlib_fetch_first_rows(rlib *r);
 gint rlib_end_page_if_line_wont_fit(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_element *e) ;
-gfloat get_outputs_size(rlib *r, struct rlib_element *e, gint page);
+gfloat get_outputs_size(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_element *e, gint page);
 void rlib_init_page(rlib *r, struct rlib_part *part, struct rlib_report *report, gchar report_header);
 gint rlib_make_report(rlib *r);
 gint rlib_finalize(rlib *r);
 void rlib_process_expression_variables(rlib *r, struct rlib_report *report);
-gint get_font_point(rlib *r, struct rlib_report_lines *rl);
 gint rlib_format_get_number(const gchar *name);
 const gchar * rlib_format_get_name(gint number);
 

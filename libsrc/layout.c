@@ -362,12 +362,7 @@ static void rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 	if(rl->italics_code != NULL)
 		rlib_execute_pcode(r, &line_rval_italics, rl->italics_code, NULL);
 
-	if(rl->font_point > 0)
-		use_font_point = rl->font_point;
-	else if(report != NULL && report->font_size > 0)
-		use_font_point = report->font_size;
-	else
-		use_font_point = part->font_size;
+	use_font_point = get_font_point(r, part, report, rl);
 
 	if(rl->max_line_height < RLIB_GET_LINE(use_font_point)) {
 			rl->max_line_height = RLIB_GET_LINE(use_font_point);
@@ -1037,7 +1032,7 @@ void rlib_layout_init_part_page(rlib *r, struct rlib_part *part, gboolean first)
 
 	for(i=0;i<part->pages_across;i++) {
 		part->position_top[i] = part->top_margin;
-		part->bottom_size[i] = get_outputs_size(r, part->page_footer, i);
+		part->bottom_size[i] = get_outputs_size(r, part, NULL, part->page_footer, i);
 	}		
 	r->current_font_point = -1;
 	OUTPUT(r)->start_new_page(r, part);

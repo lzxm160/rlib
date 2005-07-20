@@ -82,7 +82,7 @@
 					<literal width="1"/>
 					<literal width="20" col="3">Color</literal>
 				</Line>
-				<HorizontalLine size="1" bgcolor="'black'" length="v.bo"/>
+				<HorizontalLine size="1" bgcolor="'black'"/>
 				<HorizontalLine size="4" bgcolor="'white'"/>
 			</Output>
 		</FieldHeaders>		
