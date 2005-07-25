@@ -1,3 +1,7 @@
+2005-07-25  Mike Roth  <mroth@sicompos.com>
+
+	* src/examples/php/expressions.xml: Add parenthesis tests
+
 2005-07-20  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/breaks.c: Fix bug where sometimes the page footer would get overridden with detail lines
 	* libsrc/layout.c: likewise

@@ -68,6 +68,18 @@
 				<literal>SHOULD GET: WORKS               GOT: </literal>
 				<field value="iif( 2 &gt; 1 || 0 == 2 &amp;&amp; 5 == 5 &amp;&amp; 7 &lt; 8,'WORKS','DONT WORKS)" width="20" /> 
 			</Line>
+			<Line>
+				<literal>SHOULD GET: 2                   GOT: </literal>
+				<field value="(6+5) - (4+3+2)" width="10"/>
+			</Line>			
+			<Line>
+				<literal>SHOULD GET: 1                   GOT: </literal>
+				<field value="(6+5) - (4+3+2+1)" width="10"/>
+			</Line>			
+			<Line>
+				<literal>SHOULD GET: 1                   GOT: </literal>
+				<field value="(6+5) - ((4+3)+2+1)" width="10"/>
+			</Line>			
 
 		</Output>
 	</ReportHeader>		
