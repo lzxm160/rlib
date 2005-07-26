@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE report >
-<Report fontSize="9" orientation="landscape">
+<Report fontSize="42" orientation="landscape">
 	<Alternate>
 		<NoData>
 			<Output>

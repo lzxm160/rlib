@@ -1,3 +1,10 @@
+2005-07-26  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/breaks.c: Make sure break header comes out on a page even if there are no more data rows and only the footer wants to come out
+	* libsrc/pcode.c:  Tweek complier to fix Mike's expression problem
+	* libsrc/resolution.c: likewise
+	* src/examples/php/array.xml: likewise
+	* src/examples/php/expressions.xml: likewise
+
 2005-07-25  Mike Roth  <mroth@sicompos.com>
 
 	* src/examples/php/expressions.xml: Add parenthesis tests

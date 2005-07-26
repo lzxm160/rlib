@@ -440,8 +440,9 @@ void popopstack(struct rlib_pcode *p, struct rlib_operator_stack *os, struct rli
 				if(op->tag[0] != ',') {
 					rlib_pcode_add(p, rlib_new_pcode_instruction(&rpi, PCODE_EXECUTE, o));
 				} else {
-					if(o->is_function == FALSE)
+					if(o->is_function == FALSE) {
 						rlib_pcode_add(p, rlib_new_pcode_instruction(&rpi, PCODE_EXECUTE, o));
+					}
 				}
 			}
 			if(o->tag[0] == '(' || o->is_function == TRUE) {
@@ -453,10 +454,13 @@ void popopstack(struct rlib_pcode *p, struct rlib_operator_stack *os, struct rli
 		}		
 	} else {
 		while((o=operator_stack_pop(os))) {
-			if(o->is_op == TRUE)
+			if(o->is_op == TRUE) {
 				rlib_pcode_add(p, rlib_new_pcode_instruction(&rpi, PCODE_EXECUTE, o));
-			if(o->tag[0] == '(' || o->is_function == TRUE) 
+			}
+			if(o->tag[0] == '(' || o->is_function == TRUE) {
+				operator_stack_push(os, o);
 				break;
+			}
 		}	
 	}
 }
@@ -471,6 +475,7 @@ void forcepopstack(struct rlib_pcode *p, struct rlib_operator_stack *os) {
 }
 
 void smart_add_pcode(struct rlib_pcode *p, struct rlib_operator_stack *os, struct rlib_pcode_operator *op) {
+
 	if(operator_stack_is_all_less(os, op)) {
 		operator_stack_push(os, op);
 	} else {		

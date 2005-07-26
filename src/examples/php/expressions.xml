@@ -74,13 +74,12 @@
 			</Line>			
 			<Line>
 				<literal>SHOULD GET: 1                   GOT: </literal>
-				<field value="(6+5) - (4+3+2+1)" width="10"/>
+				<field value="(6+5) - ((4+3)+2+1)" width="10"/>
 			</Line>			
 			<Line>
 				<literal>SHOULD GET: 1                   GOT: </literal>
-				<field value="(6+5) - ((4+3)+2+1)" width="10"/>
-			</Line>			
-
+				<field value="(6+5) - (4+3+2+1)" width="10"/>
+			</Line>
 		</Output>
 	</ReportHeader>		
 </Report>

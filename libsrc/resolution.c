@@ -144,7 +144,7 @@ static void rlib_field_resolve_pcode(rlib *r, struct rlib_part *part, struct rli
 	rf->width = -1;
 /*	rlogit("DUMPING PCODE FOR [%s]\n", rf->value); 
 	rlib_pcode_dump(rf->code,0);	
-	rlogit("\n\n"); */
+	rlogit("\n\n");  */
 }
 
 static void rlib_literal_resolve_pcode(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_literal *rt) {
