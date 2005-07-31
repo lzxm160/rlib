@@ -504,12 +504,12 @@ gchar *outputformat) {
 	return 0;
 }
 
-gint rlib_postgre_report(gchar *connstr, gchar *xmlfilename, gchar *sqlquery, gchar *outputformat) {
+gint rlib_postgres_report(gchar *connstr, gchar *xmlfilename, gchar *sqlquery, gchar *outputformat) {
 	rlib *r;
 	r = rlib_init();
-	if(rlib_add_datasource_postgre(r, "postgre", connstr) == -1)
+	if(rlib_add_datasource_postgres(r, "postgres", connstr) == -1)
 		return -1;
-	rlib_add_query_as(r, "postgre", sqlquery, "example");
+	rlib_add_query_as(r, "postgres", sqlquery, "example");
 	rlib_add_report(r, xmlfilename);
 	rlib_set_output_format_from_text(r, outputformat);
 	if(rlib_execute(r) == -1)

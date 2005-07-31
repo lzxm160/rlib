@@ -738,7 +738,7 @@ static PyObject *_wrap_rlib_add_datasource_mysql(PyObject *self, PyObject *args)
 }
 
 
-static PyObject *_wrap_rlib_add_datasource_postgre(PyObject *self, PyObject *args) {
+static PyObject *_wrap_rlib_add_datasource_postgres(PyObject *self, PyObject *args) {
     PyObject *resultobj;
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;
@@ -746,9 +746,9 @@ static PyObject *_wrap_rlib_add_datasource_postgre(PyObject *self, PyObject *arg
     int result;
     PyObject * obj0 = 0 ;
     
-    if(!PyArg_ParseTuple(args,(char *)"Oss:rlib_add_datasource_postgre",&obj0,&arg2,&arg3)) goto fail;
+    if(!PyArg_ParseTuple(args,(char *)"Oss:rlib_add_datasource_postgres",&obj0,&arg2,&arg3)) goto fail;
     if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
-    result = (int)rlib_add_datasource_postgre(arg1,arg2,arg3);
+    result = (int)rlib_add_datasource_postgres(arg1,arg2,arg3);
     
     resultobj = PyInt_FromLong((long)result);
     return resultobj;
@@ -983,13 +983,12 @@ static PyObject *_wrap_rlib_get_output(PyObject *self, PyObject *args) {
     PyObject *resultobj;
     rlib *arg1 = (rlib *) 0 ;
     char *result;
-    int  size;
     PyObject * obj0 = 0 ;
     
     if(!PyArg_ParseTuple(args,(char *)"O:rlib_get_output",&obj0)) goto fail;
     if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
     result = (char *)rlib_get_output(arg1);
-    size = rlib_get_output_length(arg1);
+    
     resultobj = result ? PyString_FromStringAndSize(result, size) : Py_BuildValue((char*)"");
     return resultobj;
     fail:
@@ -1282,7 +1281,7 @@ static PyObject *_wrap_rlib_graph_set_x_minor_tick_by_location(PyObject *self, P
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"rlib_init", _wrap_rlib_init, METH_VARARGS },
 	 { (char *)"rlib_add_datasource_mysql", _wrap_rlib_add_datasource_mysql, METH_VARARGS },
-	 { (char *)"rlib_add_datasource_postgre", _wrap_rlib_add_datasource_postgre, METH_VARARGS },
+	 { (char *)"rlib_add_datasource_postgres", _wrap_rlib_add_datasource_postgres, METH_VARARGS },
 	 { (char *)"rlib_add_datasource_odbc", _wrap_rlib_add_datasource_odbc, METH_VARARGS },
 	 { (char *)"rlib_add_datasource_xml", _wrap_rlib_add_datasource_xml, METH_VARARGS },
 	 { (char *)"rlib_add_query_as", _wrap_rlib_add_query_as, METH_VARARGS },

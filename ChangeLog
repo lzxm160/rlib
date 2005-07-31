@@ -1,3 +1,30 @@
+2005-07-31  Bob Doan  <bdoan@sicompos.com>
+	* AUTHORS: add William
+	* NEWS: Fix spelling of postgres
+	* bindings/csharp/csharp.c: likewise
+	* bindings/interfaces/rlib.cs: likewise
+	* bindings/interfaces/rlib.java: likewise
+	* bindings/interfaces/rlib.pm: likewise
+	* bindings/interfaces/rlib.py: likewise
+	* bindings/interfaces/rlibJNI.java: likewise
+	* bindings/interfaces/rlibPINVOKE.cs: likewise
+	* bindings/java/java.c: likewise
+	* bindings/perl/perl.c: likewise
+	* bindings/php/php.c:  likewise
+	* bindings/python/python.c: likewise
+	* configure.in: likewise
+	* inputs/Makefile.am: likewise
+	* inputs/postgre/Makefile.am: likewise
+	* inputs/postgre/postgre.c: likewise
+	* inputs/postgres/Makefile.am: likewise
+	* inputs/postgres/postgres.c: likewise
+	* libsrc/api.c: likewise
+	* libsrc/datasource.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/rlib.i: likewise
+	* tests/Makefile.am: likewise
+	* tests/test2.c: likewise
+
 2005-07-26  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/breaks.c: Make sure break header comes out on a page even if there are no more data rows and only the footer wants to come out
 	* libsrc/pcode.c:  Tweek complier to fix Mike's expression problem

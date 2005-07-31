@@ -24,8 +24,8 @@ if HAVE_MYSQL
 MYSQL_INPUT=mysql
 endif
 
-if HAVE_POSTGRE
-POSTGRE_INPUT=postgre
+if HAVE_POSTGRES
+POSTGRES_INPUT=postgres
 endif
 
 if HAVE_ODBC
@@ -35,4 +35,4 @@ endif
 SUBDIRS = \
 	$(MYSQL_INPUT) \
 	$(ODBC_INPUT) \
-	$(POSTGRE_INPUT)
+	$(POSTGRES_INPUT)

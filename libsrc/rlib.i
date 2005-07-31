@@ -25,7 +25,7 @@
  
 rlib * rlib_init();
 int rlib_add_datasource_mysql(rlib *r, char *input_name, char *database_host, char *database_user, char *database_password, char *database_database);
-int rlib_add_datasource_postgre(rlib *r, char *input_name, char *conn);
+int rlib_add_datasource_postgres(rlib *r, char *input_name, char *conn);
 int rlib_add_datasource_odbc(rlib *r, char *input_name, char *source, char *user, char *password);
 int rlib_add_datasource_xml(rlib *r, char *input_name);
 int rlib_add_query_as(rlib *r, char *input_source, char *sql, char *name);

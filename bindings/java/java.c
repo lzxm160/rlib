@@ -156,7 +156,7 @@ JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1add_1datasource_1mysql(JNIEnv *jenv, j
 }
 
 
-JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1add_1datasource_1postgre(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3) {
+JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1add_1datasource_1postgres(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3) {
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;
@@ -180,7 +180,7 @@ JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1add_1datasource_1postgre(JNIEnv *jenv,
             if (!arg3) return 0;
         }
     }
-    result = (int)rlib_add_datasource_postgre(arg1,arg2,arg3);
+    result = (int)rlib_add_datasource_postgres(arg1,arg2,arg3);
     
     jresult = (jint)result; 
     {

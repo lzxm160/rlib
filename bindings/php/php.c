@@ -35,7 +35,7 @@
 ZEND_FUNCTION(rlib_init);
 ZEND_FUNCTION(rlib_add_datasource_mysql);
 ZEND_FUNCTION(rlib_add_datasource_mysql_from_group);
-ZEND_FUNCTION(rlib_add_datasource_postgre);
+ZEND_FUNCTION(rlib_add_datasource_postgres);
 ZEND_FUNCTION(rlib_add_datasource_odbc);
 ZEND_FUNCTION(rlib_add_datasource_array);
 ZEND_FUNCTION(rlib_add_datasource_xml);
@@ -74,7 +74,7 @@ zend_function_entry rlib_functions[] =
 	ZEND_FE(rlib_init, NULL)
 	ZEND_FE(rlib_add_datasource_mysql, NULL)
 	ZEND_FE(rlib_add_datasource_mysql_from_group, NULL)
-	ZEND_FE(rlib_add_datasource_postgre, NULL)
+	ZEND_FE(rlib_add_datasource_postgres, NULL)
 	ZEND_FE(rlib_add_datasource_odbc, NULL)
 	ZEND_FE(rlib_add_datasource_array, NULL)
 	ZEND_FE(rlib_add_datasource_xml, NULL)
@@ -192,7 +192,7 @@ ZEND_FUNCTION(rlib_add_datasource_mysql_from_group) {
 	RETURN_LONG(result);
 }
 
-ZEND_FUNCTION(rlib_add_datasource_postgre) {
+ZEND_FUNCTION(rlib_add_datasource_postgres) {
 	zval *z_rip = NULL;
 	gint datasource_length, conn_length;
 	gchar *datasource_name, *conn;
@@ -207,7 +207,7 @@ ZEND_FUNCTION(rlib_add_datasource_postgre) {
 	}
 	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);
 	
-	result = rlib_add_datasource_postgre(rip->r, datasource_name, conn);
+	result = rlib_add_datasource_postgres(rip->r, datasource_name, conn);
 	RETURN_LONG(result);
 }
 

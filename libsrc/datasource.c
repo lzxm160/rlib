@@ -34,7 +34,7 @@ typedef struct {
 	union {
 		gpointer ptr;
 		gpointer (*mysql_connect)(gpointer, const gchar *, const gchar *, const gchar *, const gchar*, const gchar *);
-		gpointer (*postgre_connect)(gpointer, const gchar *);
+		gpointer (*postgres_connect)(gpointer, const gchar *);
 		gpointer (*odbc_connect)(gpointer, const gchar *, const gchar *, const gchar *);
 	} connect;
 } datasource_t;
@@ -90,22 +90,22 @@ gint rlib_add_datasource_mysql_from_group(rlib *r, const gchar *input_name, cons
 	return rlib_add_datasource_mysql_private(r, input_name, group, NULL, NULL, NULL, NULL);
 }
 
-gint rlib_add_datasource_postgre(rlib *r, const gchar *input_name, const gchar *conn) {
+gint rlib_add_datasource_postgres(rlib *r, const gchar *input_name, const gchar *conn) {
 	GModule* handle;
 	datasource_t ds;
-	gpointer postgre;
+	gpointer postgres;
 
-	handle = g_module_open("libr-postgre", 2);
+	handle = g_module_open("libr-postgres", 2);
 	if (!handle) {
-		rlogit("Could Not Load POSTGRE Input [%s]\n", g_module_error());
+		rlogit("Could Not Load POSTGRES Input [%s]\n", g_module_error());
 		return -1;
 	}
-	g_module_symbol(handle, "rlib_postgre_new_input_filter", &ds.filter.ptr);
-	g_module_symbol(handle, "rlib_postgre_connect", &ds.connect.ptr);
+	g_module_symbol(handle, "rlib_postgres_new_input_filter", &ds.filter.ptr);
+	g_module_symbol(handle, "rlib_postgres_connect", &ds.connect.ptr);
 	r->inputs[r->inputs_count].input = ds.filter.new_input_filter();
-	postgre = ds.connect.postgre_connect(r->inputs[r->inputs_count].input, conn);
-	if(postgre == NULL) {
-		rlogit("ERROR: Could not connect to POSTGRE\n");
+	postgres = ds.connect.postgres_connect(r->inputs[r->inputs_count].input, conn);
+	if(postgres == NULL) {
+		rlogit("ERROR: Could not connect to POSTGRES\n");
 		return -1;
 	}
 	r->inputs[r->inputs_count].name = g_strdup(input_name);

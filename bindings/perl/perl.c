@@ -875,7 +875,7 @@ XS(_wrap_rlib_add_datasource_mysql) {
 }
 
 
-XS(_wrap_rlib_add_datasource_postgre) {
+XS(_wrap_rlib_add_datasource_postgres) {
     {
         rlib *arg1 = (rlib *) 0 ;
         char *arg2 ;
@@ -885,18 +885,18 @@ XS(_wrap_rlib_add_datasource_postgre) {
         dXSARGS;
         
         if ((items < 3) || (items > 3)) {
-            SWIG_croak("Usage: rlib_add_datasource_postgre(r,input_name,conn);");
+            SWIG_croak("Usage: rlib_add_datasource_postgres(r,input_name,conn);");
         }
         {
             if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
-                SWIG_croak("Type error in argument 1 of rlib_add_datasource_postgre. Expected _p_rlib");
+                SWIG_croak("Type error in argument 1 of rlib_add_datasource_postgres. Expected _p_rlib");
             }
         }
         if (!SvOK((SV*) ST(1))) arg2 = 0;
         else arg2 = (char *) SvPV(ST(1), PL_na);
         if (!SvOK((SV*) ST(2))) arg3 = 0;
         else arg3 = (char *) SvPV(ST(2), PL_na);
-        result = (int)rlib_add_datasource_postgre(arg1,arg2,arg3);
+        result = (int)rlib_add_datasource_postgres(arg1,arg2,arg3);
         
         ST(argvi) = sv_newmortal();
         sv_setiv(ST(argvi++), (IV) result);
@@ -1828,7 +1828,7 @@ static swig_variable_info swig_variables[] = {
 static swig_command_info swig_commands[] = {
 {"rlibc::rlib_init", _wrap_rlib_init},
 {"rlibc::rlib_add_datasource_mysql", _wrap_rlib_add_datasource_mysql},
-{"rlibc::rlib_add_datasource_postgre", _wrap_rlib_add_datasource_postgre},
+{"rlibc::rlib_add_datasource_postgres", _wrap_rlib_add_datasource_postgres},
 {"rlibc::rlib_add_datasource_odbc", _wrap_rlib_add_datasource_odbc},
 {"rlibc::rlib_add_datasource_xml", _wrap_rlib_add_datasource_xml},
 {"rlibc::rlib_add_query_as", _wrap_rlib_add_query_as},

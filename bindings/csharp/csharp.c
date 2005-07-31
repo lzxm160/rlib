@@ -131,7 +131,7 @@ DllExport int SWIGSTDCALL CSharp_rlib_add_datasource_mysql(void * jarg1, char * 
 }
 
 
-DllExport int SWIGSTDCALL CSharp_rlib_add_datasource_postgre(void * jarg1, char * jarg2, char * jarg3) {
+DllExport int SWIGSTDCALL CSharp_rlib_add_datasource_postgres(void * jarg1, char * jarg2, char * jarg3) {
     int jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
     char *arg2 ;
@@ -141,7 +141,7 @@ DllExport int SWIGSTDCALL CSharp_rlib_add_datasource_postgre(void * jarg1, char 
     arg1 = (rlib *)jarg1; 
     arg2 = jarg2; 
     arg3 = jarg3; 
-    result = (int)rlib_add_datasource_postgre(arg1,arg2,arg3);
+    result = (int)rlib_add_datasource_postgres(arg1,arg2,arg3);
     
     jresult = result; 
     return jresult;

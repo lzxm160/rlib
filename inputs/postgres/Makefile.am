@@ -22,13 +22,13 @@
 
 AM_CFLAGS = $(RLIB_CFLAGS) $(RLIB_WERROR) -I${top_srcdir}/libsrc
 postgresincludedir=$(includedir)/rlib
-lib_LTLIBRARIES = libr-postgre.la
-libr_postgre_la_SOURCES = postgre.c
-libr_postgre_la_LIBADD = $(RLIB_LIBS) 
-DEF_FILE=libr-postgre.def
+lib_LTLIBRARIES = libr-postgres.la
+libr_postgres_la_SOURCES = postgres.c
+libr_postgres_la_LIBADD = $(RLIB_LIBS) 
+DEF_FILE=libr-postgres.def
 if WIN32
 def_ldflags=-Wl,--output-def,$(DEF_FILE)
 endif
-libr_postgre_la_LDFLAGS = \
+libr_postgres_la_LDFLAGS = \
 	-version-info $(RLIB_LT_CURRENT):$(RLIB_LT_REVISION):$(RLIB_LT_AGE) \
 	$(def_ldflags) -module -avoid-version

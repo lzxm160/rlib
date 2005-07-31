@@ -35,7 +35,7 @@ rlib_init = _rlib.rlib_init
 
 rlib_add_datasource_mysql = _rlib.rlib_add_datasource_mysql
 
-rlib_add_datasource_postgre = _rlib.rlib_add_datasource_postgre
+rlib_add_datasource_postgres = _rlib.rlib_add_datasource_postgres
 
 rlib_add_datasource_odbc = _rlib.rlib_add_datasource_odbc
 

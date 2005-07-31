@@ -19,8 +19,8 @@ public class rlib {
     return rlibPINVOKE.rlib_add_datasource_mysql(SWIGTYPE_p_rlib.getCPtr(r), input_name, database_host, database_user, database_password, database_database);
   }
 
-  public static int rlib_add_datasource_postgre(SWIGTYPE_p_rlib r, string input_name, string conn) {
-    return rlibPINVOKE.rlib_add_datasource_postgre(SWIGTYPE_p_rlib.getCPtr(r), input_name, conn);
+  public static int rlib_add_datasource_postgres(SWIGTYPE_p_rlib r, string input_name, string conn) {
+    return rlibPINVOKE.rlib_add_datasource_postgres(SWIGTYPE_p_rlib.getCPtr(r), input_name, conn);
   }
 
   public static int rlib_add_datasource_odbc(SWIGTYPE_p_rlib r, string input_name, string source, string user, string password) {

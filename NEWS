@@ -108,7 +108,7 @@
 - rlib_add_parameter (chet)
 - optional memory checking (chet)
 - reports can span multiple pages (bob)
-- fix problems w/ postgre and odbc driver (bob)
+- fix problems w/ postgres and odbc driver (bob)
 - ability to disable signal handling (chet)
 - page footer formats correctly now (bob)
 - pcode compilation fixes (chet, bob)
@@ -138,14 +138,14 @@
 1.1.2
 ===
 
-- Fix RLIB so Postgre actually works
+- Fix RLIB so Postgres actually works
 - Make PDF output 3x faster by caching fields on a line before writing them
 
 1.1.1
 ===
 
 - Make RLIB a C Library, capable of language bindings (PHP)
-- Split MYSQL out of core.. now have Mysql, and Postgre support
+- Split MYSQL out of core.. now have Mysql, and Postgres support
 - Free Memory after usage
 
 1.0.2

@@ -867,7 +867,7 @@ gchar *rlib_get_output(rlib *r);
 gint rlib_get_output_length(rlib *r);
 gint rlib_mysql_report(gchar *hostname, gchar *username, gchar *password, gchar *database, gchar *xmlfilename, gchar *sqlquery, 
 	gchar *outputformat);
-gint rlib_postgre_report(gchar *connstr, gchar *xmlfilename, gchar *sqlquery, gchar *outputformat);
+gint rlib_postgres_report(gchar *connstr, gchar *xmlfilename, gchar *sqlquery, gchar *outputformat);
 gint rlib_add_resultset_follower(rlib *r, gchar *leader, gchar *follower);
 gint rlib_add_resultset_follower_n_to_1(rlib *r, gchar *leader, gchar *leader_field, gchar *follower,gchar *follower_field );
 gint rlib_add_parameter(rlib *r, const gchar *name, const gchar *value);
@@ -969,14 +969,14 @@ gint rlib_add_datasource(rlib *r, const gchar *input_name, struct input_filter *
 gint rlib_add_datasource_mysql(rlib *r, const gchar *input_name, const gchar *database_host, const gchar *database_user,
 	const gchar *database_password, const gchar *database_database);
 gint rlib_add_datasource_mysql_from_group(rlib *r, const gchar *input_name, const gchar *group);
-gint rlib_add_datasource_postgre(rlib *r, const gchar *input_name, const gchar *conn);
+gint rlib_add_datasource_postgres(rlib *r, const gchar *input_name, const gchar *conn);
 gint rlib_add_datasource_odbc(rlib *r, const gchar *input_name, const gchar *source,
 	const gchar *user, const gchar *password);
 gint rlib_add_datasource_xml(rlib *r, const gchar *input_name);
 
-/***** PROTOTYPES: postgre.c **************************************************/
-gpointer rlib_postgre_new_input_filter(void);
-gpointer rlib_postgre_connect(gpointer input_ptr, gchar *conn);
+/***** PROTOTYPES: postgres.c **************************************************/
+gpointer rlib_postgres_new_input_filter(void);
+gpointer rlib_postgres_connect(gpointer input_ptr, gchar *conn);
 
 /***** PROTOTYPES: save.c *****************************************************/
 gint save_report(struct rlib_report *rep, char *filename);

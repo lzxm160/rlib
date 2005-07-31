@@ -90,8 +90,8 @@ class rlibPINVOKE {
   [DllImport("rlibcsharp", EntryPoint="CSharp_rlib_add_datasource_mysql")]
   public static extern int rlib_add_datasource_mysql(IntPtr jarg1, string jarg2, string jarg3, string jarg4, string jarg5, string jarg6);
 
-  [DllImport("rlibcsharp", EntryPoint="CSharp_rlib_add_datasource_postgre")]
-  public static extern int rlib_add_datasource_postgre(IntPtr jarg1, string jarg2, string jarg3);
+  [DllImport("rlibcsharp", EntryPoint="CSharp_rlib_add_datasource_postgres")]
+  public static extern int rlib_add_datasource_postgres(IntPtr jarg1, string jarg2, string jarg3);
 
   [DllImport("rlibcsharp", EntryPoint="CSharp_rlib_add_datasource_odbc")]
   public static extern int rlib_add_datasource_odbc(IntPtr jarg1, string jarg2, string jarg3, string jarg4, string jarg5);

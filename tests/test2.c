@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
 	rlib *r;
 
 	if(argc != 2) {
-		fprintf(stderr, "%s requires 2 arguments POSTGREE conn str\n", argv[0]);
+		fprintf(stderr, "%s requires 2 arguments POSTGRES conn str\n", argv[0]);
 		fprintf(stderr, "You provided %d\n", argc-1);
 		return -1;
 	}
@@ -41,8 +41,8 @@ int main(int argc, char **argv) {
 	fprintf(stderr, "CONN IS %s\n", conn);
 
 	r = rlib_init();
-	rlib_add_datasource_postgre(r, "local_postgre", conn);
-	rlib_add_query_as(r, "local_postgre", "select * from example", "example");
+	rlib_add_datasource_postgres(r, "local_postgres", conn);
+	rlib_add_query_as(r, "local_postgres", "select * from example", "example");
 	rlib_add_report(r, "report.xml");
 	rlib_set_output_format(r, RLIB_FORMAT_PDF);
 	rlib_execute(r);

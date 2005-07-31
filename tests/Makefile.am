@@ -26,13 +26,13 @@ if HAVE_MYSQL
 MYSQL_INPUT=test1 test3
 endif
 
-if HAVE_POSTGRE
-POSTGRE_INPUT=test2
+if HAVE_POSTGRES
+POSTGRES_INPUT=test2
 endif
 
 noinst_PROGRAMS = \
 	$(MYSQL_INPUT) \
-	$(POSTGRE_INPUT)
+	$(POSTGRES_INPUT)
 
 test1_SOURCES= test1.c
 test1_LDADD = $(top_builddir)/libsrc/libr.la $(RLIB_LIBS)
