@@ -17,7 +17,7 @@
 		<pd width="98">
 			<Report fontSize="12" orientation="landscape" query="'sales_data'">
 				<Graph type="'line'" subtype="'normal'" width="740" height="250" title="'Double Y Axix!'" x_axis_title="'Day Of Week'" y_axis_title="'Sales $$$'" y_axis_title_right="'Avg Check'">
-					<Plot axis="'x'" field="doy"/>
+					<Plot axis="'x'" field="dow"/>
 					<Plot axis="'y'" field="val(net)" label="'Net Sales'" side="'left'"/>
 					<Plot axis="'y'" field="val(check)" label="'Avg Check'" side="'right'"/>
 				</Graph>
@@ -32,7 +32,7 @@
 						<Output>
 							<HorizontalLine size="1" bgcolor="'black'"/>
 							<Line bgcolor="'0xe5e5e5'">
-								<literal width="5" col="1">Doy</literal>
+								<literal width="10" col="1">Dow</literal>
 								<literal width="1"/>
 								<literal width="10" col="1">Net Sales</literal>
 								<literal width="1"/>
@@ -45,7 +45,7 @@
 					<FieldDetails>
 						<Output>
 							<Line bgcolor="iif(r.detailcnt%2,'0xe5e5e5','white')">
-								<field value="doy" width="5" align="left" col="1"/>
+								<field value="dow" width="10" align="left" col="1"/>
 								<literal width="1"/>
 								<field value="net" width="10" align="left" col="1"/>
 								<literal width="1"/>
@@ -320,7 +320,7 @@
 				<Graph type="'line'" subtype="'normal'" width="370" height="250" title="'Normal Line Charts!'" x_axis_title="'Day Of Week Mike'" y_axis_title="'Sales $$$'">
 -->
 				<Graph type="'line'" subtype="'normal'" width="370" height="250" title="'Normal Line Charts!'" y_axis_title="'Sales $$$'">
-					<Plot axis="'x'" field="doy"/>
+					<Plot axis="'x'" field="dow"/>
 					<Plot axis="'y'" field="val(rest1)" label="'BK 1'"/>
 					<Plot axis="'y'" field="val(rest2)" label="'BK 2'"/>
 					<Plot axis="'y'" field="val(rest3)" label="'BK 3'"/>
@@ -334,7 +334,7 @@
 		<pd width="48">
 			<Report fontSize="12" orientation="landscape" query="'line_data'">
 				<Graph type="'line'" subtype="'stacked'" width="370" height="250" title="'Stacked Line Charts!'" x_axis_title="'Day Of Week'" y_axis_title="'Sales $$$'">
-					<Plot axis="'x'" field="doy"/>
+					<Plot axis="'x'" field="dow"/>
 					<Plot axis="'y'" field="val(rest1)" label="'BK 1'"/>
 					<Plot axis="'y'" field="val(rest2)" label="'BK 2'"/>
 					<Plot axis="'y'" field="val(rest3)" label="'BK 3'"/>
@@ -349,7 +349,7 @@
 		<pd width="48">
 			<Report fontSize="12" orientation="landscape" query="'line_data'">
 				<Graph type="'line'" subtype="'percent'" width="370" height="250" title="'Percent Line Charts!'" x_axis_title="'Day Of Week'" y_axis_title="'Sales $$$'">
-					<Plot axis="'x'" field="doy"/>
+					<Plot axis="'x'" field="dow"/>
 					<Plot axis="'y'" field="val(rest1)" label="'BK 1'"/>
 					<Plot axis="'y'" field="val(rest2)" label="'BK 2'"/>
 					<Plot axis="'y'" field="val(rest3)" label="'BK 3'"/>
@@ -367,7 +367,7 @@
 						<Output>
 							<HorizontalLine size="1" bgcolor="'black'"/>
 							<Line bgcolor="'0xe5e5e5'">
-								<literal width="5" col="1">Doy</literal>
+								<literal width="10" col="1">Dow</literal>
 								<literal width="1"/>
 								<literal width="5" col="1">BK 1</literal>
 								<literal width="1"/>
@@ -388,19 +388,19 @@
 					<FieldDetails>
 						<Output>
 							<Line bgcolor="iif(r.detailcnt%2,'0xe5e5e5','white')">
-								<field value="doy" width="5" align="left" col="1"/>
+								<field value="dow" width="10" align="left" col="1"/>
 								<literal width="1"/>
-								<field value="rest1" width="5" align="left" col="1"/>
+								<field value="rest1" width="5" align="right" col="1"/>
 								<literal width="1"/>
-								<field value="rest2" width="5" align="left" col="1"/>
+								<field value="rest2" width="5" align="right" col="1"/>
 								<literal width="1"/>
-								<field value="rest3" width="5" align="left" col="1"/>
+								<field value="rest3" width="5" align="right" col="1"/>
 								<literal width="1"/>
-								<field value="rest4" width="5" align="left" col="1"/>
+								<field value="rest4" width="5" align="right" col="1"/>
 								<literal width="1"/>
-								<field value="rest5" width="5" align="left" col="1"/>
+								<field value="rest5" width="5" align="right" col="1"/>
 								<literal width="1"/>
-								<field value="rest6" width="5" align="left" col="1"/>
+								<field value="rest6" width="5" align="right" col="1"/>
 								<literal width="1"/>
 							</Line>
 						</Output>
@@ -414,7 +414,7 @@
 		<pd width="48">
 			<Report fontSize="12" orientation="landscape" query="'line_data'">
 				<Graph type="'line'" subtype="'normal'" width="370" height="250" title="'Normal Line Charts!'" x_axis_title="'Day Of Week'" y_axis_title="'OS $$$'">
-					<Plot axis="'x'" field="doy"/>
+					<Plot axis="'x'" field="dow"/>
 					<Plot axis="'y'" field="val(os1)" label="'BK 1'"/>
 					<Plot axis="'y'" field="val(os2)" label="'BK 2'"/>
 					<Plot axis="'y'" field="val(os3)" label="'BK 3'"/>
@@ -428,7 +428,7 @@
 		<pd width="48">
 			<Report fontSize="12" orientation="landscape" query="'line_data'">
 				<Graph type="'line'" subtype="'stacked'" width="370" height="250" title="'Stacked Line Charts!'" x_axis_title="'Day Of Week'" y_axis_title="'OS $$$'">
-					<Plot axis="'x'" field="doy"/>
+					<Plot axis="'x'" field="dow"/>
 					<Plot axis="'y'" field="val(os1)" label="'BK 1'"/>
 					<Plot axis="'y'" field="val(os2)" label="'BK 2'"/>
 					<Plot axis="'y'" field="val(os3)" label="'BK 3'"/>
@@ -443,7 +443,7 @@
 		<pd width="48">
 			<Report fontSize="12" orientation="landscape" query="'line_data'">
 				<Graph type="'line'" subtype="'percent'" width="370" height="250" title="'Percent Line Charts!'" x_axis_title="'Day Of Week'" y_axis_title="'OS $$$'">
-					<Plot axis="'x'" field="doy"/>
+					<Plot axis="'x'" field="dow"/>
 					<Plot axis="'y'" field="val(os1)" label="'BK 1'"/>
 					<Plot axis="'y'" field="val(os2)" label="'BK 2'"/>
 					<Plot axis="'y'" field="val(os3)" label="'BK 3'"/>
@@ -461,7 +461,7 @@
 						<Output>
 							<HorizontalLine size="1" bgcolor="'black'"/>
 							<Line bgcolor="'0xe5e5e5'">
-								<literal width="5" col="1">Doy</literal>
+								<literal width="10" col="1">Dow</literal>
 								<literal width="1"/>
 								<literal width="5" col="1">BK 1</literal>
 								<literal width="1"/>
@@ -482,19 +482,19 @@
 					<FieldDetails>
 						<Output>
 							<Line bgcolor="iif(r.detailcnt%2,'0xe5e5e5','white')">
-								<field value="doy" width="5" align="left" col="1"/>
+								<field value="dow" width="10" align="left" col="1"/>
 								<literal width="1"/>
-								<field value="os1" width="5" align="left" col="1"/>
+								<field value="os1" width="5" align="right" col="1"/>
 								<literal width="1"/>
-								<field value="os2" width="5" align="left" col="1"/>
+								<field value="os2" width="5" align="right" col="1"/>
 								<literal width="1"/>
-								<field value="os3" width="5" align="left" col="1"/>
+								<field value="os3" width="5" align="right" col="1"/>
 								<literal width="1"/>
-								<field value="os4" width="5" align="left" col="1"/>
+								<field value="os4" width="5" align="right" col="1"/>
 								<literal width="1"/>
-								<field value="os5" width="5" align="left" col="1"/>
+								<field value="os5" width="5" align="right" col="1"/>
 								<literal width="1"/>
-								<field value="os6" width="5" align="left" col="1"/>
+								<field value="os6" width="5" align="right" col="1"/>
 								<literal width="1"/>
 							</Line>
 						</Output>
@@ -591,15 +591,15 @@
 						<Output>
 							<HorizontalLine size="1" bgcolor="'black'"/>
 							<Line bgcolor="'0xe5e5e5'">
-								<literal width="10" col="1">Name</literal>
+								<literal width="10" align="center" col="1">Name</literal>
 								<literal width="1"/>
-								<literal width="10" col="1">Sold</literal>
+								<literal width="8"  align="right" col="1">Sold</literal>
 								<literal width="1"/>
-								<literal width="10" col="1">Negative</literal>
+								<literal width="8"  align="right" col="1">Negative</literal>
 								<literal width="1"/>
-								<literal width="10" col="1">Ty Sales</literal>
+								<literal width="10" align="right" col="1">Ty Sales</literal>
 								<literal width="1"/>
-								<literal width="10" col="1">LY Sales</literal>
+								<literal width="10" align="right" col="1">LY Sales</literal>
 							</Line>
 							<HorizontalLine size="1" bgcolor="'black'"/>
 							<HorizontalLine size="4" bgcolor="'white'"/>
@@ -610,13 +610,13 @@
 							<Line bgcolor="iif(r.detailcnt%2,'0xe5e5e5','white')">
 								<field value="name" width="10" align="left" col="1"/>
 								<literal width="1"/>
-								<field value="sold" width="10" align="left" col="1"/>
+								<field value="sold" width="8" align="right" col="1"/>
 								<literal width="1"/>
-								<field value="negative" width="10" align="left" col="1"/>
+								<field value="negative" width="8" align="right" col="1"/>
 								<literal width="1"/>
-								<field value="ty_sales" width="10" align="left" col="1"/>
+								<field value="ty_sales" width="10" align="right" col="1"/>
 								<literal width="1"/>
-								<field value="ly_sales" width="10" align="left" col="1"/>
+								<field value="ly_sales" width="10" align="right" col="1"/>
 							</Line>
 						</Output>
 					</FieldDetails>
@@ -667,15 +667,15 @@
 						<Output>
 							<HorizontalLine size="1" bgcolor="'black'"/>
 							<Line bgcolor="'0xe5e5e5'">
-								<literal width="10" col="1">Name</literal>
+								<literal width="10" align="center" col="1">Name</literal>
 								<literal width="1"/>
-								<literal width="10" col="1">Sold</literal>
+								<literal width="8"  align="right" col="1">Sold</literal>
 								<literal width="1"/>
-								<literal width="10" col="1">Negative</literal>
+								<literal width="8"  align="right" col="1">Negative</literal>
 								<literal width="1"/>
-								<literal width="10" col="1">Ty Sales</literal>
+								<literal width="10" align="right" col="1">Ty Sales</literal>
 								<literal width="1"/>
-								<literal width="10" col="1">LY Sales</literal>
+								<literal width="10" align="right" col="1">LY Sales</literal>
 							</Line>
 							<HorizontalLine size="1" bgcolor="'black'"/>
 							<HorizontalLine size="4" bgcolor="'white'"/>
@@ -686,13 +686,13 @@
 							<Line bgcolor="iif(r.detailcnt%2,'0xe5e5e5','white')">
 								<field value="name" width="10" align="left" col="1"/>
 								<literal width="1"/>
-								<field value="sold" width="10" align="left" col="1"/>
+								<field value="sold" width="8" align="right" col="1"/>
 								<literal width="1"/>
-								<field value="negative" width="10" align="left" col="1"/>
+								<field value="negative" width="8" align="right" col="1"/>
 								<literal width="1"/>
-								<field value="ty_sales" width="10" align="left" col="1"/>
+								<field value="ty_sales" width="10" align="right" col="1"/>
 								<literal width="1"/>
-								<field value="ly_sales" width="10" align="left" col="1"/>
+								<field value="ly_sales" width="10" align="right" col="1"/>
 							</Line>
 						</Output>
 					</FieldDetails>

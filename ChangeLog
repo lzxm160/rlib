@@ -1,4 +1,8 @@
 2005-08-01  William Volkman  <wkvsf@users.sourceforge.net>
+	* src/examples/php/graph.php: Fix up example
+	* src/examples/php/graph.xml: likewise
+
+2005-08-01  William Volkman  <wkvsf@users.sourceforge.net>
 	* bindings/python/python.c: Fix binding error from SWIG generation
 
 2005-08-01  Bob Doan  <bdoan@sicompos.com>

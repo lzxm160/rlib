@@ -6,42 +6,42 @@
 	$data[0][4] = "sold";
 	$data[0][5] = "negative";
 
-	$data[1][0] = "BK 1";
+	$data[1][0] = "XX 1";
 	$data[1][1] = "3000";
 	$data[1][2] = "3300";
 	$data[1][3] = "3300";
 	$data[1][4] = "-1.5";
 	$data[1][5] = "-2";
 
-	$data[2][0] = "BK 22";
+	$data[2][0] = "XX 2";
 	$data[2][1] = "2400";
 	$data[2][2] = "2100";
 	$data[2][3] = "3301";
 	$data[2][4] = "1";
 	$data[2][5] = "-4";
 
-	$data[3][0] = "BK 3";
+	$data[3][0] = "XX 3";
 	$data[3][1] = "4000";
 	$data[3][2] = "4100";
 	$data[3][3] = "3302";
 	$data[3][4] = "2";
 	$data[3][5] = "-6";
 
-	$data[4][0] = "BK 4";
+	$data[4][0] = "XX 4";
 	$data[4][1] = "4700";
 	$data[4][2] = "4100";
 	$data[4][3] = "3303";
 	$data[4][4] = "3";
 	$data[4][5] = "-8";
 
-	$data[5][0] = "BK 5";
+	$data[5][0] = "XX 5";
 	$data[5][1] = "2500";
 	$data[5][2] = "5500";
 	$data[5][3] = "3304";
 	$data[5][4] = "8";
 	$data[5][5] = "-10";
 
-	$line_data[0][0] = "doy";
+	$line_data[0][0] = "dow";
 	$line_data[0][1] = "rest1";
 	$line_data[0][2] = "rest2";
 	$line_data[0][3] = "rest3";
@@ -210,19 +210,19 @@
 	$pie_data2[13][0] = "Milk";
 	$pie_data2[13][1] = "5";
 
-	$pie_data2[13][0] = "Oj";
-	$pie_data2[13][1] = "5";
+	$pie_data2[14][0] = "Oj";
+	$pie_data2[14][1] = "5";
 
-	$pie_data2[13][0] = "Cake";
-	$pie_data2[13][1] = "20";
+	$pie_data2[15][0] = "Cake";
+	$pie_data2[15][1] = "20";
 
-	$pie_data2[13][0] = "Pie";
-	$pie_data2[13][1] = "10";
+	$pie_data2[16][0] = "Pie";
+	$pie_data2[16][1] = "10";
 
-	$pie_data2[13][0] = "Pudding";
-	$pie_data2[13][1] = "5";
+	$pie_data2[17][0] = "Pudding";
+	$pie_data2[17][1] = "5";
 
-	$sales_data[0][0] = "doy";
+	$sales_data[0][0] = "dow";
 	$sales_data[0][1] = "net";
 	$sales_data[0][2] = "check";
 
