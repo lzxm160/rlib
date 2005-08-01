@@ -206,7 +206,7 @@ void rlib_break_all_below_in_reverse_order(rlib *r, struct rlib_part *part, stru
 			did_end_page = rlib_end_page_if_line_wont_fit(r, part, report, rb->footer);
 
 			if(did_end_page)
-				rlib_print_break_footer_output(r, part, report, rb, rb->header, FALSE);
+				rlib_print_break_header_output(r, part, report, rb, rb->header, FALSE);
 
 			if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result))
 				rlib_navigate_previous(r, r->current_result);

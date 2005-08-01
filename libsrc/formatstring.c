@@ -25,6 +25,8 @@
 #include <ctype.h>
 #include <math.h>
 #include <time.h>
+#include <locale.h>
+
 #include "config.h"
 
 #ifdef RLIB_HAVE_MONETARY_H 
@@ -182,6 +184,12 @@ static gint rlib_format_string_default(rlib *r, struct rlib_report_field *rf, st
 }
 
 gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value *rval, gchar *buf) {
+	gchar *current_locale = NULL;
+	if(r->special_locale != NULL) {
+		current_locale = setlocale(LC_ALL, NULL);
+		setlocale(LC_ALL, r->special_locale);
+	}
+	
 	if(rf->xml_format == NULL) {
 		rlib_format_string_default(r, rf, rval, buf);
 	} else {
@@ -191,6 +199,7 @@ gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value
 		if(!RLIB_VALUE_IS_STRING(rval_fmtstr)) {
 			sprintf(buf, "!ERR_F_F");
 			rlib_value_free(rval_fmtstr);
+			setlocale(LC_ALL, current_locale);
 			return FALSE;
 		} else {
 			formatstring = RLIB_VALUE_GET_AS_STRING(rval_fmtstr);
@@ -198,18 +207,23 @@ gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value
 				rlib_format_string_default(r, rf, rval, buf);
 			} else {
 				if (*formatstring == '!') {
+					gboolean result;
 					gchar *tfmt = formatstring + 1;
 					gboolean goodfmt = TRUE;
 					switch (*tfmt) {
 					case '$': /* Format as money */
 						if (RLIB_VALUE_IS_NUMBER(rval)) {
-							return format_money(buf, 100, tfmt + 1, RLIB_VALUE_GET_AS_NUMBER(rval));
+							result = format_money(buf, 100, tfmt + 1, RLIB_VALUE_GET_AS_NUMBER(rval));
+							setlocale(LC_ALL, current_locale);
+							return result;
 						}
 						++formatstring;
 						break;
 					case '#': /* Format as number */
 						if (RLIB_VALUE_IS_NUMBER(rval)) {
-							return format_number(buf, 100, tfmt + 1, RLIB_VALUE_GET_AS_NUMBER(rval));
+							result = format_number(buf, 100, tfmt + 1, RLIB_VALUE_GET_AS_NUMBER(rval));
+							setlocale(LC_ALL, current_locale);
+							return result;
 						}
 						++formatstring;
 						break;
@@ -223,7 +237,10 @@ gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value
 						goodfmt = FALSE;
 						break;
 					}
-					if (goodfmt) return TRUE;
+					if (goodfmt) {
+						setlocale(LC_ALL, current_locale);
+						return TRUE;
+					}
 				}
 				if(RLIB_VALUE_IS_DATE(rval)) {
 					rlib_datetime_format(&RLIB_VALUE_GET_AS_DATE(rval), buf, 100, formatstring);
@@ -264,6 +281,7 @@ gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value
 								} else {
 									sprintf(buf, "!ERR_F_D");
 									rlib_value_free(rval_fmtstr);
+									setlocale(LC_ALL, current_locale);
 									return FALSE;
 								}
 							} else if (tchar == 's') {
@@ -276,6 +294,7 @@ gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value
 								} else {
 									sprintf(buf, "!ERR_F_S");
 									rlib_value_free(rval_fmtstr);
+									setlocale(LC_ALL, current_locale);
 									return FALSE;
 								}
 							}
@@ -292,5 +311,6 @@ gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value
 			rlib_value_free(rval_fmtstr);
 		}
 	}
+	setlocale(LC_ALL, current_locale);
 	return TRUE;
 }

@@ -13,7 +13,7 @@
 
 
 	$rlib =	rlib_init();
-	rlib_version();
+	rlib_set_locale($rlib, "pt_BR");	
 	rlib_add_datasource_array($rlib, "local_array");
 	rlib_add_query_as($rlib, "local_array", "data", "data");
 	rlib_add_report($rlib, "expressions.xml");

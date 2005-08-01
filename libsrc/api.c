@@ -352,20 +352,12 @@ gint rlib_add_parameter(rlib *r, const gchar *name, const gchar *value) {
 *  Returns TRUE if locale was actually set, otherwise, FALSE
 */
 gint rlib_set_locale(rlib *r, gchar *locale) {
-	gchar *cur;
-	
 #if DISABLE_UTF8
-	cur = setlocale(LC_ALL, locale);
+	r->special_locale = g_strdup(locale);
 #else
-	cur = setlocale(LC_ALL, make_utf8_locale(locale));
+	r->special_locale = g_strdup(make_utf8_locale(locale));
 #endif
-
-	if (!cur) {
-		r_error("Locale could not be changed to %s by rlib_set_locale", locale);
-		return FALSE;
-	}
-	r_debug("Locale set to: %s", locale);
-	return (cur)? TRUE : FALSE;
+	return TRUE;
 }
 
 void rlib_init_profiler() {

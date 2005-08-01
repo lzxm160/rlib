@@ -129,7 +129,7 @@ static struct rlib_element * parse_line_array(xmlDocPtr doc, xmlNsPtr ns, xmlNod
 			current = g_new0(struct rlib_element, 1);
 			sp = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 #if DISABLE_UTF8
-			utf8_to_8813(t->value, sp);
+			utf8_to_8813(t->value, (char *)sp);
 #else
 			safestrncpy(t->value, (gchar *)sp, sizeof(t->value));
 #endif

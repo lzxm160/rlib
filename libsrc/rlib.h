@@ -730,6 +730,8 @@ struct rlib {
 	gint format;
 	gint inputs_count;
 	gboolean did_execute;
+	
+	gchar *special_locale;
 
 	struct output_filter *o;
 	struct input_filters inputs[MAX_INPUT_FILTERS];

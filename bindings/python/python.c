@@ -984,11 +984,12 @@ static PyObject *_wrap_rlib_get_output(PyObject *self, PyObject *args) {
     rlib *arg1 = (rlib *) 0 ;
     char *result;
     PyObject * obj0 = 0 ;
+    int		size;
     
     if(!PyArg_ParseTuple(args,(char *)"O:rlib_get_output",&obj0)) goto fail;
     if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
     result = (char *)rlib_get_output(arg1);
-    
+    size = rlib_get_output_length(arg1);
     resultobj = result ? PyString_FromStringAndSize(result, size) : Py_BuildValue((char*)"");
     return resultobj;
     fail:

@@ -1,3 +1,17 @@
+2005-08-01  William Volkman  <wkvsf@users.sourceforge.net>
+	* bindings/python/python.c: Fix binding error from SWIG generation
+
+2005-08-01  Bob Doan  <bdoan@sicompos.com>
+	* configure.in: version
+	* libsrc/api.c: fix locale
+	* libsrc/breaks.c: fix break problem
+	* libsrc/formatstring.c: fix formatting problem (locale stuff)
+	* libsrc/parsexml.c: make gcc happier
+	* libsrc/pcode_op_functions.c: likewise
+	* libsrc/rlib.h: fix locale stuff
+	* src/examples/php/expressions.php: ..
+	* src/examples/php/expressions.xml:  ..
+	
 2005-07-31  Bob Doan  <bdoan@sicompos.com>
 	* AUTHORS: add William
 	* NEWS: Fix spelling of postgres
