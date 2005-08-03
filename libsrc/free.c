@@ -437,7 +437,8 @@ void rlib_free_results(rlib *r) {
 void rlib_free_results_and_queries(rlib *r) {
 	int i;
 	for(i=0;i<r->queries_count;i++) {
-		INPUT(r, i)->free_result(INPUT(r, i), r->results[i].result);
+		if (r->results[i].result)
+			INPUT(r, i)->free_result(INPUT(r, i), r->results[i].result);
 		g_free(r->queries[i].sql);
 		g_free(r->queries[i].name);
 	}

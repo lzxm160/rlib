@@ -1,3 +1,18 @@
+2005-08-03  Bob Doan William Volkman  <wkvsf@users.sourceforge.net>
+	* bindings/interfaces/Makefile.am: Fully featured Python Bindings
+	* bindings/interfaces/rlibcompat.py: likewise
+	* bindings/python/Makefile.am: likewise
+	* bindings/python/rlibmodule.c:  likewise
+	* libsrc/free.c: likewise
+	* src/examples/python/Makefile.am: likewise
+	* src/examples/python/arrays_signals_and_functions.py: likewise
+	* src/examples/python/compat-example.py: likewise
+	* src/examples/python/example.py: likewise
+	* src/examples/python/fixed_part.py: likewise
+	* src/examples/python/follower.py: likewise
+	* src/examples/python/graph.py: likewise
+	* src/examples/python/xml.py: likewise
+
 2005-08-01  William Volkman  <wkvsf@users.sourceforge.net>
 	* src/examples/php/graph.php: Fix up example
 	* src/examples/php/graph.xml: likewise
