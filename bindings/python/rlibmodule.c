@@ -99,7 +99,7 @@ rlib_dealloc(register RLIBObject *rp)
 }
 
 static int
-implement_function_call(rlib *rlib_ptr,  struct rlib_value_stack *vs, struct rlib_value *this_field_value, void *user_data) {
+implement_function_call(rlib *rlib_ptr,  struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, void *user_data) {
 	PyObject 	*arglist;
 	PyObject 	*retval;
 	func_chain	*fp = user_data;
@@ -134,15 +134,15 @@ implement_function_call(rlib *rlib_ptr,  struct rlib_value_stack *vs, struct rli
 	/* Figure out what to do with result here */
 
 	if (PyString_Check(retval))
-		rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, PyString_AsString(retval)));
+		rlib_value_stack_push(rlib_ptr, vs, rlib_value_new_string(&rval_rtn, PyString_AsString(retval)));
 	else if (PyInt_Check(retval)) {
 		gint64 result = LONG_TO_FXP_NUMBER(PyInt_AsLong(retval));
-		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, result));
+		rlib_value_stack_push(rlib_ptr, vs, rlib_value_new_number(&rval_rtn, result));
 	} else if (PyFloat_Check(retval)) {
 		gint64 result = PyFloat_AsDouble(retval)*(gdouble)RLIB_DECIMAL_PRECISION;
-                rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, result));
+                rlib_value_stack_push(rlib_ptr, vs, rlib_value_new_number(&rval_rtn, result));
         } else {
-                rlib_value_stack_push(vs, rlib_value_new_error(&rval_rtn));
+                rlib_value_stack_push(rlib_ptr, vs, rlib_value_new_error(&rval_rtn));
         }
 	Py_DECREF(retval);
 	return 1;

@@ -10,12 +10,13 @@
 			</Output>
 		</NoData>
 	</Alternate>
+	
 	<ReportHeader>
 		<Output>
 			<Line fontSize="11">
+				<field value="2+'hi'" format="'%02.03d'" width="10"/>
 				<literal>Test Report (Normal) AND THE REPORT FORMAT IS: </literal>
 				<field value="r.format" width="10"/>
-				<field value="2.2" format="'%02.03d'" width="10"/>
 			</Line>
 			<Line fontSize="11">
 				<literal bold="yes">Test Report (Bold)</literal>

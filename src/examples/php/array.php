@@ -42,7 +42,8 @@
 	rlib_add_report($rlib, "array.xml");
 	rlib_add_function($rlib, "bobdoan", "bobdoan", 1);
 	rlib_add_function($rlib, "mikeroth", "mike_roth", 2);
-	rlib_set_output_format_from_text($rlib, "pdf");
+	rlib_set_output_format_from_text($rlib, "html");
+	rlib_set_output_parameter($rlib, "debugging", "yes");
 	rlib_execute($rlib);
 	header(rlib_get_content_type($rlib));
 	rlib_spool($rlib);

@@ -468,7 +468,7 @@ struct both {
 	gint params;
 };
 
-gboolean default_function(rlib *r, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
+gboolean default_function(rlib *r, struct rlib_pcode * code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct both *b = user_data;
 	zval ***params = emalloc(b->params);
 	int i;
@@ -500,15 +500,15 @@ gboolean default_function(rlib *r, struct rlib_value_stack *vs, struct rlib_valu
 	}
 
 	if( Z_TYPE_P(retval) == IS_STRING )	
-		rlib_value_stack_push(vs, rlib_value_new_string(&rval_rtn, estrdup(Z_STRVAL_P(retval))));
+		rlib_value_stack_push(r, vs, rlib_value_new_string(&rval_rtn, estrdup(Z_STRVAL_P(retval))));
 	else if( Z_TYPE_P(retval) == IS_LONG ) {	
 		gint64 result = Z_LVAL_P(retval)*RLIB_DECIMAL_PRECISION;
-		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, result));
+		rlib_value_stack_push(r, vs, rlib_value_new_number(&rval_rtn, result));
 	} else if( Z_TYPE_P(retval) == IS_DOUBLE ) {	
 		gint64 result = (gdouble)Z_DVAL_P(retval)*(gdouble)RLIB_DECIMAL_PRECISION;
-		rlib_value_stack_push(vs, rlib_value_new_number(&rval_rtn, result));
+		rlib_value_stack_push(r, vs, rlib_value_new_number(&rval_rtn, result));
 	} else {
-		rlib_value_stack_push(vs, rlib_value_new_error(&rval_rtn));		
+		rlib_value_stack_push(r, vs, rlib_value_new_error(&rval_rtn));		
 	}
 
 	return TRUE;

@@ -45,21 +45,7 @@ struct rlib_string * rlib_string_new_with_string(const gchar *string);
 
 gchar *strlwrexceptquoted (gchar *s);
 gchar *rmwhitespacesexceptquoted(gchar *s);
-void rlogit(const gchar *fmt, ...);
-#if DISABLERDEBUG
-#define r_debug(...)
-#else
-void r_debug(const gchar *fmt, ...);
-#endif
-#if DISABLERINFO
-#define R_info(...)
-#else
-void r_info(const gchar *fmt, ...);
-#endif
-void r_warning(const gchar *fmt, ...);
-void r_error(const gchar *fmt, ...);
 /* coming soon: void r_fatal(const gchar *fmt, ...); */
-void rlogit_setmessagewriter(void(*writer)(const gchar *msg));
 gint rutil_enableSignalHandler(gint trueorfalse);
 gint64 tentothe(gint n);
 gchar hextochar(gchar c);

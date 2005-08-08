@@ -192,7 +192,7 @@ void * xml_new_result_from_query(gpointer input_ptr, gchar *query) {
 	xmlXIncludeProcess(doc);
 
 	if (doc == NULL) {
-		r_error("xmlParseError\n");
+		r_error(NULL,"xmlParseError\n");
 		return NULL;
 	}
 
@@ -200,10 +200,10 @@ void * xml_new_result_from_query(gpointer input_ptr, gchar *query) {
 
 	cur = xmlDocGetRootElement(INPUT_PRIVATE(input)->doc);
 	if (cur == NULL) {
-		r_error("xmlParseError \n");
+		r_error(NULL,"xmlParseError \n");
 		return NULL;
 	} else if (xmlStrcmp(cur->name, (const xmlChar *) "data") != 0) {
-		r_error("document error: 'data' expected, '%s'found\n", cur->name);
+		r_error(NULL,"document error: 'data' expected, '%s'found\n", cur->name);
 		return NULL;
 	}
 
@@ -217,10 +217,10 @@ void * xml_new_result_from_query(gpointer input_ptr, gchar *query) {
 	}
 
 	if (rows == NULL) {
-		r_error("document error: 'rows' not found\n");
+		r_error(NULL,"document error: 'rows' not found\n");
 		return NULL;
 	} else if (fields == NULL) {
-		r_error("document error: 'fields' not found\n");
+		r_error(NULL,"document error: 'fields' not found\n");
 		return NULL;
 	}
 
@@ -235,7 +235,7 @@ void * xml_new_result_from_query(gpointer input_ptr, gchar *query) {
 	}
 
 	if (first_row == NULL) {
-		r_error("'row' count is zero\n");
+		r_error(NULL,"'row' count is zero\n");
 		return NULL;
 	}
 
@@ -246,7 +246,7 @@ void * xml_new_result_from_query(gpointer input_ptr, gchar *query) {
 	}
 
 	if (first_field == NULL) {
-		r_error("'field' count is zero\n");
+		r_error(NULL,"'field' count is zero\n");
 		return NULL;
 	}
 

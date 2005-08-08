@@ -190,7 +190,7 @@ gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value
 		setlocale(LC_ALL, r->special_locale);
 	}
 	
-	if(rf->xml_format == NULL) {
+	if(rf->xml_format.xml == NULL) {
 		rlib_format_string_default(r, rf, rval, buf);
 	} else {
 		gchar *formatstring;

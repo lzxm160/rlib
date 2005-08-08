@@ -114,14 +114,14 @@ gfloat rlib_layout_estimate_string_width_from_extra_data(rlib *r, struct rlib_li
 
 static gchar *rlib_encode_text(rlib *r, gchar *text, gchar *result, gsize result_len) {
 	if (text == NULL) {
-		r_error("rlib_encode_text called with NULL text");
+		r_error(r, "rlib_encode_text called with NULL text");
 		result = (gchar *)"!ERR_ENC1";
 	} else {
 		gsize len = strlen(text);
 		gchar *tmp = result;
 		rlib_charencoder_convert(r->output_encoder, &text, &len, &tmp, &result_len);
 		if (result == NULL) {
-			r_error("encode returned NULL result input was[%s], len=%d", text, r_strlen(text));
+			r_error(r, "encode returned NULL result input was[%s], len=%d", text, r_strlen(text));
 			result = (gchar *)"!ERR_ENC2";
 		}
 	}
@@ -378,9 +378,9 @@ static void rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 			gchar buf[MAXSTRLEN];
 			rf = e->data;
 			if (rf == NULL) 
-				r_error("report_field is NULL ... will crash");
+				r_error(r, "report_field is NULL ... will crash");
 			else if 
-				(rf->code == NULL) r_error("There is no code for field");
+				(rf->code == NULL) r_error(r, "There is no code for field");
 			
 			rlib_execute_pcode(r, &extra_data[i].rval_code, rf->code, NULL);	
 			if(rf->link_code != NULL) {	
@@ -504,7 +504,7 @@ static void rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 				rl->max_line_height = RLIB_GET_LINE(height);
 			
 		} else {
-			r_error("Line has invalid content");
+			r_error(r, "Line has invalid content");
 		}
 		if(rl->font_point == -1)
 			extra_data[i].font_point = use_font_point;
@@ -537,7 +537,7 @@ static void rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 		if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_bgcolor))) {
 			gchar *colorstring, *ocolor;
 			if(!RLIB_VALUE_IS_STRING((&extra_data[i].rval_bgcolor))) {
-				r_error("RLIB ENCOUNTERED AN ERROR PROCESSING THE BGCOLOR FOR THIS VALUE [%s].. BGCOLOR VALUE WAS NOT OF TYPE STRING\n", text);
+				r_error(r, "RLIB ENCOUNTERED AN ERROR PROCESSING THE BGCOLOR FOR THIS VALUE [%s].. BGCOLOR VALUE WAS NOT OF TYPE STRING\n", text);
 			} else {
 				gchar *idx;
 				ocolor = colorstring = g_strdup(RLIB_VALUE_GET_AS_STRING((&extra_data[i].rval_bgcolor)));
@@ -558,7 +558,7 @@ static void rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 		if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_color))) {
 			gchar *colorstring, *ocolor;
 			if(!RLIB_VALUE_IS_STRING((&extra_data[i].rval_color))) {
-				r_error("RLIB ENCOUNTERED AN ERROR PROCESSING THE COLOR FOR THIS VALUE [%s].. COLOR VALUE WAS NOT OF TYPE STRING\n", text);
+				r_error(r, "RLIB ENCOUNTERED AN ERROR PROCESSING THE COLOR FOR THIS VALUE [%s].. COLOR VALUE WAS NOT OF TYPE STRING\n", text);
 			} else {
 				gchar *idx;
 				ocolor = colorstring = g_strdup(RLIB_VALUE_GET_AS_STRING((&extra_data[i].rval_color)));
@@ -577,7 +577,7 @@ static void rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 		extra_data[i].is_bold = FALSE;
 		if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_bold))) {
 			if(!RLIB_VALUE_IS_NUMBER((&extra_data[i].rval_bold))) {
-				r_error("RLIB ENCOUNTERED AN ERROR PROCESSING BOLD FOR THIS VALUE [%s].. BOLD VALUE WAS NOT OF TYPE NUMBER TYPE=%d\n", text, RLIB_VALUE_GET_TYPE((&extra_data[i].rval_bold)));
+				r_error(r, "RLIB ENCOUNTERED AN ERROR PROCESSING BOLD FOR THIS VALUE [%s].. BOLD VALUE WAS NOT OF TYPE NUMBER TYPE=%d\n", text, RLIB_VALUE_GET_TYPE((&extra_data[i].rval_bold)));
 			} else {
 				if(RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER((&extra_data[i].rval_bold)))) {
 					extra_data[i].is_bold = TRUE;
@@ -587,7 +587,7 @@ static void rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 		extra_data[i].is_italics = FALSE;
 		if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_italics))) {
 			if(!RLIB_VALUE_IS_NUMBER((&extra_data[i].rval_italics))) {
-				r_error("RLIB ENCOUNTERED AN ERROR PROCESSING ITALICS FOR THIS VALUE [%s].. ITALICS VALUE WAS NOT OF TYPE NUMBER\n", text);
+				r_error(r, "RLIB ENCOUNTERED AN ERROR PROCESSING ITALICS FOR THIS VALUE [%s].. ITALICS VALUE WAS NOT OF TYPE NUMBER\n", text);
 			} else {
 				if(RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER((&extra_data[i].rval_italics))))
 					extra_data[i].is_italics = TRUE;
@@ -597,7 +597,7 @@ static void rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 		extra_data[i].col = 0;
 		if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_col))) {
 			if(!RLIB_VALUE_IS_NUMBER((&extra_data[i].rval_col))) {
-				r_error("RLIB EXPECTS A expN FOR A COLUMN... text=[%s]\n", text);
+				r_error(r, "RLIB EXPECTS A expN FOR A COLUMN... text=[%s]\n", text);
 			} else {
 				extra_data[i].col = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER((&extra_data[i].rval_col)));
 			}
@@ -605,7 +605,7 @@ static void rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 		extra_data[i].found_link = FALSE;
 		if(!RLIB_VALUE_IS_NONE((&extra_data[i].rval_link))) {
 			if(!RLIB_VALUE_IS_STRING((&extra_data[i].rval_link))) {
-				r_error("RLIB ENCOUNTERED AN ERROR PROCESSING THE LINK FOR THIS VALUE [%s].. LINK VALUE WAS NOT OF TYPE STRING [%d]\n", text, RLIB_VALUE_GET_TYPE((&extra_data[i].rval_link)));
+				r_error(r, "RLIB ENCOUNTERED AN ERROR PROCESSING THE LINK FOR THIS VALUE [%s].. LINK VALUE WAS NOT OF TYPE STRING [%d]\n", text, RLIB_VALUE_GET_TYPE((&extra_data[i].rval_link)));
 			} else {
 				extra_data[i].link = RLIB_VALUE_GET_AS_STRING((&extra_data[i].rval_link));
 				if(extra_data[i].link != NULL && strcmp(extra_data[i].link, "")) {
@@ -867,7 +867,7 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 			if(rlib_check_is_not_suppressed(r, rhl->suppress_code)) {
 				rlib_execute_pcode(r, &rval2, rhl->bgcolor_code, NULL);				
 				if(!RLIB_VALUE_IS_STRING(rval)) {
-					r_error("RLIB ENCOUNTERED AN ERROR PROCESSING THE BGCOLOR FOR A HR.. COLOR VALUE WAS NOT OF TYPE STRING\n");
+					r_error(r, "RLIB ENCOUNTERED AN ERROR PROCESSING THE BGCOLOR FOR A HR.. COLOR VALUE WAS NOT OF TYPE STRING\n");
 				} else {
 					gfloat font_point;
 					gfloat indent;
@@ -906,7 +906,7 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 			rlib_execute_pcode(r, &rval3, ri->width_code, NULL);
 			rlib_execute_pcode(r, &rval4, ri->height_code, NULL);
 			if(!RLIB_VALUE_IS_STRING(rval_value) || !RLIB_VALUE_IS_NUMBER(rval_width) || !RLIB_VALUE_IS_NUMBER(rval_height)) {
-				r_error("RLIB ENCOUNTERED AN ERROR PROCESSING THE BGCOLOR FOR A IMAGE\n");
+				r_error(r, "RLIB ENCOUNTERED AN ERROR PROCESSING THE BGCOLOR FOR A IMAGE\n");
 			} else {
 				gfloat height1 = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(rval_height));
 				gfloat width1 = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(rval_width));

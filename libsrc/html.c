@@ -340,7 +340,7 @@ static void rlib_html_start_report(rlib *r, struct rlib_part *part) {
 	gchar buf[MAXSTRLEN];
 	gchar *meta;
 	gchar *link;
-    	gchar *suppress_head;
+	gchar *suppress_head;
 	gint pages_across = part->pages_across;
 
 	OUTPUT_PRIVATE(r)->top = g_new0(GSList *, pages_across);
@@ -1066,7 +1066,7 @@ static void html_graph_draw_legend_label(rlib *r, gint iteration, gchar *label, 
 }
 
 static void html_graph_finalize(rlib *r) {
-	rlib_gd_spool(OUTPUT_PRIVATE(r)->rgd);
+	rlib_gd_spool(r, OUTPUT_PRIVATE(r)->rgd);
 	rlib_gd_free(OUTPUT_PRIVATE(r)->rgd);
 }
 

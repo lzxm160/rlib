@@ -25,6 +25,7 @@
 #include "config.h"
 #include "util.h"
 #include "datetime.h"
+#include "rlib.h"
  
 #define RLIB_DATETIME_SECSPERDAY (60 * 60 * 24)
 
@@ -123,7 +124,7 @@ static void rlib_datetime_format_date(struct rlib_datetime *dt, char *buf, int m
 		g_date_strftime(buf, max, fmt, &dt->date);
 	} else {
 		strcpy(buf, "");
-/*		rlogit("Invalid date in format date"); */
+/*		r_error("Invalid date in format date"); */
 	}
 }
 
@@ -138,7 +139,7 @@ static void rlib_datetime_format_time(struct rlib_datetime *dt, char *buf, int m
 		strftime(buf, max, fmt, tmp);
 	} else {
 		strcpy(buf, "!ERR_DT_T");
-		rlogit("Invalid time in format time");
+		r_error(NULL, "Invalid time in format time");
 	}
 }
 
@@ -222,10 +223,10 @@ void rlib_datetime_format(struct rlib_datetime *dt, gchar *buf, gint max, const 
 		havetime = TRUE;
 	}
 	if (timefmt && !havetime) {
-		r_warning("Attempt to format time with NULL time value");
+		r_warning(NULL, "Attempt to format time with NULL time value");
 	}
 	if (datefmt && !havedate) {
-		r_warning("Attempt to format date with NULL date value");
+		r_warning(NULL, "Attempt to format date with NULL date value");
 	}
 	switch (order) {
 	case 1:
@@ -238,7 +239,7 @@ void rlib_datetime_format(struct rlib_datetime *dt, gchar *buf, gint max, const 
 		break;
 	default:
 		g_strlcpy(buf, "!ERR_DT_NO", max);
-		r_error("Datetime format has no date or no format");
+		r_error(NULL, "Datetime format has no date or no format");
 		break; /* format has no date or time codes ??? */
 	}
 	if (datefmt) g_free(datefmt);

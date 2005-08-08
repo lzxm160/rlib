@@ -119,7 +119,7 @@ gint rlib_add_query_as(rlib *r, const gchar *input_source, const gchar *sql, con
 		}
 	}
 
-	r_error("rlib_add_query_as: Could not find input source [%s]!\n", input_source);
+	r_error(r, "rlib_add_query_as: Could not find input source [%s]!\n", input_source);
 	return -1;	
 }
 
@@ -152,7 +152,7 @@ static gint rlib_execute_queries(rlib *r) {
 		r->results[i].next_failed = FALSE;
 		r->results[i].navigation_failed = FALSE;
 		if(r->results[i].result == NULL) {
-			rlogit("Failed To Run A Query [%s]: %s\n", r->queries[i].sql, INPUT(r,i)->get_error(INPUT(r,i)));
+			r_error(r,"Failed To Run A Query [%s]: %s\n", r->queries[i].sql, INPUT(r,i)->get_error(INPUT(r,i)));
 			return FALSE;
 		}
 		r->results[i].name =  r->queries[i].name;
@@ -166,7 +166,7 @@ gint rlib_execute(rlib *r) {
 	r->now = time(NULL);
 
 	if(r->queries_count < 1) {
-		r_error("No queries added to report\n");
+		r_error(r,"No queries added to report\n");
 		return -1;      
 	}
 
@@ -182,7 +182,7 @@ gint rlib_execute(rlib *r) {
 			r->parts[i] = parse_part_file(r, r->reportstorun[i].name, r->reportstorun[i].type);
 		xmlCleanupParser();		
 		if(r->parts[i] == NULL) {
-			r_error("Failed to load a report file [%s]\n", r->reportstorun[i].name);
+			r_error(r,"Failed to load a report file [%s]\n", r->reportstorun[i].name);
 			return -1;
 		}
 	}
@@ -219,7 +219,7 @@ gchar * rlib_get_content_type_as_text(rlib *r) {
 			}
 		}
 	}
-	r_error("Content type code unknown");
+	r_error(r,"Content type code unknown");
 	return (gchar *)"UNKNOWN";
 }
 
@@ -252,15 +252,15 @@ gint rlib_add_resultset_follower_n_to_1(rlib *r, gchar *leader, gchar *leader_fi
 	}
 	
 	if(ptr_leader == -1) {
-		rlogit("rlib_add_resultset_follower: Could not find leader!\n");
+		r_error(r,"rlib_add_resultset_follower: Could not find leader!\n");
 		return -1;
 	}
 	if(ptr_follower == -1) {
-		rlogit("rlib_add_resultset_follower: Could not find follower!\n");
+		r_error(r,"rlib_add_resultset_follower: Could not find follower!\n");
 		return -1;
 	}
 	if(ptr_follower == ptr_leader) {
-		rlogit("rlib_add_resultset_follower: Followes can't be leaders ;)!\n");
+		r_error(r,"rlib_add_resultset_follower: Followes can't be leaders ;)!\n");
 		return -1;
 	}
 	r->followers[r->resultset_followers_count].leader = ptr_leader;
@@ -303,7 +303,7 @@ gboolean rlib_signal_connect(rlib *r, gint signal_number, gboolean (*signal_func
 	return TRUE;
 }
 
-gboolean rlib_add_function(rlib *r, gchar *function_name, gboolean (*function)(rlib *,  struct rlib_value_stack *, struct rlib_value *this_field_value, gpointer user_data), gpointer user_data) {	
+gboolean rlib_add_function(rlib *r, gchar *function_name, gboolean (*function)(rlib *, struct rlib_pcode *code, struct rlib_value_stack *, struct rlib_value *this_field_value, gpointer user_data), gpointer user_data) {	
 	struct rlib_pcode_operator *rpo = g_new0(struct rlib_pcode_operator, 1);
 	rpo->tag = g_strconcat(function_name, "(", NULL);	
 	rpo->taglen = strlen(rpo->tag);
@@ -330,7 +330,7 @@ gboolean rlib_signal_connect_string(rlib *r, gchar *signal_name, gboolean (*sign
 	else if(!strcasecmp(signal_name, "part_iteration"))
 		signal = RLIB_SIGNAL_PART_ITERATION;
 	else {
-		r_error("Unknowm SIGNAL [%s]\n", signal_name);
+		r_error(r,"Unknowm SIGNAL [%s]\n", signal_name);
 		return FALSE;
 	}
 	return rlib_signal_connect(r, signal, signal_function, data);
@@ -378,7 +378,7 @@ void rlib_dump_profile(gint profilenum, const gchar *filename) {
 	fflush(stdout);
 	fd = dup(STDOUT_FILENO); /* get a dup of current stdout */
 	if (fd < 0) {
-		rlogit("Unable to dup stdout");
+		//r_error(r, "Unable to dup stdout");
 		return;
 	}
 	if (filename) {
@@ -389,7 +389,7 @@ void rlib_dump_profile(gint profilenum, const gchar *filename) {
 	if (newout) {
 		fclose(newout);
 	} else {
-		rlogit("Could not open memory profile file: %s. Used stderr instead", filename);
+		//r_error(r,"Could not open memory profile file: %s. Used stderr instead", filename);
 	}
 	dup2(fd, STDOUT_FILENO); /* restore original stdout and close the dup fd */
 	close(fd);
@@ -422,7 +422,7 @@ gint rlib_set_datasource_encoding(rlib *r, gchar *input_name, gchar *encoding) {
 			return 0;
 		}
 	}
-	r_error("Error.. datasource [%s] does not exist\n", input_name);
+	r_error(r,"Error.. datasource [%s] does not exist\n", input_name);
 	return -1;
 }
 

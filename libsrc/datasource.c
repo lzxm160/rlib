@@ -56,7 +56,7 @@ const gchar *database_user, const gchar *database_password, const gchar *databas
 
 	handle = g_module_open("libr-mysql", 2);
 	if (!handle) {
-		rlogit("Could Not Load MYSQL Input [%s]\n", g_module_error());
+		r_error(r,"Could Not Load MYSQL Input [%s]\n", g_module_error());
 		return -1;
 	}
 
@@ -67,7 +67,7 @@ const gchar *database_user, const gchar *database_password, const gchar *databas
 		database_password, database_database);
 
 	if(mysql == NULL) {
-		rlogit("ERROR: Could not connect to MYSQL\n");
+		r_error(r,"ERROR: Could not connect to MYSQL\n");
 		return -1;
 	}
 	
@@ -97,7 +97,7 @@ gint rlib_add_datasource_postgres(rlib *r, const gchar *input_name, const gchar 
 
 	handle = g_module_open("libr-postgres", 2);
 	if (!handle) {
-		rlogit("Could Not Load POSTGRES Input [%s]\n", g_module_error());
+		r_error(r,"Could Not Load POSTGRES Input [%s]\n", g_module_error());
 		return -1;
 	}
 	g_module_symbol(handle, "rlib_postgres_new_input_filter", &ds.filter.ptr);
@@ -105,7 +105,7 @@ gint rlib_add_datasource_postgres(rlib *r, const gchar *input_name, const gchar 
 	r->inputs[r->inputs_count].input = ds.filter.new_input_filter();
 	postgres = ds.connect.postgres_connect(r->inputs[r->inputs_count].input, conn);
 	if(postgres == NULL) {
-		rlogit("ERROR: Could not connect to POSTGRES\n");
+		r_error(r,"ERROR: Could not connect to POSTGRES\n");
 		return -1;
 	}
 	r->inputs[r->inputs_count].name = g_strdup(input_name);
@@ -122,7 +122,7 @@ gint rlib_add_datasource_odbc(rlib *r, const gchar *input_name, const gchar *sou
 	
 	handle = g_module_open("libr-odbc", 2);
 	if (!handle) {
-		rlogit("Could Not Load ODBC Input [%s]\n", g_module_error());
+		r_error(r,"Could Not Load ODBC Input [%s]\n", g_module_error());
 		return -1;
 	}
 	g_module_symbol(handle, "rlib_odbc_new_input_filter", &ds.filter.ptr);
@@ -131,7 +131,7 @@ gint rlib_add_datasource_odbc(rlib *r, const gchar *input_name, const gchar *sou
 	odbc = ds.connect.odbc_connect(r->inputs[r->inputs_count].input, source, user, password);
 	r->inputs[r->inputs_count].name = g_strdup(input_name);
 	if(odbc == NULL) {
-		rlogit("ERROR: Could not connect to ODBC\n");
+		r_error(r,"ERROR: Could not connect to ODBC\n");
 		return -1;
 	}
 	r->inputs[r->inputs_count].handle = handle;

@@ -115,14 +115,14 @@ struct rlib_gd * rlib_gd_new(gint width, gint height, gchar *image_directory) {
 	return rgd;
 }
 
-int rlib_gd_spool(struct rlib_gd *rgd) {
+int rlib_gd_spool(rlib *r, struct rlib_gd *rgd) {
 	FILE *out;
 	out = fopen(rgd->file_name, "wb");
 	if(out != NULL) {
 		gdImagePng(rgd->im, out);
 		fclose(out);
 	} else {
-		r_error("GD PROBLEM: Could not write %s\n", rgd->file_name);
+		r_error(r, "GD PROBLEM: Could not write %s\n", rgd->file_name);
 	}
 	return TRUE;
 }
@@ -250,7 +250,7 @@ int rlib_gd_arc(struct rlib_gd *rgd, gint x, gint y, gint radius, gint start_ang
 }
 
 
-int rlib_gd_spool(struct rlib_gd *rgd) {
+int rlib_gd_spool(rlib *r, struct rlib_gd *rgd) {
 	return TRUE;
 }
 

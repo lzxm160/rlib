@@ -40,6 +40,7 @@ struct packet {
 
 void write_xml_str(gint fd, gchar *str) {
 	gint len;
+	gint result;
 	struct packet p;
 	if(str != NULL)
 		len = strlen(str)+1;
@@ -47,61 +48,62 @@ void write_xml_str(gint fd, gchar *str) {
 		len = 0;
 	p.type = RLIB_FILE_XML_STR;
 	p.size = len;
-	write(fd, &p, sizeof(struct packet));
+	result = write(fd, &p, sizeof(struct packet));
 	if(len > 0)
-		write(fd, str, len);
+		result = write(fd, str, len);
 	return;
 }
 
 void write_image(gint fd, struct rlib_report_image *ri) {
-	write_xml_str(fd, (gchar *)ri->xml_value);
-	write_xml_str(fd, (gchar *)ri->xml_type);
-	write_xml_str(fd, (gchar *)ri->xml_width);
-	write_xml_str(fd, (gchar *)ri->xml_height);
+	write_xml_str(fd, (gchar *)ri->xml_value.xml);
+	write_xml_str(fd, (gchar *)ri->xml_type.xml);
+	write_xml_str(fd, (gchar *)ri->xml_width.xml);
+	write_xml_str(fd, (gchar *)ri->xml_height.xml);
 }
 
 void write_hr(gint fd, struct rlib_report_horizontal_line *hr) {
-	write_xml_str(fd, (gchar *)hr->xml_bgcolor);
-	write_xml_str(fd, (gchar *)hr->xml_size);
-	write_xml_str(fd, (gchar *)hr->xml_indent);
-	write_xml_str(fd, (gchar *)hr->xml_length);
-	write_xml_str(fd, (gchar *)hr->xml_font_size);
-	write_xml_str(fd, (gchar *)hr->xml_suppress);
+	write_xml_str(fd, (gchar *)hr->xml_bgcolor.xml);
+	write_xml_str(fd, (gchar *)hr->xml_size.xml);
+	write_xml_str(fd, (gchar *)hr->xml_indent.xml);
+	write_xml_str(fd, (gchar *)hr->xml_length.xml);
+	write_xml_str(fd, (gchar *)hr->xml_font_size.xml);
+	write_xml_str(fd, (gchar *)hr->xml_suppress.xml);
 }
 
 void write_field(gint fd, struct rlib_report_field *rf) {
 	write_xml_str(fd, (gchar *)rf->value);
-	write_xml_str(fd, (gchar *)rf->xml_align);
-	write_xml_str(fd, (gchar *)rf->xml_bgcolor);
-	write_xml_str(fd, (gchar *)rf->xml_color);
-	write_xml_str(fd, (gchar *)rf->xml_width);
-	write_xml_str(fd, (gchar *)rf->xml_format);
-	write_xml_str(fd, (gchar *)rf->xml_link);
-	write_xml_str(fd, (gchar *)rf->xml_col);
+	write_xml_str(fd, (gchar *)rf->xml_align.xml);
+	write_xml_str(fd, (gchar *)rf->xml_bgcolor.xml);
+	write_xml_str(fd, (gchar *)rf->xml_color.xml);
+	write_xml_str(fd, (gchar *)rf->xml_width.xml);
+	write_xml_str(fd, (gchar *)rf->xml_format.xml);
+	write_xml_str(fd, (gchar *)rf->xml_link.xml);
+	write_xml_str(fd, (gchar *)rf->xml_col.xml);
 }
 
 void write_text(gint fd, struct rlib_report_literal *rt) {
 	write_xml_str(fd, (gchar *)rt->value);
-	write_xml_str(fd, (gchar *)rt->xml_align);
-	write_xml_str(fd, (gchar *)rt->xml_color);
-	write_xml_str(fd, (gchar *)rt->xml_bgcolor);
-	write_xml_str(fd, (gchar *)rt->xml_width);
-	write_xml_str(fd, (gchar *)rt->xml_col);
+	write_xml_str(fd, (gchar *)rt->xml_align.xml);
+	write_xml_str(fd, (gchar *)rt->xml_color.xml);
+	write_xml_str(fd, (gchar *)rt->xml_bgcolor.xml);
+	write_xml_str(fd, (gchar *)rt->xml_width.xml);
+	write_xml_str(fd, (gchar *)rt->xml_col.xml);
 }
 
 void write_line(gint fd, struct rlib_report_lines *rl) {
 	struct rlib_element *e;
 	gint32 type;
-	write_xml_str(fd, (gchar *)rl->xml_bgcolor);
-	write_xml_str(fd, (gchar *)rl->xml_color);
-	write_xml_str(fd, (gchar *)rl->xml_font_size);
-	write_xml_str(fd, (gchar *)rl->xml_suppress);
+	gint result;
+	write_xml_str(fd, (gchar *)rl->xml_bgcolor.xml);
+	write_xml_str(fd, (gchar *)rl->xml_color.xml);
+	write_xml_str(fd, (gchar *)rl->xml_font_size.xml);
+	write_xml_str(fd, (gchar *)rl->xml_suppress.xml);
 
 	type = RLIB_FILE_LINE;
-	write(fd, &type, sizeof(gint32));		
+	result = write(fd, &type, sizeof(gint32));
 	for(e=rl->e; e != NULL; e=e->next) {
 		type = e->type;
-		write(fd, &type, sizeof(gint32));
+		result = write(fd, &type, sizeof(gint32));
 		if(e->type == RLIB_ELEMENT_FIELD) {
 			struct rlib_report_field *rf = e->data;
 			write_field(fd, rf);
@@ -111,20 +113,21 @@ void write_line(gint fd, struct rlib_report_lines *rl) {
 		}
 	}
 	type = RLIB_FILE_LINE;
-	write(fd, &type, sizeof(gint32));		
+	result = write(fd, &type, sizeof(gint32));		
 
 }
 
 void write_roa(gint fd, struct rlib_report_output_array *roa) {
 	gint j;
 	gint32 type;
+	gint result;
 	type = RLIB_FILE_ROA;
-	write(fd, &type, sizeof(gint32));
-	write_xml_str(fd, (gchar *)roa->xml_page);
+	result = write(fd, &type, sizeof(gint32));
+	write_xml_str(fd, (gchar *)roa->xml_page.xml);
 	for(j=0;j<roa->count;j++) {
 		struct rlib_report_output *ro = roa->data[j];
 		type = ro->type;
-		write(fd, &type, sizeof(gint32));
+		result = write(fd, &type, sizeof(gint32));
 		if(ro->type == RLIB_REPORT_PRESENTATION_DATA_LINE) {			
 			struct rlib_report_lines *rl = ro->data;	
 			write_line(fd, rl);
@@ -138,70 +141,73 @@ void write_roa(gint fd, struct rlib_report_output_array *roa) {
 
 	}	
 	type = RLIB_FILE_ROA+1;
-	write(fd, &type, sizeof(gint32));
+	result = write(fd, &type, sizeof(gint32));
 }
 
 void write_output(gint fd, struct rlib_element *e) {
 	struct rlib_report_output_array *roa;
 	gint32 type = RLIB_FILE_OUTPUTS;
-	write(fd, &type, sizeof(gint32));
+	gint result;
+	result = write(fd, &type, sizeof(gint32));
 	for(; e != NULL; e=e->next) {
 		roa = e->data;
 		write_roa(fd, roa);
 	}
 	type++;
-	write(fd, &type, sizeof(gint32));
+	result = write(fd, &type, sizeof(gint32));
 }
 
 void write_variables(gint fd, struct rlib_element *rv) {
 	struct rlib_element *e;
 	gint32 type = RLIB_FILE_VARIABLES;
-	write(fd, &type, sizeof(gint32));
-
+	gint result;
+	
+	result = write(fd, &type, sizeof(gint32));
 	for(e=rv; e != NULL; e=e->next) {
 		struct rlib_report_variable *rv1 = e->data;
 		type = RLIB_FILE_VARIABLE;
-		write(fd, &type, sizeof(gint32));
-		write_xml_str(fd, (gchar *)rv1->xml_name);
-		write_xml_str(fd, (gchar *)rv1->xml_str_type);
-		write_xml_str(fd, (gchar *)rv1->xml_value);
-		write_xml_str(fd, (gchar *)rv1->xml_resetonbreak);
+		result = write(fd, &type, sizeof(gint32));
+		write_xml_str(fd, (gchar *)rv1->xml_name.xml);
+		write_xml_str(fd, (gchar *)rv1->xml_str_type.xml);
+		write_xml_str(fd, (gchar *)rv1->xml_value.xml);
+		write_xml_str(fd, (gchar *)rv1->xml_resetonbreak.xml);
 		type = RLIB_FILE_VARIABLE+1;
-		write(fd, &type, sizeof(gint32));
+		result = write(fd, &type, sizeof(gint32));
 	}
 	type = RLIB_FILE_VARIABLES+1;
-	write(fd, &type, sizeof(gint32));
+	result = write(fd, &type, sizeof(gint32));
 }
 
 void write_breaks(gint fd, struct rlib_element *breaks) {
 	struct rlib_element *e;
 	gint32 type = RLIB_FILE_BREAKS;
-	write(fd, &type, sizeof(gint32));
+	gint result;
+	result = write(fd, &type, sizeof(gint32));
 
 	for(e=breaks; e != NULL; e=e->next) {
 		struct rlib_report_break *rb = e->data;
 		struct rlib_element *be;
 		type = RLIB_FILE_BREAK;
-		write(fd, &type, sizeof(gint32));
-		write_xml_str(fd, (gchar *)rb->xml_name);
-		write_xml_str(fd, (gchar *)rb->xml_newpage);
-		write_xml_str(fd, (gchar *)rb->xml_headernewpage);
-		write_xml_str(fd, (gchar *)rb->xml_suppressblank);
+		result = write(fd, &type, sizeof(gint32));
+		write_xml_str(fd, (gchar *)rb->xml_name.xml);
+		write_xml_str(fd, (gchar *)rb->xml_newpage.xml);
+		write_xml_str(fd, (gchar *)rb->xml_headernewpage.xml);
+		write_xml_str(fd, (gchar *)rb->xml_suppressblank.xml);
 		write_output(fd, rb->header);
 		write_output(fd, rb->footer);
 		for(be = rb->fields; be != NULL; be=be->next) {
 			struct rlib_break_fields *bf = be->data;
 			type = RLIB_FILE_BREAK_FIELD;
-			write(fd, &type, sizeof(gint32));
-			write_xml_str(fd, (gchar *)bf->xml_value);
+			result = write(fd, &type, sizeof(gint32));
+			write_xml_str(fd, (gchar *)bf->xml_value.xml);
 			type = RLIB_FILE_BREAK_FIELD+1;
-			write(fd, &type, sizeof(gint32));
+			result = write(fd, &type, sizeof(gint32));
 		}		
 		type = RLIB_FILE_BREAK+1;
-		write(fd, &type, sizeof(gint32));
+		result = write(fd, &type, sizeof(gint32));
 	}
 	type = RLIB_FILE_BREAKS + 1;
-	write(fd, &type, sizeof(gint32));
+	result = write(fd, &type, sizeof(gint32));
 }
 
 gint save_report(struct rlib_report *rep, gchar *filename) {
@@ -213,13 +219,13 @@ gint save_report(struct rlib_report *rep, gchar *filename) {
 	sprintf(buf, "RLIB %s                                ", VERSION);
 	write(fd, buf, 20);
 	
-	write_xml_str(fd, (gchar *)rep->xml_font_size);
-	write_xml_str(fd, (gchar *)rep->xml_orientation);
-	write_xml_str(fd, (gchar *)rep->xml_top_margin); 
-	write_xml_str(fd, (gchar *)rep->xml_left_margin);
-	write_xml_str(fd, (gchar *)rep->xml_bottom_margin);
-	write_xml_str(fd, (gchar *)rep->xml_pages_across);
-	write_xml_str(fd, (gchar *)rep->xml_suppress_page_header_first_page);
+	write_xml_str(fd, (gchar *)rep->xml_font_size.xml);
+	write_xml_str(fd, (gchar *)rep->xml_orientation.xml);
+	write_xml_str(fd, (gchar *)rep->xml_top_margin.xml); 
+	write_xml_str(fd, (gchar *)rep->xml_left_margin.xml);
+	write_xml_str(fd, (gchar *)rep->xml_bottom_margin.xml);
+	write_xml_str(fd, (gchar *)rep->xml_pages_across.xml);
+	write_xml_str(fd, (gchar *)rep->xml_suppress_page_header_first_page.xml);
 	
 	write_output(fd, rep->report_header);
 	write_output(fd, rep->page_header);

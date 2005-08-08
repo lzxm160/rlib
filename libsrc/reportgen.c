@@ -346,30 +346,30 @@ static void rlib_process_variables(rlib *r, struct rlib_report *report) {
 				rlib_value_free(amount);
 				rlib_value_new_string(amount, RLIB_VALUE_GET_AS_STRING(er));
 			} else
-				r_error("rlib_process_variables EXPECTED TYPE NUMBER OR STRING FOR RLIB_REPORT_VARIABLE_EXPRESSION\n");
+				r_error(r, "rlib_process_variables EXPECTED TYPE NUMBER OR STRING FOR RLIB_REPORT_VARIABLE_EXPRESSION\n");
 		} else if(rv->type == RLIB_REPORT_VARIABLE_SUM) {
 			if(RLIB_VALUE_IS_NUMBER(er))
 				RLIB_VALUE_GET_AS_NUMBER(amount) += RLIB_VALUE_GET_AS_NUMBER(er);
 			else
-				r_error("rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_SUM\n");
+				r_error(r, "rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_SUM\n");
 		} else if(rv->type == RLIB_REPORT_VARIABLE_AVERAGE) {
 			RLIB_VALUE_GET_AS_NUMBER(count) += RLIB_DECIMAL_PRECISION;
 			if(RLIB_VALUE_IS_NUMBER(er))
 				RLIB_VALUE_GET_AS_NUMBER(amount) += RLIB_VALUE_GET_AS_NUMBER(er);
 			else
-				r_error("rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_AVERAGE\n");
+				r_error(r, "rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_AVERAGE\n");
 		} else if(rv->type == RLIB_REPORT_VARIABLE_LOWEST) {
 			if(RLIB_VALUE_IS_NUMBER(er)) {
 				if(RLIB_VALUE_GET_AS_NUMBER(er) < RLIB_VALUE_GET_AS_NUMBER(amount) || RLIB_VALUE_GET_AS_NUMBER(amount) == 0) /* TODO: EVIL HACK */
 					RLIB_VALUE_GET_AS_NUMBER(amount) = RLIB_VALUE_GET_AS_NUMBER(er);
 			} else
-				r_error("rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_LOWEST\n");
+				r_error(r, "rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_LOWEST\n");
 		} else if(rv->type == RLIB_REPORT_VARIABLE_HIGHEST) {
 			if(RLIB_VALUE_IS_NUMBER(er)) {
 				if(RLIB_VALUE_GET_AS_NUMBER(er) > RLIB_VALUE_GET_AS_NUMBER(amount) || RLIB_VALUE_GET_AS_NUMBER(amount) == 0) /* TODO: EVIL HACK */
 					RLIB_VALUE_GET_AS_NUMBER(amount) = RLIB_VALUE_GET_AS_NUMBER(er);
 			} else
-				r_error("rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_HIGHEST\n");
+				r_error(r, "rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_HIGHEST\n");
 		}
 	}
 }
@@ -440,7 +440,7 @@ void rlib_process_expression_variables(rlib *r, struct rlib_report *report) {
 				rlib_value_free(amount);
 				rlib_value_new_string(amount, RLIB_VALUE_GET_AS_STRING(er));
 			} else
-				r_error("rlib_process_variables EXPECTED TYPE NUMBER OR STRING FOR RLIB_REPORT_VARIABLE_EXPRESSION\n");
+				r_error(r, "rlib_process_variables EXPECTED TYPE NUMBER OR STRING FOR RLIB_REPORT_VARIABLE_EXPRESSION\n");
 		}
 	}
 	
@@ -479,7 +479,7 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 	gfloat at_least = 0.0, origional_position_top = 0;
 	gint iterations;
 
-	report->query_code = rlib_infix_to_pcode(r, part, report, (gchar *)report->xml_query, TRUE);
+	report->query_code = rlib_infix_to_pcode(r, part, report, (gchar *)report->xml_query.xml, report->xml_query.line, TRUE);
 	r->current_result = 0;
 	if(report->query_code != NULL) {
 		rlib_execute_as_string(r, report->query_code, query, MAXSTRLEN);
@@ -737,7 +737,7 @@ gint rlib_evaulate_single_report_variables(rlib *r, struct rlib_part *part) {
 				char query[MAXSTRLEN];
 				gint i;
 
-				report->query_code = rlib_infix_to_pcode(r, part, report, (gchar *)report->xml_query, TRUE);
+				report->query_code = rlib_infix_to_pcode(r, part, report, (gchar *)report->xml_query.xml, report->xml_query.line, TRUE);
 				r->current_result = 0;
 				if(report->query_code != NULL) {
 					rlib_execute_as_string(r, report->query_code, query, MAXSTRLEN);
@@ -767,8 +767,11 @@ gint rlib_make_report(rlib *r) {
 	gint i = 0;
 	gint iterations;
 
-	if(r->format == RLIB_FORMAT_HTML)
+	if(r->format == RLIB_FORMAT_HTML) {
 		rlib_html_new_output_filter(r);
+		if(g_hash_table_lookup(r->output_parameters, "debugging") != NULL)
+			r->html_debugging = TRUE; 	
+	}
 	else if(r->format == RLIB_FORMAT_TXT)
 		rlib_txt_new_output_filter(r);
 	else if(r->format == RLIB_FORMAT_CSV)

@@ -87,7 +87,7 @@ int locale_codes[] = {
 #ifdef ENABLE_CRASH
 static void myFaultHandler (gint signum, siginfo_t *si, gpointer aptr) {
 	struct rlimit rlim;
-	rlogit("** NUTS.. WE CRASHED\n");
+	rlogit(NULL, "** NUTS.. WE CRASHED\n");
 	getrlimit (RLIMIT_CORE, &rlim); /* POSSIBLY NOT NECESSARY */
 	rlim.rlim_cur = 1024000000; /* NECESSARY */
 	setrlimit (RLIMIT_CORE, &rlim); /* NECESSARY */
@@ -170,19 +170,24 @@ gchar *rmwhitespacesexceptquoted(gchar *s) {
 	return orig;
 }
 
-static void local_rlogit(const gchar *message) {
+static void local_rlogit(rlib *r, const gchar *message) {
+	if(r->html_debugging) {
+		fputs("<br><b>RLIB: ", stdout);
+		fputs(message, stdout);
+		fputs("</br></b>", stdout);
+	}
 	fputs(message, stderr);
 	return;
 }
 
-static void (*logMessage)(const gchar *msg) = local_rlogit;
+static void (*logMessage)(rlib *r, const gchar *msg) = local_rlogit;
 
 
-void rlogit_setmessagewriter(void (*msgwriter)(const gchar *msg)) {
+void rlogit_setmessagewriter(void (*msgwriter)(rlib *r, const gchar *msg)) {
 	logMessage = msgwriter;
 }
 
-void rlogit(const gchar *fmt, ...) {
+void rlogit(rlib *r, const gchar *fmt, ...) {
 	va_list vl;
 	gchar *result = NULL;
 
@@ -190,14 +195,14 @@ void rlogit(const gchar *fmt, ...) {
 	result = g_strdup_vprintf(fmt, vl);
 	va_end(vl);
 	if (result != NULL) {
-		logMessage(result);
+		logMessage(r, result);
 		g_free(result);
 	}
 	return;
 }
 
 
-void r_error(const gchar *fmt, ...) {
+void r_error(rlib *r, const gchar *fmt, ...) {
 	va_list vl;
 	gchar *result = NULL;
 
@@ -205,7 +210,7 @@ void r_error(const gchar *fmt, ...) {
 	result = g_strdup_vprintf(fmt, vl);
 	va_end(vl);
 	if (result != NULL) {
-		logMessage(result);
+		logMessage(r, result);
 		g_free(result);
 	}
 	return;
@@ -213,7 +218,7 @@ void r_error(const gchar *fmt, ...) {
 
 
 #if ! DISABLERINFO
-void r_info(const gchar *fmt, ...) {
+void r_info(rlib *r, const gchar *fmt, ...) {
 	va_list vl;
 	gchar *result = NULL;
 
@@ -221,7 +226,7 @@ void r_info(const gchar *fmt, ...) {
 	result = g_strdup_vprintf(fmt, vl);
 	va_end(vl);
 	if (result != NULL) {
-		logMessage(result);
+		logMessage(r, result);
 		g_free(result);
 	}
 	return;
@@ -230,7 +235,7 @@ void r_info(const gchar *fmt, ...) {
 
 
 #if ! DISABLERDEBUG
-void r_debug(const gchar *fmt, ...) {
+void r_debug(rlib *r, const gchar *fmt, ...) {
 	va_list vl;
 	gchar *result = NULL;
 
@@ -238,7 +243,7 @@ void r_debug(const gchar *fmt, ...) {
 	result = g_strdup_vprintf(fmt, vl);
 	va_end(vl);
 	if (result != NULL) {
-		logMessage(result);
+		logMessage(r, result);
 		g_free(result);
 	}
 	return;
@@ -246,7 +251,7 @@ void r_debug(const gchar *fmt, ...) {
 #endif
 
 
-void r_warning(const gchar *fmt, ...) {
+void r_warning(rlib *r, const gchar *fmt, ...) {
 	va_list vl;
 	gchar *result = NULL;
 
@@ -254,7 +259,7 @@ void r_warning(const gchar *fmt, ...) {
 	result = g_strdup_vprintf(fmt, vl);
 	va_end(vl);
 	if (result != NULL) {
-		logMessage(result);
+		logMessage(r, result);
 		g_free(result);
 	}
 	return;
@@ -403,7 +408,7 @@ gchar *make_utf8_locale(const gchar *encoding) {
 	gint len = r_strlen(encoding);
 
 	if ((encoding == NULL) || (r_strlen(encoding) < 2)) {
-		r_warning("encoding is NULL or invalid [%s]... using en_US\n", encoding);
+		r_warning(NULL, "encoding is NULL or invalid [%s]... using en_US\n", encoding);
 		return (char *)"en_US.utf8";
 	}
 	g_strlcpy(buf, encoding, sizeof(buf));
@@ -437,7 +442,7 @@ void make_all_locales_utf8(void) {
 		char *t = setlocale(i, NULL);
 		if (t) {
 			if (!setlocale(i, make_utf8_locale(t))) {
-				r_error("Setting locale to [%s] FAILED\n", t);
+				r_error(NULL, "Setting locale to [%s] FAILED\n", t);
 			}
 		}
 		++lc;

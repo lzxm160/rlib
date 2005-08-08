@@ -163,16 +163,21 @@ struct rlib_element {
 #define RLIB_ALIGN_RIGHT	1
 #define RLIB_ALIGN_CENTER	2
 
+struct rlib_from_xml {
+	xmlChar *xml;
+	gint line;
+};
+
 struct rlib_report_literal {
 	gchar value[MAXSTRLEN];
-	xmlChar *xml_align;
-	xmlChar *xml_color;
-	xmlChar *xml_bgcolor;
-	xmlChar *xml_width;
-	xmlChar *xml_bold;
-	xmlChar *xml_italics;
-	xmlChar *xml_col;
-	xmlChar *xml_link;
+	struct rlib_from_xml xml_align;
+	struct rlib_from_xml xml_color;
+	struct rlib_from_xml xml_bgcolor;
+	struct rlib_from_xml xml_width;
+	struct rlib_from_xml xml_bold;
+	struct rlib_from_xml xml_italics;
+	struct rlib_from_xml xml_col;
+	struct rlib_from_xml xml_link;
 	
 	gint width;
 	gint align;
@@ -248,19 +253,20 @@ struct rlib_delayed_extra_data {
 
 struct rlib_report_field {
 	gchar value[MAXSTRLEN];
-	xmlChar *xml_align;
-	xmlChar *xml_bgcolor;
-	xmlChar *xml_color;
-	xmlChar *xml_width;
-	xmlChar *xml_bold;
-	xmlChar *xml_italics;
-	xmlChar *xml_format;
-	xmlChar *xml_link;
-	xmlChar *xml_col;
-	xmlChar *xml_delayed;
-	xmlChar *xml_memo;
-	xmlChar *xml_memo_height;
-	xmlChar *xml_memo_wrap_chars;
+	gint value_line_number;
+	struct rlib_from_xml xml_align;
+	struct rlib_from_xml xml_bgcolor;
+	struct rlib_from_xml xml_color;
+	struct rlib_from_xml xml_width;
+	struct rlib_from_xml xml_bold;
+	struct rlib_from_xml xml_italics;
+	struct rlib_from_xml xml_format;
+	struct rlib_from_xml xml_link;
+	struct rlib_from_xml xml_col;
+	struct rlib_from_xml xml_delayed;
+	struct rlib_from_xml xml_memo;
+	struct rlib_from_xml xml_memo_height;
+	struct rlib_from_xml xml_memo_wrap_chars;
 
 	gint width;
 	gint align;
@@ -294,18 +300,18 @@ struct rlib_report_output {
 
 struct rlib_report_output_array {
 	gint count;
-	xmlChar *xml_page;
+	struct rlib_from_xml xml_page;
 	gint page;
 	struct rlib_report_output **data;
 };
 
 struct rlib_report_horizontal_line {
-	xmlChar *xml_bgcolor;
-	xmlChar *xml_size;
-	xmlChar *xml_indent;
-	xmlChar *xml_length;
-	xmlChar *xml_font_size;
-	xmlChar *xml_suppress;
+	struct rlib_from_xml xml_bgcolor;
+	struct rlib_from_xml xml_size;
+	struct rlib_from_xml xml_indent;
+	struct rlib_from_xml xml_length;
+	struct rlib_from_xml xml_font_size;
+	struct rlib_from_xml xml_suppress;
 
 	gint font_point;
 	gfloat size;
@@ -321,10 +327,10 @@ struct rlib_report_horizontal_line {
 };
 
 struct rlib_report_image {
-	xmlChar *xml_value;
-	xmlChar *xml_type;
-	xmlChar *xml_width;
-	xmlChar *xml_height;
+	struct rlib_from_xml xml_value;
+	struct rlib_from_xml xml_type;
+	struct rlib_from_xml xml_width;
+	struct rlib_from_xml xml_height;
 	
 	struct rlib_pcode *value_code;
 	struct rlib_pcode *type_code;
@@ -333,12 +339,12 @@ struct rlib_report_image {
 };
 
 struct rlib_report_lines {
-	xmlChar *xml_bgcolor;
-	xmlChar *xml_color;
-	xmlChar *xml_bold;
-	xmlChar *xml_italics;
-	xmlChar *xml_font_size;
-	xmlChar *xml_suppress;
+	struct rlib_from_xml xml_bgcolor;
+	struct rlib_from_xml xml_color;
+	struct rlib_from_xml xml_bold;
+	struct rlib_from_xml xml_italics;
+	struct rlib_from_xml xml_font_size;
+	struct rlib_from_xml xml_suppress;
 
 	gint font_point;
 
@@ -355,17 +361,17 @@ struct rlib_report_lines {
 };
 
 struct rlib_break_fields {
-	xmlChar *xml_value;
+	struct rlib_from_xml xml_value;
 	struct rlib_pcode *code;
 	struct rlib_value rval2;
 	struct rlib_value *rval;
 };
 
 struct rlib_report_break {
-	xmlChar *xml_name;
-	xmlChar *xml_newpage;
-	xmlChar *xml_headernewpage;
-	xmlChar *xml_suppressblank;
+	struct rlib_from_xml xml_name;
+	struct rlib_from_xml xml_newpage;
+	struct rlib_from_xml xml_headernewpage;
+	struct rlib_from_xml xml_suppressblank;
 
 	gint didheader;
 	gint headernewpage;
@@ -405,10 +411,10 @@ struct rlib_count_amount {
 #define RLIB_VARIABLE_CA(a)	(&(a->data))
 
 struct rlib_report_variable {
-	xmlChar *xml_name;
-	xmlChar *xml_str_type;
-	xmlChar *xml_value;
-	xmlChar *xml_resetonbreak;
+	struct rlib_from_xml xml_name;
+	struct rlib_from_xml xml_str_type;
+	struct rlib_from_xml xml_value;
+	struct rlib_from_xml xml_resetonbreak;
 
 	gint type;
 	struct rlib_pcode *code;
@@ -416,15 +422,15 @@ struct rlib_report_variable {
 };
 
 struct rlib_part_load {
-	xmlChar *xml_name;
+	struct rlib_from_xml xml_name;
 	struct rlib_pcode *name_code;
 };
 
 struct rlib_part_td {
-	xmlChar *xml_width;
-	xmlChar *xml_height;
-	xmlChar *xml_border_width;
-	xmlChar *xml_border_color;
+	struct rlib_from_xml xml_width;
+	struct rlib_from_xml xml_height;
+	struct rlib_from_xml xml_border_width;
+	struct rlib_from_xml xml_border_color;
 	struct rlib_pcode *width_code;
 	struct rlib_pcode *height_code;
 	struct rlib_pcode *border_width_code;
@@ -433,8 +439,8 @@ struct rlib_part_td {
 };
 
 struct rlib_part_tr {
-	xmlChar *xml_layout;
-	xmlChar *xml_newpage;
+	struct rlib_from_xml xml_layout;
+	struct rlib_from_xml xml_newpage;
 
 	struct rlib_pcode *layout_code;
 	struct rlib_pcode *newpage_code;
@@ -444,15 +450,15 @@ struct rlib_part_tr {
 };
 
 struct rlib_part {
-	xmlChar *xml_name;
-	xmlChar *xml_pages_across;
-	xmlChar *xml_orientation;
-	xmlChar *xml_top_margin;
-	xmlChar *xml_left_margin;
-	xmlChar *xml_bottom_margin;
-	xmlChar *xml_paper_type;
-	xmlChar *xml_font_size;
-	xmlChar *xml_iterations;
+	struct rlib_from_xml xml_name;
+	struct rlib_from_xml xml_pages_across;
+	struct rlib_from_xml xml_orientation;
+	struct rlib_from_xml xml_top_margin;
+	struct rlib_from_xml xml_left_margin;
+	struct rlib_from_xml xml_bottom_margin;
+	struct rlib_from_xml xml_paper_type;
+	struct rlib_from_xml xml_font_size;
+	struct rlib_from_xml xml_iterations;
 
 	GSList *part_rows;
 	struct rlib_element *report_header;
@@ -502,12 +508,12 @@ struct rlib_graph_region {
 };
 
 struct rlib_graph_plot {
-	gchar *xml_axis;
-	gchar *xml_field;
-	gchar *xml_label;
-	gchar *xml_side;	
-	gchar *xml_disabled;	
-	gchar *xml_color;
+	struct rlib_from_xml xml_axis;
+	struct rlib_from_xml xml_field;
+	struct rlib_from_xml xml_label;
+	struct rlib_from_xml xml_side;	
+	struct rlib_from_xml xml_disabled;	
+	struct rlib_from_xml xml_color;
 	struct rlib_value rval_axis;
 	struct rlib_value rval_field;
 	struct rlib_value rval_label;
@@ -546,24 +552,24 @@ struct rlib_graph_plot {
 #define RLIB_GRAPH_TYPE_XY_BSPLINE_WITH_SYMBOLS      22
 
 struct rlib_graph {
-	gchar *xml_name;
-	gchar *xml_type;	
-	gchar *xml_subtype;
-	gchar *xml_width;
-	gchar *xml_height;
-	gchar *xml_title;
-	gchar *xml_bold_titles;
-	gchar *xml_legend_bg_color;
-	gchar *xml_legend_orientation;
-	gchar *xml_draw_x_line;
-	gchar *xml_draw_y_line;
-	gchar *xml_grid_color;
-	gchar *xml_x_axis_title;
-	gchar *xml_y_axis_title;
-	gchar *xml_y_axis_mod;
-	gchar *xml_y_axis_title_right;
-	gchar *xml_y_axis_decimals;
-	gchar *xml_y_axis_decimals_right;
+	struct rlib_from_xml xml_name;
+	struct rlib_from_xml xml_type;	
+	struct rlib_from_xml xml_subtype;
+	struct rlib_from_xml xml_width;
+	struct rlib_from_xml xml_height;
+	struct rlib_from_xml xml_title;
+	struct rlib_from_xml xml_bold_titles;
+	struct rlib_from_xml xml_legend_bg_color;
+	struct rlib_from_xml xml_legend_orientation;
+	struct rlib_from_xml xml_draw_x_line;
+	struct rlib_from_xml xml_draw_y_line;
+	struct rlib_from_xml xml_grid_color;
+	struct rlib_from_xml xml_x_axis_title;
+	struct rlib_from_xml xml_y_axis_title;
+	struct rlib_from_xml xml_y_axis_mod;
+	struct rlib_from_xml xml_y_axis_title_right;
+	struct rlib_from_xml xml_y_axis_decimals;
+	struct rlib_from_xml xml_y_axis_decimals_right;
 	struct rlib_pcode *name_code;	
 	struct rlib_pcode *type_code;	
 	struct rlib_pcode *subtype_code;	
@@ -588,18 +594,18 @@ struct rlib_graph {
 struct rlib_report {
 	xmlDocPtr doc;
 	gchar *contents;
-	xmlChar *xml_font_size;
-	xmlChar *xml_query;
-	xmlChar *xml_orientation;
-	xmlChar *xml_top_margin;
-	xmlChar *xml_left_margin;
-	xmlChar *xml_bottom_margin;
-	xmlChar *xml_pages_across;
-	xmlChar *xml_detail_columns;
-	xmlChar *xml_column_pad;
-	xmlChar *xml_suppress_page_header_first_page;
-	xmlChar *xml_height;
-	xmlChar *xml_iterations;
+	struct rlib_from_xml xml_font_size;
+	struct rlib_from_xml xml_query;
+	struct rlib_from_xml xml_orientation;
+	struct rlib_from_xml xml_top_margin;
+	struct rlib_from_xml xml_left_margin;
+	struct rlib_from_xml xml_bottom_margin;
+	struct rlib_from_xml xml_pages_across;
+	struct rlib_from_xml xml_detail_columns;
+	struct rlib_from_xml xml_column_pad;
+	struct rlib_from_xml xml_suppress_page_header_first_page;
+	struct rlib_from_xml xml_height;
+	struct rlib_from_xml xml_iterations;
 	
 	gfloat *position_top;
 	gfloat *position_bottom;
@@ -686,7 +692,7 @@ struct rlib_signal_functions {
 };
 
 struct rlib_metadata {
-	gchar *xml_formula;
+	struct rlib_from_xml xml_formula;
 	struct rlib_value rval_formula;
 	struct rlib_pcode *formula_code;
 };
@@ -732,6 +738,8 @@ struct rlib {
 	gboolean did_execute;
 	
 	gchar *special_locale;
+	
+	gint html_debugging;
 
 	struct output_filter *o;
 	struct input_filters inputs[MAX_INPUT_FILTERS];
@@ -885,7 +893,7 @@ gint rlib_graph_add_bg_region(rlib *r, gchar *graph_name, gchar *region_label, g
 gint rlib_graph_clear_bg_region(rlib *r, gchar *graph_name);
 gint rlib_graph_set_x_minor_tick(rlib *r, gchar *graph_name, gchar *x_value);
 gint rlib_graph_set_x_minor_tick_by_location(rlib *r, gchar *graph_name, gint location);
-gboolean rlib_add_function(rlib *r, gchar *function_name, gboolean (*function)(rlib *,  struct rlib_value_stack *, struct rlib_value *this_field_value, gpointer user_data), gpointer user_data);
+gboolean rlib_add_function(rlib *r, gchar *function_name, gboolean (*function)(rlib *, struct rlib_pcode *code, struct rlib_value_stack *, struct rlib_value *this_field_value, gpointer user_data), gpointer user_data);
 
 /***** PROTOTYPES: parsexml.c *************************************************/
 struct rlib_part * parse_part_file(rlib *r, gchar *filename, gchar type);
@@ -893,8 +901,8 @@ struct rlib_report_output * report_output_new(gint type, gpointer data);
 
 /***** PROTOTYPES: pcode.c ****************************************************/
 struct rlib_value * rlib_execute_pcode(rlib *r, struct rlib_value *rval, struct rlib_pcode *code, struct rlib_value *this_field_value);
-gint64 rlib_str_to_long_long(gchar *str);
-struct rlib_pcode * rlib_infix_to_pcode(rlib *r, struct rlib_part *part, struct rlib_report *report, gchar *infix, gboolean look_at_metadata);
+gint64 rlib_str_to_long_long(rlib *r, gchar *str);
+struct rlib_pcode * rlib_infix_to_pcode(rlib *r, struct rlib_part *part, struct rlib_report *report, gchar *infix, gint line_number, gboolean look_at_metadata);
 gint rvalcmp(struct rlib_value *v1, struct rlib_value *v2);
 gint rlib_value_free(struct rlib_value *rval);
 struct rlib_value * rlib_value_dup(struct rlib_value *orig);
@@ -1011,3 +1019,11 @@ int adjust_limits(gdouble  dataMin, gdouble dataMax, gint denyMinEqualsAdjMin, g
 /***** PROTOTYPES: xml_data_source.c ******************************************************/
 gpointer rlib_xml_new_input_filter(void);
 gpointer rlib_xml_connect(gpointer input_ptr);
+
+/***** PROTOTYPES: util.c ******************************************************/
+void rlogit(rlib *r, const gchar *fmt, ...);
+void r_debug(rlib *r, const gchar *fmt, ...);
+void r_info(rlib *r, const gchar *fmt, ...);
+void r_warning(rlib *r, const gchar *fmt, ...);
+void r_error(rlib *r, const gchar *fmt, ...);
+void rlogit_setmessagewriter(void(*writer)(rlib *r, const gchar *msg));
