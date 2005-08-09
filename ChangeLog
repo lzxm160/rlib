@@ -1,3 +1,7 @@
+2005-08-09  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/reportgen.c: check for "yes"
+	* libsrc/util.c: log out the environment so that binding languages can pick up the messages
+
 2005-08-08  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/php.c: error messages with line numbers and the ability to dump error messages in html
 	* bindings/python/rlibmodule.c: likewise

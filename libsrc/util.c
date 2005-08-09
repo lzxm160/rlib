@@ -172,9 +172,9 @@ gchar *rmwhitespacesexceptquoted(gchar *s) {
 
 static void local_rlogit(rlib *r, const gchar *message) {
 	if(r->html_debugging) {
-		fputs("<br><b>RLIB: ", stdout);
-		fputs(message, stdout);
-		fputs("</br></b>", stdout);
+		ENVIRONMENT(r)->rlib_write_output("<br><b>RLIB: ", strlen("<br><b>RLIB: "));
+		ENVIRONMENT(r)->rlib_write_output((char *)message, strlen(message));
+		ENVIRONMENT(r)->rlib_write_output("</br></b>", strlen("</br></b>"));
 	}
 	fputs(message, stderr);
 	return;
