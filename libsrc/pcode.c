@@ -336,7 +336,6 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, struct rlib_part *part, st
 		o->value = newstr;
 		r_error(r, "Unrecognized operand: [%s]\n", str);
 		r_error(r, "Error on Line %d: The Expression Was [%s]\n", line_number, infix);
-
 	}
 	return o;
 }
@@ -797,9 +796,8 @@ struct rlib_value *this_field_value) {
 		count = &RLIB_VARIABLE_CA(rv)->count;
 		amount = &RLIB_VARIABLE_CA(rv)->amount;
 
-		if(rv->code == NULL) {
-			val = 0;			
-			r_error(r, "Variable Resolution: Assuming 0 value for variable with a bad expression\n");
+		if(rv->code == NULL && rv->type != RLIB_REPORT_VARIABLE_COUNT) {
+			r_error(r, "Variable Resolution: Assuming 0 value for variable [%s] on line [%d] with a bad expression\n", rv->xml_name.xml, rv->xml_name.line);	
 		} else {
 			if(rv->type == RLIB_REPORT_VARIABLE_COUNT) {
 				val = RLIB_VALUE_GET_AS_NUMBER(count);

@@ -14,7 +14,7 @@
 	<ReportHeader>
 		<Output>
 			<Line fontSize="11">
-				<field value="2+'hi'" format="'%02.03d'" width="10"/>
+				<field value="2" format="'%02.03d'" width="10"/>
 				<literal>Test Report (Normal) AND THE REPORT FORMAT IS: </literal>
 				<field value="r.format" width="10"/>
 			</Line>
@@ -43,7 +43,7 @@
 		</Output>
 	</ReportHeader>		
 	<Variables>
-		<Variable name="bo" value="2+3" type="expression"/>
+		<Variable name="oscar" value="2+3" type="expression"/>
 	</Variables>
 	<Breaks>	
 		<Break name="break0" newpage="no" headernewpage="yes">
@@ -83,7 +83,7 @@
 					<literal width="1"/>
 					<literal width="20" col="3">Color</literal>
 				</Line>
-				<HorizontalLine size="1" bgcolor="'black'"/>
+				<HorizontalLine size="1" length="v.oscar" bgcolor="'black'"/>
 				<HorizontalLine size="4" bgcolor="'white'"/>
 			</Output>
 		</FieldHeaders>		

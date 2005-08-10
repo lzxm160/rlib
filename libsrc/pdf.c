@@ -989,7 +989,7 @@ void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r) = g_malloc(sizeof(struct output_filter));
 	r->o->private = g_malloc(sizeof(struct _private));
 	memset(OUTPUT_PRIVATE(r), 0, sizeof(struct _private));
-
+	OUTPUT(r)->do_graph = TRUE;
 	OUTPUT(r)->do_align = TRUE;
 	OUTPUT(r)->do_break = TRUE;
 	OUTPUT(r)->do_grouptext = TRUE;	

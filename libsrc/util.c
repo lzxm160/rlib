@@ -171,7 +171,7 @@ gchar *rmwhitespacesexceptquoted(gchar *s) {
 }
 
 static void local_rlogit(rlib *r, const gchar *message) {
-	if(r->html_debugging) {
+	if(r != NULL && r->html_debugging) {
 		ENVIRONMENT(r)->rlib_write_output("<br><b>RLIB: ", strlen("<br><b>RLIB: "));
 		ENVIRONMENT(r)->rlib_write_output((char *)message, strlen(message));
 		ENVIRONMENT(r)->rlib_write_output("</br></b>", strlen("</br></b>"));

@@ -739,9 +739,7 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 	if(report != NULL) {
 		if(report->detail_columns > 1) {
 			gfloat paper_width = (rlib_layout_get_page_width(r, part) - (part->left_margin * 2)) / report->detail_columns;
-
-			my_left_margin += ((r->detail_line_count % report->detail_columns) * paper_width) + ((r->detail_line_count % report->detail_columns) * report->column_pad);
-		
+			my_left_margin += ((r->detail_line_count % report->detail_columns) * paper_width) + ((r->detail_line_count % report->detail_columns) * report->column_pad);		
 		}	
 	}
 
@@ -937,9 +935,16 @@ static gint rlib_layout_report_outputs_across_pages(rlib *r, struct rlib_part *p
 			OUTPUT(r)->set_working_page(r, part, roa->page-1);
 			output_count += rlib_layout_report_output_array(r, part, report, roa, backwards, roa->page);
 		} else {
-			for(i=0;i<part->pages_across;i++) {
-				OUTPUT(r)->set_working_page(r, part, i);
-				output_count = rlib_layout_report_output_array(r, part, report, roa, backwards, i+1);
+			if(OUTPUT(r)->do_break) {
+				for(i=0;i<part->pages_across;i++) {
+					OUTPUT(r)->set_working_page(r, part, i);
+					output_count = rlib_layout_report_output_array(r, part, report, roa, backwards, i+1);
+				}
+			} else { /*Only go once Otherwise CVS Might Look Funny*/
+				for(i=0;i<1;i++) {
+					OUTPUT(r)->set_working_page(r, part, i);
+					output_count = rlib_layout_report_output_array(r, part, report, roa, backwards, i+1);
+				}			
 			}
 		}
 	}

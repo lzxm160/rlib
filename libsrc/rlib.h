@@ -769,6 +769,7 @@ struct output_filter {
 	gboolean do_grouptext;
 	gboolean trim_links;
 	gboolean table_around_multiple_detail_columns;
+	gboolean do_graph;
 	gint paginate;
 	gfloat (*get_string_width)(rlib *, const char *);
 	void (*print_text)(rlib *, float, float, const char *, int, int);
@@ -931,6 +932,7 @@ gint rlib_finalize(rlib *r);
 void rlib_process_expression_variables(rlib *r, struct rlib_report *report);
 gint rlib_format_get_number(const gchar *name);
 const gchar * rlib_format_get_name(gint number);
+void rlib_init_variables(rlib *r, struct rlib_report *report);
 
 /***** PROTOTYPES: resolution.c ***********************************************/
 gint rlib_resolve_rlib_variable(rlib *r, gchar *name);

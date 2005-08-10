@@ -1,3 +1,17 @@
+2005-08-10  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/csv.c: don't crash on CSV output w/ graphs
+	* libsrc/html.c: don't crash on CSV output w/ graphs
+	* libsrc/layout.c: fix csv output problem w/ pages across
+	* libsrc/pcode.c:  better error messages
+	* libsrc/pdf.c: don't crash on CSV output w/ graphs
+	* libsrc/reportgen.c: expressions are now truely in the global scope
+	* libsrc/resolution.c: expressions are now truely in the global scope 
+	* libsrc/rlib.h: expressions are now truely in the global scope
+	* libsrc/txt.c: don't crash on CSV output w/ graphs
+	* libsrc/util.c: make sure the r pointer is not null to prevent crash
+	* src/examples/php/array.php: examples
+	* src/examples/php/array.xml: likewise
+
 2005-08-09  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/reportgen.c: check for "yes"
 	* libsrc/util.c: log out the environment so that binding languages can pick up the messages

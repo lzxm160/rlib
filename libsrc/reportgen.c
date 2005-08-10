@@ -305,7 +305,7 @@ gint rlib_fetch_first_rows(rlib *r) {
 	return result;
 }
 
-static void rlib_init_variables(rlib *r, struct rlib_report *report) {
+void rlib_init_variables(rlib *r, struct rlib_report *report) {
 	struct rlib_element *e;
 	for(e = report->variables; e != NULL; e=e->next) {
 		struct rlib_report_variable *rv = e->data;
@@ -326,7 +326,6 @@ static void rlib_init_variables(rlib *r, struct rlib_report *report) {
 	}
 	
 }
-
 static void rlib_process_variables(rlib *r, struct rlib_report *report) {
 	struct rlib_element *e;
 	for(e = report->variables; e != NULL; e=e->next) {
@@ -533,10 +532,12 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 
 			if(report->graph.type_code != NULL) {
 				gfloat top;
-				top_margin_offset += rlib_graph(r, part, report, left_margin_offset, &top_margin_offset);
-				top = report->position_top[0];
-				rlib_layout_report_footer(r, part, report);	
-				top_margin_offset += report->position_top[0] - top;
+				if(OUTPUT(r)->do_graph == TRUE) {
+					top_margin_offset += rlib_graph(r, part, report, left_margin_offset, &top_margin_offset);
+					top = report->position_top[0];
+					rlib_layout_report_footer(r, part, report);	
+					top_margin_offset += report->position_top[0] - top;
+				}
 			} else {
 				rlib_fetch_first_rows(r);
 				

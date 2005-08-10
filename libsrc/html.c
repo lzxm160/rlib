@@ -1100,7 +1100,8 @@ void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT(r)->paginate = FALSE;
 	OUTPUT(r)->trim_links = FALSE;
 	OUTPUT(r)->table_around_multiple_detail_columns = TRUE;
-	
+	OUTPUT(r)->do_graph = TRUE;
+
 	OUTPUT(r)->get_string_width = rlib_html_get_string_width;
 	OUTPUT(r)->print_text = rlib_html_print_text;
 	OUTPUT(r)->print_text_delayed = rlib_html_print_text_delayed;

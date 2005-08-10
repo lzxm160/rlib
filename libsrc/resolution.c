@@ -326,7 +326,10 @@ void rlib_resolve_report_fields(rlib *r, struct rlib_part *part, struct rlib_rep
 
 		}
 	}
-
+	
+	rlib_init_variables(r, report);
+	rlib_process_expression_variables(r, report);
+	
 	report->orientation = RLIB_ORIENTATION_PORTRAIT;
 	report->orientation_code = rlib_infix_to_pcode(r, part, report, (gchar *)report->xml_orientation.xml, report->xml_orientation.line, TRUE);
 	report->font_size = -1;

@@ -205,6 +205,7 @@ void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT(r)->do_grouptext = FALSE;
 	OUTPUT(r)->paginate = FALSE;
 	OUTPUT(r)->trim_links = FALSE;
+	OUTPUT(r)->do_graph = FALSE;
 
 	OUTPUT(r)->get_string_width = rlib_csv_get_string_width;
 	OUTPUT(r)->print_text = rlib_csv_print_text;
