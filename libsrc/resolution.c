@@ -179,11 +179,7 @@ static void rlib_hr_resolve_pcode(rlib *r, struct rlib_part *part, struct rlib_r
 	gfloat f;
 	rhl->size = 0;
 
-	if(rhl->xml_indent.xml == NULL)
-		rhl->indent = 0;
-	else
-		rhl->indent = atof((char *)rhl->xml_indent.xml);
-
+	rhl->indent_code = rlib_infix_to_pcode(r, part, report, (gchar *)rhl->xml_indent.xml, rhl->xml_indent.line, TRUE);
 	rhl->length_code = rlib_infix_to_pcode(r, part, report, (gchar *)rhl->xml_length.xml, rhl->xml_length.line, TRUE);
 	rhl->bgcolor_code = rlib_infix_to_pcode(r, part, report, (gchar *)rhl->xml_bgcolor.xml, rhl->xml_bgcolor.line, TRUE);
 	rhl->suppress_code = rlib_infix_to_pcode(r, part, report, (gchar *)rhl->xml_suppress.xml, rhl->xml_suppress.line, TRUE);
@@ -195,6 +191,10 @@ static void rlib_hr_resolve_pcode(rlib *r, struct rlib_part *part, struct rlib_r
 	rhl->length = 0;
 	if (rlib_execute_as_float(r, rhl->length_code, &f))
 		rhl->length = f;
+
+	rhl->indent = 0;
+	if (rlib_execute_as_float(r, rhl->indent_code, &f))
+		rhl->indent = f;
 }
 
 static void rlib_image_resolve_pcode(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_image * ri) {
