@@ -184,12 +184,17 @@ static gint rlib_format_string_default(rlib *r, struct rlib_report_field *rf, st
 }
 
 gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value *rval, gchar *buf) {
-	gchar *current_locale = NULL;
+	gchar current_locale[MAXSTRLEN];
+	
 	if(r->special_locale != NULL) {
-		current_locale = setlocale(LC_ALL, NULL);
+		gchar *tmp;
+		tmp = setlocale(LC_ALL, NULL);
+		if(tmp == NULL)
+			current_locale[0] = 0;
+		else
+			strcpy(current_locale, tmp);
 		setlocale(LC_ALL, r->special_locale);
 	}
-	
 	if(rf->xml_format.xml == NULL) {
 		rlib_format_string_default(r, rf, rval, buf);
 	} else {

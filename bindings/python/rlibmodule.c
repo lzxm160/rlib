@@ -159,7 +159,7 @@ implement_signal_call(rlib *rlib_ptr,  void *user_data) {
 	return 1;
 }
 
-static gchar * rlib_python_resolve_memory_variable(rlib *r, gchar *name) {
+static gchar * rlib_python_resolve_memory_variable(gchar *name) {
 	PyObject	*moduledict = PyImport_GetModuleDict();
 	PyObject	*mainmodule;
 	PyObject	*dict;

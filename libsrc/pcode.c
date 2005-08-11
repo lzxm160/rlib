@@ -843,6 +843,12 @@ gint execute_pcode(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs
 			}
 		}
 	}
+	
+	if(vs->count != 1) {
+		r_error(r, "PCODE Execution Error: Stack Elements %d != 1\n", vs->count);
+		r_error(r, "PCODE Execution Error: [%s] on line [%d]\n", code->infix_string, code->line_number);
+	}
+	
 	return TRUE;
 }
 

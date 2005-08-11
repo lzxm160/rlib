@@ -1,3 +1,8 @@
+2005-08-11  Bob Doan  <bdoan@sicompos.com>
+	* bindings/python/rlibmodule.c: Fix function params
+	* libsrc/formatstring.c: Fix bug assuming locale was thread safe
+	* libsrc/pcode.c: throw error if there is more then 1 element left on the stack after execution
+
 2005-08-10  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/csv.c: don't crash on CSV output w/ graphs
 	* libsrc/html.c: don't crash on CSV output w/ graphs
