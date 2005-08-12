@@ -1138,7 +1138,7 @@ static PyMethodDef rlibmodule_methods[] = {
     { NULL, NULL, 0, NULL },
 };
 //DL_EXPORT(void)
-PyMODINIT_FUNC
+PyMODINIT_FUNC 
 initrlib(void) {
     PyObject *m, *d, *s, *i;
 
@@ -1310,8 +1310,10 @@ initrlib(void) {
 	PyDict_SetItemString(d, "GRAPH_TYPE_XY_BSPLINE_WITH_SYMBOLS", i);
 	Py_DECREF(i);
     }
-    if (PyType_Ready(&RLIBType) < 0)
-        return;
+	if (PyType_Ready(&RLIBType) < 0) {
+        
+	} else {
     Py_INCREF(&RLIBType);
     PyModule_AddObject(m, "Rlib", (PyObject *)&RLIBType);
+	}
 }
