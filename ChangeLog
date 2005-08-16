@@ -1,3 +1,9 @@
+2005-08-16  Bob Doan  <bdoan@sicompos.com>
+	* bindings/php/array_data_source.c: Don' go passed the end by accident while graphing
+	* libsrc/csv.c: escape quotes
+	* libsrc/resolution.c: don't strlen null
+	* src/examples/php/array.php: testing
+
 2005-08-12  Bob Doan  <bdoan@sicompos.com>
 	* bindings/python/rlibmodule.c: Fix some gcc warnings/ compile problems on RH 9
 

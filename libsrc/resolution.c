@@ -70,14 +70,18 @@ gchar * rlib_resolve_field_value(rlib *r, struct rlib_resultset_field *rf) {
 		return NULL;
 	
 	str = rs->get_field_value_as_string(rs, r->results[rf->resultset].result, rf->field);
-	
+
 #if DISABLE_UTF8
 	return g_strdup(str);
 #else
-	slen = strlen(str);
-	elen = MAXSTRLEN;
-	rlib_charencoder_convert(rs->info.encoder, &str, &slen, &ptr, &elen);
-	return g_strdup(encoded_buf);
+	if(str == NULL)
+		return "";
+	else {
+		slen = strlen(str);
+		elen = MAXSTRLEN;
+		rlib_charencoder_convert(rs->info.encoder, &str, &slen, &ptr, &elen);
+		return g_strdup(encoded_buf);
+	}
 #endif
 }
 

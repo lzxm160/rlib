@@ -65,17 +65,24 @@ static void rlib_csv_spool_private(rlib *r) {
 	ENVIRONMENT(r)->rlib_write_output(OUTPUT_PRIVATE(r)->top, strlen(OUTPUT_PRIVATE(r)->top));
 }
 
-static void really_print_text(rlib *r, const gchar *text) {
-	gchar buf[MAXSTRLEN];
+static void really_print_text(rlib *r, const gchar *passed_text) {
+	gchar buf[MAXSTRLEN], text[MAXSTRLEN];
 	gchar *str_ptr;
-	gint text_size = strlen(text);
+	gint text_size = strlen(passed_text);
 	gint *size;
+	gint i, spot=0;
 
-	if(text != NULL && text[0] != '\n') {
+	if(passed_text != NULL && passed_text[0] != '\n') {
+		for(i=0;i<text_size+1;i++) {
+			if(passed_text[i] == '"')
+				text[spot++] = '\\';
+			text[spot++] = passed_text[i];			
+		}
 		sprintf(buf, "\"%s\",", text);
+		text_size = spot -1;
 		text_size += 3;
 	} else {
-		strcpy(buf, text);
+		strcpy(buf, passed_text);
 	}
 	
 	make_more_space_if_necessary(&OUTPUT_PRIVATE(r)->top, &OUTPUT_PRIVATE(r)->top_size, 
