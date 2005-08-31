@@ -1,3 +1,10 @@
+2005-08-31  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/axis.c: Don't allow really big numbers in the left_pad
+	* libsrc/formatstring.c:  likewise
+	* libsrc/pcode_op_functions.c: likewise
+	* libsrc/rlib.h: likewise
+	* src/examples/php/expressions.xml: ...
+
 2005-08-16  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/array_data_source.c: Don' go passed the end by accident while graphing
 	* libsrc/csv.c: escape quotes

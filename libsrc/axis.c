@@ -264,7 +264,7 @@ ________________________________________________________________________________
 
 
 gint localError(const gchar* s) {
-	r_error("%s\n",s);
+	fprintf(stderr, "%s\n",s);
 	return -1;
 }
 

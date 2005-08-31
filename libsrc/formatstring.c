@@ -63,7 +63,7 @@ gint rlib_string_sprintf(gchar *dest, gchar *fmtstr, struct rlib_value *rval) {
 	return sprintf(dest, fmtstr, value);
 }
 
-gint rlib_number_sprintf(gchar *dest, gchar *fmtstr, const struct rlib_value *rval, gint special_format) {
+gint rlib_number_sprintf(rlib *r, gchar *dest, gchar *fmtstr, const struct rlib_value *rval, gint special_format, gchar *infix, gint line_number) {
 	gint dec=0;
 	gint left_padzero=0;
 	gint left_pad=0;
@@ -102,6 +102,18 @@ gint rlib_number_sprintf(gchar *dest, gchar *fmtstr, const struct rlib_value *rv
 	if(rval != NULL) {
 		gchar fleft[20];
 		gchar fright[20];
+		
+		if(left_pad > 20) {
+			r_error(r, "FORMATTING ERROR ON LINE %d: %s\n", line_number, infix);
+			r_error(r, "FORMATTING ERROR:  LEFT PAD IS WAY TO BIG! (%d)\n", left_pad);
+			left_pad = 20;
+		} 
+		if(right_pad > 20) {
+			r_error(r, "FORMATTING ERROR ON LINE %d: %s\n", line_number, infix);
+			r_error(r, "FORMATTING ERROR:  LEFT PAD IS WAY TO BIG! (%d)\n", right_pad);			
+			right_pad = 20;
+		} 
+		
 		gchar *left_holding = g_malloc0(left_pad + 16);
 		gchar *right_holding = g_malloc0(right_pad + 16);
 		gint ptr=0;
@@ -256,6 +268,7 @@ gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value
 					gchar *idx;
 					gint len_formatstring;
 					idx = strchr(formatstring, ':');
+					fmtstr[0] = 0;
 					if(idx != NULL && RLIB_VALUE_IS_NUMBER(rval)) {
 						formatstring = g_strdup(formatstring);
 						idx = strchr(formatstring, ':');
@@ -280,7 +293,7 @@ gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value
 							if ((tchar == 'd') || (tchar == 'i') || (tchar == 'n')) {
 								if(RLIB_VALUE_IS_NUMBER(rval)) {
 									gchar tmp[50];
-									rlib_number_sprintf(tmp, fmtstr, rval, special_format);
+									rlib_number_sprintf(r, tmp, fmtstr, rval, special_format,rf->xml_format.xml, rf->xml_format.line);
 									for(j=0;j<(int)strlen(tmp);j++)
 										buf[pos++] = tmp[j];
 								} else {

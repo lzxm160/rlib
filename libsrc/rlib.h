@@ -852,7 +852,7 @@ void rlib_handle_break_footers(rlib *r, struct rlib_part *part, struct rlib_repo
 
 /***** PROTOTYPES: formatstring.c *********************************************/
 gint rlb_string_sprintf(char *dest, gchar *fmtstr, struct rlib_value *rval);
-gint rlib_number_sprintf(char *dest, gchar *fmtstr, const struct rlib_value *rval, gint special_format);
+gint rlib_number_sprintf(rlib *r, char *dest, gchar *fmtstr, const struct rlib_value *rval, gint special_format, gchar *infix, gint line_number);
 gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value *rval, gchar *buf);
 
 /***** PROTOTYPES: fxp.c ******************************************************/
