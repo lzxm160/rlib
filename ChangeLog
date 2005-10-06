@@ -1,3 +1,9 @@
+2005-10-05  Bob Doan  <bdoan@sicompos.com>
+	* inputs/postgres/postgres.c: Fix Previous
+	* libsrc/pcode.c: Detect () Mismatch, Don't continue executing if problems executing
+	* libsrc/pcode_op_functions.c: likewise
+	* src/examples/php/expressions.xml: test...
+
 2005-08-31  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/axis.c: Don't allow really big numbers in the left_pad
 	* libsrc/formatstring.c:  likewise

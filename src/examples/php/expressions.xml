@@ -88,21 +88,10 @@
 				<literal>SHOULD GET: 9876,54             GOT:</literal>
 				<field value="9876.54" format="'!# %.2f'" width="10"/>
 			</Line>
-
-<!--
-<field value="format(12345,'!$ %n')"/>
-<literal width="3"/>
-<field value="format(9876.54,'!# %.2f')"/>
-<literal width="3"/>
-<field value="format(123.45,'!$ %n')"/>
-<literal width="3"/>			
-
-RLIB results:
-12.345,00 R$        9876,00      123,00 R$
-
-Results expected:
-12.345,00 R$        9876,54      123,45 R$
--->			
+			<Line>
+				<literal>SHOULD GET: 9.876,54            GOT:</literal>
+				<field value="format(9876.54, '!$ %n')"  width="10"/>
+			</Line>
 		</Output>
 	</ReportHeader>		
 </Report>

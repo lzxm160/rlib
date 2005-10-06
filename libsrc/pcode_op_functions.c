@@ -23,6 +23,7 @@
 #include <math.h>
 #include <time.h>
 #include <ctype.h>
+#include <locale.h>
 
 #include "config.h"
 #include "rlib.h"
@@ -1208,8 +1209,21 @@ gboolean rlib_pcode_operator_dtosf(rlib *r, struct rlib_pcode *code, struct rlib
 */
 gboolean rlib_pcode_operator_format(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, rval_rtn;
+	gchar current_locale[MAXSTRLEN];
+
 	v2 = rlib_value_stack_pop(vs);
 	v1 = rlib_value_stack_pop(vs);
+	
+	if(r->special_locale != NULL) {
+		gchar *tmp;
+		tmp = setlocale(LC_ALL, NULL);
+		if(tmp == NULL)
+			current_locale[0] = 0;
+		else
+			strcpy(current_locale, tmp);
+		setlocale(LC_ALL, r->special_locale);
+	}
+
 	if (RLIB_VALUE_IS_STRING(v2)) {
 		gchar buf[MAXSTRLEN];
 		const gchar *result = "!ERR_F_IV";
@@ -1249,12 +1263,14 @@ gboolean rlib_pcode_operator_format(rlib *r, struct rlib_pcode *code, struct rli
 		rlib_value_free(v1);
 		rlib_value_free(v2);
 		rlib_value_stack_push(r,vs, rlib_value_new_string(&rval_rtn, result));
+		setlocale(LC_ALL, current_locale);
 		return TRUE;
 	}
 	rlib_pcode_operator_fatal_execption(r,"format not string in format", code, 2, v1, v2, NULL);
 	rlib_value_free(v1);
 	rlib_value_free(v2);
 	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	setlocale(LC_ALL, current_locale);
 	return FALSE;
 }
 

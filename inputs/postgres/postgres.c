@@ -109,7 +109,7 @@ static gint rlib_postgres_isdone(gpointer input_ptr, gpointer result_ptr) {
 static gint rlib_postgres_previous(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_postgres_results *result = result_ptr;
 	if (result) {
-		if(result->row-1 > 0) {
+		if(result->row-1 >= 0) {
 			result->row--;
 			result->isdone = FALSE;
 			return TRUE;

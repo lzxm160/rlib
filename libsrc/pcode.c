@@ -108,7 +108,6 @@ struct rlib_pcode_operator rlib_pcode_verbs[] = {
       {"settimeinsecs(", 	14, 0,	TRUE,	OP_SETTIMESECS,  	TRUE, 	rlib_pcode_operator_settimeinsecs, NULL},
       {"format(", 	7, 0,	TRUE,	OP_FORMAT,  	TRUE, 	rlib_pcode_operator_format, NULL},
       {"eval(", 	5, 0,	TRUE,	OP_EVAL,  	TRUE, 	rlib_pcode_operator_eval, NULL},
-      {"eval(", 	5, 0,	TRUE,	OP_EVAL,  	TRUE, 	rlib_pcode_operator_eval, NULL},
 
       { NULL, 	 	0, 0, FALSE,-1,			TRUE,		NULL, NULL}
 };
@@ -139,6 +138,7 @@ void rlib_pcode_free(struct rlib_pcode *code) {
 
 struct rlib_operator_stack {
 	gint count;
+	gint pcount;
 	struct rlib_pcode_operator *op[200];
 };
 
@@ -393,8 +393,12 @@ void rlib_pcode_dump(rlib *r, struct rlib_pcode *p, gint offset) {
 	}
 }
 
-int operator_stack_push(struct rlib_operator_stack *os, struct rlib_pcode_operator *op) {
-	
+int operator_stack_push(struct rlib_operator_stack *os, struct rlib_pcode_operator *op) {		
+	if((op->tag[0] == '(' || op->is_function) && op->opnum != OP_IIF)
+		os->pcount++;
+	else if(op->tag[0] == ')')
+		os->pcount--;
+
 	if(op->tag[0] != ')' && op->tag[0] != ',')
 		os->op[os->count++] = op;
 	return 0;
@@ -407,8 +411,17 @@ struct rlib_pcode_operator * operator_stack_pop(struct rlib_operator_stack *os) 
 		return NULL;
 }
 
+struct rlib_pcode_operator * operator_stack_peek(struct rlib_operator_stack *os) {
+	if(os->count > 0) {
+		return os->op[os->count-1];
+	} else
+		return NULL;
+}
+
+
 void operator_stack_init(struct rlib_operator_stack *os) {
 	os->count = 0;
+	os->pcount = 0;
 }
 
 gint operator_stack_is_all_less(struct rlib_operator_stack *os, struct rlib_pcode_operator *op) {
@@ -435,7 +448,7 @@ void popopstack(struct rlib_pcode *p, struct rlib_operator_stack *os, struct rli
 	struct rlib_pcode_operator *o;
 	struct rlib_pcode_instruction rpi;
 	if(op != NULL && (op->tag[0] == ')' || op->tag[0] == ',')) {
-		while((o=operator_stack_pop(os))) {
+		while((o=operator_stack_peek(os))) {
 			if(o->is_op == TRUE) {
 				if(op->tag[0] != ',') {
 					rlib_pcode_add(p, rlib_new_pcode_instruction(&rpi, PCODE_EXECUTE, o));
@@ -446,32 +459,34 @@ void popopstack(struct rlib_pcode *p, struct rlib_operator_stack *os, struct rli
 				}
 			}
 			if(o->tag[0] == '(' || o->is_function == TRUE) {
-				if(op->tag[0] == ',') /* NEED TO PUT THE ( or FUNCTION back on the stack cause it takes more then 1 paramater */
-					operator_stack_push(os, o);
-				break;
-				
+				if(op->tag[0] != ',') /* NEED TO PUT THE ( or FUNCTION back on the stack cause it takes more then 1 paramater */
+					operator_stack_pop(os);
+				break;				
 			}
+			operator_stack_pop(os);
 		}		
 	} else {
-		while((o=operator_stack_pop(os))) {
+		while((o=operator_stack_peek(os))) {
 			if(o->is_op == TRUE) {
 				rlib_pcode_add(p, rlib_new_pcode_instruction(&rpi, PCODE_EXECUTE, o));
 			}
 			if(o->tag[0] == '(' || o->is_function == TRUE) {
-				operator_stack_push(os, o);
 				break;
 			}
+			operator_stack_pop(os);
 		}	
 	}
 }
 
-void forcepopstack(struct rlib_pcode *p, struct rlib_operator_stack *os) {
+static void forcepopstack(rlib *r, struct rlib_pcode *p, struct rlib_operator_stack *os) {
 	struct rlib_pcode_operator *o;
 	struct rlib_pcode_instruction rpi;
 	while((o=operator_stack_pop(os))) {
 		if(o->is_op == TRUE)
 			rlib_pcode_add(p, rlib_new_pcode_instruction(&rpi, PCODE_EXECUTE, o));
 	}
+	
+	
 }
 
 void smart_add_pcode(struct rlib_pcode *p, struct rlib_operator_stack *os, struct rlib_pcode_operator *op) {
@@ -654,10 +669,14 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, struct rlib_part *part, struct 
 		}
 		op_pointer += moving_ptr - op_pointer;
 	}
-	forcepopstack(pcodes, &os);
+	forcepopstack(r, pcodes, &os);
+	if(os.pcount != 0) {
+		r_error(r, "Compiler Error. Parenthesis Mismatch\n");
+		r_error(r, "Error Occured On Line %d: %s\n", line_number, infix);
+	}
+
 	return pcodes;	
 }
-
 
 #if !USE_RLIB_VAL
 void rlib_value_stack_init(struct rlib_value_stack *vs) {
@@ -677,7 +696,12 @@ gint rlib_value_stack_push(rlib *r, struct rlib_value_stack *vs, struct rlib_val
 }
 
 struct rlib_value * rlib_value_stack_pop(struct rlib_value_stack *vs) {
-	return &vs->values[--vs->count];
+	if(vs->count <= 0) {
+		vs->values[0].type = RLIB_VALUE_NONE;
+		return &vs->values[0];
+	} else {
+		return &vs->values[--vs->count];
+	}
 }
 struct rlib_value * rlib_value_new(struct rlib_value *rval, gint type, gint free_, gpointer value) {
 	rval->type = type;
@@ -839,7 +863,11 @@ gint execute_pcode(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs
 		} else if(code->instructions[i].instruction == PCODE_EXECUTE) {
 			struct rlib_pcode_operator *o = code->instructions[i].value;
 			if(o->execute != NULL) {
-				o->execute(r, code, vs, this_field_value, o->user_data);
+				if(o->execute(r, code, vs, this_field_value, o->user_data) == FALSE) {
+					r_error(r, "PCODE Execution Error: %s Didn't Work\n", o->tag);
+					r_error(r, "PCODE Execution Error: [%s] on line [%d]\n", code->infix_string, code->line_number);
+					break;
+				}
 			}
 		}
 	}
