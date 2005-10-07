@@ -1,3 +1,7 @@
+2005-10-07  Bob Doan  <bdoan@sicompos.com>
+	* NEWS: Release Time
+	* configure.in: likewise
+
 2005-10-05  Bob Doan  <bdoan@sicompos.com>
 	* inputs/postgres/postgres.c: Fix Previous
 	* libsrc/pcode.c: Detect () Mismatch, Don't continue executing if problems executing
