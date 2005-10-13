@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE report >
-<Report fontSize="42" orientation="landscape">
+<Report fontSize="20" orientation="landscape">
 	<Alternate>
 		<NoData>
 			<Output>
@@ -44,6 +44,9 @@
 	</ReportHeader>		
 	<Variables>
 		<Variable name="oscar" value="2+3" type="expression"/>
+		<Variable name="precal" value="val(group)" type="sum" resetonbreak="break0" precalculate="yes"/>
+		<Variable name="edude" value="val(group)" type="sum" precalculate="yes"/>
+		<Variable name="actual" value="val(group)" type="sum" resetonbreak="break0"/>
 	</Variables>
 	<Breaks>	
 		<Break name="break0" newpage="no" headernewpage="yes">
@@ -51,6 +54,10 @@
 				<Output>
 					<Line>
 						<field value="val(group)" width="20" format="'%.2d'" align="left" col="1"/>					
+						<literal>TEST::: </literal>
+						<field value="v.precal" width="10"/>
+						<literal>EDUDE::: </literal>
+						<field value="v.edude" width="10"/>
 					</Line>
 				</Output>								
 			</BreakHeader>
@@ -64,6 +71,8 @@
 					<HorizontalLine size="4" bgcolor="'white'"/>
 					<Line>
 						<field value="group" width="20" align="left" col="1"/>					
+						<literal>WE NEED TO GET:::</literal>
+						<field value="v.actual" width="10"/>
 					</Line>
 					<HorizontalLine size="4" bgcolor="'white'"/>
 					<HorizontalLine size="2" bgcolor="'black'"/>

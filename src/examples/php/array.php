@@ -35,6 +35,12 @@
 	$data[5][3] = "2";
 	$data[5][4] = "Dude";
 
+	$data[6][0] = "Oscar";
+	$data[6][1] = "Meyer";
+	$data[6][2] = "grey";
+	$data[6][3] = "3";
+	$data[6][4] = "Dude";
+
 	$rlib =	rlib_init();
 	rlib_version();
 	rlib_add_datasource_array($rlib, "local_array");
@@ -42,7 +48,7 @@
 	rlib_add_report($rlib, "array.xml");
 	rlib_add_function($rlib, "bobdoan", "bobdoan", 1);
 	rlib_add_function($rlib, "mikeroth", "mike_roth", 2);
-	rlib_set_output_format_from_text($rlib, "csv");
+	rlib_set_output_format_from_text($rlib, "txt");
 	rlib_set_output_parameter($rlib, "debugging", "yes");
 	rlib_execute($rlib);
 	header(rlib_get_content_type($rlib));

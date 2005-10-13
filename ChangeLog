@@ -1,3 +1,19 @@
+2005-10-13  Bob Doan  <bdoan@sicompos.com>
+	* configure.in: 1.3.6
+	* libsrc/Makefile.am: Pre Calculated Variables
+	* libsrc/breaks.c:  likewise
+	* libsrc/formatstring.c: likewise
+	* libsrc/free.c: likewise
+	* libsrc/load.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/save.c: likewise
+	* libsrc/variables.c: likewise
+	* src/examples/php/array.php: likewise
+	* src/examples/php/array.xml: likewise
+
 2005-10-07  Bob Doan  <bdoan@sicompos.com>
 	* NEWS: Release Time
 	* configure.in: likewise
