@@ -213,11 +213,12 @@ void write_breaks(gint fd, struct rlib_element *breaks) {
 gint save_report(struct rlib_report *rep, gchar *filename) {
 	gint fd;
 	gchar buf[MAXSTRLEN];
+	gint result;
 	
 	unlink(filename);
 	fd = open(filename, O_RDWR | O_CREAT, 0664);
 	sprintf(buf, "RLIB %s                                ", VERSION);
-	write(fd, buf, 20);
+	result = write(fd, buf, 20);
 	
 	write_xml_str(fd, (gchar *)rep->xml_font_size.xml);
 	write_xml_str(fd, (gchar *)rep->xml_orientation.xml);

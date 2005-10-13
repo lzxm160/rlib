@@ -173,7 +173,21 @@ static void rlib_break_resolve_pcode(rlib *r, struct rlib_part *part, struct rli
 }
 
 static void rlib_variable_resolve_pcode(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_variable *rv) {
+	struct rlib_pcode *code;
+	gint t;
+
 	rv->code = rlib_infix_to_pcode(r, part, report, (gchar *)rv->xml_value.xml, rv->xml_value.line, TRUE);
+
+	code = rlib_infix_to_pcode(r, part, report, (gchar *)rv->xml_precalculate.xml, rv->xml_precalculate.line, TRUE);
+	if (rlib_execute_as_boolean(r, code, &t)) {
+		rv->precalculate = t;
+	} else {
+		rv->precalculate = FALSE;
+	}
+	rlib_pcode_free(code);
+
+
+	rv->precalculated_values = NULL;
 /* rlogit("DUMPING PCODE FOR [%s]\n", rv->xml_value);
 rlib_pcode_dump(rv->code,0);	
 rlogit("\n\n"); */

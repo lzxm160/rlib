@@ -293,7 +293,7 @@ gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value
 							if ((tchar == 'd') || (tchar == 'i') || (tchar == 'n')) {
 								if(RLIB_VALUE_IS_NUMBER(rval)) {
 									gchar tmp[50];
-									rlib_number_sprintf(r, tmp, fmtstr, rval, special_format,rf->xml_format.xml, rf->xml_format.line);
+									rlib_number_sprintf(r, tmp, fmtstr, rval, special_format, (gchar *)rf->xml_format.xml, rf->xml_format.line);
 									for(j=0;j<(int)strlen(tmp);j++)
 										buf[pos++] = tmp[j];
 								} else {

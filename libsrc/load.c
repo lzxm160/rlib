@@ -332,6 +332,7 @@ struct rlib_part * load_report(gchar *filename) {
 	gchar *contents;
 	gchar *ptr;
 	gchar buf[MAXSTRLEN];
+	gint result;
 	struct rlib_report *rep;
 /*	struct rlib_part *part; */
 
@@ -341,7 +342,7 @@ struct rlib_part * load_report(gchar *filename) {
 	size = lseek(fd, 0, SEEK_END);
 	lseek(fd, 0, SEEK_SET);
 	contents = g_malloc(size);
-	read(fd, contents, size);
+	result = read(fd, contents, size);
 
 	sprintf(buf, "RLIB %s                                ", VERSION);
 	buf[20] = 0;

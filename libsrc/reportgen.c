@@ -305,74 +305,6 @@ gint rlib_fetch_first_rows(rlib *r) {
 	return result;
 }
 
-void rlib_init_variables(rlib *r, struct rlib_report *report) {
-	struct rlib_element *e;
-	for(e = report->variables; e != NULL; e=e->next) {
-		struct rlib_report_variable *rv = e->data;
-		if(rv->type == RLIB_REPORT_VARIABLE_EXPRESSION) {
-			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
-		} else if(rv->type == RLIB_REPORT_VARIABLE_COUNT) {
-			RLIB_VARIABLE_CA(rv)->count = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->count, 0);
-		} else if(rv->type == RLIB_REPORT_VARIABLE_SUM) {
-			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
-		} else if(rv->type == RLIB_REPORT_VARIABLE_AVERAGE) {
-			RLIB_VARIABLE_CA(rv)->count = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->count, 0);
-			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
-		} else if(rv->type == RLIB_REPORT_VARIABLE_LOWEST) {
-			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
-		} else if(rv->type == RLIB_REPORT_VARIABLE_HIGHEST) {
-			RLIB_VARIABLE_CA(rv)->amount = *rlib_value_new_number(&RLIB_VARIABLE_CA(rv)->amount, 0);
-		}
-	}
-	
-}
-static void rlib_process_variables(rlib *r, struct rlib_report *report) {
-	struct rlib_element *e;
-	for(e = report->variables; e != NULL; e=e->next) {
-		struct rlib_report_variable *rv = e->data;
-		struct rlib_value *count = &RLIB_VARIABLE_CA(rv)->count;
-		struct rlib_value *amount = &RLIB_VARIABLE_CA(rv)->amount;
-		struct rlib_value execute_result, *er = &execute_result;
-		if(rv->code != NULL)
-			 rlib_execute_pcode(r, &execute_result, rv->code, NULL);
-		if(rv->type == RLIB_REPORT_VARIABLE_COUNT) {
-			RLIB_VALUE_GET_AS_NUMBER(count) += RLIB_DECIMAL_PRECISION;
-		} else if(rv->type == RLIB_REPORT_VARIABLE_EXPRESSION) {
-			if(RLIB_VALUE_IS_NUMBER(er)) {
-				rlib_value_free(amount);
-				rlib_value_new_number(amount, RLIB_VALUE_GET_AS_NUMBER(er));
-			} else if (RLIB_VALUE_IS_STRING(er)) {
-				rlib_value_free(amount);
-				rlib_value_new_string(amount, RLIB_VALUE_GET_AS_STRING(er));
-			} else
-				r_error(r, "rlib_process_variables EXPECTED TYPE NUMBER OR STRING FOR RLIB_REPORT_VARIABLE_EXPRESSION\n");
-		} else if(rv->type == RLIB_REPORT_VARIABLE_SUM) {
-			if(RLIB_VALUE_IS_NUMBER(er))
-				RLIB_VALUE_GET_AS_NUMBER(amount) += RLIB_VALUE_GET_AS_NUMBER(er);
-			else
-				r_error(r, "rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_SUM\n");
-		} else if(rv->type == RLIB_REPORT_VARIABLE_AVERAGE) {
-			RLIB_VALUE_GET_AS_NUMBER(count) += RLIB_DECIMAL_PRECISION;
-			if(RLIB_VALUE_IS_NUMBER(er))
-				RLIB_VALUE_GET_AS_NUMBER(amount) += RLIB_VALUE_GET_AS_NUMBER(er);
-			else
-				r_error(r, "rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_AVERAGE\n");
-		} else if(rv->type == RLIB_REPORT_VARIABLE_LOWEST) {
-			if(RLIB_VALUE_IS_NUMBER(er)) {
-				if(RLIB_VALUE_GET_AS_NUMBER(er) < RLIB_VALUE_GET_AS_NUMBER(amount) || RLIB_VALUE_GET_AS_NUMBER(amount) == 0) /* TODO: EVIL HACK */
-					RLIB_VALUE_GET_AS_NUMBER(amount) = RLIB_VALUE_GET_AS_NUMBER(er);
-			} else
-				r_error(r, "rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_LOWEST\n");
-		} else if(rv->type == RLIB_REPORT_VARIABLE_HIGHEST) {
-			if(RLIB_VALUE_IS_NUMBER(er)) {
-				if(RLIB_VALUE_GET_AS_NUMBER(er) > RLIB_VALUE_GET_AS_NUMBER(amount) || RLIB_VALUE_GET_AS_NUMBER(amount) == 0) /* TODO: EVIL HACK */
-					RLIB_VALUE_GET_AS_NUMBER(amount) = RLIB_VALUE_GET_AS_NUMBER(er);
-			} else
-				r_error(r, "rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_HIGHEST\n");
-		}
-	}
-}
-
 static void rlib_evaluate_report_attributes(rlib *r, struct rlib_report *report) {
 	gint t;
 	gfloat f;
@@ -407,42 +339,6 @@ static void rlib_evaluate_report_attributes(rlib *r, struct rlib_report *report)
 	if (rlib_execute_as_float(r, report->column_pad_code, &f))
 		report->column_pad = f;
 
-}
-
-static void rlib_evaluate_break_attributes(rlib *r, struct rlib_report *report) {
-	struct rlib_report_break *rb;
-	struct rlib_element *e;
-	gint t;
-	
-	for(e = report->breaks; e != NULL; e = e->next) {
-		rb = e->data;
-		if (rlib_execute_as_boolean(r, rb->headernewpage_code, &t))
-			rb->headernewpage = t;
-		if (rlib_execute_as_boolean(r, rb->suppressblank_code, &t))
-			rb->suppressblank = t;
-	}
-}
-
-void rlib_process_expression_variables(rlib *r, struct rlib_report *report) {
-	struct rlib_element *e;
-	for(e = report->variables; e != NULL; e=e->next) {
-		struct rlib_report_variable *rv = e->data;
-		struct rlib_value *amount = &RLIB_VARIABLE_CA(rv)->amount;
-		struct rlib_value execute_result, *er = &execute_result;
-		if(rv->code != NULL)
-			 rlib_execute_pcode(r, &execute_result, rv->code, NULL);
-		if(rv->type == RLIB_REPORT_VARIABLE_EXPRESSION) {
-			if(RLIB_VALUE_IS_NUMBER(er)) {
-				rlib_value_free(amount);
-				rlib_value_new_number(amount, RLIB_VALUE_GET_AS_NUMBER(er));
-			} else if (RLIB_VALUE_IS_STRING(er)) {
-				rlib_value_free(amount);
-				rlib_value_new_string(amount, RLIB_VALUE_GET_AS_STRING(er));
-			} else
-				r_error(r, "rlib_process_variables EXPECTED TYPE NUMBER OR STRING FOR RLIB_REPORT_VARIABLE_EXPRESSION\n");
-		}
-	}
-	
 }
 
 static void rlib_evaluate_part_attributes(rlib *r, struct rlib_part *part) {
@@ -492,6 +388,13 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 		r->current_result = 0;
 	}
 
+	if(!part->has_only_one_report) {
+		if(rlib_variabls_needs_precalculate(r, part, report)) {
+			rlib_navigate_first(r, r->current_result);
+			rlib_variables_precalculate(r, part, report);
+		}
+	}
+
 	rlib_emit_signal(r, RLIB_SIGNAL_REPORT_START);
 	if (!part->has_only_one_report)
 		rlib_resolve_report_fields(r, part, report);
@@ -507,7 +410,7 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 			rlib_navigate_first(r, r->current_result);
 			if (!part->has_only_one_report) {
 				rlib_init_variables(r, report);
-				rlib_process_variables(r, report);
+				rlib_process_variables(r, report, FALSE);
 				rlib_process_input_metadata(r);
 			}
 			
@@ -554,14 +457,15 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 						
 						if(!processed_variables) {
 							rlib_process_input_metadata(r);
-							rlib_process_variables(r, report);
+							rlib_process_variables(r, report, FALSE);
 							processed_variables = TRUE;
 						}
-						rlib_evaluate_break_attributes(r, report);
-						rlib_handle_break_headers(r, part, report);
+						
+						rlib_break_evaluate_attributes(r, report);
+						rlib_handle_break_headers(r, part, report, FALSE);
 
 						if(rlib_end_page_if_line_wont_fit(r, part, report, report->detail.fields))
-							rlib_force_break_headers(r, part, report);
+							rlib_force_break_headers(r, part, report, FALSE);
 
 						if(report->detail_columns > 1) {
 							if(OUTPUT(r)->table_around_multiple_detail_columns) {
@@ -581,12 +485,12 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 
 						if(rlib_navigate_next(r, r->current_result) == FALSE) {
 							rlib_navigate_last(r, r->current_result);
-							rlib_handle_break_footers(r, part, report);
+							rlib_handle_break_footers(r, part, report, FALSE);
 							break;
 						} 
 
-						rlib_evaluate_break_attributes(r, report);
-						rlib_handle_break_footers(r, part, report);
+						rlib_break_evaluate_attributes(r, report);
+						rlib_handle_break_footers(r, part, report, FALSE);
 						processed_variables = FALSE;
 
 						if(report->detail_columns > 1) {
@@ -594,7 +498,6 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 								OUTPUT(r)->end_td(r);
 							}
 						}
-
 						
 						if(report->detail_columns > 1) {
 							if(r->detail_line_count % report->detail_columns != 0) {
@@ -754,8 +657,14 @@ gint rlib_evaulate_single_report_variables(rlib *r, struct rlib_part *part) {
 
 				rlib_resolve_report_fields(r, part, report);
 				rlib_pcode_free(report->query_code);
+
+				if(rlib_variabls_needs_precalculate(r, part, report)) {
+					rlib_navigate_first(r, r->current_result);
+					rlib_variables_precalculate(r, part, report);
+				}
+
 				rlib_init_variables(r, report);
-				rlib_process_variables(r, report);
+				rlib_process_variables(r, report, FALSE);
 				rlib_process_input_metadata(r);
 				part->only_report = report;
 			}
@@ -795,7 +704,7 @@ gint rlib_make_report(rlib *r) {
 	for(i=0;i<r->parts_count;i++) {
 		struct rlib_part *part = r->parts[i];
 		rlib_fetch_first_rows(r);
-		if(part->has_only_one_report)
+		if(part->has_only_one_report) 
 			rlib_evaulate_single_report_variables(r, part);
 		rlib_resolve_part_fields(r, part);
 		for(iterations=0;iterations<part->iterations;iterations++) {
@@ -811,12 +720,6 @@ gint rlib_make_report(rlib *r) {
 		rlib_emit_signal(r, RLIB_SIGNAL_REPORT_DONE);
 	}
 	
-#if 0
-		rlib_char_encoder_destroy(&rr->output_encoder); /* Destroy if was one. */
-		rlib_char_encoder_destroy(&rr->db_encoder); /* Destroy if was one. */
-		rlib_char_encoder_destroy(&rr->param_encoder); /* Destroy if was one. */
-	}
-#endif
 	return 0;
 }
 

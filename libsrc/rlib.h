@@ -415,10 +415,14 @@ struct rlib_report_variable {
 	struct rlib_from_xml xml_str_type;
 	struct rlib_from_xml xml_value;
 	struct rlib_from_xml xml_resetonbreak;
+	struct rlib_from_xml xml_precalculate;
 
-	gint type;
+	gchar type;
+	gchar precalculate;
 	struct rlib_pcode *code;
 	struct rlib_count_amount data;
+	
+	GSList *precalculated_values;
 };
 
 struct rlib_part_load {
@@ -844,11 +848,11 @@ struct output_filter {
 };
 
 /***** PROTOTYPES: breaks.c ***************************************************/
-void rlib_force_break_headers(rlib *r, struct rlib_part *part, struct rlib_report *report);
-void rlib_handle_break_headers(rlib *r, struct rlib_part *part, struct rlib_report *report);
-void rlib_reset_variables_on_break(rlib *r, struct rlib_part *part, struct rlib_report *report, gchar *name);
-void rlib_break_all_below_in_reverse_order(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_element *e);
-void rlib_handle_break_footers(rlib *r, struct rlib_part *part, struct rlib_report *report);
+void rlib_force_break_headers(rlib *r, struct rlib_part *part, struct rlib_report *report, gboolean precalculate);
+void rlib_handle_break_headers(rlib *r, struct rlib_part *part, struct rlib_report *report, gboolean precalculate);
+void rlib_handle_break_footers(rlib *r, struct rlib_part *part, struct rlib_report *report, gboolean precalculate);
+void rlib_break_evaluate_attributes(rlib *r, struct rlib_report *report);
+void rlib_breaks_clear(rlib *r, struct rlib_part *part, struct rlib_report *report);
 
 /***** PROTOTYPES: formatstring.c *********************************************/
 gint rlb_string_sprintf(char *dest, gchar *fmtstr, struct rlib_value *rval);
@@ -929,10 +933,8 @@ gfloat get_outputs_size(rlib *r, struct rlib_part *part, struct rlib_report *rep
 void rlib_init_page(rlib *r, struct rlib_part *part, struct rlib_report *report, gchar report_header);
 gint rlib_make_report(rlib *r);
 gint rlib_finalize(rlib *r);
-void rlib_process_expression_variables(rlib *r, struct rlib_report *report);
 gint rlib_format_get_number(const gchar *name);
 const gchar * rlib_format_get_name(gint number);
-void rlib_init_variables(rlib *r, struct rlib_report *report);
 
 /***** PROTOTYPES: resolution.c ***********************************************/
 gint rlib_resolve_rlib_variable(rlib *r, gchar *name);
@@ -1029,3 +1031,11 @@ void r_info(rlib *r, const gchar *fmt, ...);
 void r_warning(rlib *r, const gchar *fmt, ...);
 void r_error(rlib *r, const gchar *fmt, ...);
 void rlogit_setmessagewriter(void(*writer)(rlib *r, const gchar *msg));
+
+/***** PROTOTYPES: variables.c ******************************************************/
+void rlib_init_variables(rlib *r, struct rlib_report *report);
+void rlib_process_variables(rlib *r, struct rlib_report *report, gboolean precalculate);
+void rlib_process_expression_variables(rlib *r, struct rlib_report *report);
+gboolean rlib_variabls_needs_precalculate(rlib *r, struct rlib_part *part, struct rlib_report *report);
+void rlib_variables_precalculate(rlib *r, struct rlib_part *part, struct rlib_report *report);
+void rlib_variable_clear(rlib *r, struct rlib_report_variable *rv, gboolean do_expression);
