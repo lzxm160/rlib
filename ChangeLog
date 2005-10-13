@@ -1,4 +1,7 @@
 2005-10-13  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/breaks.c: Don't layout when precalculating
+
+2005-10-13  Bob Doan  <bdoan@sicompos.com>
 	* configure.in: 1.3.6
 	* libsrc/Makefile.am: Pre Calculated Variables
 	* libsrc/breaks.c:  likewise
