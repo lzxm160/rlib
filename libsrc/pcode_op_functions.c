@@ -914,8 +914,7 @@ gint rlib_pcode_operator_str(rlib *r, struct rlib_pcode *code, struct rlib_value
 #else
 			sprintf(fmtstring, "%%%lld", n2);
 #endif
-		dest = g_malloc0((gulong)(n1 + n2 + 16));
-		rlib_number_sprintf(r, dest, fmtstring, v3, 0, "((NONE))", -1);
+		rlib_number_sprintf(r, &dest, fmtstring, v3, 0, "((NONE))", -1);
 		rlib_value_free(v1);
 		rlib_value_free(v2);
 		rlib_value_free(v3);
@@ -1044,11 +1043,12 @@ static gboolean rlib_pcode_operator_dtos_common(rlib *r, struct rlib_pcode *code
 	gboolean result = FALSE;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_DATE(v1)) {
-		gchar buf[60];
+		gchar *buf = NULL;
 		struct rlib_datetime *tmp = &RLIB_VALUE_GET_AS_DATE(v1);
-		rlib_datetime_format(tmp, buf, sizeof(buf) - 1, format);
+		rlib_datetime_format(r, &buf, tmp, format);
 		rlib_value_free(v1);
 		rlib_value_stack_push(r,vs, rlib_value_new_string(&rval_rtn, buf));
+		g_free(buf);
 		result = TRUE;
 	} else {
 		rlib_pcode_operator_fatal_execption(r,"dtos", code, 1, v1, NULL, NULL);
@@ -1226,8 +1226,9 @@ gboolean rlib_pcode_operator_format(rlib *r, struct rlib_pcode *code, struct rli
 
 	if (RLIB_VALUE_IS_STRING(v2)) {
 		gchar buf[MAXSTRLEN];
-		const gchar *result = "!ERR_F_IV";
+		gchar *result = "!ERR_F_IV";
 		gchar *fmt = RLIB_VALUE_GET_AS_STRING(v2);
+		gboolean need_free = FALSE;
 		if (*fmt == '!') {
 			++fmt;
 			buf[MAXSTRLEN - 1] = '\0'; /* Assure terminated */
@@ -1242,20 +1243,22 @@ gboolean rlib_pcode_operator_format(rlib *r, struct rlib_pcode *code, struct rli
 				gint64 num = RLIB_VALUE_GET_AS_NUMBER(v1);
 				if (*fmt == '#') {
 					++fmt;
-					format_number(buf, sizeof(buf) - 1, fmt, num);
-					result = buf;
+					rlib_format_number(r, &result, fmt, num);
+					need_free = TRUE;
 				} else if(*fmt == '$') {
 					++fmt;
-					format_money(buf, sizeof(buf) - 1, fmt, num);
-					result = buf;
+					rlib_format_money(r, &result, fmt, num);
+					need_free = TRUE;
 				} else r_error(r, "Format type does not match variable type in 'format' function");
 			} else if(RLIB_VALUE_IS_DATE(v1)) {
 				if (*fmt == '@') {
 					struct rlib_datetime dt = RLIB_VALUE_GET_AS_DATE(v1);
 					++fmt;
-					rlib_datetime_format(&dt, buf, sizeof(buf) - 1, fmt);
-					result = buf;
-				} else r_error(r, "Format type does not match variable type in 'format' function");
+					rlib_datetime_format(r, &result, &dt, fmt);
+					need_free = TRUE;
+				} else {
+					r_error(r, "Format type does not match variable type in 'format' function");
+				}
 			} else {
 				r_error(r, "Invalid variable type encountered in format");
 			}
@@ -1263,6 +1266,8 @@ gboolean rlib_pcode_operator_format(rlib *r, struct rlib_pcode *code, struct rli
 		rlib_value_free(v1);
 		rlib_value_free(v2);
 		rlib_value_stack_push(r,vs, rlib_value_new_string(&rval_rtn, result));
+		if(need_free)
+			g_free(result);
 		setlocale(LC_ALL, current_locale);
 		return TRUE;
 	}

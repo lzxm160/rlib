@@ -78,37 +78,6 @@ static const gchar *orientations[] = {
 	NULL
 };
 
-gchar *align_text(rlib *r, gchar *rtn, gint len, gchar *src, gint align, gint width) {
-	g_strlcpy(rtn, src, len);
-
-	if(!OUTPUT(r)->do_align)
-		return rtn;
-
-	if(align == RLIB_ALIGN_LEFT || width == -1) {
-	} else {
-		if(align == RLIB_ALIGN_RIGHT) {        
-			gint x = width - r_strlen(src);
-			if (x > (len - 1)) x = len - 1;
-			if(x > 0) {
-				memset(rtn, ' ', x);
-				g_strlcpy(rtn+x, src, len - x);
-			}
-		}
-		if(align == RLIB_ALIGN_CENTER) {
-			if(!(width > 0 && r_strlen(src) > width)) {
-				gint x = (width - r_strlen(src))/2;
-				if (x > (len - 1)) 
-					x = len -1;
-				if(x > 0) {
-					memset(rtn, ' ', x);
-					g_strlcpy(rtn+x, src, len - x);
-				}
-			}
-		}
-	}
-	return rtn;
-}
-	
 gint get_font_point(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_lines *rl) {
 	gint use_font_point;
 	

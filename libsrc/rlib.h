@@ -221,7 +221,7 @@ struct rlib_line_extra_data {
 	struct rlib_value rval_image_height;
 
 	gint font_point;
-	gchar formatted_string[MAXSTRLEN];
+	gchar* formatted_string;
 	gint width;	
 	gint col;	
 	gint delayed;	
@@ -238,6 +238,9 @@ struct rlib_line_extra_data {
 	gfloat running_link_total;
 	gboolean is_bold;
 	gboolean is_italics;
+	gboolean is_memo;
+	GSList *memo_lines;
+	gint memo_line_count;
 	
 	struct rlib_pcode *field_code;
 	struct rlib_report_field *report_field;
@@ -265,7 +268,7 @@ struct rlib_report_field {
 	struct rlib_from_xml xml_col;
 	struct rlib_from_xml xml_delayed;
 	struct rlib_from_xml xml_memo;
-	struct rlib_from_xml xml_memo_height;
+	struct rlib_from_xml xml_memo_max_lines;
 	struct rlib_from_xml xml_memo_wrap_chars;
 
 	gint width;
@@ -283,7 +286,7 @@ struct rlib_report_field {
 	struct rlib_pcode *italics_code;
 	struct rlib_pcode *align_code;
 	struct rlib_pcode *memo_code;
-	struct rlib_pcode *memo_height_code;
+	struct rlib_pcode *memo_max_lines_code;
 	struct rlib_pcode *memo_wrap_chars_code;
 		
 	struct rlib_value *rval;
@@ -855,9 +858,12 @@ void rlib_break_evaluate_attributes(rlib *r, struct rlib_report *report);
 void rlib_breaks_clear(rlib *r, struct rlib_part *part, struct rlib_report *report);
 
 /***** PROTOTYPES: formatstring.c *********************************************/
-gint rlb_string_sprintf(char *dest, gchar *fmtstr, struct rlib_value *rval);
-gint rlib_number_sprintf(rlib *r, char *dest, gchar *fmtstr, const struct rlib_value *rval, gint special_format, gchar *infix, gint line_number);
-gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value *rval, gchar *buf);
+gint rlib_number_sprintf(rlib *r, gchar **dest, gchar *fmtstr, const struct rlib_value *rval, gint special_format, gchar *infix, gint line_number);
+gint rlib_format_string(rlib *r, gchar **buf,  struct rlib_report_field *rf, struct rlib_value *rval);
+gint rlib_format_money(rlib *r, gchar **dest, const gchar *moneyformat, gint64 x);
+gint rlib_format_number(rlib *r, gchar **dest, const gchar *moneyformat, gint64 x);
+gchar *rlib_align_text(rlib *r, char **rtn, gchar *src, gint align, gint width);
+GSList * rlib_format_split_string(rlib *r, gchar *data, gint width, gint max_lines, gchar new_line, gchar space, gint *line_count);
 
 /***** PROTOTYPES: fxp.c ******************************************************/
 gint64 rlib_fxp_mul(gint64 a, gint64 b, gint64 factor);
@@ -922,7 +928,6 @@ void rlib_pcode_free(struct rlib_pcode *code);
 
 /***** PROTOTYPES: reportgen.c ****************************************************/
 void rlib_set_report_from_part(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat top_margin_offset);
-gchar *align_text(rlib *r, char *rtn, gint len, gchar *src, gint align, gint width);
 gint will_outputs_fit(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_element *e, gint page);
 gint rlib_will_this_fit(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat total, gint page);
 gint get_font_point(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_lines *rl);
@@ -1039,3 +1044,6 @@ void rlib_process_expression_variables(rlib *r, struct rlib_report *report);
 gboolean rlib_variabls_needs_precalculate(rlib *r, struct rlib_part *part, struct rlib_report *report);
 void rlib_variables_precalculate(rlib *r, struct rlib_part *part, struct rlib_report *report);
 void rlib_variable_clear(rlib *r, struct rlib_report_variable *rv, gboolean do_expression);
+
+/***** PROTOTYPES: datetime.c ******************************************************/
+void rlib_datetime_format(rlib *r, gchar **dest, struct rlib_datetime *dt, const gchar *fmt);

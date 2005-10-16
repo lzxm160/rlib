@@ -41,29 +41,32 @@
 /*
 * Formats numbers in money format using locale parameters and moneyformat codes
 */
-gint format_money(gchar *dest, gint max, const gchar *moneyformat, gint64 x) { 
+gint rlib_format_money(rlib *r, gchar **dest,const gchar *moneyformat, gint64 x) { 
 	gint result;
+	*dest = g_malloc(MAXSTRLEN);
 #ifdef RLIB_WIN32
 	result = 0;
-	dest[0] = 0;
+	(*dest)[0] = 0;
 #else
 	gdouble d = ((gdouble) x) / RLIB_DECIMAL_PRECISION;
-	result = strfmon(dest, max - 1, moneyformat, d);
+	result = strfmon(*dest, MAXSTRLEN - 1, moneyformat, d);
 #endif	
-	return (result >= 0)? strlen(dest) : 0;
+	return (result >= 0)? strlen(*dest) : 0;
 }
 
-gint format_number(gchar *dest, gint max, const gchar *fmt, gint64 x) {
+gint rlib_format_number(rlib *r, gchar **dest, const gchar *fmt, gint64 x) {
 	double d = (((double) x) / (double)RLIB_DECIMAL_PRECISION);
-	return snprintf(dest, max - 1, fmt, d);
+	*dest = g_strdup_printf(fmt, d);
+	return TRUE;
 }
 
-gint rlib_string_sprintf(gchar *dest, gchar *fmtstr, struct rlib_value *rval) {
+static gint rlib_string_sprintf(rlib *r, gchar **dest, gchar *fmtstr, struct rlib_value *rval) {
 	gchar *value = RLIB_VALUE_GET_AS_STRING(rval);
-	return sprintf(dest, fmtstr, value);
+	*dest = g_strdup_printf(fmtstr, value);
+	return TRUE;
 }
 
-gint rlib_number_sprintf(rlib *r, gchar *dest, gchar *fmtstr, const struct rlib_value *rval, gint special_format, gchar *infix, gint line_number) {
+gint rlib_number_sprintf(rlib *r, gchar **dest, gchar *fmtstr, const struct rlib_value *rval, gint special_format, gchar *infix, gint line_number) {
 	gint dec=0;
 	gint left_padzero=0;
 	gint left_pad=0;
@@ -73,6 +76,8 @@ gint rlib_number_sprintf(rlib *r, gchar *dest, gchar *fmtstr, const struct rlib_
 	gint commatize=0;
 	gchar *c;
 	gchar *radixchar = nl_langinfo(RADIXCHAR);
+	
+	*dest = g_malloc(MAXSTRLEN);
 
 	for(c=fmtstr;*c && (*c != 'd');c++) {
 		if(*c=='$') {
@@ -137,17 +142,22 @@ gint rlib_number_sprintf(rlib *r, gchar *dest, gchar *fmtstr, const struct rlib_
 			fleft[ptr++] = 'd';
 			fleft[ptr++] = '\0';
 		}
-		sprintf(left_holding, fleft, left);
-		strcpy(dest, left_holding);
-		dest[strlen(left_holding)] = '\0';
+		if(left_pad == 0 && left == 0) {
+			left_holding[0] = '0';
+			left_holding[1] = 0;			
+		} else {
+			sprintf(left_holding, fleft, left);
+		}
+		strcpy(*dest, left_holding);
+		(*dest)[strlen(left_holding)] = '\0';
 		if(dec) {
 			ptr=0;
 			if(!special_format && RLIB_VALUE_GET_AS_NUMBER(rval) < 0 && left == 0) {
 				gchar tmp[MAXSTRLEN];
 				sprintf(tmp, "-%s", left_holding);
 				strcpy(left_holding, tmp);
-				strcpy(dest, left_holding);
-				dest[strlen(left_holding)] = '\0';
+				strcpy(*dest, left_holding);
+				(*dest)[strlen(left_holding)] = '\0';
 			}
 				
 			right = llabs(RLIB_VALUE_GET_AS_NUMBER(rval)) % RLIB_DECIMAL_PRECISION;
@@ -164,39 +174,40 @@ gint rlib_number_sprintf(rlib *r, gchar *dest, gchar *fmtstr, const struct rlib_
 			}
 			right /= tentothe(RLIB_FXP_PRECISION-right_pad);
 			sprintf(right_holding, fright, right);
-			strcat(dest, radixchar);
-			strcat(dest, right_holding);
+			strcat(*dest, radixchar);
+			strcat(*dest, right_holding);
 		}
 		g_free(left_holding);
 		g_free(right_holding);
 	}
-	return strlen(dest);
+	return strlen(*dest);
 }
 
-static gint rlib_format_string_default(rlib *r, struct rlib_report_field *rf, struct rlib_value *rval, gchar *buf) {
+static gint rlib_format_string_default(rlib *r, struct rlib_report_field *rf, struct rlib_value *rval, gchar **dest) {
 	if(RLIB_VALUE_IS_NUMBER(rval)) {
 #ifdef _64BIT_
-		sprintf(buf, "%ld", RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(rval)));
+		*dest = g_strdup_printf("%ld", RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(rval)));
 #else
-		sprintf(buf, "%lld", RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(rval)));
+		*dest = g_strdup_printf("%lld", RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(rval)));
 #endif
 	} else if(RLIB_VALUE_IS_STRING(rval)) {
 		if(RLIB_VALUE_GET_AS_STRING(rval) == NULL)
-			buf[0] = 0;
+			*dest = NULL;
 		else
-			sprintf(buf, "%s", RLIB_VALUE_GET_AS_STRING(rval));
+			*dest = g_strdup_printf("%s", RLIB_VALUE_GET_AS_STRING(rval));
 	} else if(RLIB_VALUE_IS_DATE(rval))  {
 		struct rlib_datetime *dt = &RLIB_VALUE_GET_AS_DATE(rval);
-		rlib_datetime_format(dt, buf, 100, "%m/%d/%Y");
+		rlib_datetime_format(r, dest, dt, "%m/%d/%Y");
 	} else {
-		sprintf(buf, "!ERR_F");
+		*dest = g_strdup_printf("!ERR_F");
 		return FALSE;
 	}
 	return TRUE;
 }
 
-gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value *rval, gchar *buf) {
+gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, struct rlib_value *rval) {
 	gchar current_locale[MAXSTRLEN];
+	current_locale[0] = 0;
 	
 	if(r->special_locale != NULL) {
 		gchar *tmp;
@@ -208,20 +219,20 @@ gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value
 		setlocale(LC_ALL, r->special_locale);
 	}
 	if(rf->xml_format.xml == NULL) {
-		rlib_format_string_default(r, rf, rval, buf);
+		rlib_format_string_default(r, rf, rval, dest);
 	} else {
 		gchar *formatstring;
 		struct rlib_value rval_fmtstr2, *rval_fmtstr=&rval_fmtstr2;
 		rval_fmtstr = rlib_execute_pcode(r, &rval_fmtstr2, rf->format_code, rval);
 		if(!RLIB_VALUE_IS_STRING(rval_fmtstr)) {
-			sprintf(buf, "!ERR_F_F");
+			*dest = g_strdup_printf("!ERR_F_F");
 			rlib_value_free(rval_fmtstr);
 			setlocale(LC_ALL, current_locale);
 			return FALSE;
 		} else {
 			formatstring = RLIB_VALUE_GET_AS_STRING(rval_fmtstr);
 			if(formatstring == NULL) {
-				rlib_format_string_default(r, rf, rval, buf);
+				rlib_format_string_default(r, rf, rval, dest);
 			} else {
 				if (*formatstring == '!') {
 					gboolean result;
@@ -230,7 +241,7 @@ gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value
 					switch (*tfmt) {
 					case '$': /* Format as money */
 						if (RLIB_VALUE_IS_NUMBER(rval)) {
-							result = format_money(buf, 100, tfmt + 1, RLIB_VALUE_GET_AS_NUMBER(rval));
+							result = rlib_format_money(r, dest, tfmt + 1, RLIB_VALUE_GET_AS_NUMBER(rval));
 							setlocale(LC_ALL, current_locale);
 							return result;
 						}
@@ -238,7 +249,7 @@ gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value
 						break;
 					case '#': /* Format as number */
 						if (RLIB_VALUE_IS_NUMBER(rval)) {
-							result = format_number(buf, 100, tfmt + 1, RLIB_VALUE_GET_AS_NUMBER(rval));
+							result = rlib_format_number(r, dest, tfmt + 1, RLIB_VALUE_GET_AS_NUMBER(rval));
 							setlocale(LC_ALL, current_locale);
 							return result;
 						}
@@ -247,7 +258,7 @@ gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value
 					case '@': /* Format as time/date */
 						if(RLIB_VALUE_IS_DATE(rval)) {
 							struct rlib_datetime *dt = &RLIB_VALUE_GET_AS_DATE(rval);
-							rlib_datetime_format(dt, buf, 100, tfmt + 1);
+							rlib_datetime_format(r, dest, dt, tfmt + 1);
 						}
 						break;
 					default:
@@ -260,9 +271,9 @@ gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value
 					}
 				}
 				if(RLIB_VALUE_IS_DATE(rval)) {
-					rlib_datetime_format(&RLIB_VALUE_GET_AS_DATE(rval), buf, 100, formatstring);
+					rlib_datetime_format(r, dest, &RLIB_VALUE_GET_AS_DATE(rval), formatstring);
 				} else {	
-					gint i=0,j=0,pos=0,fpos=0;
+					gint i=0,/*j=0,pos=0,*/fpos=0;
 					gchar fmtstr[20];
 					gint special_format=0;
 					gchar *idx;
@@ -292,37 +303,32 @@ gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value
 							tchar = fmtstr[fpos - 1];
 							if ((tchar == 'd') || (tchar == 'i') || (tchar == 'n')) {
 								if(RLIB_VALUE_IS_NUMBER(rval)) {
-									gchar tmp[50];
-									rlib_number_sprintf(r, tmp, fmtstr, rval, special_format, (gchar *)rf->xml_format.xml, rf->xml_format.line);
-									for(j=0;j<(int)strlen(tmp);j++)
-										buf[pos++] = tmp[j];
+									rlib_number_sprintf(r, dest, fmtstr, rval, special_format, (gchar *)rf->xml_format.xml, rf->xml_format.line);
 								} else {
-									sprintf(buf, "!ERR_F_D");
+									*dest = g_strdup_printf("!ERR_F_D");
 									rlib_value_free(rval_fmtstr);
 									setlocale(LC_ALL, current_locale);
 									return FALSE;
 								}
 							} else if (tchar == 's') {
 								if(RLIB_VALUE_IS_STRING(rval)) {
-									gchar tmp[500];
-									rlib_string_sprintf(tmp, fmtstr, rval);
-									for(j=0;j<(int)strlen(tmp);j++)
-										buf[pos++] = tmp[j];
-
+									rlib_string_sprintf(r, dest, fmtstr, rval);
 								} else {
-									sprintf(buf, "!ERR_F_S");
+									*dest = g_strdup_printf("!ERR_F_S");
 									rlib_value_free(rval_fmtstr);
 									setlocale(LC_ALL, current_locale);
 									return FALSE;
 								}
 							}
 						} else {
-							buf[pos++] = formatstring[i];
-							if(formatstring[i] == '%')
-								i++;
+//TODO: How to handle this???
+//							buf[pos++] = formatstring[i];
+//							if(formatstring[i] == '%')
+//								i++;
 						}
 					}
-					buf[pos++] = '\0'; 
+//TODO: HOW TO HANDLE THIS					
+//					buf[pos++] = '\0'; 
 				}
 
 			}
@@ -331,4 +337,92 @@ gint rlib_format_string(rlib *r, struct rlib_report_field *rf, struct rlib_value
 	}
 	setlocale(LC_ALL, current_locale);
 	return TRUE;
+}
+
+gchar *rlib_align_text(rlib *r, gchar **my_rtn, gchar *src, gint align, gint width) {
+	gint len = 0;
+	gchar *rtn;
+
+	if(src != NULL)
+		len = r_strlen(src);
+
+	if(len > width) {
+		rtn = *my_rtn = g_strdup(src);
+	} else {
+		rtn = *my_rtn  = g_malloc(width + 1);
+		memset(rtn, 0, width+1);
+		strcpy(rtn, src);
+	}
+
+	if(!OUTPUT(r)->do_align)
+		return rtn;
+
+	if(align == RLIB_ALIGN_LEFT || width == -1) {
+	} else {
+		if(align == RLIB_ALIGN_RIGHT) {        
+			gint x = width - len;
+			if(x > 0) {
+				memset(rtn, ' ', x);
+				g_strlcpy(rtn+x, src, width);
+			}
+		}
+		if(align == RLIB_ALIGN_CENTER) {
+			if(!(width > 0 && len > width)) {
+				gint x = (width - len)/2;
+				if(x > 0) {
+					memset(rtn, ' ', x);
+					g_strlcpy(rtn+x, src, width);
+				}
+			}
+		}
+	}
+	return rtn;
+}
+
+GSList * rlib_format_split_string(rlib *r, gchar *data, gint width, gint max_lines, gchar new_line, gchar space, gint *line_count) {
+	gint slen;
+	gint spot = 0;
+	gint end = 0;
+	gint i;
+	gint line_spot = 0;
+	gboolean at_the_end = FALSE;
+	GSList *list = NULL;
+	
+	slen = strlen(data);
+	while(1) {
+		gchar *this_line = g_malloc(width);
+		memset(this_line, 0, width);
+		end = spot + width-1;
+		if(end > slen) {
+			end = slen;
+			at_the_end = TRUE;
+		}
+	
+		line_spot = 0;
+		for(i=spot;i<end;i++) {
+			spot++;
+			if(data[i] == new_line) 
+				break;
+			this_line[line_spot++] = data[i];
+		}
+		
+		if(!at_the_end) {
+			while(data[i] != space && data[i] != new_line) {
+				this_line[--line_spot] = ' ';
+				i--;
+				spot--;
+			}
+			if(data[spot] == ' ')
+				spot++;
+		}
+	
+		list = g_slist_append(list, this_line);
+		*line_count = *line_count + 1;
+//r_error(r, "THIS LINE = %s\n", this_line);
+
+		if(at_the_end == TRUE)
+			break;
+	
+	}
+	return list;
 }

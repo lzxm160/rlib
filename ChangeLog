@@ -1,3 +1,26 @@
+2005-10-16  Bob Doan  <bdoan@sicompos.com>
+	* configure.in: Start working our way twords multiline rows (memo fields)
+	* libsrc/charencoder.c: likewise
+	* libsrc/datetime.c: likewise
+	* libsrc/datetime.h:likewise
+	* libsrc/formatstring.c: likewise
+	* libsrc/free.c: likewise
+	* libsrc/html.c: likewise
+	* libsrc/layout.c: likewise
+	* libsrc/parsexml.c: likewise
+	* libsrc/pcode.c:likewise
+	* libsrc/pcode.h:likewise
+	* libsrc/pcode_op_functions.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/reportgen.c:likewise
+	* libsrc/resolution.c:likewise
+	* libsrc/rlib.h:likewise
+	* libsrc/txt.c:likewise
+	* src/examples/php/Makefile.am:likewise
+	* src/examples/php/array.xml:likewise
+	* src/examples/php/multiline.php:likewise
+	* src/examples/php/multiline.xml:likewise
+
 2005-10-13  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/breaks.c: Don't layout when precalculating
 

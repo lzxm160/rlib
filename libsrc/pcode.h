@@ -90,18 +90,20 @@
 #define OP_WIY 	43
 #define OP_WIYO 	44
 #define OP_DATE 	45
-#define OP_LEFT		46
-#define OP_TSTOD	47
-#define OP_DTOSF	48
-#define OP_DATEOF	49
-#define OP_TIMEOF	50
-#define OP_CHGDATEOF	51
-#define OP_CHGTIMEOF	52
-#define OP_GETTIMESECS	53
-#define OP_SETTIMESECS	54
-#define OP_FORMAT		55
-#define OP_STODSQL 	56
-#define OP_EVAL 	57
+#define OP_LEFT	46
+#define OP_RIGHT	47
+#define OP_MID		48
+#define OP_TSTOD	49
+#define OP_DTOSF	50
+#define OP_DATEOF	41
+#define OP_TIMEOF	52
+#define OP_CHGDATEOF	53
+#define OP_CHGTIMEOF	54
+#define OP_GETTIMESECS	55
+#define OP_SETTIMESECS	56
+#define OP_FORMAT		57
+#define OP_STODSQL 	58
+#define OP_EVAL 	59
 
 
 #define PCODE_PUSH	1
@@ -162,9 +164,6 @@ struct rlib_pcode_operand {
 
 #define RLIB_DECIMAL_PRECISION	10000000LL
 #define RLIB_FXP_PRECISION 7
-
-gint format_money(gchar *dest, gint max, const gchar *moneyformat, gint64 x);
-gint format_number(gchar *dest, gint max, const gchar *moneyformat, gint64 x);
 
 int execute_pcode(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
 struct rlib_value * rlib_value_stack_pop(struct rlib_value_stack *vs);

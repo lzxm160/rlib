@@ -205,12 +205,15 @@ static void split_tdformat(gchar **datefmt, gchar **timefmt, gint *order, const 
 }
 
 
-void rlib_datetime_format(struct rlib_datetime *dt, gchar *buf, gint max, const gchar *fmt) {
+void rlib_datetime_format(rlib *r, gchar **dest, struct rlib_datetime *dt, const gchar *fmt) {
 	gchar *datefmt, *timefmt;
 	gint order;
 	gchar datebuf[128];
 	gchar timebuf[128];
 	gint havedate = FALSE, havetime = FALSE;
+	gint max = MAXSTRLEN;
+	*dest = g_malloc(MAXSTRLEN);
+	
 	
 	split_tdformat(&datefmt, &timefmt, &order, fmt);
 	*datebuf = *timebuf = '\0';
@@ -223,23 +226,23 @@ void rlib_datetime_format(struct rlib_datetime *dt, gchar *buf, gint max, const 
 		havetime = TRUE;
 	}
 	if (timefmt && !havetime) {
-		r_warning(NULL, "Attempt to format time with NULL time value");
+		r_warning(r, "Attempt to format time with NULL time value");
 	}
 	if (datefmt && !havedate) {
-		r_warning(NULL, "Attempt to format date with NULL date value");
+		r_warning(r, "Attempt to format date with NULL date value");
 	}
 	switch (order) {
 	case 1:
-		g_strlcpy(buf, datebuf, max);
-		g_strlcat(buf, timebuf, max - r_strlen(datebuf));
+		g_strlcpy(*dest, datebuf, max);
+		g_strlcat(*dest, timebuf, max - r_strlen(datebuf));
 		break;
 	case 2:
-		g_strlcpy(buf, timebuf, max);
-		g_strlcat(buf, datebuf, max - r_strlen(timebuf));
+		g_strlcpy(*dest, timebuf, max);
+		g_strlcat(*dest, datebuf, max - r_strlen(timebuf));
 		break;
 	default:
-		g_strlcpy(buf, "!ERR_DT_NO", max);
-		r_error(NULL, "Datetime format has no date or no format");
+		g_strlcpy(*dest, "!ERR_DT_NO", max);
+		r_error(r, "Datetime format has no date or no format");
 		break; /* format has no date or time codes ??? */
 	}
 	if (datefmt) g_free(datefmt);

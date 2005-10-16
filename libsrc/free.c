@@ -89,7 +89,7 @@ static void rlib_field_free_pcode(rlib *r, struct rlib_report_field *rf) {
 	rlib_pcode_free(rf->italics_code);
 	rlib_pcode_free(rf->align_code);
 	rlib_pcode_free(rf->memo_code);
-	rlib_pcode_free(rf->memo_height_code);
+	rlib_pcode_free(rf->memo_max_lines_code);
 	rlib_pcode_free(rf->memo_wrap_chars_code);
 	xmlFree(rf->xml_align.xml);
 	xmlFree(rf->xml_bgcolor.xml);
@@ -102,7 +102,7 @@ static void rlib_field_free_pcode(rlib *r, struct rlib_report_field *rf) {
 	xmlFree(rf->xml_col.xml);
 	xmlFree(rf->xml_delayed.xml);
 	xmlFree(rf->xml_memo.xml);
-	xmlFree(rf->xml_memo_height.xml);
+	xmlFree(rf->xml_memo_max_lines.xml);
 	xmlFree(rf->xml_memo_wrap_chars.xml);
 
 	g_free(rf);

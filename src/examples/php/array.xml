@@ -10,7 +10,7 @@
 			</Output>
 		</NoData>
 	</Alternate>
-	
+		
 	<ReportHeader>
 		<Output>
 			<Line fontSize="11">
@@ -29,11 +29,7 @@
 			</Line>
 			<Line fontSize="11">
 				<literal bold="yes" italics="yes">Whee: </literal>
-				<field format="'%.5d'" value="abs(-5.3333)" width="10"/>
-			</Line>
-			<Line fontSize="11">
-				<literal bold="yes" italics="yes">BOO: </literal>
-				<field value="'mike is a silly pants'" width="10"/>
+				<field format="'%.2d'" value="0" width="10"/>
 			</Line>
 			<Line fontSize="11">
 				<literal bold="yes" italics="yes">TESTING CUSTOM FUNCTION </literal>
@@ -62,7 +58,7 @@
 				</Output>								
 			</BreakHeader>
 			<BreakFields>
-				<BreakField value="group"/>
+				<BreakField value="val(group)"/>
 			</BreakFields>
 			<BreakFooter>
 				<Output>
@@ -70,6 +66,7 @@
 					<HorizontalLine size="2" bgcolor="'black'"/>
 					<HorizontalLine size="4" bgcolor="'white'"/>
 					<Line>
+						<literal>-- FOOTER --</literal>
 						<field value="group" width="20" align="left" col="1"/>					
 						<literal>WE NEED TO GET:::</literal>
 						<field value="v.actual" width="10"/>

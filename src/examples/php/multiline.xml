@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!DOCTYPE report >
+<Report fontSize="12" orientation="landscape">
+	<Alternate>
+		<NoData>
+			<Output>
+				<Line fontSize="12">
+					<literal>NO DATA</literal>
+				</Line>		
+			</Output>
+		</NoData>
+	</Alternate>
+	
+	<ReportHeader>
+		<Output>
+			<Line fontSize="11">
+				<field value="2" format="'%02.03d'" width="10"/>
+				<literal>Test Report (Normal) AND THE REPORT FORMAT IS: </literal>
+				<field value="r.format" width="10"/>
+			</Line>
+			<HorizontalLine size="4" bgcolor="'white'"/>
+		</Output>
+	</ReportHeader>		
+
+	<Detail>
+		<FieldHeaders>
+			<Output>
+				<HorizontalLine size="1" bgcolor="'black'"/>
+				<Line bgcolor="'0xe5e5e5'">
+					<literal width="20" col="1">test1</literal>
+					<literal width="1"/>
+					<literal width="20" col="2">test2</literal>
+					<literal width="1"/>
+					<literal width="20" col="3">longline</literal>
+				</Line>
+				<HorizontalLine size="4" bgcolor="'white'"/>
+			</Output>
+		</FieldHeaders>		
+		<FieldDetails>
+			<Output>
+				<Line bgcolor="iif(r.detailcnt%2,'0xe5e5e5','white')">
+					<field value="test1" width="20" align="left" col="1"/>
+					<literal width="1"/>
+					<field value="test2" width="20" align="left" col="2"/>
+					<literal width="1"/>
+					<field value="longline" width="60" align="left" col="3" memo="yes"/>
+				</Line>
+			</Output>
+		</FieldDetails>
+	</Detail>
+	<PageFooter>
+		<Output>
+			<Line>
+				<literal>Page: </literal>	
+				<field value="r.pageno" width="3" align="right"/>
+			</Line>
+		</Output>
+	</PageFooter>
+
+	<ReportFooter>
+	</ReportFooter>
+</Report>

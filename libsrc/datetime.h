@@ -37,7 +37,6 @@ gint rlib_datetime_valid_time(struct rlib_datetime *dt);
 void rlib_datetime_clear_time(struct rlib_datetime *t);
 void rlib_datetime_clear_date(struct rlib_datetime *t);
 gint rlib_datetime_compare(struct rlib_datetime *t1, struct rlib_datetime *t2);
-void rlib_datetime_format(struct rlib_datetime *dt, gchar *buf, gint max, const gchar *fmt);
 gint rlib_datetime_daysdiff(struct rlib_datetime *dt, struct rlib_datetime *dt2);
 void rlib_datetime_addto(struct rlib_datetime *dt, gint64 amt);
 gint rlib_datetime_secsdiff(struct rlib_datetime *dt, struct rlib_datetime *dt2);

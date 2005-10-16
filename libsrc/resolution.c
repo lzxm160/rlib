@@ -59,9 +59,8 @@ gint rlib_resolve_rlib_variable(rlib *r, gchar *name) {
 gchar * rlib_resolve_field_value(rlib *r, struct rlib_resultset_field *rf) {
 	struct input_filter *rs = INPUT(r, rf->resultset);
 #if !DISABLE_UTF8
-	gchar encoded_buf[MAXSTRLEN];
 	gsize slen, elen;
-	gchar *ptr= encoded_buf;
+	gchar *ptr = NULL;
 #endif	
 	gchar *str;
 
@@ -79,8 +78,7 @@ gchar * rlib_resolve_field_value(rlib *r, struct rlib_resultset_field *rf) {
 	else {
 		slen = strlen(str);
 		elen = MAXSTRLEN;
-		rlib_charencoder_convert(rs->info.encoder, &str, &slen, &ptr, &elen);
-		return g_strdup(encoded_buf);
+		return rlib_charencoder_convert(rs->info.encoder, &str, &slen, &ptr, &elen);
 	}
 #endif
 }
@@ -124,8 +122,12 @@ gint rlib_resolve_resultset_field(rlib *r, char *name, void **rtn_field, gint *r
 	
 	if(*rtn_field != NULL)
 		found = TRUE;
-	else
-		r_error(r, "The field [%s.%s] does not exist\n", result_name, name);
+	else {
+		if(result_name == NULL)
+			r_error(r, "The field [%s] does not exist\n", name);
+		else
+			r_error(r, "The field [%s.%s] does not exist\n", result_name, name);
+	}
 	*rtn_resultset = resultset;
 	return found;
 }
@@ -143,7 +145,7 @@ static void rlib_field_resolve_pcode(rlib *r, struct rlib_part *part, struct rli
 	rf->italics_code = rlib_infix_to_pcode(r, part, report, (gchar *)rf->xml_italics.xml, rf->xml_italics.line, TRUE);
 	rf->align_code = rlib_infix_to_pcode(r, part, report, (gchar *)rf->xml_align.xml, rf->xml_align.line, TRUE);
 	rf->memo_code = rlib_infix_to_pcode(r, part, report, (gchar *)rf->xml_memo.xml, rf->xml_memo.line, TRUE);
-	rf->memo_height_code = rlib_infix_to_pcode(r, part, report, (gchar *)rf->xml_memo_height.xml, rf->xml_memo_height.line, TRUE);
+	rf->memo_max_lines_code = rlib_infix_to_pcode(r, part, report, (gchar *)rf->xml_memo_max_lines.xml, rf->xml_memo_max_lines.line, TRUE);
 	rf->memo_wrap_chars_code = rlib_infix_to_pcode(r, part, report, (gchar *)rf->xml_memo_wrap_chars.xml, rf->xml_memo_wrap_chars.line, TRUE);
 	rf->width = -1;
 /*	rlogit("DUMPING PCODE FOR [%s]\n", rf->value); 

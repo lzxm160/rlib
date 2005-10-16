@@ -125,7 +125,7 @@ static struct rlib_element * parse_line_array(rlib *r, xmlDocPtr doc, xmlNsPtr n
 			get_both(&f->xml_col, cur, "col");
 			get_both(&f->xml_delayed, cur, "delayed");
 			get_both(&f->xml_memo, cur, "memo");
-			get_both(&f->xml_memo_height, cur, "memo_height");
+			get_both(&f->xml_memo_max_lines, cur, "memo_max_lines");
 			get_both(&f->xml_memo_wrap_chars, cur, "memo_wrap_chars");
 
 			current->data = f;
