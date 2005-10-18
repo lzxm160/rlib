@@ -348,6 +348,7 @@ gchar *rlib_align_text(rlib *r, gchar **my_rtn, gchar *src, gint align, gint wid
 
 	if(len > width) {
 		rtn = *my_rtn = g_strdup(src);
+		return rtn;
 	} else {
 		rtn = *my_rtn  = g_malloc(width + 1);
 		memset(rtn, 0, width+1);
@@ -408,17 +409,16 @@ GSList * rlib_format_split_string(rlib *r, gchar *data, gint width, gint max_lin
 		
 		if(!at_the_end) {
 			while(data[i] != space && data[i] != new_line) {
-				this_line[--line_spot] = ' ';
+				this_line[--line_spot] = 0;
 				i--;
 				spot--;
 			}
-			if(data[spot] == ' ')
+			if(data[spot] == space)
 				spot++;
 		}
 	
 		list = g_slist_append(list, this_line);
 		*line_count = *line_count + 1;
-//r_error(r, "THIS LINE = %s\n", this_line);
 
 		if(at_the_end == TRUE)
 			break;

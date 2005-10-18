@@ -190,7 +190,6 @@ gfloat get_output_size(rlib *r, struct rlib_part *part, struct rlib_report *repo
 		if(rd->type == RLIB_REPORT_PRESENTATION_DATA_LINE) {
 			struct rlib_report_lines *rl = rd->data;
 			total += RLIB_GET_LINE(get_font_point(r, part, report, rl));
-/* Here to adjust size of memo field output. */
 		} else if(rd->type == RLIB_REPORT_PRESENTATION_DATA_HR) {
 			struct rlib_report_horizontal_line *rhl = rd->data;
 			total += RLIB_GET_LINE(rhl->size);		
@@ -215,10 +214,18 @@ gfloat get_outputs_size(rlib *r, struct rlib_part *part, struct rlib_report *rep
 gint rlib_will_this_fit(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat total, gint page) {
 	if(OUTPUT(r)->paginate == FALSE)
 		return TRUE;
-	if(report->position_top[page-1]+total > report->position_bottom[page-1])
-		return FALSE;
-	else
-		return TRUE;
+	if(report == NULL) {
+		if(part->position_top[page-1]+total > part->position_bottom[page-1])
+			return FALSE;
+		else
+			return TRUE;	
+	
+	} else {
+		if(report->position_top[page-1]+total > report->position_bottom[page-1])
+			return FALSE;
+		else
+			return TRUE;
+	}
 }
 
 gint will_outputs_fit(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_element *e, gint page) {

@@ -235,7 +235,7 @@ struct rpdf {
 	struct rpdf_page_info **page_info;
 	
 	gboolean text_on;
-	gchar *page_data;
+	GString *page_data;
 	GHashTable *page_fonts;
 	gchar *working_obj;
 	gint font_obj_number;

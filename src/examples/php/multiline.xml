@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE report >
-<Report fontSize="12" orientation="landscape">
+<Report fontSize="10" orientation="landscape">
 	<Alternate>
 		<NoData>
 			<Output>
@@ -29,9 +29,9 @@
 				<Line bgcolor="'0xe5e5e5'">
 					<literal width="20" col="1">test1</literal>
 					<literal width="1"/>
-					<literal width="20" col="2">test2</literal>
+					<literal width="40" col="2">test2</literal>
 					<literal width="1"/>
-					<literal width="20" col="3">longline</literal>
+					<literal width="60" col="3">longline</literal>
 				</Line>
 				<HorizontalLine size="4" bgcolor="'white'"/>
 			</Output>
@@ -41,9 +41,9 @@
 				<Line bgcolor="iif(r.detailcnt%2,'0xe5e5e5','white')">
 					<field value="test1" width="20" align="left" col="1"/>
 					<literal width="1"/>
-					<field value="test2" width="20" align="left" col="2"/>
+					<field value="test2" width="40" align="center" col="2" memo="yes" bgcolor="iif(val(constitution)==1,'red', iif(val(constitution)==2,'blue', 'white'))" />
 					<literal width="1"/>
-					<field value="longline" width="60" align="left" col="3" memo="yes"/>
+					<field value="longline" width="60" align="right" col="3" memo="yes" bgcolor="iif(val(constitution)==1,'yellow', iif(val(constitution)==2,'green', 'white'))"/>
 				</Line>
 			</Output>
 		</FieldDetails>

@@ -1,3 +1,13 @@
+2005-10-17  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/formatstring.c: Multiline / RPDF Speed Up
+	* libsrc/layout.c:  likewise
+	* libsrc/reportgen.c: likewise
+	* rpdf/rpdf.c: likewise
+	* rpdf/rpdf.h: likewise
+	* src/examples/php/array.xml: likewise
+	* src/examples/php/multiline.php: likewise
+	* src/examples/php/multiline.xml: likewise
+
 2005-10-16  Bob Doan  <bdoan@sicompos.com>
 	* configure.in: Start working our way twords multiline rows (memo fields)
 	* libsrc/charencoder.c: likewise

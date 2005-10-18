@@ -1,6 +1,4 @@
 <? dl ("rlib.so");
-	
-	
 	$constitution  = "We the People of the United States, in Order to form a more perfect Union, establish Justice, insure domestic Tranquility, provide for the common defence, promote the general Welfare, and secure the Blessings of Liberty to ourselves and our Posterity, do ordain and establish this Constitution for the United States of America.\n";
 	$constitution .= "Article. I.\n";
 	$constitution .= "Section 1.\n";
@@ -30,8 +28,6 @@
 	$constitution .= "Section. 6.\n";
 	$constitution .= "Clause 1: The Senators and Representatives shall receive a Compensation for their Services, to be ascertained by Law, and paid out of the Treasury of the United States. (See Note 6) They shall in all Cases, except Treason, Felony and Breach of the Peace, beprivileged from Arrest during their Attendance at the Session of their respective Houses, and in going to and returning from the same; and for any Speech or Debate in either House, they shall not be questioned in any other Place.\n";
 	$constitution .= "Clause 2: No Senator or Representative shall, during the Time for which he was elected, be appointed to any civil Office under the Authority of the United States, which shall have been created, or the Emoluments whereof shall have been encreased during such time; and no Person holding any Office under the United States, shall be a Member of either House during his Continuance in Office. \n";
-
-
 	$constitution .= "Section. 7.\n";
 	$constitution .= "Clause 1: All Bills for raising Revenue shall originate in the House of Representatives; but the Senate may propose or concur with Amendments as on other Bills.\n";
 	$constitution .= "Clause 2: Every Bill which shall have passed the House of Representatives and the Senate, shall, before it become a Law, be presented to the President of the United States; If he approve he shall sign it, but if not he shall return it, with his Objections to that House in which it shall have originated, who shall enter the Objections at large on their Journal, and proceed to reconsider it. If after such Reconsideration two thirds of that House shall agree to pass the Bill, it shall be sent, together with the Objections, to the other House, by which it shall likewise be reconsidered, and if approved by two thirds of that House, it shall become a Law. But in all such Cases the Votes of both Houses shall be determined by yeas and Nays, and the Names of the Persons voting for and against the Bill shall be entered on the Journal of each House respectively. If any Bill shall not be returned by the President within ten Days (Sundays excepted) after it shall have been presented to him, the Same shall be a Law, in like Manner as if he had signed it, unless the Congress by their Adjournment prevent its Return, in which Case it shall not be a Law.\n";
@@ -69,14 +65,59 @@
 	$constitution .= "Clause 2: No State shall, without the Consent of the Congress, lay any Imposts or Duties on Imports or Exports, except what may be absolutely necessary for executing it's inspection Laws: and the net Produce of all Duties and Imposts, laid by any State on Imports or Exports, shall be for the Use of the Treasury of the United States; and all such Laws shall be subject to the Revision and Controul of the Congress.\n";
 	$constitution .= "Clause 3: No State shall, without the Consent of Congress, lay any Duty of Tonnage, keep Troops, or Ships of War in time of Peace, enter into any Agreement or Compact with another State, or with a foreign Power, or engage in War, unless actually invaded, or in such imminent Danger as will not admit of delay. \n";
 
+	$bill =  "The Conventions of a number of the States having, at the time of adopting the Constitution, expressed a desire, in order to prevent misconstruction or abuse of its powers, that further declaratory and restrictive clauses should be added, and as extending the ground of public confidence in the Government will best insure the beneficent ends of its institution;\n";
+	$bill .= "Resolved, by the Senate and House of Representatives of the United States of America, in Congress assembled, two-thirds of both Houses concurring, that the following articles be proposed to the Legislatures of the several States, as amendments to the Constitution of the United States; all or any of which articles, when ratified by three-fourths of the said Legislatures, to be valid to all intents and purposes as part of the said Constitution, namely:\n";
+	$bill .= "Amendment I\n";
+	$bill .= "Congress shall make no law respecting an establishment of religion, or prohibiting the free exercise thereof; or abridging the freedom of speech, or of the press; or the right of the people peaceably to assemble, and to petition the government for a redress of grievances.\n";
+	$bill .= "Amendment II\n";
+	$bill .= "A well regulated militia, being necessary to the security of a free state, the right of the people to keep and bear arms, shall not be infringed.\n";
+	$bill .= "Amendment III\n";
+	$bill .= "No soldier shall, in time of peace be quartered in any house, without the consent of the owner, nor in time of war, but in a manner to be prescribed by law.\n";
+	$bill .= "Amendment IV\n";
+	$bill .= "The right of the people to be secure in their persons, houses, papers, and effects, against unreasonable searches and seizures, shall not be violated, and no warrants shall issue, but upon probable cause, supported by oath or affirmation, and particularly describing the place to be searched, and the persons or things to be seized.\n";
+	$bill .= "Amendment V\n";
+	$bill .= "No person shall be held to answer for a capital, or otherwise infamous crime, unless on a presentment or indictment of a grand jury, except in cases arising in the land or naval forces, or in the militia, when in actual service in time of war or public danger; nor shall any person be subject for the same offense to be twice put in jeopardy of life or limb; nor shall be compelled in any criminal case to be a witness against himself, nor be deprived of life, liberty, or property, without due process of law; nor shall private property be taken for public use, without just compensation.\n";
+	$bill .= "Amendment VI\n";
+	$bill .= "In all criminal prosecutions, the accused shall enjoy the right to a speedy and public trial, by an impartial jury of the state and district wherein the crime shall have been committed, which district shall have been previously ascertained by law, and to be informed of the nature and cause of the accusation; to be confronted with the witnesses against him; to have compulsory process for obtaining witnesses in his favor, and to have the assistance of counsel for his defense.\n";
+	$bill .= "Amendment VII\n";
+	$bill .= "In suits at common law, where the value in controversy shall exceed twenty dollars, the right of trial by jury shall be preserved, and no fact tried by a jury, shall be otherwise reexamined in any court of the United States, than according to the rules of the common law.\n";
+	$bill .= "Amendment VIII\n";
+	$bill .= "Excessive bail shall not be required, nor excessive fines imposed, nor cruel and unusual punishments inflicted.\n";
+	$bill .= "Amendment IX\n";
+	$bill .= "The enumeration in the Constitution, of certain rights, shall not be construed to deny or disparage others retained by the people.\n";
+	$bill .= "Amendment X\n";
+	$bill .= "The powers not delegated to the United States by the Constitution, nor prohibited by it to the states, are reserved to the states respectively, or to the people. \n";
 	
 	$data[0][0] = "test1";
 	$data[0][1] = "test2";
 	$data[0][2] = "longline";
+	$data[0][3] = "constitution";
 
-	$data[1][0] = "Hello World";
-	$data[1][1] = "Good Night Moon";
-	$data[1][2] = $constitution;
+	for($i=0;$i<400;$i++) {
+		
+		$spot = 1 + ($i*4);
+
+		$data[$spot][0] = "Line 1";
+		$data[$spot][1] = "Mike";
+		$data[$spot][2] = "Roth";
+		$data[$spot][3] = "0";
+
+		$data[$spot+1][0] = "Line 2";
+		$data[$spot+1][1] = $bill;
+		$data[$spot+1][2] = $constitution;
+		$data[$spot+1][3] = "2";
+
+		$data[$spot+2][0] = "Line 3";
+		$data[$spot+2][1] = "Oscar";
+		$data[$spot+2][2] = "Meyer";
+		$data[$spot+2][3] = "0";
+
+		$data[$spot+3][0] = "Line 4";
+		$data[$spot+3][1] = $constitution;
+		$data[$spot+3][2] = $bill;
+		$data[$spot+3][3] = "1";
+	
+	}
 	
 	$rlib =	rlib_init();
 	rlib_version();

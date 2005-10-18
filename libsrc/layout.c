@@ -118,7 +118,7 @@ static gchar *rlib_encode_text(rlib *r, gchar *text, gchar **result) {
 		*result = g_strdup("!ERR_ENC1");
 	} else {
 		gsize len = strlen(text);
-		gint result_len;
+		guint result_len;
 		rlib_charencoder_convert(r->output_encoder, &text, &len, result, &result_len);
 		if (*result == NULL) {
 			r_error(r, "encode returned NULL result input was[%s], len=%d", text, r_strlen(text));
@@ -168,6 +168,49 @@ static gfloat rlib_layout_estimate_string_width(rlib *r, gint len) {
 	return (OUTPUT(r)->get_string_width(r, buf)*len);
 }
 
+static gchar *rlib_layout_suppress_non_memo_on_extra_lines(rlib *r, struct rlib_line_extra_data *extra_data, gint memo_line, gchar *spaced_out) {
+	if(memo_line <= 1)
+		return extra_data->formatted_string;
+	else {
+		memset(spaced_out, ' ', extra_data->width);
+		spaced_out[extra_data->width] = 0;
+		return spaced_out;
+	}
+}
+
+static gchar *rlib_layout_get_true_text_from_extra_data(rlib *r, struct rlib_line_extra_data *extra_data, gint memo_line, gchar *spaced_out) {
+	gchar *text = NULL;
+	gchar *align_text = NULL;
+	gchar *encoded_text = NULL;
+
+	if(extra_data->is_memo == FALSE) {
+		memset(spaced_out, ' ', extra_data->width);
+		spaced_out[extra_data->width] = 0;
+		return spaced_out;
+	} else {
+		if(memo_line > extra_data->memo_line_count) {
+			return ""; //WRONG
+		
+		} else {
+			gint i=1;
+			GSList *list = extra_data->memo_lines;
+
+			while(i < memo_line) {
+				list = list->next;		
+				i++;
+			}
+
+			text = list->data;
+		}
+	}
+
+	//HERE
+	rlib_align_text(r, &align_text, text, extra_data->report_field->align, extra_data->report_field->width);
+ 	rlib_encode_text(r, align_text, &encoded_text);
+	g_free(align_text);
+	return encoded_text;
+}
+
 static gfloat rlib_layout_output_extras_start(rlib *r, struct rlib_part *part, gint backwards, gfloat left_origin, gfloat bottom_orgin, 
 struct rlib_line_extra_data *extra_data, gboolean ignore_links) {
 	
@@ -189,11 +232,12 @@ struct rlib_line_extra_data *extra_data, gboolean ignore_links) {
 	return extra_data->output_width;
 }
 
-static gfloat rlib_layout_text_from_extra_data(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_orgin, struct rlib_line_extra_data *extra_data, gint flag) {
+static gfloat rlib_layout_text_from_extra_data(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_orgin, struct rlib_line_extra_data *extra_data, 
+gint flag, gint memo_line) {
 	gfloat rtn_width;
 	gchar *text = extra_data->formatted_string;
 	gint i, slen;
-	gchar *encoded_text = NULL;
+	gchar spaced_out[MAXSTRLEN];
 	
 	if(OUTPUT(r)->trim_links == FALSE) {
 		flag = TEXT_NORMAL;
@@ -249,8 +293,9 @@ static gfloat rlib_layout_text_from_extra_data(rlib *r, gint backwards, gfloat l
 			delayed_data->r = r;
 			OUTPUT(r)->print_text_delayed(r, delayed_data, backwards);
 		} else {
-			OUTPUT(r)->print_text(r, left_origin, bottom_orgin+(extra_data->font_point/300.0), rlib_encode_text(r, text, &encoded_text), backwards, extra_data->col);
-			g_free(encoded_text);
+			gchar *real_text = rlib_layout_get_true_text_from_extra_data(r, extra_data, memo_line, spaced_out);
+			OUTPUT(r)->print_text(r, left_origin, bottom_orgin+(extra_data->font_point/300.0), real_text, backwards, extra_data->col);
+			g_free(real_text);
 		}
 		rtn_width = extra_data->output_width;
 		if(extra_data->found_color)
@@ -265,12 +310,11 @@ static gfloat rlib_layout_text_from_extra_data(rlib *r, gint backwards, gfloat l
 	if((flag == TEXT_LEFT || flag == TEXT_RIGHT) && extra_data->found_link) {
 		g_free(text);
 	}
-	g_free(extra_data->formatted_string);
 	return rtn_width;
 }
 
 static gfloat rlib_layout_output_extras_end(rlib *r, struct rlib_part *part, gint backwards, gfloat left_origin, gfloat bottom_orgin, 
-struct rlib_line_extra_data *extra_data) {
+struct rlib_line_extra_data *extra_data, gint memo_line) {
 
 
 	if(extra_data->running_bgcolor_status & STATUS_STOP)
@@ -280,7 +324,7 @@ struct rlib_line_extra_data *extra_data) {
 		OUTPUT(r)->end_boxurl(r, backwards);
 		if(OUTPUT(r)->trim_links) {
 			rlib_layout_output_extras_start(r, part, backwards, 0, 0, extra_data, TRUE);
-			rlib_layout_text_from_extra_data(r, backwards, 0, 0, extra_data, TEXT_RIGHT);		
+			rlib_layout_text_from_extra_data(r, backwards, 0, 0, extra_data, TEXT_RIGHT, memo_line);		
 		}
 	}
 
@@ -312,9 +356,10 @@ struct rlib_line_extra_data *extra_data) {
 }
 
 static gfloat rlib_layout_text_string(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_orgin, struct rlib_line_extra_data *extra_data, 
-gchar *text) {
+gchar *text, gint memo_line) {
 	gfloat rtn_width;
 	gchar *encoded_text = NULL;
+
 	OUTPUT(r)->set_font_point(r, extra_data->font_point);
 	if(extra_data->found_color)
 		OUTPUT(r)->set_fg_color(r, extra_data->color.r, extra_data->color.g, extra_data->color.b);
@@ -687,12 +732,14 @@ static void rlib_layout_find_common_properties_in_a_line(rlib *r, struct rlib_li
 			if(state == STATE_NONE) {
 				save_ptr = e_ptr;
 				state = STATE_BGCOLOR;
+r_error(r, "******************* MISSING LINK\n");
 				e_ptr->running_link_status |= STATUS_START;
 				e_ptr->running_link_total = e_ptr->output_width;
 			} else {
 				if(!strcmp(save_ptr->link, e_ptr->link)) {
 					save_ptr->running_link_total += e_ptr->output_width;
 				} else {
+r_error(r, "******************* MISSING LINK\n");
 					save_ptr = e_ptr;
 					previous_ptr->running_link_status |= STATUS_STOP;
 					e_ptr->running_link_status |= STATUS_START;
@@ -767,6 +814,8 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 			gint count=0;
 			gint delayed = FALSE;
 			gboolean has_memo = TRUE;
+			gint max_memo_lines = 0;
+			gint i;
 			
 			if(rlib_check_is_not_suppressed(r, rl->suppress_code)) {
 				output_count++;
@@ -780,80 +829,115 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 				rlib_layout_find_common_properties_in_a_line(r, extra_data, count, delayed);
 				count = 0;
 
-				if(OUTPUT(r)->do_grouptext && !delayed) {
-					gchar buf[MAXSTRLEN];
-					gfloat fun_width=0;
-					gint start_count=-1;
+				if(has_memo) {
 					for(e = rl->e; e != NULL; e=e->next) {
-						if(e->type == RLIB_ELEMENT_FIELD) {
-							struct rlib_report_field *rf = ((struct rlib_report_field *)e->data);
-							rf->rval = &extra_data[count].rval_code;
-							width = rlib_layout_output_extras(r, part, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), &extra_data[count]);
-						} else if(e->type == RLIB_ELEMENT_LITERAL) {
-							width = rlib_layout_output_extras(r, part, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), &extra_data[count]);
-						} else if(e->type == RLIB_ELEMENT_IMAGE) {
-							width = extra_data[count].output_width;
-						} else {
-							width = 0;
-						}
-						margin += width;
-						count++;
-					}
-					count=0;
-					margin = my_left_margin;				
-					buf[0] = 0;
-					width = 0;
-					start_count = -1;
-					for(e = rl->e; e != NULL; e=e->next) {
-						if(extra_data[count].found_color == FALSE && extra_data[count].is_bold == FALSE && extra_data[count].is_italics == FALSE && extra_data[count].type != RLIB_ELEMENT_IMAGE) {
-							if(start_count == -1)
-								start_count = count;
-							strcat(buf, extra_data[count].formatted_string);
-							fun_width += extra_data[count].output_width;
-						} else {
-							if(start_count != -1) {
-								rlib_layout_text_string(r, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), &extra_data[start_count], buf);
-								start_count = -1;
-								margin += fun_width;
-								fun_width = 0;
-								buf[0] = 0;
+						if(extra_data[count].is_memo == TRUE) {
+							if(extra_data[count].memo_line_count > max_memo_lines) {
+								max_memo_lines = extra_data[count].memo_line_count;
 							}
-							width = rlib_layout_text_from_extra_data(r, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), &extra_data[count], TEXT_NORMAL);
-							margin += width;
-
 						}
-						count++;					
-					}
-					if(start_count != -1) {
-						width += fun_width;
-						rlib_layout_text_string(r, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), &extra_data[start_count], buf);
-					}
-				} else {
-					for(e = rl->e; e != NULL; e=e->next) {
-						if(e->type == RLIB_ELEMENT_FIELD) {
-							struct rlib_report_field *rf = ((struct rlib_report_field *)e->data);
-							rf->rval = &extra_data[count].rval_code;
-							rlib_layout_output_extras_start(r, part, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), &extra_data[count], FALSE);
-							width = rlib_layout_text_from_extra_data(r, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), &extra_data[count], TEXT_LEFT);
-							rlib_layout_output_extras_end(r, part, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), &extra_data[count]);
-						} else if(e->type == RLIB_ELEMENT_LITERAL) {
-							rlib_layout_output_extras_start(r, part, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), &extra_data[count], FALSE);
-							width = rlib_layout_text_from_extra_data(r, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), &extra_data[count], TEXT_LEFT);
-							rlib_layout_output_extras_end(r, part, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), &extra_data[count]);
-						} else if(e->type == RLIB_ELEMENT_IMAGE) {
-							gfloat height1 = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(&extra_data[count].rval_image_height));
-							gfloat width1 = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(&extra_data[count].rval_image_width));
-							gchar *name = RLIB_VALUE_GET_AS_STRING(&extra_data[count].rval_image_name);
-							gchar *type = RLIB_VALUE_GET_AS_STRING(&extra_data[count].rval_image_type);
-							OUTPUT(r)->line_image(r, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), name, type, width1, height1);
-							width = RLIB_GET_LINE(width1);
-						}											
-						margin += width;
+						
 						count++;
 					}
 				}
 
-				rlib_advance_vertical_position(r, rlib_position, rl);
+				if(max_memo_lines < 1)
+					max_memo_lines = 1;
+				for(i=1; i <= max_memo_lines; i++) {				
+					margin = my_left_margin;
+/* Memo Fields that won't fit */
+					if(rlib_will_this_fit(r, part, report, get_output_size(r, part, report, roa), 1) == FALSE) {
+						rlib_layout_end_page(r, part, report);
+						rlib_force_break_headers(r, part, report, FALSE);
+					
+					}
+					if(OUTPUT(r)->do_grouptext && !delayed) {
+						gchar buf[MAXSTRLEN];
+						gchar spaced_out[MAXSTRLEN];
+						gfloat fun_width=0;
+						gint start_count=-1;
+						count = 0;
+						for(e = rl->e; e != NULL; e=e->next) {
+							if(e->type == RLIB_ELEMENT_FIELD) {
+								struct rlib_report_field *rf = ((struct rlib_report_field *)e->data);
+								rf->rval = &extra_data[count].rval_code;
+								width = rlib_layout_output_extras(r, part, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), 
+										&extra_data[count]);
+							} else if(e->type == RLIB_ELEMENT_LITERAL) {
+								width = rlib_layout_output_extras(r, part, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), 
+									&extra_data[count]);
+							} else if(e->type == RLIB_ELEMENT_IMAGE) {
+								width = extra_data[count].output_width;
+							} else {
+								width = 0;
+							}
+							margin += width;
+							count++;
+						}
+						count=0;
+						margin = my_left_margin;				
+						buf[0] = 0;
+						width = 0;
+						start_count = -1;
+						for(e = rl->e; e != NULL; e=e->next) {
+							if(extra_data[count].found_color == FALSE && extra_data[count].is_bold == FALSE && extra_data[count].is_italics == FALSE 
+							&& extra_data[count].is_memo == FALSE && extra_data[count].type != RLIB_ELEMENT_IMAGE) {
+								if(start_count == -1)
+									start_count = count;
+								strcat(buf, rlib_layout_suppress_non_memo_on_extra_lines(r, &extra_data[count], i, spaced_out));
+								fun_width += extra_data[count].output_width;
+							} else {
+								if(start_count != -1) {
+									rlib_layout_text_string(r, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), 
+										&extra_data[start_count], buf, i);
+									start_count = -1;
+									margin += fun_width;
+									fun_width = 0;
+									buf[0] = 0;
+								}
+								width = rlib_layout_text_from_extra_data(r, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), 
+									&extra_data[count], TEXT_NORMAL, i);
+								margin += width;
+
+							}
+							count++;					
+						}
+						if(start_count != -1) {
+							width += fun_width;
+							rlib_layout_text_string(r, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), &extra_data[start_count], buf, i);
+						}
+					} else { /* Not Group Next Follows */
+						for(e = rl->e; e != NULL; e=e->next) {
+							if(e->type == RLIB_ELEMENT_FIELD) {
+								struct rlib_report_field *rf = ((struct rlib_report_field *)e->data);
+								rf->rval = &extra_data[count].rval_code;
+								rlib_layout_output_extras_start(r, part, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl),
+									 &extra_data[count], FALSE);
+								width = rlib_layout_text_from_extra_data(r, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), 
+									&extra_data[count], TEXT_LEFT, i);
+								rlib_layout_output_extras_end(r, part, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), 
+									&extra_data[count], i);
+							} else if(e->type == RLIB_ELEMENT_LITERAL) {
+								rlib_layout_output_extras_start(r, part, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), 
+									&extra_data[count], FALSE);
+								width = rlib_layout_text_from_extra_data(r, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), 
+									&extra_data[count], TEXT_LEFT, i);
+								rlib_layout_output_extras_end(r, part, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), 
+									&extra_data[count], i);
+							} else if(e->type == RLIB_ELEMENT_IMAGE) {
+								gfloat height1 = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(&extra_data[count].rval_image_height));
+								gfloat width1 = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(&extra_data[count].rval_image_width));
+								gchar *name = RLIB_VALUE_GET_AS_STRING(&extra_data[count].rval_image_name);
+								gchar *type = RLIB_VALUE_GET_AS_STRING(&extra_data[count].rval_image_type);
+								OUTPUT(r)->line_image(r, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), name, type, width1, height1);
+								width = RLIB_GET_LINE(width1);
+							}											
+							margin += width;
+							count++;
+						}
+					}
+					rlib_advance_vertical_position(r, rlib_position, rl);
+				}
 
 				OUTPUT(r)->end_line(r, backwards);	
 
@@ -870,6 +954,7 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 					rlib_value_free(&extra_data[count].rval_image_type);
 					rlib_value_free(&extra_data[count].rval_image_width);
 					rlib_value_free(&extra_data[count].rval_image_height);
+					g_free(extra_data[count].formatted_string);
 					count++;
 				}
 				g_free(extra_data);

@@ -162,7 +162,7 @@ static void rpdf_finalize_objects(gpointer data, gpointer user_data) {
 	struct rpdf_object *object = data;
 	struct rpdf *pdf = user_data;
 	pdf->object_count++;
-	
+
 	pdf->xref = g_slist_append(pdf->xref, GINT_TO_POINTER(pdf->size));
 	sprintf(buf, "%d 0 obj\n", pdf->object_count);
 	rpdf_out_string(pdf, buf);
@@ -333,11 +333,10 @@ static void rpdf_make_page_stream(gpointer data, gpointer user_data) {
 
 	g_free(stream);
 	if(pdf->page_data == NULL) {
-		pdf->page_data = result;
+		pdf->page_data = g_string_new(result);
+		g_free(result);
 	} else {
-		old_page_data = pdf->page_data;
-		pdf->page_data = g_strconcat(pdf->page_data, result, NULL);
-		g_free(old_page_data);
+		g_string_append(pdf->page_data, result);
 		g_free(result);
 	}
 }
@@ -429,9 +428,7 @@ static void rpdf_number_fonts(gpointer key, gpointer value, gpointer user_data) 
 
 static void rpdf_finalize_page_stream(struct rpdf *pdf) {
 	if(pdf->text_on == TRUE) {
-		gchar *old_page_data = pdf->page_data;
-		pdf->page_data = g_strconcat(pdf->page_data, "ET\n", NULL);		
-		g_free(old_page_data);	
+		g_string_append(pdf->page_data, "ET\n");
 	}
 }
 
@@ -442,7 +439,7 @@ static void rpdf_string_destroyer (gpointer data) {
 struct rpdf *rpdf_new(void) {
 	struct rpdf *pdf = g_new0(struct rpdf, 1);
 	pdf->header = g_strdup_printf("%%PDF-1.3\n");
-	pdf->fonts = g_hash_table_new_full (g_str_hash, g_str_equal, rpdf_string_destroyer, NULL);	
+	pdf->fonts = g_hash_table_new_full (g_str_hash, g_str_equal, rpdf_string_destroyer, rpdf_string_destroyer);	
 	return pdf;
 }
 
@@ -451,6 +448,7 @@ gboolean rpdf_finalize(struct rpdf *pdf) {
 	gchar *obj = NULL;
 	char  *saved_locale;
 	gchar buf[128];
+
 	rpdf_out_string(pdf, pdf->header);
 	g_hash_table_foreach(pdf->fonts, rpdf_number_fonts, pdf);
 	
@@ -483,12 +481,14 @@ gboolean rpdf_finalize(struct rpdf *pdf) {
 		struct rpdf_page_info *page_info = pdf->page_info[i];
 		GSList *list = pdf->page_contents[i];
 		gint slen = 0;
+
 		pdf->text_on = FALSE;
 		pdf->page_data = NULL;
 		pdf->page_fonts = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, NULL);
 
 		if(list != NULL)
 			g_slist_foreach(list, rpdf_make_page_stream, pdf);
+
 		rpdf_finalize_page_stream(pdf);
 
 		obj = obj_printf(NULL, "/Type /Page\n");
@@ -534,32 +534,30 @@ gboolean rpdf_finalize(struct rpdf *pdf) {
 				gdouble text_sin= sin(angle);
 				gdouble text_cos = cos(angle);
 				sprintf(buf2, "%.04f %.04f %.04f %.04f 0.0 0.0 cm\n", text_cos, text_sin, -text_sin, text_cos);
-				save_page_data = pdf->page_data;
-				pdf->page_data = g_strconcat(buf2, pdf->page_data, NULL);
-				g_free(save_page_data);
+				g_string_prepend(pdf->page_data, buf2);
 			}
 			if(page_info->has_translation == TRUE) {
 				sprintf(buf1, "1.0000 0.0000 0.0000 1.0000 %.04f %.04f cm\n", page_info->translate_x*RPDF_DPI, page_info->translate_y*RPDF_DPI);
-				save_page_data = pdf->page_data;
-				pdf->page_data = g_strconcat(buf1, pdf->page_data, NULL);
-				g_free(save_page_data);
+				g_string_prepend(pdf->page_data, buf1);
 			}
 
-			slen = strlen(pdf->page_data) + 1;
+			slen = pdf->page_data->len + 1;
 		}
 		obj = obj_printf(NULL, "<</Length %d>>\n", slen);
 		obj = obj_printf(obj, "stream\n");
 		obj = obj_printf(obj, "\n");
 		if(slen > 0) {
 			gchar *save_obj = obj;
-			obj = g_strconcat(obj, pdf->page_data, "\n", NULL);
+			obj = g_strconcat(obj, pdf->page_data->str, "\n", NULL);
 			g_free(save_obj);
 		}
 		obj = obj_printf(obj, "endstream\n");
 		rpdf_object_append(pdf, FALSE,  obj, NULL, 0);
 		g_hash_table_destroy(pdf->page_fonts);
-		g_free(pdf->page_data);
+		g_string_free(pdf->page_data, TRUE);
 	}
+
+
 
 	g_hash_table_foreach(pdf->fonts, rpdf_make_fonts_stream, pdf);
 
@@ -632,6 +630,7 @@ gboolean rpdf_finalize(struct rpdf *pdf) {
 	rpdf_out_string(pdf, "%%EOF\n");
 	setlocale(LC_ALL, saved_locale);
 	free(saved_locale);
+	
 	return TRUE;
 }
 

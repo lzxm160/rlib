@@ -58,7 +58,7 @@
 				</Output>								
 			</BreakHeader>
 			<BreakFields>
-				<BreakField value="val(group)"/>
+				<BreakField value="str(r.detailcnt/2,10,0)"/>
 			</BreakFields>
 			<BreakFooter>
 				<Output>
