@@ -10,7 +10,15 @@
 			</Output>
 		</NoData>
 	</Alternate>
-	
+
+	<PageHeader>
+		<Output>
+			<Line color="'white'" bgcolor="'black'">
+				<field value="upper(m.constitution)" width="122" align="left" col="4" memo="yes"/>
+			</Line>
+		</Output>
+	</PageHeader>
+
 	<ReportHeader>
 		<Output>
 			<Line fontSize="11">
@@ -41,9 +49,12 @@
 				<Line bgcolor="iif(r.detailcnt%2,'0xe5e5e5','white')">
 					<field value="test1" width="20" align="left" col="1"/>
 					<literal width="1"/>
-					<field value="test2" width="40" align="center" col="2" memo="yes" bgcolor="iif(val(constitution)==1,'red', iif(val(constitution)==2,'blue', 'white'))" />
+					<field value="test2" width="40" align="center" col="2" memo="yes" bgcolor="iif(val(constitution)==1,'red', iif(val(constitution)==2,'aqua', 'white'))" />
 					<literal width="1"/>
 					<field value="longline" width="60" align="right" col="3" memo="yes" bgcolor="iif(val(constitution)==1,'yellow', iif(val(constitution)==2,'green', 'white'))"/>
+				</Line>
+				<Line bgcolor="'bobkratz'">
+					<field value="longline" width="122" align="left" col="4" memo="yes"/>
 				</Line>
 			</Output>
 		</FieldDetails>

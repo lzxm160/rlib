@@ -1,3 +1,15 @@
+2005-10-21  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/breaks.c: Multiline support in the page header
+	* libsrc/formatstring.c: likewise
+	* libsrc/graphing.c: likewise
+	* libsrc/layout.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/txt.c: likewise
+	* rpdf/rpdf.c: likewise
+	* src/examples/php/multiline.php: likewise
+	* src/examples/php/multiline.xml: likewise
+
 2005-10-17  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/formatstring.c: Multiline / RPDF Speed Up
 	* libsrc/layout.c:  likewise

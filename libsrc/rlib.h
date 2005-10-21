@@ -1005,16 +1005,16 @@ struct rlib_part * load_report(gchar *filename);
 
 /***** PROTOTYPES: layout.c ***************************************************/
 gfloat rlib_layout_get_page_width(rlib *r, struct rlib_part *part);
-void rlib_layout_init_part_page(rlib *r, struct rlib_part *part, gboolean first);
-gint rlib_layout_report_output(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_element *e, gint backwards);
+void rlib_layout_init_part_page(rlib *r, struct rlib_part *part, gboolean first, gboolean normal);
+gint rlib_layout_report_output(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_element *e, gint backwards, gboolean page_header_layout);
 struct rlib_paper * rlib_layout_get_paper(rlib *r, gint paper_type);
 struct rlib_paper * rlib_layout_get_paper_by_name(rlib *r, gchar *paper_name);
-gint rlib_layout_report_output_with_break_headers(rlib *r, struct rlib_part *part, struct rlib_report *report);
+gint rlib_layout_report_output_with_break_headers(rlib *r, struct rlib_part *part, struct rlib_report *report, gboolean page_header_layout);
 void rlib_layout_init_report_page(rlib *r, struct rlib_part *part, struct rlib_report *report);
 void rlib_layout_report_footer(rlib *r, struct rlib_part *part, struct rlib_report *report);
 gfloat rlib_layout_get_next_line(rlib *r, struct rlib_part *part, gfloat position, struct rlib_report_lines *rl);
 gfloat rlib_layout_get_next_line_by_font_point(rlib *r, struct rlib_part *part, gfloat position, gfloat point);
-gint rlib_layout_end_page(rlib *r, struct rlib_part *part, struct rlib_report *report);
+gint rlib_layout_end_page(rlib *r, struct rlib_part *part, struct rlib_report *report, gboolean normal);
 
 /***** PROTOTYPES: graphing.c **************************************************/
 gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat left_margin_offset, gfloat *top_margin_offset);

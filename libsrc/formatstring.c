@@ -351,8 +351,12 @@ gchar *rlib_align_text(rlib *r, gchar **my_rtn, gchar *src, gint align, gint wid
 		return rtn;
 	} else {
 		rtn = *my_rtn  = g_malloc(width + 1);
-		memset(rtn, 0, width+1);
-		strcpy(rtn, src);
+		if(width >= 1) {
+			memset(rtn, ' ', width);
+			rtn[width] = 0;
+		}  
+		if(src != NULL)
+			memcpy(rtn, src, len);
 	}
 
 	if(!OUTPUT(r)->do_align)
@@ -372,7 +376,7 @@ gchar *rlib_align_text(rlib *r, gchar **my_rtn, gchar *src, gint align, gint wid
 				gint x = (width - len)/2;
 				if(x > 0) {
 					memset(rtn, ' ', x);
-					g_strlcpy(rtn+x, src, width);
+					memcpy(rtn+x, src, len);
 				}
 			}
 		}
@@ -388,10 +392,11 @@ GSList * rlib_format_split_string(rlib *r, gchar *data, gint width, gint max_lin
 	gint line_spot = 0;
 	gboolean at_the_end = FALSE;
 	GSList *list = NULL;
-	
+
 	slen = strlen(data);
 	while(1) {
 		gchar *this_line = g_malloc(width);
+		gint space_count = 0;
 		memset(this_line, 0, width);
 		end = spot + width-1;
 		if(end > slen) {
@@ -405,24 +410,33 @@ GSList * rlib_format_split_string(rlib *r, gchar *data, gint width, gint max_lin
 			if(data[i] == new_line) 
 				break;
 			this_line[line_spot++] = data[i];
+			if(data[i] == space)
+				space_count++;
 		}
 		
+		if(spot < slen)
+			at_the_end = FALSE;
+			
 		if(!at_the_end) {
-			while(data[i] != space && data[i] != new_line) {
-				this_line[--line_spot] = 0;
-				i--;
-				spot--;
+			if(space_count == 0) {
+				/* We do nothing here as we have text that just won't fit.. we split it up in "width" chunks */
+			} else {
+				while(data[i] != space && data[i] != new_line) {
+					this_line[--line_spot] = 0;
+					i--;
+					spot--;
+				}
 			}
 			if(data[spot] == space)
 				spot++;
 		}
-	
+
 		list = g_slist_append(list, this_line);
 		*line_count = *line_count + 1;
 
-		if(at_the_end == TRUE)
+		if(at_the_end == TRUE) 
 			break;
-	
 	}
+	
 	return list;
 }

@@ -176,7 +176,7 @@ void rlib_handle_page_footer(rlib *r, struct rlib_part *part, struct rlib_report
 		report->position_bottom[i] -= report->bottom_size[i];
 	}
 
-	rlib_layout_report_output(r, part, report, report->page_footer, TRUE);
+	rlib_layout_report_output(r, part, report, report->page_footer, TRUE, FALSE);
 	
 	for(i=0; i<report->pages_across; i++)
 		report->position_bottom[i] -= report->bottom_size[i];
@@ -262,7 +262,7 @@ gint rlib_end_page_if_line_wont_fit(rlib *r, struct rlib_part *part, struct rlib
 			fits=FALSE;
 	}
 	if(!fits)
-		rlib_layout_end_page(r, part, report);
+		rlib_layout_end_page(r, part, report, TRUE);
 	return !fits;
 }
 
@@ -380,8 +380,8 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 			rlib_evaluate_report_attributes(r, report);
 			rlib_set_report_from_part(r, part, report, top_margin_offset);
 			report->left_margin += left_margin_offset + part->left_margin;
-			rlib_layout_report_output(r, part, report, report->report_header, FALSE);
-			rlib_layout_report_output(r, part, report, report->alternate.nodata, FALSE);
+			rlib_layout_report_output(r, part, report, report->report_header, FALSE, TRUE);
+			rlib_layout_report_output(r, part, report, report->alternate.nodata, FALSE, TRUE);
 		} else {
 			rlib_navigate_first(r, r->current_result);
 			if (!part->has_only_one_report) {
@@ -401,7 +401,7 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 			if(rlib_execute_as_int(r, report->height_code, &report_percent)) 
 				at_least = (part->position_bottom[0] - part->position_top[0]) * ((gfloat)report_percent/100);					
 			origional_position_top = report->position_top[0];
-			rlib_layout_report_output(r, part, report, report->report_header, FALSE);
+			rlib_layout_report_output(r, part, report, report->report_header, FALSE, TRUE);
 			rlib_layout_init_report_page(r, part, report);
 			r->detail_line_count = 0;
 			if(report->font_size != -1) {
@@ -450,9 +450,9 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 						}
 						
 						if(OUTPUT(r)->do_break)
-							output_count = rlib_layout_report_output(r, part, report, report->detail.fields, FALSE);
+							output_count = rlib_layout_report_output(r, part, report, report->detail.fields, FALSE, FALSE);
 						else
-							output_count = rlib_layout_report_output_with_break_headers(r, part, report);
+							output_count = rlib_layout_report_output_with_break_headers(r, part, report, TRUE);
 
 						if(output_count > 0)
 							r->detail_line_count++;
@@ -576,7 +576,7 @@ static void rlib_layout_part_tr(rlib *r, struct rlib_part *part) {
 		if(rlib_execute_as_boolean(r, tr->newpage_code, &newpage)) {
 			if(newpage && OUTPUT(r)->paginate) {
 				OUTPUT(r)->end_page(r, part);
-				rlib_layout_init_part_page(r, part, FALSE);
+				rlib_layout_init_part_page(r, part, FALSE, TRUE);
 				memset(&rrp, 0, sizeof(rrp));
 			}
 		}
@@ -687,7 +687,7 @@ gint rlib_make_report(rlib *r) {
 			rlib_fetch_first_rows(r);
 			rlib_evaluate_part_attributes(r, part);
 			OUTPUT(r)->start_report(r, part);
-			rlib_layout_init_part_page(r, part, TRUE);
+			rlib_layout_init_part_page(r, part, TRUE, TRUE);
 			rlib_layout_part_tr(r, part);
 			OUTPUT(r)->end_part(r, part);
 			OUTPUT(r)->end_page(r, part);

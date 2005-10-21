@@ -102,6 +102,20 @@ struct _rpdf_fonts rpdf_fonts[] =  {
 
 #define DEGREE_2_RAD(x) (x*M_PI/180.0)
 
+void rpdf_error(const gchar *fmt, ...) {
+	va_list vl;
+	gchar *result = NULL;
+
+	va_start(vl, fmt);
+	result = g_strdup_vprintf(fmt, vl);
+	va_end(vl);
+	if (result != NULL) {
+		fprintf(stderr, "RPDF:: %s", result);
+		g_free(result);
+	}
+	return;
+}
+
 static gchar * obj_printf(gchar *obj, const gchar *fmt, ...) {
 	va_list vl;
 	gchar *result = NULL;
@@ -683,8 +697,10 @@ gboolean rpdf_new_page(struct rpdf *pdf, gint paper, gint orientation) {
 }
 
 gboolean rpdf_set_page(struct rpdf *pdf, gint page) {
+	static gint six = 0;
 	if(page < 0 || page >= pdf->page_count)
 		return FALSE;
+
 	pdf->current_page = page;
 	return TRUE;
 }

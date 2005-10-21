@@ -78,6 +78,8 @@ static void rlib_txt_print_text(rlib *r, gfloat left_origin, gfloat bottom_origi
 }
 
 static void rlib_txt_start_new_page(rlib *r, struct rlib_part *part) {
+	if(r->current_page_number <= 0) 
+		r->current_page_number++;
 	part->position_bottom[0] = 11-part->bottom_margin;
 }
 

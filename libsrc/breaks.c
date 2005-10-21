@@ -48,7 +48,7 @@ static void rlib_print_break_header_output(rlib *r, struct rlib_part *part, stru
 	if(!suppress || (suppress && !blank)) {
 		rb->didheader = TRUE;
 		if(e != NULL)
-			rlib_layout_report_output(r, part, report, e, backwards);
+			rlib_layout_report_output(r, part, report, e, backwards, TRUE);
 	} else {
 		rb->didheader = FALSE;
 	}
@@ -59,7 +59,7 @@ static void rlib_print_break_footer_output(rlib *r, struct rlib_part *part, stru
 		return;
 
 	if(rb->didheader)
-		rlib_layout_report_output(r, part, report, e, backwards);
+		rlib_layout_report_output(r, part, report, e, backwards, FALSE);
 }
 
 void rlib_force_break_headers(rlib *r, struct rlib_part *part, struct rlib_report *report, gboolean precalculate) {
@@ -142,7 +142,7 @@ void rlib_handle_break_headers(rlib *r, struct rlib_part *part, struct rlib_repo
 				allfit = FALSE;
 		}
 		if(!allfit) {
-			rlib_layout_end_page(r, part, report);
+			rlib_layout_end_page(r, part, report, TRUE);
 			rlib_force_break_headers(r, part, report, precalculate);
 		} else {
 			for(i=0;i<icache;i++) {
@@ -227,7 +227,7 @@ static void rlib_break_all_below_in_reverse_order(rlib *r, struct rlib_part *par
 	if(newpage && OUTPUT(r)->do_break) {
 		if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
 			if(OUTPUT(r)->paginate)
-				rlib_layout_end_page(r, part, report);
+				rlib_layout_end_page(r, part, report, TRUE);
 			rlib_force_break_headers(r, part, report, precalculate);
 		}
 	}

@@ -295,7 +295,7 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 
 	if(!rlib_will_this_fit(r, part, report, graph_height / RLIB_PDF_DPI, 1)) {
 		*top_margin_offset = 0;
-		rlib_layout_end_page(r, part, report);
+		rlib_layout_end_page(r, part, report, TRUE);
 		if(report->font_size != -1) {
 			r->font_point = report->font_size;
 			OUTPUT(r)->set_font_point(r, r->font_point);
