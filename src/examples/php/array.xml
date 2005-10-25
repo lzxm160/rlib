@@ -38,18 +38,23 @@
 			<HorizontalLine size="4" bgcolor="'white'"/>
 		</Output>
 	</ReportHeader>		
+	
+	<MetaData>
+		<MetaData name="bacon" value="val(group)"/>
+	</MetaData>
+	
 	<Variables>
 		<Variable name="oscar" value="2+3" type="expression"/>
-		<Variable name="precal" value="val(group)" type="sum" resetonbreak="break0" precalculate="yes"/>
-		<Variable name="edude" value="val(group)" type="sum" precalculate="yes"/>
-		<Variable name="actual" value="val(group)" type="sum" resetonbreak="break0"/>
+		<Variable name="precal" value="bacon" type="sum" resetonbreak="break0" precalculate="yes"/>
+		<Variable name="edude" value="bacon" type="sum" precalculate="yes"/>
+		<Variable name="actual" value="bacon" type="sum" resetonbreak="break0"/>
 	</Variables>
 	<Breaks>	
 		<Break name="break0" newpage="no" headernewpage="yes">
 			<BreakHeader>
 				<Output>
 					<Line>
-						<field value="val(group)" width="20" format="'%.2d'" align="left" col="1"/>					
+						<field value="bacon" width="20" format="'%.2d'" align="left" col="1"/>					
 						<literal>TEST::: </literal>
 						<field value="v.precal" width="10"/>
 						<literal>EDUDE::: </literal>

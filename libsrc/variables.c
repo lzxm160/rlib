@@ -62,6 +62,7 @@ void rlib_init_variables(rlib *r, struct rlib_report *report) {
 
 void rlib_process_variables(rlib *r, struct rlib_report *report, gboolean precalculate) {
 	struct rlib_element *e;
+
 	for(e = report->variables; e != NULL; e=e->next) {
 		struct rlib_report_variable *rv = e->data;
 		struct rlib_value *count = &RLIB_VARIABLE_CA(rv)->count;
@@ -85,6 +86,7 @@ void rlib_process_variables(rlib *r, struct rlib_report *report, gboolean precal
 				RLIB_VALUE_GET_AS_NUMBER(amount) += RLIB_VALUE_GET_AS_NUMBER(er);
 			else
 				r_error(r, "rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_SUM\n");
+				
 		} else if(rv->type == RLIB_REPORT_VARIABLE_AVERAGE) {
 			RLIB_VALUE_GET_AS_NUMBER(count) += RLIB_DECIMAL_PRECISION;
 			if(RLIB_VALUE_IS_NUMBER(er))
@@ -148,8 +150,9 @@ void rlib_variables_precalculate(rlib *r, struct rlib_part *part, struct rlib_re
 	struct rlib_element *e;
 
 	rlib_fetch_first_rows(r);
-	rlib_process_input_metadata(r);
 	rlib_process_variables(r, report, TRUE);
+
+	r->detail_line_count = 0;
 
 	if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
 		while (1) {
@@ -157,9 +160,10 @@ void rlib_variables_precalculate(rlib *r, struct rlib_part *part, struct rlib_re
 			rlib_handle_break_headers(r, part, report, TRUE);
 			rlib_handle_break_footers(r, part, report, TRUE);
 
+			r->detail_line_count++;
+
 			if(did_it == FALSE) {
 				did_it = TRUE;
-				rlib_process_input_metadata(r);
 				rlib_process_variables(r, report, TRUE);
 			}			
 			

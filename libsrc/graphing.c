@@ -360,7 +360,6 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 			stacked_y_value_max[RLIB_SIDE_RIGHT] = 0;;
 			stacked_y_value_min[RLIB_SIDE_LEFT] = 0;
 			stacked_y_value_min[RLIB_SIDE_RIGHT] = 0;
-			rlib_process_input_metadata(r);
 			row_sum = g_realloc(row_sum, (row_count+1) * sizeof(gfloat));
 			row_sum[row_count] = 0;
 			for(list=graph->plots;list != NULL; list = g_slist_next(list)) {
@@ -599,7 +598,6 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	rlib_fetch_first_rows(r);
 	if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
 		while (1) {
-			rlib_process_input_metadata(r);
 			data_plot_count = 0;
 			last_height_pos=0;
 			last_height_neg=0;

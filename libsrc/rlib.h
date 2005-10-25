@@ -466,6 +466,8 @@ struct rlib_part {
 	struct rlib_from_xml xml_paper_type;
 	struct rlib_from_xml xml_font_size;
 	struct rlib_from_xml xml_iterations;
+	struct rlib_from_xml xml_suppress_page_header_first_page;
+
 
 	GSList *part_rows;
 	struct rlib_element *report_header;
@@ -481,6 +483,8 @@ struct rlib_part {
 	struct rlib_pcode *paper_type_code;
 	struct rlib_pcode *font_size_code;
 	struct rlib_pcode *iterations_code;
+	struct rlib_pcode *suppress_page_header_first_page_code;
+
 
 	struct rlib_paper *paper;
 	gint orientation;
@@ -496,6 +500,8 @@ struct rlib_part {
 	gfloat bottom_margin;
 	gfloat left_margin;
 	gint landscape;
+	gint suppress_page_header_first_page;
+
 };
 
 struct rlib_graph_x_minor_tick {

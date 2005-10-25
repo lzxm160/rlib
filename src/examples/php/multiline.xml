@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE report >
-<Report fontSize="10" orientation="landscape">
+<Report fontSize="10" orientation="landscape" suppressPageHeaderFirstPage="yes">
 	<Alternate>
 		<NoData>
 			<Output>
@@ -14,7 +14,7 @@
 	<PageHeader>
 		<Output>
 			<Line color="'white'" bgcolor="'black'">
-				<field value="upper(m.constitution)" width="122" align="left" col="4" memo="yes"/>
+				<field value="'Wheeeeeeee'" width="122" align="left" col="4" memo="yes"/>
 			</Line>
 		</Output>
 	</PageHeader>

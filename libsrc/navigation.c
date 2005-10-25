@@ -108,6 +108,7 @@ static gint rlib_navigate_followers(rlib *r, gint my_leader, gint way) {
 			
 		}
 	}
+	rlib_process_input_metadata(r);
 	return rtn;
 }
 

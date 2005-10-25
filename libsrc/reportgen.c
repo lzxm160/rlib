@@ -92,53 +92,6 @@ gint get_font_point(rlib *r, struct rlib_part *part, struct rlib_report *report,
 }	
 
 
-#if 0
-/**
- * break the string txt into a RVector of individual strings that will fit
- * the width. Use RVector_size to count the # of lines returned.
- */
-RVector *wrap_memo_lines(gchar *txt, gint width, const gchar *wrapchars) {
-	gint len;
-	gchar *tptr, *endptr, *ptr;
-	RVector *v = RVector_new();
-	
-	do {
-		if (r_strlen(txt) < width) {
-			RVector_add(v, g_strdup(txt));
-			break;
-		} else {
-			endptr = ptr = txt + width;
-			while (ptr > txt) {
-				if ((tptr = strchr(wrapchars, *ptr))) {
-					len = ptr - txt;
-					tptr = g_malloc(len + 1);
-					strncpy(tptr, txt, len);
-					tptr[len] = '\0';
-					RVector_add(v, tptr);
-					endptr = ptr;
-				}
-				--ptr;
-			}
-			txt = endptr;
-		}
-	} while (TRUE);
-	return v;
-}
-
-
-/**
- * Frees all memory allocated for a memo lines vector
- */
-void free_memo_lines(RVector *v) {
-	gint i, lim = RVector_size(v);
-
-	for (i = 0; i < lim; ++i) {
-		g_free(RVector_get(v, i));
-	}
-	RVector_free(v);
-}
-#endif
-
 gint rlib_emit_signal(rlib *r, gint signal_number) {
 	gboolean (*signal_function)(rlib *, gpointer) = r->signal_functions[signal_number].signal_function;
 	gpointer data = r->signal_functions[signal_number].data;
@@ -146,26 +99,6 @@ gint rlib_emit_signal(rlib *r, gint signal_number) {
 		return signal_function(r, data);
 	else
 		return FALSE;
-}
-
-gint calc_memo_lines(struct rlib_report_lines *rl) {
-	struct rlib_element *e;
-/*	int hasmemo; */
-	gint nlines = 0;
-/*	RVector *v; */
-	
-	for (e = rl->e; e != NULL; e = e->next) {
-		if (e->type == RLIB_ELEMENT_FIELD) {
-#if 0
-			if (e->xml_maxlines)
-			v = wrapMemoLines(
-			if (e->maxlines != 1) {
-				hasmemo = TRUE;
-			}
-#endif
-		}
-	}
-	return nlines;
 }
 
 void rlib_handle_page_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {
@@ -273,7 +206,7 @@ gint rlib_fetch_first_rows(rlib *r) {
 		if(r->results[i].result == NULL) {
 			result = FALSE;
 		} else {
-			if(INPUT(r,i)->first(INPUT(r,i), r->results[i].result) == FALSE) {
+			if(rlib_navigate_first(r, i) == FALSE) {
 				result = FALSE;
 			}
 		}
@@ -317,7 +250,7 @@ static void rlib_evaluate_report_attributes(rlib *r, struct rlib_report *report)
 
 }
 
-static void rlib_evaluate_part_attributes(rlib *r, struct rlib_part *part) {
+static void rlib_evaulate_part_attributes(rlib *r, struct rlib_part *part) {
 	gint t;
 	gfloat f;
 	char buf[MAXSTRLEN];
@@ -335,6 +268,9 @@ static void rlib_evaluate_part_attributes(rlib *r, struct rlib_part *part) {
 		part->bottom_margin = f;
 	if (rlib_execute_as_float(r, part->pages_across_code, &f))
 		part->pages_across = f;
+	if (rlib_execute_as_int(r, part->suppress_page_header_first_page_code, &t))
+		part->suppress_page_header_first_page = t;
+
 	if (rlib_execute_as_string(r, part->paper_type_code, buf, MAXSTRLEN)) {
 		struct rlib_paper *paper = rlib_layout_get_paper_by_name(r, buf);
 		if(paper != NULL)
@@ -387,7 +323,6 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 			if (!part->has_only_one_report) {
 				rlib_init_variables(r, report);
 				rlib_process_variables(r, report, FALSE);
-				rlib_process_input_metadata(r);
 			}
 			
 			processed_variables = TRUE;
@@ -432,7 +367,6 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 						}
 						
 						if(!processed_variables) {
-							rlib_process_input_metadata(r);
 							rlib_process_variables(r, report, FALSE);
 							processed_variables = TRUE;
 						}
@@ -641,7 +575,6 @@ gint rlib_evaulate_single_report_variables(rlib *r, struct rlib_part *part) {
 
 				rlib_init_variables(r, report);
 				rlib_process_variables(r, report, FALSE);
-				rlib_process_input_metadata(r);
 				part->only_report = report;
 			}
 		}
@@ -685,7 +618,7 @@ gint rlib_make_report(rlib *r) {
 		rlib_resolve_part_fields(r, part);
 		for(iterations=0;iterations<part->iterations;iterations++) {
 			rlib_fetch_first_rows(r);
-			rlib_evaluate_part_attributes(r, part);
+			rlib_evaulate_part_attributes(r, part);
 			OUTPUT(r)->start_report(r, part);
 			rlib_layout_init_part_page(r, part, TRUE, TRUE);
 			rlib_layout_part_tr(r, part);

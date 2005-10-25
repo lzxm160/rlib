@@ -364,7 +364,7 @@ void rlib_pcode_dump(rlib *r, struct rlib_pcode *p, gint offset) {
 				rlogit(r, "Result Set = [%d]; Field = [%d]", rf->resultset, rf->field);
 			} else if(o->type == OPERAND_METADATA) {
 				struct rlib_metadata *metadata = o->value;
-				rlogit(r, "METADATA");
+				rlogit(r, "METADATA ");
 				rlib_pcode_dump(r, metadata->formula_code, offset+1);
 			} else if(o->type == OPERAND_MEMORY_VARIABLE) {
 				rlogit(r, "Result Memory Variable = [%s]", (char *)o->value);

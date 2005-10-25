@@ -1204,8 +1204,12 @@ void rlib_layout_init_part_page(rlib *r, struct rlib_part *part, gboolean first,
 	if(normal) {
 		if(first) {
 			rlib_layout_report_output(r, part, NULL, part->report_header, FALSE, TRUE);
-		}			
-		rlib_layout_report_output(r, part, NULL, part->page_header, FALSE, TRUE);
+		}
+		if(r->current_page_number == 1 && part->suppress_page_header_first_page == TRUE) {
+			// We don't print the page header in this case
+		} else {
+			rlib_layout_report_output(r, part, NULL, part->page_header, FALSE, TRUE);
+		}
 	}
 
 	OUTPUT(r)->init_end_page(r);

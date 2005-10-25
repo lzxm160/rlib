@@ -256,7 +256,8 @@ void rlib_handle_break_footers(rlib *r, struct rlib_part *part, struct rlib_repo
 				if (INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
 					dobreak = 1;
 				} else {
-					struct rlib_value *tmp = rlib_execute_pcode(r, &rval_tmp, bf->code, NULL);
+					struct rlib_value *tmp = rlib_execute_pcode(r, &rval_tmp, bf->code, NULL);					
+
 					if (rvalcmp(bf->rval, tmp))
 					    dobreak = 1;
 					else 

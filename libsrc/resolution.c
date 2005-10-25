@@ -449,6 +449,9 @@ void rlib_resolve_part_fields(rlib *r, struct rlib_part *part) {
 	part->pages_across_code = rlib_infix_to_pcode(r, part, NULL, (gchar *)part->xml_pages_across.xml, part->xml_pages_across.line, TRUE);
 	part->iterations = 1;
 	part->iterations_code = rlib_infix_to_pcode(r, part, NULL, (gchar *)part->xml_iterations.xml, part->xml_iterations.line, TRUE);
+	part->suppress_page_header_first_page = FALSE;
+	part->suppress_page_header_first_page_code = rlib_infix_to_pcode(r, part, part, (gchar *)part->xml_suppress_page_header_first_page.xml, part->xml_suppress_page_header_first_page.line, TRUE);
+
 
 	if (rlib_execute_as_float(r, part->pages_across_code, &f))
 		part->pages_across = f;

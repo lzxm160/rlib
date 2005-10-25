@@ -654,6 +654,8 @@ static void parse_part(rlib *r, struct rlib_part *part, xmlDocPtr doc, xmlNsPtr 
 	get_both(&part->xml_bottom_margin, cur, "bottom_margin");
 	get_both(&part->xml_paper_type, cur, "paper_type");
 	get_both(&part->xml_iterations, cur, "iterations");
+	get_both(&part->xml_suppress_page_header_first_page, cur, "suppressPageHeaderFirstPage");
+
 
 	part->part_rows = NULL;
 	
@@ -765,6 +767,8 @@ struct rlib_part * parse_part_file(rlib *r, gchar *filename, gchar type) {
 		part->xml_bottom_margin.xml = xmlStrdup(report->xml_bottom_margin.xml);
 		part->xml_font_size.xml = xmlStrdup(report->xml_font_size.xml);
 		part->xml_orientation.xml = xmlStrdup(report->xml_orientation.xml);
+		part->xml_suppress_page_header_first_page.xml = xmlStrdup(report->xml_suppress_page_header_first_page.xml);
+		
 		report->is_the_only_report = TRUE;		
 		part->has_only_one_report = TRUE;
 #if 0
