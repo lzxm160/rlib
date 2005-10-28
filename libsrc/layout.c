@@ -1189,7 +1189,15 @@ void rlib_layout_init_part_page(rlib *r, struct rlib_part *part, gboolean first,
 	}		
 	r->current_font_point = -1;
 	OUTPUT(r)->start_new_page(r, part);
-	OUTPUT(r)->set_font_point(r, r->font_point);
+	
+	/* It's important that we set the font point for all pages across (RPDF)  Above start_new_page allocates pages_across new pages*/
+	for(i=0;i<part->pages_across;i++) {
+		r->current_font_point = -1;
+		OUTPUT(r)->set_working_page(r, part, i);
+		OUTPUT(r)->set_font_point(r, r->font_point);
+	}
+	
+	OUTPUT(r)->set_working_page(r, part, 0);
 	
 	for(i=0; i<part->pages_across; i++)
 		part->position_bottom[i] -= part->bottom_size[i];

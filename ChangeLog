@@ -1,3 +1,8 @@
+2005-10-27  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/layout.c: Set the font size on all pages_across so that RPDF is a happy camper
+	* rpdf/rpdf.c: likewise
+	* src/examples/php/pages_across.php: likewise
+
 2005-10-25  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/breaks.c: Metadata support & Fix Suppress Page Header 1st Page
 	* libsrc/free.c: likewise

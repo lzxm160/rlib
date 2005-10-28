@@ -102,7 +102,7 @@ struct _rpdf_fonts rpdf_fonts[] =  {
 
 #define DEGREE_2_RAD(x) (x*M_PI/180.0)
 
-void rpdf_error(const gchar *fmt, ...) {
+static void rpdf_error(const gchar *fmt, ...) {
 	va_list vl;
 	gchar *result = NULL;
 
@@ -714,6 +714,7 @@ gboolean rpdf_set_font(struct rpdf *pdf, const gchar *font, const gchar *encodin
 	struct rpdf_stream *real_stream;
 	gchar *both;
 
+
 	while(rpdf_fonts[i].name[0] != 0) {
 		if(strcmp(rpdf_fonts[i].name, font) == 0) {
 			found = TRUE;
@@ -1095,9 +1096,8 @@ gboolean rpdf_setrgbcolor(struct rpdf *pdf, gdouble r, gdouble g, gdouble b) {
 gdouble rpdf_text_width(struct rpdf *pdf, const gchar *text) {
 	gint slen,i;
 	gdouble width = 0.0;
-
 	struct rpdf_page_info *page_info = pdf->page_info[pdf->current_page];
-	
+
 	if(text == NULL)
 		return 0.0;
 	
