@@ -1,3 +1,7 @@
+2005-11-06  Bob Doan  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/formatstring.c: Make GLIB Quitier
+	* libsrc/parsexml.c: remove #if 0
+
 2005-10-27  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/layout.c: Set the font size on all pages_across so that RPDF is a happy camper
 	* rpdf/rpdf.c: likewise

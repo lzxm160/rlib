@@ -368,7 +368,10 @@ gchar *rlib_align_text(rlib *r, gchar **my_rtn, gchar *src, gint align, gint wid
 			gint x = width - len;
 			if(x > 0) {
 				memset(rtn, ' ', x);
-				g_strlcpy(rtn+x, src, width);
+				if(src == NULL)
+					rtn[x] = 0;
+				else
+					g_strlcpy(rtn+x, src, width);
 			}
 		}
 		if(align == RLIB_ALIGN_CENTER) {

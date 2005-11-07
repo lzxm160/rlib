@@ -771,11 +771,6 @@ struct rlib_part * parse_part_file(rlib *r, gchar *filename, gchar type) {
 		
 		report->is_the_only_report = TRUE;		
 		part->has_only_one_report = TRUE;
-#if 0
-		report->xml_left_margin = NULL;
-		report->xml_top_margin = NULL;
-		report->xml_bottom_margin = NULL;
-#endif		
 		
 		part->xml_pages_across.xml = xmlStrdup(report->xml_pages_across.xml);
 		found = TRUE;
