@@ -148,9 +148,9 @@ static void rlib_field_resolve_pcode(rlib *r, struct rlib_part *part, struct rli
 	rf->memo_max_lines_code = rlib_infix_to_pcode(r, part, report, (gchar *)rf->xml_memo_max_lines.xml, rf->xml_memo_max_lines.line, TRUE);
 	rf->memo_wrap_chars_code = rlib_infix_to_pcode(r, part, report, (gchar *)rf->xml_memo_wrap_chars.xml, rf->xml_memo_wrap_chars.line, TRUE);
 	rf->width = -1;
-/*	rlogit("DUMPING PCODE FOR [%s]\n", rf->value); 
-	rlib_pcode_dump(rf->code,0);	
-	rlogit("\n\n");  */
+/*	r_error(r, "DUMPING PCODE FOR [%s]\n", rf->value); 
+	rlib_pcode_dump(r, rf->code,0);	
+	r_error(r, "\n\n");  */
 }
 
 static void rlib_literal_resolve_pcode(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_literal *rt) {
@@ -450,7 +450,7 @@ void rlib_resolve_part_fields(rlib *r, struct rlib_part *part) {
 	part->iterations = 1;
 	part->iterations_code = rlib_infix_to_pcode(r, part, NULL, (gchar *)part->xml_iterations.xml, part->xml_iterations.line, TRUE);
 	part->suppress_page_header_first_page = FALSE;
-	part->suppress_page_header_first_page_code = rlib_infix_to_pcode(r, part, part, (gchar *)part->xml_suppress_page_header_first_page.xml, part->xml_suppress_page_header_first_page.line, TRUE);
+	part->suppress_page_header_first_page_code = rlib_infix_to_pcode(r, part, NULL, (gchar *)part->xml_suppress_page_header_first_page.xml, part->xml_suppress_page_header_first_page.line, TRUE);
 
 
 	if (rlib_execute_as_float(r, part->pages_across_code, &f))

@@ -864,7 +864,10 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 					
 					
 /* Memo Fields that won't fit */
-					if(rlib_will_this_fit(r, part, report, get_output_size(r, part, report, roa), 1) == FALSE) {
+/*
+	TODO?? This shoudl really look @ the size of the line and not the output
+*/
+					if(rlib_will_this_fit(r, part, report, get_output_size(r, part, report, roa), 1) == FALSE && max_memo_lines > 1) {
 						if(page_header_layout == FALSE) {
 							if(report != NULL) {
 /* We need to let the layout engine know this has nothing to do w/ pages across and then we have a really long memo field in the report header some how */							

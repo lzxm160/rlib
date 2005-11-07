@@ -5,7 +5,7 @@
 	$data[0][3] = "group";
 	$data[0][4] = "breakfast";
 
-	$data[1][0] = "Bob";
+	$data[1][0] = "";
 	$data[1][1] = "Doan";
 	$data[1][2] = "blue";
 	$data[1][3] = "1";

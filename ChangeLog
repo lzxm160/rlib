@@ -1,3 +1,15 @@
+2005-11-07  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/formatstring.c: restore non format string chars in format string functionality.
+	* libsrc/layout.c: don't check stack size on iif's
+	* libsrc/pcode.c: likewise
+	* libsrc/pcode.h: likewise
+	* libsrc/pcode_op_functions.c:  likewise
+	* libsrc/resolution.c:  likewise
+	* libsrc/xml_data_source.c:  likewise
+	* src/examples/php/array.php: likewise
+	* src/examples/php/expressions.php: likewise
+	* src/examples/php/expressions.xml: likewise
+
 2005-11-06  Bob Doan  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/formatstring.c: Make GLIB Quitier
 	* libsrc/parsexml.c: remove #if 0

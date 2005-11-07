@@ -1005,27 +1005,28 @@ gboolean rlib_pcode_operator_iif(rlib *r, struct rlib_pcode *code, struct rlib_v
 	if(RLIB_VALUE_IS_IIF(v1)) {
 		struct rlib_pcode_if *rif = RLIB_VALUE_GET_AS_IIF(v1);
 		struct rlib_value *result;
-		execute_pcode(r, rif->evaulation, vs, this_field_value);
+		execute_pcode(r, rif->evaulation, vs, this_field_value, FALSE);
 		result = rlib_value_stack_pop(vs);
 		if(RLIB_VALUE_IS_NUMBER(result)) {
 			if(RLIB_VALUE_GET_AS_NUMBER(result) == 0) {
 				rlib_value_free(result);
 				rlib_value_free(v1);
-				thisresult = execute_pcode(r, rif->false, vs, this_field_value);
+				thisresult = execute_pcode(r, rif->false, vs, this_field_value, FALSE);
+
 			} else {
 				rlib_value_free(result);
 				rlib_value_free(v1);
-				thisresult = execute_pcode(r, rif->true, vs, this_field_value);
+				thisresult = execute_pcode(r, rif->true, vs, this_field_value, FALSE);
 			}
 		} else if(RLIB_VALUE_IS_STRING(result)) {
 			if(RLIB_VALUE_GET_AS_STRING(result) == NULL) {
 				rlib_value_free(result);
 				rlib_value_free(v1);
-				thisresult = execute_pcode(r, rif->false, vs, this_field_value);
+				thisresult = execute_pcode(r, rif->false, vs, this_field_value, FALSE);
 			} else {
 				rlib_value_free(result);
 				rlib_value_free(v1);
-				thisresult = execute_pcode(r, rif->true, vs, this_field_value);
+				thisresult = execute_pcode(r, rif->true, vs, this_field_value, FALSE);
 			}
 		} else {
 			rlib_value_free(result);
@@ -1033,7 +1034,8 @@ gboolean rlib_pcode_operator_iif(rlib *r, struct rlib_pcode *code, struct rlib_v
 			r_error(r, "CAN'T COMPARE IIF VALUE [%d]\n", RLIB_VALUE_GET_TYPE(result));
 		}
 	}
-	if (!thisresult) rlib_pcode_operator_fatal_execption(r,"iif", code, 1, v1, NULL, NULL);
+	if (!thisresult) 
+	rlib_pcode_operator_fatal_execption(r,"iif", code, 1, v1, NULL, NULL);
 	return thisresult;
 }
 
@@ -1591,7 +1593,7 @@ gint rlib_pcode_operator_eval(rlib *r, struct rlib_pcode *code, struct rlib_valu
 	if(v1 != NULL) {
 		if(RLIB_VALUE_IS_STRING(v1)) {
 			struct rlib_pcode *code = NULL;
-			code = rlib_infix_to_pcode(r, NULL, NULL, RLIB_VALUE_GET_AS_STRING(v1), code->line_number, TRUE);
+			code = rlib_infix_to_pcode(r, NULL, NULL, RLIB_VALUE_GET_AS_STRING(v1), -1, TRUE);
 			rlib_execute_pcode(r, &rval_rtn, code, this_field_value);		
 			rlib_pcode_free(code);
 			rlib_value_free(v1);

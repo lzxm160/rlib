@@ -156,6 +156,9 @@ static gchar * rlib_xml_get_field_value_as_string(gpointer input_ptr, gpointer r
 	if (field_value == NULL)
 		return (gchar *)"";
 
+	if (field_value->xmlChildrenNode == NULL)
+		return (gchar *)"";
+
 	return (gchar *)field_value->xmlChildrenNode->content;
 }
 

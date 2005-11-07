@@ -11,6 +11,7 @@
 	$data[1][3] = "1";
 	$data[1][4] = "Green Eggs And Spam I Am I Am";
 
+	$Alloc_Cnt = "-1";
 
 	$rlib =	rlib_init();
 	rlib_set_locale($rlib, "pt_BR");	

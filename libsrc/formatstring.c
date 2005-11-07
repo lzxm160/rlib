@@ -207,6 +207,11 @@ static gint rlib_format_string_default(rlib *r, struct rlib_report_field *rf, st
 
 gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, struct rlib_value *rval) {
 	gchar current_locale[MAXSTRLEN];
+	gchar before[MAXSTRLEN], after[MAXSTRLEN];
+	gint before_len = 0, after_len = 0;
+	gboolean formatted_it = FALSE;	
+	
+	
 	current_locale[0] = 0;
 	
 	if(r->special_locale != NULL) {
@@ -220,6 +225,7 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 	}
 	if(rf->xml_format.xml == NULL) {
 		rlib_format_string_default(r, rf, rval, dest);
+		formatted_it = TRUE;
 	} else {
 		gchar *formatstring;
 		struct rlib_value rval_fmtstr2, *rval_fmtstr=&rval_fmtstr2;
@@ -233,6 +239,7 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 			formatstring = RLIB_VALUE_GET_AS_STRING(rval_fmtstr);
 			if(formatstring == NULL) {
 				rlib_format_string_default(r, rf, rval, dest);
+				formatted_it = TRUE;
 			} else {
 				if (*formatstring == '!') {
 					gboolean result;
@@ -242,6 +249,7 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 					case '$': /* Format as money */
 						if (RLIB_VALUE_IS_NUMBER(rval)) {
 							result = rlib_format_money(r, dest, tfmt + 1, RLIB_VALUE_GET_AS_NUMBER(rval));
+							formatted_it = TRUE;
 							setlocale(LC_ALL, current_locale);
 							return result;
 						}
@@ -250,6 +258,7 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 					case '#': /* Format as number */
 						if (RLIB_VALUE_IS_NUMBER(rval)) {
 							result = rlib_format_number(r, dest, tfmt + 1, RLIB_VALUE_GET_AS_NUMBER(rval));
+							formatted_it = TRUE;
 							setlocale(LC_ALL, current_locale);
 							return result;
 						}
@@ -259,6 +268,7 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 						if(RLIB_VALUE_IS_DATE(rval)) {
 							struct rlib_datetime *dt = &RLIB_VALUE_GET_AS_DATE(rval);
 							rlib_datetime_format(r, dest, dt, tfmt + 1);
+							formatted_it = TRUE;
 						}
 						break;
 					default:
@@ -272,6 +282,7 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 				}
 				if(RLIB_VALUE_IS_DATE(rval)) {
 					rlib_datetime_format(r, dest, &RLIB_VALUE_GET_AS_DATE(rval), formatstring);
+					formatted_it = TRUE;
 				} else {	
 					gint i=0,/*j=0,pos=0,*/fpos=0;
 					gchar fmtstr[20];
@@ -304,6 +315,7 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 							if ((tchar == 'd') || (tchar == 'i') || (tchar == 'n')) {
 								if(RLIB_VALUE_IS_NUMBER(rval)) {
 									rlib_number_sprintf(r, dest, fmtstr, rval, special_format, (gchar *)rf->xml_format.xml, rf->xml_format.line);
+									formatted_it = TRUE;
 								} else {
 									*dest = g_strdup_printf("!ERR_F_D");
 									rlib_value_free(rval_fmtstr);
@@ -313,6 +325,7 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 							} else if (tchar == 's') {
 								if(RLIB_VALUE_IS_STRING(rval)) {
 									rlib_string_sprintf(r, dest, fmtstr, rval);
+									formatted_it = TRUE;
 								} else {
 									*dest = g_strdup_printf("!ERR_F_S");
 									rlib_value_free(rval_fmtstr);
@@ -321,20 +334,31 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 								}
 							}
 						} else {
-//TODO: How to handle this???
-//							buf[pos++] = formatstring[i];
-//							if(formatstring[i] == '%')
-//								i++;
+							if(formatted_it == FALSE) {
+								before[before_len++] = formatstring[i];
+							} else {
+								after[after_len++] = formatstring[i];
+							}
+							if(formatstring[i] == '%')
+								i++;
 						}
 					}
-//TODO: HOW TO HANDLE THIS					
-//					buf[pos++] = '\0'; 
 				}
 
 			}
 			rlib_value_free(rval_fmtstr);
 		}
 	}
+	
+	if(before_len > 0 || after_len > 0) {
+		gchar *new_str;
+		before[before_len] = 0;
+		after[after_len] = 0;
+		new_str = g_strconcat(before, *dest, after, NULL);
+		g_free(*dest);
+		*dest = new_str;
+	}
+	
 	setlocale(LC_ALL, current_locale);
 	return TRUE;
 }

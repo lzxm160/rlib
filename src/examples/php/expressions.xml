@@ -92,6 +92,20 @@
 				<literal>SHOULD GET: 9.876,54            GOT:</literal>
 				<field value="format(9876.54, '!$ %n')"  width="10"/>
 			</Line>
+			<Line>
+				<literal>SHOULD GET: 9.876,54            GOT:</literal>
+				<field value="format(9876.54, '!$ %n')"  width="10"/>
+			</Line>
+			<Line>
+				<literal>SHOULD GET: XX N/A              GOT: </literal>
+				<field value="'XX '+iif(m.Alloc_Cnt == '-1', 'N/A', m.Alloc_Cnt)"  width="10"/>
+			</Line>
+			<Line>
+				<literal>SHOULD GET: FOO1                GOT: </literal>
+				<field value="1" format="'FOO%d'" width="10"/>
+			</Line>
+
+
 		</Output>
 	</ReportHeader>		
 </Report>

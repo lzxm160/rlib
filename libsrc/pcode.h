@@ -165,7 +165,7 @@ struct rlib_pcode_operand {
 #define RLIB_DECIMAL_PRECISION	10000000LL
 #define RLIB_FXP_PRECISION 7
 
-int execute_pcode(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value);
+int execute_pcode(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gboolean show_stack_errors);
 struct rlib_value * rlib_value_stack_pop(struct rlib_value_stack *vs);
 int rlib_value_stack_push(rlib *r, struct rlib_value_stack *vs, struct rlib_value *value);
 struct rlib_value * rlib_value_new_number(struct rlib_value *rval, gint64 value);

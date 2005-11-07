@@ -853,7 +853,7 @@ struct rlib_value *this_field_value) {
 	return 0;
 }
 
-gint execute_pcode(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value) {
+gint execute_pcode(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gboolean show_stack_errors) {
 	gint i;
 	for(i=0;i<code->count;i++) {
 		if(code->instructions[i].instruction == PCODE_PUSH) {
@@ -872,7 +872,7 @@ gint execute_pcode(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs
 		}
 	}
 	
-	if(vs->count != 1) {
+	if(vs->count != 1 && show_stack_errors) {
 		r_error(r, "PCODE Execution Error: Stack Elements %d != 1\n", vs->count);
 		r_error(r, "PCODE Execution Error: [%s] on line [%d]\n", code->infix_string, code->line_number);
 	}
@@ -888,7 +888,7 @@ struct rlib_value * rlib_execute_pcode(rlib *r, struct rlib_value *rval, struct 
 
 	rlib_value_stack_init(&value_stack);
 	
-	execute_pcode(r, code, &value_stack, this_field_value);
+	execute_pcode(r, code, &value_stack, this_field_value, TRUE);
 	*rval = *rlib_value_stack_pop(&value_stack);
 	return rval;		
 }
