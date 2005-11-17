@@ -101,7 +101,7 @@ static void rlib_txt_start_report(rlib *r, struct rlib_part *part) {
 	OUTPUT_PRIVATE(r)->bottom = g_new0(GSList *, pages_across);
 }
 
-static void txt_callback(gchar *data, gint len, struct rlib_delayed_extra_data *delayed_data) {
+static gchar * txt_callback(struct rlib_delayed_extra_data *delayed_data) {
 	struct rlib_line_extra_data *extra_data = &delayed_data->extra_data;
 	rlib *r = delayed_data->r;
 	gchar *buf = NULL, *buf2 = NULL;
@@ -109,11 +109,9 @@ static void txt_callback(gchar *data, gint len, struct rlib_delayed_extra_data *
 	rlib_execute_pcode(r, &extra_data->rval_code, extra_data->field_code, NULL);	
 	rlib_format_string(r, &buf, extra_data->report_field, &extra_data->rval_code);
 	rlib_align_text(r, &buf2, buf, extra_data->report_field->align, extra_data->report_field->width);
-	memcpy(data, buf2, len);
-	data[len-1] = 0;
 	g_free(buf);
-	g_free(buf2);
 	g_free(delayed_data);
+	return buf2;
 }
 
 static void rlib_txt_print_text_delayed(rlib *r, struct rlib_delayed_extra_data *delayed_data, int backwards) {
@@ -132,7 +130,6 @@ static void rlib_txt_print_text_delayed(rlib *r, struct rlib_delayed_extra_data 
 static void rlib_txt_end_part(rlib *r, struct rlib_part *part) {
 	gint i;
 	gchar *old;
-	char buf[MAXSTRLEN];
 	for(i=0;i<part->pages_across;i++) {
 		GSList *tmp = OUTPUT_PRIVATE(r)->top[i]; 
 		GSList *list = NULL;
@@ -145,8 +142,7 @@ static void rlib_txt_end_part(rlib *r, struct rlib_part *part) {
 			struct _packet *packet = list->data;
 			gchar *str;	
 			if(packet->type == DELAY) {
-				txt_callback(buf, MAXSTRLEN-1, packet->data);
-				str = g_strdup(buf);
+				str = txt_callback(packet->data);
 			} else {
 				str = ((struct rlib_string *)packet->data)->string;
 			}
@@ -175,8 +171,7 @@ static void rlib_txt_end_part(rlib *r, struct rlib_part *part) {
 			struct _packet *packet = list->data;
 			gchar *str;	
 			if(packet->type == DELAY) {
-				txt_callback(buf, MAXSTRLEN-1, packet->data);
-				str = g_strdup(buf);
+				str = txt_callback(packet->data);
 			} else {
 				str = ((struct rlib_string *)packet->data)->string;
 			}

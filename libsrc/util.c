@@ -202,7 +202,7 @@ void rlogit(rlib *r, const gchar *fmt, ...) {
 }
 
 
-void r_error(rlib *r, const gchar *fmt, ...) {
+void r_error(rlib *r, const char *fmt, ...) {
 	va_list vl;
 	gchar *result = NULL;
 

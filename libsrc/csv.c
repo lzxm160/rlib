@@ -37,9 +37,13 @@ struct _private {
 static void print_text(rlib *r, const gchar *text, gint backwards, gint col) {
 	if(col < MAX_COL) {
 		if(OUTPUT_PRIVATE(r)->col[col][0] == 0)
-			memcpy(OUTPUT_PRIVATE(r)->col[col], text, strlen(text)+1);
-		else
-			sprintf(OUTPUT_PRIVATE(r)->col[col], "%s %s", OUTPUT_PRIVATE(r)->col[col], text);
+			strcpy(OUTPUT_PRIVATE(r)->col[col], text);
+		else {
+			gchar *tmp;
+			tmp = g_strdup_printf("%s %s", OUTPUT_PRIVATE(r)->col[col], text);
+			strcpy(OUTPUT_PRIVATE(r)->col[col], tmp);
+			g_free(tmp);
+		}
 	}
 }
 

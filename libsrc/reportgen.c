@@ -359,7 +359,6 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 					while (1) {
 						gint output_count = 0;
 						gfloat position_top = report->position_top[0];
-						
 						if(report->detail_columns > 1 && r->detail_line_count == 0) {
 							if(OUTPUT(r)->table_around_multiple_detail_columns) {
 								OUTPUT(r)->start_tr(r);
@@ -374,8 +373,10 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 						rlib_break_evaluate_attributes(r, report);
 						rlib_handle_break_headers(r, part, report, FALSE);
 
-						if(rlib_end_page_if_line_wont_fit(r, part, report, report->detail.fields))
+						if(rlib_end_page_if_line_wont_fit(r, part, report, report->detail.fields)) {
+							r_error(r, "rlib_force_break_headersrlib_force_break_headersrlib_force_break_headersrlib_force_break_headersrlib_force_break_headersrlib_force_break_headersrlib_force_break_headersrlib_force_break_headers?????\n");
 							rlib_force_break_headers(r, part, report, FALSE);
+						}
 
 						if(report->detail_columns > 1) {
 							if(OUTPUT(r)->table_around_multiple_detail_columns) {

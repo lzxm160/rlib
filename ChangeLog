@@ -1,3 +1,12 @@
+2005-11-17  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/api.c: fix crashers
+	* libsrc/breaks.c: fix crashers
+	* libsrc/csv.c: fix crashers
+	* libsrc/html.c: fix crashers
+	* libsrc/reportgen.c: fix crashers
+	* libsrc/txt.c: fix crashers
+	* libsrc/util.c: fix crashers
+
 2005-11-07  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/formatstring.c: restore non format string chars in format string functionality.
 	* libsrc/layout.c: don't check stack size on iif's

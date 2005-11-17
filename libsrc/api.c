@@ -154,6 +154,8 @@ static gint rlib_execute_queries(rlib *r) {
 		if(r->results[i].result == NULL) {
 			r_error(r,"Failed To Run A Query [%s]: %s\n", r->queries[i].sql, INPUT(r,i)->get_error(INPUT(r,i)));
 			return FALSE;
+		} else {
+			INPUT(r,i)->first(INPUT(r,i), r->results[i].result);
 		}
 		r->results[i].name =  r->queries[i].name;
 	}
