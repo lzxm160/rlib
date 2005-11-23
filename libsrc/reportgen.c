@@ -290,8 +290,8 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 	r->current_result = 0;
 	if(report->query_code != NULL) {
 		rlib_execute_as_string(r, report->query_code, query, MAXSTRLEN);
-		for(i=0;i<r->queries_count;i++) {
-			if(!strcmp(r->results[i].name, query)) {
+		for(i=0;i<r->queries_count;i++) {		
+			if(query != NULL && r->results[i].name != NULL && !strcmp(r->results[i].name, query)) {
 				r->current_result = i;		
 				break;
 			}

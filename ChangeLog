@@ -1,3 +1,8 @@
+2005-11-23  Bob Doan  <bdoan@sicompos.com>
+	* bindings/php/array_data_source.c: Play nice if array datasource is invalid
+	* libsrc/reportgen.c:  likewise
+	* src/examples/php/array.xml: ditto
+
 2005-11-17  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/api.c: fix crashers
 	* libsrc/breaks.c: fix crashers

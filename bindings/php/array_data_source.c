@@ -48,8 +48,18 @@ static gint rlib_php_array_input_close(gpointer input_ptr) {
 	return TRUE;
 }
 
+static const gchar* rlib_php_array_get_error(gpointer input_ptr) {
+	return "Hard to make a mistake here.. try checking your names/spellings";
+}
+
+
 static gint rlib_php_array_first(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_php_array_results *result = result_ptr;
+
+	if(result_ptr == NULL) {
+		return FALSE;	
+	}
+
 	result->current_row = 1;
 	result->isdone = FALSE;
 	if(result->rows <= 1) {
@@ -71,6 +81,10 @@ static gint rlib_php_array_next(gpointer input_ptr, gpointer result_ptr) {
 
 static gint rlib_php_array_isdone(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_php_array_results *result = result_ptr;
+
+	if(result == NULL)
+		return TRUE;
+
 	return result->isdone;
 }
 
@@ -103,6 +117,10 @@ static gchar * rlib_php_array_get_field_value_as_string(gpointer input_ptr, gpoi
 static gpointer rlib_php_array_resolve_field_pointer(gpointer input_ptr, gpointer result_ptr, gchar *name) {
 	struct rlib_php_array_results *result = result_ptr;
 	int i;
+
+	if(result_ptr == NULL)
+		return NULL;
+
 	for(i=0;i<result->cols;i++) {
 		if(strcmp(name, result->data[i]) == 0) {
 			i++;
@@ -209,6 +227,7 @@ static gpointer rlib_php_array_new_input_filter() {
 	input->next = rlib_php_array_next;
 	input->previous = rlib_php_array_previous;
 	input->last = rlib_php_array_last;
+	input->get_error = rlib_php_array_get_error;
 	input->isdone = rlib_php_array_isdone;
 	input->new_result_from_query = php_array_new_result_from_query;
 	input->get_field_value_as_string = rlib_php_array_get_field_value_as_string;
