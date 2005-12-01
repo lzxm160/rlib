@@ -1,4 +1,7 @@
 2005-12-01  Bob Doan  <bdoan@sicompos.com>
+	* NEWS: Release Time
+
+2005-12-01  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/array_data_source.c: Don't crash on Empty Data Source
 	* libsrc/api.c: Turn on HTML Error reporting faster
 	* libsrc/reportgen.c: likewise
