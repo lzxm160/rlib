@@ -863,9 +863,11 @@ gint rlib_pcode_operator_fxpval(rlib *r, struct rlib_pcode *code, struct rlib_va
 	if(RLIB_VALUE_IS_NUMBER(v1) && RLIB_VALUE_IS_STRING(v2)) {
 		gint64 result = rlib_safe_atoll(RLIB_VALUE_GET_AS_STRING(v2));
 		gint64 decplaces = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v1));
+		gint64 to_be_pushed_result;
 		rlib_value_free(v1);
 		rlib_value_free(v2);
-		rlib_value_stack_push(r,vs, rlib_value_new_number(&rval_rtn, result*(RLIB_DECIMAL_PRECISION/tentothe(decplaces))));
+		to_be_pushed_result = rlib_fxp_div(result, tentothe(decplaces), RLIB_FXP_PRECISION);
+		rlib_value_stack_push(r,vs, rlib_value_new_number(&rval_rtn, to_be_pushed_result));
 		return TRUE;
 	}
 	rlib_value_free(v1);

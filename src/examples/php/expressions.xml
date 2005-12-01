@@ -104,6 +104,14 @@
 				<literal>SHOULD GET: FOO1                GOT: </literal>
 				<field value="1" format="'FOO%d'" width="10"/>
 			</Line>
+			<Line>
+				<literal>SHOULD GET: 0,0098              GOT: </literal>
+				<field value="fxpval('987000',8)" format="'%.4d'" width="20"/>
+			</Line>
+			<Line>
+				<literal>SHOULD GET: 1,23                GOT: </literal>
+				<field value="fxpval('123',2)" format="'%.2d'" width="20"/>
+			</Line>
 
 
 		</Output>
