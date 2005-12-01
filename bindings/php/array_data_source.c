@@ -163,6 +163,9 @@ void * php_array_new_result_from_query(gpointer input_ptr, gchar *query) {
 	total_size = result->rows*result->cols*sizeof(char *);
 	result->data = emalloc(total_size);
 
+	if(result->cols <= 0)
+		return NULL;
+
 	zend_hash_internal_pointer_reset_ex(ht1, &pos1);
 	while(1) {
 		zend_hash_get_current_data_ex(ht1, &data, &pos1);
@@ -171,31 +174,41 @@ void * php_array_new_result_from_query(gpointer input_ptr, gchar *query) {
 		zend_hash_internal_pointer_reset_ex(ht2, &pos2);
 		col=0;
 		while(1) {
-			zend_hash_get_current_data_ex(ht2, &lookup_data, &pos2);
-			lookup_value = *(zval **)lookup_data;
-			zend_hash_move_forward_ex(ht2, &pos2);
-
-			data_result = NULL;
-			memset(dstr,0,64);
-			if( Z_TYPE_P(lookup_value) == IS_STRING )	
-				data_result = Z_STRVAL_P(lookup_value);
-			else if( Z_TYPE_P(lookup_value) == IS_LONG ) {	
-				sprintf(dstr,"%ld",Z_LVAL_P(lookup_value));
-				data_result = estrdup(dstr);
-			} else if( Z_TYPE_P(lookup_value) == IS_DOUBLE ) {	
-				sprintf(dstr,"%f",Z_DVAL_P(lookup_value));
-				data_result = estrdup(dstr);
-			} else if( Z_TYPE_P(lookup_value) == IS_NULL ) {	
-				data_result = estrdup("");
+			int lookup_result = zend_hash_get_current_data_ex(ht2, &lookup_data, &pos2);
+			if(lookup_result < 0) {
+				result->data[(row*result->cols)+col] = estrdup("RLIB: INVALID ARRAY CELL");
+				col++;
+				if(col >= result->cols) {
+					break;
+				}
+			
 			} else {
-				sprintf(dstr,"ZEND Z_TYPE %d NOT SUPPORTED",Z_TYPE_P(lookup_value));
-				data_result = estrdup(dstr);
-			}
 
-			result->data[(row*result->cols)+col] = data_result;
-			col++;
-			if(col >= result->cols) {
-				break;
+				lookup_value = *(zval **)lookup_data;
+				zend_hash_move_forward_ex(ht2, &pos2);
+
+				data_result = NULL;
+				memset(dstr,0,64);
+				if( Z_TYPE_P(lookup_value) == IS_STRING )	
+					data_result = Z_STRVAL_P(lookup_value);
+				else if( Z_TYPE_P(lookup_value) == IS_LONG ) {	
+					sprintf(dstr,"%ld",Z_LVAL_P(lookup_value));
+					data_result = estrdup(dstr);
+				} else if( Z_TYPE_P(lookup_value) == IS_DOUBLE ) {	
+					sprintf(dstr,"%f",Z_DVAL_P(lookup_value));
+					data_result = estrdup(dstr);
+				} else if( Z_TYPE_P(lookup_value) == IS_NULL ) {	
+					data_result = estrdup("");
+				} else {
+					sprintf(dstr,"ZEND Z_TYPE %d NOT SUPPORTED",Z_TYPE_P(lookup_value));
+					data_result = estrdup(dstr);
+				}
+
+				result->data[(row*result->cols)+col] = data_result;
+				col++;
+				if(col >= result->cols) {
+					break;
+				}
 			}
 		}
 		row++;

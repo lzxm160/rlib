@@ -152,7 +152,7 @@ static gint rlib_execute_queries(rlib *r) {
 		r->results[i].next_failed = FALSE;
 		r->results[i].navigation_failed = FALSE;
 		if(r->results[i].result == NULL) {
-			r_error(r,"Failed To Run A Query [%s]: %s\n", r->queries[i].sql, INPUT(r,i)->get_error(INPUT(r,i)));
+			r_error(r, "Failed To Run A Query [%s]: %s\n", r->queries[i].sql, INPUT(r,i)->get_error(INPUT(r,i)));
 			return FALSE;
 		} else {
 			INPUT(r,i)->first(INPUT(r,i), r->results[i].result);
@@ -167,11 +167,18 @@ gint rlib_execute(rlib *r) {
 	char newfile[MAXSTRLEN];
 	r->now = time(NULL);
 
+	if(r->format == RLIB_FORMAT_HTML) {
+		gchar *param;
+		rlib_html_new_output_filter(r);
+		param = g_hash_table_lookup(r->output_parameters, "debugging");
+		if(param != NULL && strcmp(param, "yes") == 0)
+			r->html_debugging = TRUE; 	
+	}
+
 	if(r->queries_count < 1) {
 		r_error(r,"No queries added to report\n");
 		return -1;      
 	}
-
 	rlib_execute_queries(r);
 
 	LIBXML_TEST_VERSION
@@ -188,9 +195,12 @@ gint rlib_execute(rlib *r) {
 			return -1;
 		}
 	}
+
 	rlib_resolve_metadata(r);
 	rlib_resolve_followers(r);
-	rlib_make_report(r);	
+
+	rlib_make_report(r);
+	
 	rlib_finalize(r);
 	r->did_execute = TRUE;
 	return 0;

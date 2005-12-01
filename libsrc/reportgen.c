@@ -588,11 +588,7 @@ gint rlib_make_report(rlib *r) {
 	gint iterations;
 
 	if(r->format == RLIB_FORMAT_HTML) {
-		gchar *param;
 		rlib_html_new_output_filter(r);
-		param = g_hash_table_lookup(r->output_parameters, "debugging");
-		if(param != NULL && strcmp(param, "yes") == 0)
-			r->html_debugging = TRUE; 	
 	} else if(r->format == RLIB_FORMAT_TXT)
 		rlib_txt_new_output_filter(r);
 	else if(r->format == RLIB_FORMAT_CSV)
