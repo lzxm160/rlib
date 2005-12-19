@@ -96,7 +96,11 @@ gpointer rlib_odbc_connect(gpointer input_ptr, gchar *source, gchar *user, gchar
 
 	V_OD_erg = SQLConnect(INPUT_PRIVATE(input)->V_OD_hdbc, (SQLCHAR*) source, SQL_NTS, (SQLCHAR*) user, SQL_NTS, (SQLCHAR*) password, SQL_NTS);
 	if ((V_OD_erg != SQL_SUCCESS) && (V_OD_erg != SQL_SUCCESS_WITH_INFO)) {
-		fprintf(stderr, "Error SQLConnect %d\n",V_OD_erg);
+		char szState[6];
+		unsigned char buffer[256];
+      SQLError(INPUT_PRIVATE(input)->V_OD_Env, INPUT_PRIVATE(input)->V_OD_hdbc, NULL, (SQLCHAR*)szState, NULL, buffer, 256, NULL);
+      printf("SQLError = %s \n", buffer); 
+		fprintf(stderr, "Error SQLConnect %d [%s]\n",V_OD_erg, buffer);
 		SQLGetDiagRec(SQL_HANDLE_DBC, INPUT_PRIVATE(input)->V_OD_hdbc,1, V_OD_stat, &V_OD_err,V_OD_msg,100,&V_OD_mlen);
 		SQLFreeHandle(SQL_HANDLE_DBC, INPUT_PRIVATE(input)->V_OD_hdbc);
 		SQLFreeHandle(SQL_HANDLE_ENV, INPUT_PRIVATE(input)->V_OD_Env);

@@ -545,8 +545,9 @@ static void parse_report(rlib *r, struct rlib_part *part, struct rlib_report *re
 	get_both(&report->xml_height, cur, "height");
 	get_both(&report->xml_iterations, cur, "iterations");
 
-	if(xmlHasProp(cur, (const xmlChar *) "paperType") && part->xml_paper_type.xml == NULL)
+	if(xmlHasProp(cur, (const xmlChar *) "paperType") && part->xml_paper_type.xml == NULL) {
 		get_both(&part->xml_paper_type, cur, "paperType");
+	}
 
 	get_both(&report->xml_pages_across, cur, "pagesAcross");
 	get_both(&report->xml_suppress_page_header_first_page, cur, "suppressPageHeaderFirstPage");
@@ -655,6 +656,9 @@ static void parse_part(rlib *r, struct rlib_part *part, xmlDocPtr doc, xmlNsPtr 
 	get_both(&part->xml_paper_type, cur, "paper_type");
 	get_both(&part->xml_iterations, cur, "iterations");
 	get_both(&part->xml_suppress_page_header_first_page, cur, "suppressPageHeaderFirstPage");
+	if(xmlHasProp(cur, (const xmlChar *) "paperType") && part->xml_paper_type.xml == NULL) {
+		get_both(&part->xml_paper_type, cur, "paperType");
+	}
 
 
 	part->part_rows = NULL;

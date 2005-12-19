@@ -121,7 +121,7 @@ make
 %{_libdir}/libr-odbc.so
 
 %files postgres
-%{_libdir}/libr-postgre.so
+%{_libdir}/libr-postgres.so
 
 %files perl
 %{perlextdir}/*

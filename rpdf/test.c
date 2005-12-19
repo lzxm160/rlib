@@ -34,7 +34,7 @@ static void callback_test(gchar *data, gint len, gpointer user_data) {
 
 int main(int argc, char **argv) {
 	struct rpdf *pdf = rpdf_new();
-	rpdf_new_page(pdf, RPDF_PAPER_LETTER, RPDF_PORTRAIT);
+	rpdf_new_page(pdf, RPDF_PAPER_LEGAL, RPDF_LANDSCAPE);
 /*	rpdf_set_font(pdf, "Times-Italic", "MacRomanEncoding", 30.0); */
 /*	rpdf_text(pdf, 1.0, 10.0, 0.0, "FARK - BOB KRATZ LOVES BACON ))"); */
 	rpdf_set_font(pdf, "Times-Italic", "MacRomanEncoding", 20.0);
@@ -45,6 +45,10 @@ int main(int argc, char **argv) {
 	rpdf_set_font(pdf, "Courier", "MacRomanEncoding", 20.0);
 	rpdf_text(pdf, 4.0, 7.0, 0.0, "WOOT");
 	rpdf_text(pdf, 5.0, 6.0, 0.0, "TOOT");
+	rpdf_text(pdf, 5.0, 12.0, 0.0, "GOOD TIMES");
+	rpdf_text(pdf, 5.0, 13.0, 0.0, "GOOD TIMES");
+	rpdf_text(pdf, 5.0, 14.0, 0.0, "GOOD TIMES");
+
 	rpdf_text(pdf, 6.0, 5.0, 90.0, "ROTATE 90");
 	rpdf_text(pdf, 7.0, 4.0, 45.0, "ROTATE 45");
 	rpdf_link(pdf, 0, 0, 1, 1, "http://www.yahoo.com");

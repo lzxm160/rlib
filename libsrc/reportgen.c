@@ -10,7 +10,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
+ * General Public Liense for more details.
  *
  * You should have received a copy of the GNU General Public
  * License along with this program; if not, write to the
@@ -374,7 +374,6 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 						rlib_handle_break_headers(r, part, report, FALSE);
 
 						if(rlib_end_page_if_line_wont_fit(r, part, report, report->detail.fields)) {
-							r_error(r, "rlib_force_break_headersrlib_force_break_headersrlib_force_break_headersrlib_force_break_headersrlib_force_break_headersrlib_force_break_headersrlib_force_break_headersrlib_force_break_headers?????\n");
 							rlib_force_break_headers(r, part, report, FALSE);
 						}
 
