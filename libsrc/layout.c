@@ -118,7 +118,7 @@ static gchar *rlib_encode_text(rlib *r, gchar *text, gchar **result) {
 		*result = g_strdup("!ERR_ENC1");
 	} else {
 		gsize len = strlen(text);
-		guint result_len;
+		gsize result_len;
 		rlib_charencoder_convert(r->output_encoder, &text, &len, result, &result_len);
 		if (*result == NULL) {
 			r_error(r, "encode returned NULL result input was[%s], len=%d", text, r_strlen(text));
@@ -601,8 +601,11 @@ static gint rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 				if(slen > extra_data[i].width)
 					*r_ptrfromindex(text, extra_data[i].width) = '\0';
 				else if(slen < extra_data[i].width && MAXSTRLEN != slen) {
-					gint lim = extra_data[i].width - slen;
-					gchar *ptr = r_ptrfromindex(text, slen);
+					gint lim = extra_data[i].width - slen, size = strlen(text);
+					gchar *ptr;
+					if (size + lim >= extra_data[i].width)
+						extra_data[i].formatted_string = text = g_realloc(text, size + lim + 1);
+					ptr = r_ptrfromindex(text, slen);
 					while (lim-- > 0) {
 						*ptr++ = ' ';
 					}

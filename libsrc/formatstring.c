@@ -364,11 +364,13 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 }
 
 gchar *rlib_align_text(rlib *r, gchar **my_rtn, gchar *src, gint align, gint width) {
-	gint len = 0;
+	gint len = 0, size = 0;
 	gchar *rtn;
 
-	if(src != NULL)
+	if(src != NULL) {
 		len = r_strlen(src);
+		size = strlen(src);
+	}
 
 	if(len > width) {
 		rtn = *my_rtn = g_strdup(src);
@@ -380,7 +382,7 @@ gchar *rlib_align_text(rlib *r, gchar **my_rtn, gchar *src, gint align, gint wid
 			rtn[width] = 0;
 		}  
 		if(src != NULL)
-			memcpy(rtn, src, len);
+			memcpy(rtn, src, size);
 	}
 
 	if(!OUTPUT(r)->do_align)
@@ -403,7 +405,7 @@ gchar *rlib_align_text(rlib *r, gchar **my_rtn, gchar *src, gint align, gint wid
 				gint x = (width - len)/2;
 				if(x > 0) {
 					memset(rtn, ' ', x);
-					memcpy(rtn+x, src, len);
+					memcpy(rtn+x, src, size);
 				}
 			}
 		}

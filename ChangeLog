@@ -1,3 +1,16 @@
+2005-12-31  Zoltan Boszormenyi <zboszor@dunaweb.hu>
+	* libsrc/charencoder.c: Don't memset() a NULL pointer.  g_iconv() doesn't allocate the output buffer, use g_convert_with_iconv() instead.
+	* libsrc/formatstring.c: Don't truncate UTF-8 strings.
+	* libsrc/layout.c: On 64-bit systems, gsize isn't the same size as guint. So, don't pass
+		an address of a smaller sized variable to a function that expects
+		a larger storage, it will corrupt the stack and cause crashes elsewhere.
+
+		Resize the allocated buffer if needed to avoid crashes.
+	* libsrc/resolution.c: Always return an allocated string
+
+2005-12-31  Bob Doan  <bdoan@sicompos.com>
+	* src/examples/php/array.xml: Somehow it had cvs stuff in the XML
+
 2005-12-19  Zoltan Boszormenyi <zboszor@dunaweb.hu>
 	* rlib.spec.in: Spec Update
 
@@ -211,7 +224,7 @@
 	* src/examples/php/array.php: likewise
 	* src/examples/php/array.xml: likewise
 
-2005-08-03  Bob Doan William Volkman  <wkvsf@users.sourceforge.net>
+2005-08-03  William Volkman  <wkvsf@users.sourceforge.net>
 	* bindings/interfaces/Makefile.am: Fully featured Python Bindings
 	* bindings/interfaces/rlibcompat.py: likewise
 	* bindings/python/Makefile.am: likewise

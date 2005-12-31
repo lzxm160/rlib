@@ -74,11 +74,12 @@ gchar * rlib_resolve_field_value(rlib *r, struct rlib_resultset_field *rf) {
 	return g_strdup(str);
 #else
 	if(str == NULL)
-		return "";
+		return g_strdup("");
 	else {
 		slen = strlen(str);
 		elen = MAXSTRLEN;
-		return rlib_charencoder_convert(rs->info.encoder, &str, &slen, &ptr, &elen);
+		rlib_charencoder_convert(rs->info.encoder, &str, &slen, &ptr, &elen);
+		return ptr;
 	}
 #endif
 }

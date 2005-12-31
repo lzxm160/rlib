@@ -59,13 +59,12 @@ gint rlib_charencoder_convert(GIConv converter, gchar **inbuf, gsize *inbytes_le
 	*outbuf = g_strdup(*inbuf);
 	return 0;
 #else
-	memset(*outbuf, 0, *outbytes_left);
 	if(converter <= 0) {
 		*outbuf = g_strdup(*inbuf);
 		return 1;
 	} else {
-		gint res = g_iconv(converter, inbuf, inbytes_left, outbuf, outbytes_left);	
-		return res;
+		*outbuf = g_convert_with_iconv(*inbuf, strlen(*inbuf), converter, inbytes_left, outbytes_left, NULL);
+		return *outbuf ? 0 : -1;
 	}
 #endif
 }

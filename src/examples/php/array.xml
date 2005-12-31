@@ -29,15 +29,11 @@
 			</Line>
 			<Line fontSize="11">
 				<literal bold="yes" italics="yes">Whee: </literal>
-<<<<<<< array.xml
 				<field format="'%.5d'" value="abs(-5.3333)abs(10)" width="10"/>
 			</Line>
 			<Line fontSize="11">
 				<literal bold="yes" italics="yes">BOO: </literal>
 				<field value="'mike is a silly pants'" width="10"/>
-=======
-				<field format="'%.2d'" value="0" width="10"/>
->>>>>>> 1.20
 			</Line>
 			<Line fontSize="11">
 				<literal bold="yes" italics="yes">TESTING CUSTOM FUNCTION </literal>
