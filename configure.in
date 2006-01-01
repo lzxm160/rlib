@@ -355,9 +355,16 @@ PYTHON_EXTENSION_DIR=""
 if test x$enable_python = xyes; then
 	AM_PATH_PYTHON($python_version)
 	if test x$PYTHON_VERSION = x$python_version; then
-		AC_DEFINE(HAVE_PYTHON,1,[Build with PYTHON support])
-		PYTHON_CFLAGS="-I $PYTHON_PREFIX/include/python$PYTHON_VERSION"
-		PYTHON_EXTENSION_DIR=$pyexecdir
+		eval python_foo=$PYTHON_PREFIX
+		AC_CHECK_HEADERS($python_foo/include/python$PYTHON_VERSION/Python.h,python_header=yes,python_header=no)
+		if test x$python_header = xyes; then
+			AC_DEFINE(HAVE_PYTHON,1,[Build with PYTHON support])
+			PYTHON_CFLAGS="-I $PYTHON_PREFIX/include/python$PYTHON_VERSION"
+			PYTHON_EXTENSION_DIR=$pyexecdir
+		else
+			enable_python=no
+			echo "*** WARNING: PYTHON was found but Python.h was not!   No python bindings for you.  Perhaps you need to install the devel package or something"
+		fi
 	else
 		enable_python=no
 		echo "*** WARNING: PYTHON ${python_version} NOT FOUND IN PATH.  RLIB WILL NOT BE COMPILED WITH SUPPORT FOR IT"

@@ -1,3 +1,6 @@
+2006-01-01  Bob Doan  <bdoan@sicompos.com>
+	* configure.in: Make sure Python.h is there even if autoconf stuff finds some Python stuff
+
 2006-01-01  Zoltan Boszormenyi <zboszor@dunaweb.hu>
 	* rlib.spec.in: Make newer RPM's happier
 
