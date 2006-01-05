@@ -173,7 +173,7 @@ gint rlib_execute(rlib *r) {
 		param = g_hash_table_lookup(r->output_parameters, "debugging");
 		if(param != NULL && strcmp(param, "yes") == 0)
 			r->html_debugging = TRUE; 	
-	}
+	} 
 
 	if(r->queries_count < 1) {
 		r_error(r,"No queries added to report\n");

@@ -778,7 +778,7 @@ struct environment_filter {
 struct output_filter {
 	gpointer *private;
 	gboolean do_align;
-	gboolean do_break;
+	gboolean do_breaks;
 	gboolean do_grouptext;
 	gboolean trim_links;
 	gboolean table_around_multiple_detail_columns;

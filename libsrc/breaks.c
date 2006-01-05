@@ -30,7 +30,7 @@ static void rlib_print_break_header_output(rlib *r, struct rlib_part *part, stru
 	gint blank = TRUE;
 	gint suppress = FALSE;
 
-	if(!OUTPUT(r)->do_break)
+	if(!OUTPUT(r)->do_breaks)
 		return;
 		
 	if(rb->suppressblank) {
@@ -55,7 +55,7 @@ static void rlib_print_break_header_output(rlib *r, struct rlib_part *part, stru
 }
 
 static void rlib_print_break_footer_output(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb, struct rlib_element *e, gint backwards) {
-	if(!OUTPUT(r)->do_break)
+	if(!OUTPUT(r)->do_breaks)
 		return;
 
 	if(rb->didheader)
@@ -65,7 +65,7 @@ static void rlib_print_break_footer_output(rlib *r, struct rlib_part *part, stru
 void rlib_force_break_headers(rlib *r, struct rlib_part *part, struct rlib_report *report, gboolean precalculate) {
 	struct rlib_element *e;
 
-	if(!OUTPUT(r)->do_break)
+	if(!OUTPUT(r)->do_breaks)
 		return;
 	
 	if(report->breaks == NULL)
@@ -135,7 +135,7 @@ void rlib_handle_break_headers(rlib *r, struct rlib_part *part, struct rlib_repo
 		}				
 	}
 	
-	if(icache && OUTPUT(r)->do_break && precalculate == FALSE) {	
+	if(icache && OUTPUT(r)->do_breaks && precalculate == FALSE) {	
 		gint allfit = TRUE;
 		for(page=0;page<report->pages_across;page++) {
 			if(!rlib_will_this_fit(r, part, report, total[page], page+1))
@@ -198,7 +198,7 @@ static void rlib_break_all_below_in_reverse_order(rlib *r, struct rlib_part *par
 			rlib_value_free(bf->rval);
 			bf->rval = NULL;
 		}
-		if(OUTPUT(r)->do_break) {
+		if(OUTPUT(r)->do_breaks) {
 			gint did_end_page = FALSE;
 			
 			
@@ -224,7 +224,7 @@ static void rlib_break_all_below_in_reverse_order(rlib *r, struct rlib_part *par
 			newpage = t;
 		
 	}
-	if(newpage && OUTPUT(r)->do_break) {
+	if(newpage && OUTPUT(r)->do_breaks) {
 		if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
 			if(OUTPUT(r)->paginate)
 				rlib_layout_end_page(r, part, report, TRUE);

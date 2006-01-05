@@ -796,8 +796,7 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 	struct rlib_line_extra_data *extra_data;
 	gint output_count = 0;
 	gfloat my_left_margin;
-
-
+	
 	if(roa == NULL)
 		return 0;
 	
@@ -1084,7 +1083,7 @@ static gint rlib_layout_report_outputs_across_pages(rlib *r, struct rlib_part *p
 			OUTPUT(r)->set_working_page(r, part, roa->page-1);
 			output_count += rlib_layout_report_output_array(r, part, report, roa, backwards, roa->page, page_header_layout);
 		} else {
-			if(OUTPUT(r)->do_break) {
+			if(OUTPUT(r)->do_breaks) {
 				for(i=0;i<part->pages_across;i++) {
 					OUTPUT(r)->set_working_page(r, part, i);
 					output_count = rlib_layout_report_output_array(r, part, report, roa, backwards, i+1, page_header_layout);

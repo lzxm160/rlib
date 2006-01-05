@@ -282,7 +282,7 @@ void rlib_txt_new_output_filter(rlib *r) {
 	memset(OUTPUT_PRIVATE(r), 0, sizeof(struct _private));
 	
 	OUTPUT(r)->do_align = TRUE;
-	OUTPUT(r)->do_break = TRUE;
+	OUTPUT(r)->do_breaks = TRUE;
 	OUTPUT(r)->do_grouptext = FALSE;	
 	OUTPUT(r)->paginate = FALSE;
 	OUTPUT(r)->trim_links = FALSE;

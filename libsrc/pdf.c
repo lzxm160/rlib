@@ -993,7 +993,7 @@ void rlib_pdf_new_output_filter(rlib *r) {
 	memset(OUTPUT_PRIVATE(r), 0, sizeof(struct _private));
 	OUTPUT(r)->do_graph = TRUE;
 	OUTPUT(r)->do_align = TRUE;
-	OUTPUT(r)->do_break = TRUE;
+	OUTPUT(r)->do_breaks = TRUE;
 	OUTPUT(r)->do_grouptext = TRUE;	
 	OUTPUT(r)->paginate = TRUE;
 	OUTPUT(r)->trim_links = FALSE;

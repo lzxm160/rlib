@@ -112,13 +112,15 @@ static void rlib_csv_end_output_section(rlib *r) {
 		if(OUTPUT_PRIVATE(r)->col[i][0] != 0)
 			biggest = i;
 	
-	for(i=0;i<=biggest;i++)
-		if(OUTPUT_PRIVATE(r)->col[i][0] != 0) 
-			really_print_text(r, OUTPUT_PRIVATE(r)->col[i]);
-		else
-			really_print_text(r, "");
-			
-	really_print_text(r, "\n");	
+	if(biggest != 0) {
+		for(i=0;i<=biggest;i++)
+			if(OUTPUT_PRIVATE(r)->col[i][0] != 0) 
+				really_print_text(r, OUTPUT_PRIVATE(r)->col[i]);
+			else
+				really_print_text(r, "");
+		
+		really_print_text(r, "\n");
+	}
 }
 
 static void rlib_csv_end_page(rlib *r, struct rlib_part *part) {
@@ -212,7 +214,7 @@ void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT_PRIVATE(r)->top_total_size = 0;
 
 	OUTPUT(r)->do_align = FALSE;	
-	OUTPUT(r)->do_break = FALSE;	
+	OUTPUT(r)->do_breaks = FALSE;	
 	OUTPUT(r)->do_grouptext = FALSE;
 	OUTPUT(r)->paginate = FALSE;
 	OUTPUT(r)->trim_links = FALSE;

@@ -383,10 +383,11 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 							}
 						}
 						
-						if(OUTPUT(r)->do_break)
+						if(OUTPUT(r)->do_breaks)
 							output_count = rlib_layout_report_output(r, part, report, report->detail.fields, FALSE, FALSE);
 						else
 							output_count = rlib_layout_report_output_with_break_headers(r, part, report, TRUE);
+
 
 						if(output_count > 0)
 							r->detail_line_count++;
@@ -590,9 +591,13 @@ gint rlib_make_report(rlib *r) {
 		rlib_html_new_output_filter(r);
 	} else if(r->format == RLIB_FORMAT_TXT)
 		rlib_txt_new_output_filter(r);
-	else if(r->format == RLIB_FORMAT_CSV)
+	else if(r->format == RLIB_FORMAT_CSV) {
+		gchar *param;
 		rlib_csv_new_output_filter(r);
-	else
+		param = g_hash_table_lookup(r->output_parameters, "do_breaks");
+		if(param != NULL && strcmp(param, "yes") == 0)
+			OUTPUT(r)->do_breaks = TRUE; 	
+	} else
 		rlib_pdf_new_output_filter(r);
 	r->current_font_point = -1;
 

@@ -1,3 +1,14 @@
+2006-01-05  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/api.c: do_break output parameter
+	* libsrc/breaks.c: likewise
+	* libsrc/csv.c: likewise
+	* libsrc/html.c: likewise
+	* libsrc/layout.c: likewise
+	* libsrc/pdf.c: likewise
+	* libsrc/reportgen.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/txt.c: likewise
+
 2006-01-01  Bob Doan  <bdoan@sicompos.com>
 	* configure.in: Make sure Python.h is there even if autoconf stuff finds some Python stuff
 

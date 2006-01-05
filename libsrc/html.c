@@ -1092,7 +1092,7 @@ void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT_PRIVATE(r)->both = NULL;
 	OUTPUT_PRIVATE(r)->length = 0;
 	OUTPUT(r)->do_align = TRUE;
-	OUTPUT(r)->do_break = TRUE;
+	OUTPUT(r)->do_breaks = TRUE;
 	OUTPUT(r)->do_grouptext = FALSE;	
 	OUTPUT(r)->paginate = FALSE;
 	OUTPUT(r)->trim_links = FALSE;
