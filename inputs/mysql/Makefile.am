@@ -24,7 +24,7 @@ AM_CFLAGS = $(RLIB_CFLAGS) $(RLIB_WERROR) -I${top_srcdir}/libsrc
 mysqlincludedir=$(includedir)/rlib
 lib_LTLIBRARIES = libr-mysql.la
 libr_mysql_la_SOURCES = mysql.c
-libr_mysql_la_LIBADD = $(RLIB_LIBS) 
+libr_mysql_la_LIBADD = $(MYSQL_LIBS) 
 DEF_FILE=libr-mysql.def
 if WIN32
 def_ldflags=-Wl,--output-def,$(DEF_FILE)

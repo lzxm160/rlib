@@ -1,3 +1,9 @@
+2006-01-06  Zoltan Boszormenyi <zboszor@dunaweb.hu>
+	* configure.in: Don't link main rlib w/ plugin libraries.
+	* inputs/mysql/Makefile.am: likewise
+	* inputs/odbc/Makefile.am: likewise
+	* inputs/postgres/Makefile.am: likewise
+
 2006-01-05  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/api.c: do_break output parameter
 	* libsrc/breaks.c: likewise

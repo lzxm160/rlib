@@ -24,7 +24,7 @@ AM_CFLAGS = $(RLIB_CFLAGS) $(RLIB_WERROR) -I${top_srcdir}/libsrc
 odbcincludedir=$(includedir)/rlib
 lib_LTLIBRARIES = libr-odbc.la
 libr_odbc_la_SOURCES = odbc.c
-libr_odbc_la_LIBADD = $(RLIB_LIBS) 
+libr_odbc_la_LIBADD = $(ODBC_LIBS) 
 DEF_FILE=libr-odbc.def
 if WIN32
 def_ldflags=-Wl,--output-def,$(DEF_FILE)
