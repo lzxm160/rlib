@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2005 SICOM Systems, INC.
+ *  Copyright (C) 2003-2006 SICOM Systems, INC.
  * 
  *  Authors: Jeremy Lee <jlee@platinumtel.com> 
  *           Warren Smith <wsmith@platinumtel.com>
