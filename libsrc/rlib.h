@@ -998,6 +998,7 @@ gint rlib_add_datasource_postgres(rlib *r, const gchar *input_name, const gchar 
 gint rlib_add_datasource_odbc(rlib *r, const gchar *input_name, const gchar *source,
 	const gchar *user, const gchar *password);
 gint rlib_add_datasource_xml(rlib *r, const gchar *input_name);
+gint rlib_add_datasource_csv(rlib *r, const gchar *input_name);
 
 /***** PROTOTYPES: postgres.c **************************************************/
 gpointer rlib_postgres_new_input_filter(void);
@@ -1034,6 +1035,10 @@ int adjust_limits(gdouble  dataMin, gdouble dataMax, gint denyMinEqualsAdjMin, g
 /***** PROTOTYPES: xml_data_source.c ******************************************************/
 gpointer rlib_xml_new_input_filter(void);
 gpointer rlib_xml_connect(gpointer input_ptr);
+
+/***** PROTOTYPES: csv_data_source.c ******************************************************/
+gpointer rlib_csv_new_input_filter(void);
+gpointer rlib_csv_connect(gpointer input_ptr);
 
 /***** PROTOTYPES: util.c ******************************************************/
 void rlogit(rlib *r, const gchar *fmt, ...);

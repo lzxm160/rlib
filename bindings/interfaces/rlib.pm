@@ -50,6 +50,7 @@ package rlib;
 *rlib_add_datasource_postgres = *rlibc::rlib_add_datasource_postgres;
 *rlib_add_datasource_odbc = *rlibc::rlib_add_datasource_odbc;
 *rlib_add_datasource_xml = *rlibc::rlib_add_datasource_xml;
+*rlib_add_datasource_csv = *rlibc::rlib_add_datasource_csv;
 *rlib_add_query_as = *rlibc::rlib_add_query_as;
 *rlib_add_report = *rlibc::rlib_add_report;
 *rlib_add_report_from_buffer = *rlibc::rlib_add_report_from_buffer;

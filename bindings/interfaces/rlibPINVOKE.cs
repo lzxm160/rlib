@@ -99,6 +99,9 @@ class rlibPINVOKE {
   [DllImport("rlibcsharp", EntryPoint="CSharp_rlib_add_datasource_xml")]
   public static extern int rlib_add_datasource_xml(IntPtr jarg1, string jarg2);
 
+  [DllImport("rlibcsharp", EntryPoint="CSharp_rlib_add_datasource_csv")]
+  public static extern int rlib_add_datasource_csv(IntPtr jarg1, string jarg2);
+
   [DllImport("rlibcsharp", EntryPoint="CSharp_rlib_add_query_as")]
   public static extern int rlib_add_query_as(IntPtr jarg1, string jarg2, string jarg3, string jarg4);
 

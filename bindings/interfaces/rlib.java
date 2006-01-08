@@ -29,6 +29,10 @@ public class rlib {
     return rlibJNI.rlib_add_datasource_xml(SWIGTYPE_p_rlib.getCPtr(r), input_name);
   }
 
+  public static int rlib_add_datasource_csv(SWIGTYPE_p_rlib r, String input_name) {
+    return rlibJNI.rlib_add_datasource_csv(SWIGTYPE_p_rlib.getCPtr(r), input_name);
+  }
+
   public static int rlib_add_query_as(SWIGTYPE_p_rlib r, String input_source, String sql, String name) {
     return rlibJNI.rlib_add_query_as(SWIGTYPE_p_rlib.getCPtr(r), input_source, sql, name);
   }

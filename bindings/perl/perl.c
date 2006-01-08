@@ -977,6 +977,36 @@ XS(_wrap_rlib_add_datasource_xml) {
 }
 
 
+XS(_wrap_rlib_add_datasource_csv) {
+    {
+        rlib *arg1 = (rlib *) 0 ;
+        char *arg2 ;
+        int result;
+        int argvi = 0;
+        dXSARGS;
+        
+        if ((items < 2) || (items > 2)) {
+            SWIG_croak("Usage: rlib_add_datasource_csv(r,input_name);");
+        }
+        {
+            if (SWIG_ConvertPtr(ST(0), (void **) &arg1, SWIGTYPE_p_rlib,0) < 0) {
+                SWIG_croak("Type error in argument 1 of rlib_add_datasource_csv. Expected _p_rlib");
+            }
+        }
+        if (!SvOK((SV*) ST(1))) arg2 = 0;
+        else arg2 = (char *) SvPV(ST(1), PL_na);
+        result = (int)rlib_add_datasource_csv(arg1,arg2);
+        
+        ST(argvi) = sv_newmortal();
+        sv_setiv(ST(argvi++), (IV) result);
+        XSRETURN(argvi);
+        fail:
+        ;
+    }
+    croak(Nullch);
+}
+
+
 XS(_wrap_rlib_add_query_as) {
     {
         rlib *arg1 = (rlib *) 0 ;
@@ -1831,6 +1861,7 @@ static swig_command_info swig_commands[] = {
 {"rlibc::rlib_add_datasource_postgres", _wrap_rlib_add_datasource_postgres},
 {"rlibc::rlib_add_datasource_odbc", _wrap_rlib_add_datasource_odbc},
 {"rlibc::rlib_add_datasource_xml", _wrap_rlib_add_datasource_xml},
+{"rlibc::rlib_add_datasource_csv", _wrap_rlib_add_datasource_csv},
 {"rlibc::rlib_add_query_as", _wrap_rlib_add_query_as},
 {"rlibc::rlib_add_report", _wrap_rlib_add_report},
 {"rlibc::rlib_add_report_from_buffer", _wrap_rlib_add_report_from_buffer},

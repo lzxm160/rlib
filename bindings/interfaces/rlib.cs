@@ -31,6 +31,10 @@ public class rlib {
     return rlibPINVOKE.rlib_add_datasource_xml(SWIGTYPE_p_rlib.getCPtr(r), input_name);
   }
 
+  public static int rlib_add_datasource_csv(SWIGTYPE_p_rlib r, string input_name) {
+    return rlibPINVOKE.rlib_add_datasource_csv(SWIGTYPE_p_rlib.getCPtr(r), input_name);
+  }
+
   public static int rlib_add_query_as(SWIGTYPE_p_rlib r, string input_source, string sql, string name) {
     return rlibPINVOKE.rlib_add_query_as(SWIGTYPE_p_rlib.getCPtr(r), input_source, sql, name);
   }

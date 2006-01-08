@@ -278,6 +278,32 @@ JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1add_1datasource_1xml(JNIEnv *jenv, jcl
 }
 
 
+JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1add_1datasource_1csv(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
+    jint jresult = 0 ;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    int result;
+    
+    (void)jenv;
+    (void)jcls;
+    arg1 = *(rlib **)&jarg1; 
+    {
+        arg2 = 0;
+        if (jarg2) {
+            arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
+            if (!arg2) return 0;
+        }
+    }
+    result = (int)rlib_add_datasource_csv(arg1,arg2);
+    
+    jresult = (jint)result; 
+    {
+        if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, arg2); 
+    }
+    return jresult;
+}
+
+
 JNIEXPORT jint JNICALL Java_rlibJNI_rlib_1add_1query_1as(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3, jstring jarg4) {
     jint jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;

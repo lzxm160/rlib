@@ -795,6 +795,23 @@ static PyObject *_wrap_rlib_add_datasource_xml(PyObject *self, PyObject *args) {
     return NULL;
 }
 
+static PyObject *_wrap_rlib_add_datasource_csv(PyObject *self, PyObject *args) {
+    PyObject *resultobj;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    int result;
+    PyObject * obj0 = 0 ;
+    
+    if(!PyArg_ParseTuple(args,(char *)"Os:rlib_add_datasource_csv",&obj0,&arg2)) goto fail;
+    if ((SWIG_ConvertPtr(obj0,(void **) &arg1, SWIGTYPE_p_rlib,SWIG_POINTER_EXCEPTION | 0 )) == -1) SWIG_fail;
+    result = (int)rlib_add_datasource_csv(arg1,arg2);
+    
+    resultobj = PyInt_FromLong((long)result);
+    return resultobj;
+    fail:
+    return NULL;
+}
+
 
 static PyObject *_wrap_rlib_add_query_as(PyObject *self, PyObject *args) {
     PyObject *resultobj;
@@ -1285,6 +1302,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"rlib_add_datasource_postgres", _wrap_rlib_add_datasource_postgres, METH_VARARGS },
 	 { (char *)"rlib_add_datasource_odbc", _wrap_rlib_add_datasource_odbc, METH_VARARGS },
 	 { (char *)"rlib_add_datasource_xml", _wrap_rlib_add_datasource_xml, METH_VARARGS },
+	 { (char *)"rlib_add_datasource_csv", _wrap_rlib_add_datasource_csv, METH_VARARGS },
 	 { (char *)"rlib_add_query_as", _wrap_rlib_add_query_as, METH_VARARGS },
 	 { (char *)"rlib_add_report", _wrap_rlib_add_report, METH_VARARGS },
 	 { (char *)"rlib_add_report_from_buffer", _wrap_rlib_add_report_from_buffer, METH_VARARGS },

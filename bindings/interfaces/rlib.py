@@ -41,6 +41,8 @@ rlib_add_datasource_odbc = _rlib.rlib_add_datasource_odbc
 
 rlib_add_datasource_xml = _rlib.rlib_add_datasource_xml
 
+rlib_add_datasource_csv = _rlib.rlib_add_datasource_csv
+
 rlib_add_query_as = _rlib.rlib_add_query_as
 
 rlib_add_report = _rlib.rlib_add_report

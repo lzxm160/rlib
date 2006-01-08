@@ -1,5 +1,22 @@
-/* RLIB module */
-/* Author: William K. Volkman */
+/*
+ *  Copyright (C) 2003-2006 SICOM Systems, INC.
+ *
+ *  Authors: William K. Volkman
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of version 2 of the GNU General Public
+ * License as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
 static char *rlib_interface_version="0.1.0";
 
 #include "Python.h"
@@ -533,6 +550,20 @@ method_add_datasource_xml(PyObject *self, PyObject *_args) {
 	return PyInt_FromLong(result);
 }
 
+static char method_add_datasource_csv__doc__[] = "add_datasource_csv(datasource_name) -> int";
+static PyObject *
+method_add_datasource_csv(PyObject *self, PyObject *_args) {
+	RLIBObject	*rp = (RLIBObject *)self;
+	char		*datasource;
+	long		result;
+	
+	if (!PyArg_ParseTuple(_args, "s:add_datasource_csv", &datasource))
+		return NULL;
+	check_rlibobject_open(rp);
+	result = rlib_add_datasource_csv(rp->rlib_ptr, datasource);
+	return PyInt_FromLong(result);
+}
+
 
 static char method_add_function__doc__[] = "add_function(name, function, param_count) -> None\n\
 name - The name of the function\n\
@@ -1009,6 +1040,7 @@ static PyMethodDef rlib_methods[] = {
 	{"add_datasource_odbc", 	method_add_datasource_odbc,		METH_VARARGS, method_add_datasource_odbc__doc__},
 	{"add_datasource_postgres", 	method_add_datasource_postgres,		METH_VARARGS, method_add_datasource_postgres__doc__},
 	{"add_datasource_xml", 		method_add_datasource_xml,		METH_VARARGS, method_add_datasource_xml__doc__},
+	{"add_datasource_csv", 		method_add_datasource_csv,		METH_VARARGS, method_add_datasource_csv__doc__},
 	{"add_function", 		method_add_function,			METH_VARARGS, method_add_function__doc__},
 	{"add_parameter", 		method_add_parameter,			METH_VARARGS, method_add_parameter__doc__},
 	{"add_query_as", 		method_add_query_as,			METH_VARARGS, method_add_query_as__doc__},

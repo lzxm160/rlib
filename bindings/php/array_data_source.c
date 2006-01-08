@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2005 SICOM Systems, INC.
+ *  Copyright (C) 2003-2006 SICOM Systems, INC.
  *
  *  Authors: Bob Doan <bdoan@sicompos.com>
  *
@@ -51,7 +51,6 @@ static gint rlib_php_array_input_close(gpointer input_ptr) {
 static const gchar* rlib_php_array_get_error(gpointer input_ptr) {
 	return "Hard to make a mistake here.. try checking your names/spellings";
 }
-
 
 static gint rlib_php_array_first(gpointer input_ptr, gpointer result_ptr) {
 	struct rlib_php_array_results *result = result_ptr;

@@ -77,8 +77,6 @@ const gchar *database_user, const gchar *database_password, const gchar *databas
 	r->inputs_count++;
 
 	return 0;	
-	
-	
 }
 
 gint rlib_add_datasource_mysql(rlib *r, const gchar *input_name, const gchar *database_host, const gchar *database_user, const gchar *database_password, 
@@ -145,6 +143,18 @@ gint rlib_add_datasource_xml(rlib *r, const gchar *input_name) {
 
 	r->inputs[r->inputs_count].input = rlib_xml_new_input_filter();
 	xml = rlib_xml_connect(r->inputs[r->inputs_count].input);
+	r->inputs[r->inputs_count].name = g_strdup(input_name);
+	r->inputs[r->inputs_count].handle = NULL;
+	r->inputs[r->inputs_count].input->info.encoder = NULL;
+	r->inputs_count++;
+	return 0;
+}
+
+gint rlib_add_datasource_csv(rlib *r, const gchar *input_name) {
+	gpointer csv;
+
+	r->inputs[r->inputs_count].input = rlib_csv_new_input_filter();
+	csv = rlib_csv_connect(r->inputs[r->inputs_count].input);
 	r->inputs[r->inputs_count].name = g_strdup(input_name);
 	r->inputs[r->inputs_count].handle = NULL;
 	r->inputs[r->inputs_count].input->info.encoder = NULL;

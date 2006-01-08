@@ -1,3 +1,31 @@
+2006-01-08  Bob Doan  <bdoan@sicompos.com>
+	* bindings/csharp/csharp.c: CSV data source
+	* bindings/interfaces/rlib.cs: likewise
+	* bindings/interfaces/rlib.java:  likewise
+	* bindings/interfaces/rlib.pm: likewise
+	* bindings/interfaces/rlib.py: likewise
+	* bindings/interfaces/rlibJNI.java:  likewise
+	* bindings/interfaces/rlibPINVOKE.cs: likewise
+	* bindings/interfaces/rlibcompat.py: likewise
+	* bindings/java/java.c: likewise
+	* bindings/perl/perl.c: likewise
+	* bindings/php/Makefile.am: likewise
+	* bindings/php/array_data_source.c: likewise
+	* bindings/php/environment.c: likewise
+	* bindings/php/php.c:  likewise
+	* bindings/php/rlib_php.h: likewise
+	* bindings/python/python.c: likewise
+	* bindings/python/rlibmodule.c:  likewise
+	* libsrc/Makefile.am: likewise
+	* libsrc/csv_data_source.c:  likewise
+	* libsrc/datasource.c:  likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/rlib.i: likewise
+	* src/examples/php/Makefile.am: likewise
+	* src/examples/php/csv.php: likewise
+	* src/examples/php/csv.xml: likewise
+	* src/examples/php/data.csv: likewise
+
 2006-01-07  Bob Doan  <bdoan@sicompos.com>
 	* inputs/odbc/odbc.c: Support cursors w/ forward only navigation
 

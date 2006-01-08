@@ -184,6 +184,21 @@ DllExport int SWIGSTDCALL CSharp_rlib_add_datasource_xml(void * jarg1, char * ja
 }
 
 
+DllExport int SWIGSTDCALL CSharp_rlib_add_datasource_csv(void * jarg1, char * jarg2) {
+    int jresult = 0 ;
+    rlib *arg1 = (rlib *) 0 ;
+    char *arg2 ;
+    int result;
+    
+    arg1 = (rlib *)jarg1; 
+    arg2 = jarg2; 
+    result = (int)rlib_add_datasource_csv(arg1,arg2);
+    
+    jresult = result; 
+    return jresult;
+}
+
+
 DllExport int SWIGSTDCALL CSharp_rlib_add_query_as(void * jarg1, char * jarg2, char * jarg3, char * jarg4) {
     int jresult = 0 ;
     rlib *arg1 = (rlib *) 0 ;
