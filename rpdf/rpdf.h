@@ -145,7 +145,7 @@ struct rpdf_images {
 
 struct rpdf_object {
 	gboolean put_wrapper;
-	gchar *contents;
+	GString *contents;
 	gchar *stream;
 	gint stream_length;
 };
@@ -237,7 +237,7 @@ struct rpdf {
 	gboolean text_on;
 	GString *page_data;
 	GHashTable *page_fonts;
-	gchar *working_obj;
+	GString *working_obj;
 	gint font_obj_number;
 	GSList *stream_font_destroyer;
 };

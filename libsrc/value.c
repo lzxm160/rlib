@@ -45,7 +45,7 @@ const gchar *rlib_var_get_string(rlib_var *v) {
 		return (gchar *)v->value.ref;
 		break;
 	default:
-		r_error("rlib_var not a string");
+		r_error(NULL, "rlib_var not a string");
 		return "!ERR_STR";
 		break;
 	}
@@ -72,7 +72,7 @@ gint rlib_var_concat_string(rlib_var *v, const char *str) {
 /*--- Number functions ---*/
 gint64 rlib_var_get_number(rlib_var *v) {
 	if (v->type != RLIB_VAR_NUMBER) {
-		r_error("rlib_var not a number");
+		r_error(NULL, "rlib_var not a number");
 #if _64BIT_
 		return 0L;
 #else
@@ -100,7 +100,7 @@ void rlib_var_mul_number(rlib_var *v, gint64 n) {
 
 void rlib_var_divby_number(rlib_var *v, gint64 n) {
 	if (n == 0) {
-		r_error("Divide by 0");
+		r_error(NULL, "Divide by 0");
 		return;
 	}
 	v->value.num /= n;
@@ -109,7 +109,7 @@ void rlib_var_divby_number(rlib_var *v, gint64 n) {
 
 void rlib_var_mod_number(rlib_var *v, gint64 n) {
 	if (n == 0) {
-		r_error("Divide by 0");
+		r_error(NULL, "Divide by 0");
 		return;
 	}
 	v->value.num %= n;
@@ -348,13 +348,13 @@ rlib_var_stack *rlib_var_stack_new(void) {
 
 void rlib_var_stack_push(rlib_var_stack *s, rlib_var *val) {
 	if (s->cur < s->max) *s->cur++ = val;
-	else r_error("Stack OVERFLOW!!!!!");
+	else r_error(NULL, "Stack OVERFLOW!!!!!");
 }
 
 
 rlib_var *rlib_var_stack_pop(rlib_var_stack *s) {
 	if (s->cur > s->base) return *(--s->cur); 
-	r_error("Stack UNDERFLOW!!!!");
+	r_error(NULL, "Stack UNDERFLOW!!!!");
 	return NULL;
 }
 
@@ -362,7 +362,7 @@ rlib_var *rlib_var_stack_pop(rlib_var_stack *s) {
 /* Like _pop, but DOES NOT REMOVE the TOS */
 rlib_var *rlib_var_stack_peek(rlib_var_stack *s) {
 	if (s->cur > s->base) return *s->cur; 
-	r_error("Stack UNDERFLOW!!!!");
+	r_error(NULL, "Stack UNDERFLOW!!!!");
 	return NULL;
 }
 

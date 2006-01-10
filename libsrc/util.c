@@ -473,30 +473,3 @@ gint64 rlib_safe_atoll(char *str) {
 	return atoll(str);
 #endif
 }
-
-struct rlib_string * rlib_string_new() {
-	return g_new0(struct rlib_string, 1);
-}
-
-/* THIS IS NOT UTF8 ON PURPOSE */
-void rlib_string_append(struct rlib_string *rs, const gchar *str) {
-	gint slen = strlen(str);
-	if((rs->slen + slen  + 1) > rs->buf_size) {
-		rs->buf_size = (rs->buf_size * 2) + slen + 1;
-		rs->string = g_realloc(rs->string, rs->buf_size);
-	}
-	memcpy(rs->string + rs->slen, str, slen+1);
-	rs->slen += slen;
-}
-
-struct rlib_string * rlib_string_new_with_string(const gchar *string) {
-	struct rlib_string *rs = rlib_string_new();
-	rlib_string_append(rs, string);
-	return rs;
-}
-
-
-void rlib_string_free(struct rlib_string *rs) {
-	g_free(rs->string);
-	g_free(rs);
-}

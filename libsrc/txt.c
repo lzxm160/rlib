@@ -48,22 +48,22 @@ static void print_text(rlib *r, const gchar *text, gint backwards) {
 		if(OUTPUT_PRIVATE(r)->bottom[current_page] != NULL)
 			packet = OUTPUT_PRIVATE(r)->bottom[current_page]->data;
 		if(packet != NULL && packet->type == TEXT) {
-			rlib_string_append(packet->data, text);
+			g_string_append(packet->data, text);
 		} else {	
 			packet = g_new0(struct _packet, 1);
 			packet->type = TEXT;
-			packet->data = rlib_string_new_with_string(text);
+			packet->data = g_string_new(text);
 			OUTPUT_PRIVATE(r)->bottom[current_page] = g_slist_prepend(OUTPUT_PRIVATE(r)->bottom[current_page], packet);
 		}
 	} else {
 		if(OUTPUT_PRIVATE(r)->top[current_page] != NULL)
 			packet = OUTPUT_PRIVATE(r)->top[current_page]->data;
 		if(packet != NULL && packet->type == TEXT) {
-			rlib_string_append(packet->data, text);
+			g_string_append(packet->data, text);
 		} else {	
 			packet = g_new0(struct _packet, 1);
 			packet->type = TEXT;
-			packet->data = rlib_string_new_with_string(text);
+			packet->data = g_string_new(text);
 			OUTPUT_PRIVATE(r)->top[current_page] = g_slist_prepend(OUTPUT_PRIVATE(r)->top[current_page], packet);
 		}
 	}
@@ -144,7 +144,7 @@ static void rlib_txt_end_part(rlib *r, struct rlib_part *part) {
 			if(packet->type == DELAY) {
 				str = txt_callback(packet->data);
 			} else {
-				str = ((struct rlib_string *)packet->data)->string;
+				str = ((GString *)packet->data)->str;
 			}
 			if(OUTPUT_PRIVATE(r)->both  == NULL) {
 				OUTPUT_PRIVATE(r)->both  = str;
@@ -153,7 +153,7 @@ static void rlib_txt_end_part(rlib *r, struct rlib_part *part) {
 				OUTPUT_PRIVATE(r)->both  = g_strconcat(OUTPUT_PRIVATE(r)->both , str, NULL);
 				g_free(old);
 				if(packet->type == TEXT)
-					rlib_string_free(packet->data);
+					g_string_free(packet->data, TRUE);
 			}
 			g_free(packet);
 			list = list->next;
@@ -173,7 +173,7 @@ static void rlib_txt_end_part(rlib *r, struct rlib_part *part) {
 			if(packet->type == DELAY) {
 				str = txt_callback(packet->data);
 			} else {
-				str = ((struct rlib_string *)packet->data)->string;
+				str = ((GString *)packet->data)->str;
 			}
 			if(OUTPUT_PRIVATE(r)->both  == NULL) {
 				OUTPUT_PRIVATE(r)->both  = str;
@@ -182,7 +182,7 @@ static void rlib_txt_end_part(rlib *r, struct rlib_part *part) {
 				OUTPUT_PRIVATE(r)->both  = g_strconcat(OUTPUT_PRIVATE(r)->both , str, NULL);
 				g_free(old);
 				if(packet->type == TEXT)
-					rlib_string_free(packet->data);
+					g_string_free(packet->data, TRUE);
 
 			}
 			g_free(packet);

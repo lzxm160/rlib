@@ -1,3 +1,17 @@
+2006-01-10  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/api.c: Speed things up by using gstrings, hash the function table, don't do silly thinks like keep looking up the existing locale
+	* libsrc/formatstring.c: likewise
+	* libsrc/free.c: likewise
+	* libsrc/html.c: likewise
+	* libsrc/pcode.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/txt.c: likewise
+	* libsrc/util.c: likewise
+	* libsrc/util.h: likewise
+	* libsrc/value.c: likewise
+	* rpdf/rpdf.c: likewise
+	* rpdf/rpdf.h: likewise
+
 2006-01-08  Bob Doan  <bdoan@sicompos.com>
 	* Makefile.am: New year, new copyright
 	* bindings/Makefile.am:

@@ -43,12 +43,16 @@
 */
 gint rlib_format_money(rlib *r, gchar **dest,const gchar *moneyformat, gint64 x) { 
 	gint result;
+#ifndef RLIB_WIN32
+	gdouble d;
+#endif	
+	
 	*dest = g_malloc(MAXSTRLEN);
 #ifdef RLIB_WIN32
 	result = 0;
 	(*dest)[0] = 0;
 #else
-	gdouble d = ((gdouble) x) / RLIB_DECIMAL_PRECISION;
+	d = ((gdouble) x) / RLIB_DECIMAL_PRECISION;
 	result = strfmon(*dest, MAXSTRLEN - 1, moneyformat, d);
 #endif	
 	return (result >= 0)? strlen(*dest) : 0;
@@ -107,6 +111,10 @@ gint rlib_number_sprintf(rlib *r, gchar **dest, gchar *fmtstr, const struct rlib
 	if(rval != NULL) {
 		gchar fleft[20];
 		gchar fright[20];
+		gchar *left_holding=NULL;
+		gchar *right_holding=NULL;
+		gint ptr=0;
+		gint64 left=0, right=0;
 		
 		if(left_pad > 20) {
 			r_error(r, "FORMATTING ERROR ON LINE %d: %s\n", line_number, infix);
@@ -119,10 +127,8 @@ gint rlib_number_sprintf(rlib *r, gchar **dest, gchar *fmtstr, const struct rlib
 			right_pad = 20;
 		} 
 		
-		gchar *left_holding = g_malloc0(left_pad + 16);
-		gchar *right_holding = g_malloc0(right_pad + 16);
-		gint ptr=0;
-		gint64 left, right;
+		left_holding = g_malloc0(left_pad + 16);
+		right_holding = g_malloc0(right_pad + 16);
 		left = RLIB_VALUE_GET_AS_NUMBER(rval) / RLIB_DECIMAL_PRECISION;
 		if(special_format)
 			left = llabs(left);
@@ -206,23 +212,12 @@ static gint rlib_format_string_default(rlib *r, struct rlib_report_field *rf, st
 }
 
 gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, struct rlib_value *rval) {
-	gchar current_locale[MAXSTRLEN];
 	gchar before[MAXSTRLEN], after[MAXSTRLEN];
 	gint before_len = 0, after_len = 0;
 	gboolean formatted_it = FALSE;	
 	
-	
-	current_locale[0] = 0;
-	
-	if(r->special_locale != NULL) {
-		gchar *tmp;
-		tmp = setlocale(LC_ALL, NULL);
-		if(tmp == NULL)
-			current_locale[0] = 0;
-		else
-			strcpy(current_locale, tmp);
+	if(r->special_locale != NULL) 
 		setlocale(LC_ALL, r->special_locale);
-	}
 	if(rf->xml_format.xml == NULL) {
 		rlib_format_string_default(r, rf, rval, dest);
 		formatted_it = TRUE;
@@ -233,7 +228,8 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 		if(!RLIB_VALUE_IS_STRING(rval_fmtstr)) {
 			*dest = g_strdup_printf("!ERR_F_F");
 			rlib_value_free(rval_fmtstr);
-			setlocale(LC_ALL, current_locale);
+			if(r->special_locale != NULL) 
+				setlocale(LC_ALL, r->current_locale);
 			return FALSE;
 		} else {
 			formatstring = RLIB_VALUE_GET_AS_STRING(rval_fmtstr);
@@ -250,7 +246,8 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 						if (RLIB_VALUE_IS_NUMBER(rval)) {
 							result = rlib_format_money(r, dest, tfmt + 1, RLIB_VALUE_GET_AS_NUMBER(rval));
 							formatted_it = TRUE;
-							setlocale(LC_ALL, current_locale);
+							if(r->special_locale != NULL) 
+								setlocale(LC_ALL, r->current_locale);
 							return result;
 						}
 						++formatstring;
@@ -259,7 +256,8 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 						if (RLIB_VALUE_IS_NUMBER(rval)) {
 							result = rlib_format_number(r, dest, tfmt + 1, RLIB_VALUE_GET_AS_NUMBER(rval));
 							formatted_it = TRUE;
-							setlocale(LC_ALL, current_locale);
+							if(r->special_locale != NULL) 
+								setlocale(LC_ALL, r->current_locale);
 							return result;
 						}
 						++formatstring;
@@ -276,7 +274,8 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 						break;
 					}
 					if (goodfmt) {
-						setlocale(LC_ALL, current_locale);
+						if(r->special_locale != NULL) 
+							setlocale(LC_ALL, r->current_locale);
 						return TRUE;
 					}
 				}
@@ -319,7 +318,8 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 								} else {
 									*dest = g_strdup_printf("!ERR_F_D");
 									rlib_value_free(rval_fmtstr);
-									setlocale(LC_ALL, current_locale);
+									if(r->special_locale != NULL) 
+										setlocale(LC_ALL, r->current_locale);
 									return FALSE;
 								}
 							} else if (tchar == 's') {
@@ -329,7 +329,8 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 								} else {
 									*dest = g_strdup_printf("!ERR_F_S");
 									rlib_value_free(rval_fmtstr);
-									setlocale(LC_ALL, current_locale);
+									if(r->special_locale != NULL) 
+										setlocale(LC_ALL, r->current_locale);
 									return FALSE;
 								}
 							}
@@ -358,8 +359,8 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 		g_free(*dest);
 		*dest = new_str;
 	}
-	
-	setlocale(LC_ALL, current_locale);
+	if(r->special_locale != NULL) 
+		setlocale(LC_ALL, r->current_locale);
 	return TRUE;
 }
 

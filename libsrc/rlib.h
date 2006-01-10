@@ -751,6 +751,7 @@ struct rlib {
 	gboolean did_execute;
 	
 	gchar *special_locale;
+	gchar *current_locale;
 	
 	gint html_debugging;
 
@@ -759,6 +760,9 @@ struct rlib {
 	struct environment_filter *environment;
 	GSList *graph_regions;
 	GSList *graph_minor_x_ticks;
+	
+	gint pcode_alpha_index;
+	gint pcode_alpha_m_index;
 };
 
 #define INPUT(r, i) (r->results[i].input)
@@ -931,6 +935,7 @@ gint rlib_execute_as_string(rlib *r, struct rlib_pcode *pcode, gchar *buf, gint 
 gint rlib_execute_as_int_inlist(rlib *r, struct rlib_pcode *pcode, gint *result, const gchar *list[]);
 gint rlib_execute_as_float(rlib *r, struct rlib_pcode *pcode, gfloat *result);
 void rlib_pcode_free(struct rlib_pcode *code);
+void rlib_pcode_find_index(rlib *r);
 
 /***** PROTOTYPES: reportgen.c ****************************************************/
 void rlib_set_report_from_part(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat top_margin_offset);

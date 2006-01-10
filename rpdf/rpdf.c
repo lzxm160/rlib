@@ -23,6 +23,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 
 #include <locale.h>
 #include <sys/types.h>
@@ -116,27 +117,37 @@ static void rpdf_error(const gchar *fmt, ...) {
 	return;
 }
 
-static gchar * obj_printf(gchar *obj, const gchar *fmt, ...) {
+static GString * obj_printf(GString *obj, const gchar *fmt, ...) {
 	va_list vl;
 	gchar *result = NULL;
+
+	if(obj == NULL)
+		obj = g_string_new("");
 
 	va_start(vl, fmt);
 	result = g_strdup_vprintf(fmt, vl);
 	va_end(vl);
-	if (result != NULL) {
-		if(obj == NULL) {
-			return result;
-		} else {
-			gchar *new_obj = g_strconcat(obj, result, NULL);
-			g_free(obj);
-			g_free(result);
-			return new_obj;
-		}
+
+	if(result != NULL) {
+		g_string_append(obj, result);
+		g_free(result);
 	}
-	return NULL;
+
+	return obj;
 }
 
-static void rpdf_object_append(struct rpdf *pdf, gboolean put_wrapper, gchar *contents, gchar *stream, gint stream_length) {
+static GString * obj_concat(GString *obj, gchar *data) {
+	va_list vl;
+	gchar *result = NULL;
+
+	if(obj == NULL)
+		obj = g_string_new("");
+
+	g_string_append(obj, data);
+	return obj;
+}
+
+static void rpdf_object_append(struct rpdf *pdf, gboolean put_wrapper, GString *contents, gchar *stream, gint stream_length) {
 	struct rpdf_object *object = g_new0(struct rpdf_object, 1);
 	object->put_wrapper = put_wrapper;
 	object->contents = contents;
@@ -164,6 +175,14 @@ static gboolean rpdf_out_string(struct rpdf *rpdf, const gchar *output) {
 	return TRUE;
 }
 
+static gboolean rpdf_out_gstring(struct rpdf *rpdf, const GString *output) {
+	rpdf->out_buffer = g_realloc(rpdf->out_buffer, rpdf->size+output->len);
+	memcpy(rpdf->out_buffer + rpdf->size, output->str, output->len);
+	rpdf->size += output->len;
+	return TRUE;
+}
+
+
 static gboolean rpdf_out_binary(struct rpdf *rpdf, const gchar *output, gint size) {
 	rpdf->out_buffer = g_realloc(rpdf->out_buffer, rpdf->size+size);
 	memcpy(rpdf->out_buffer + rpdf->size, output, size);
@@ -182,7 +201,7 @@ static void rpdf_finalize_objects(gpointer data, gpointer user_data) {
 	rpdf_out_string(pdf, buf);
 	if(object->put_wrapper)
 		rpdf_out_string(pdf, "<<\n");
-	rpdf_out_string(pdf, object->contents);
+	rpdf_out_gstring(pdf, object->contents);
 	if(object->put_wrapper)
 		rpdf_out_string(pdf, ">>\n");
 	if(object->stream != NULL) {
@@ -208,7 +227,7 @@ static void rpdf_stream_font_destroyer(gpointer data, gpointer user_data) {
 
 static void rpdf_object_destroyer(gpointer data, gpointer user_data) {
 	struct rpdf_object *object = data;
-	g_free(object->contents);
+	g_string_free(object->contents, TRUE);
 	g_free(object);
 }
 
@@ -365,25 +384,25 @@ static void rpdf_make_page_image_obj(gpointer data, gpointer user_data) {
 	struct rpdf *pdf = user_data;
 	struct rpdf_images *image = data;
 	struct rpdf_image_jpeg *jpeg = image->metadata;
-	gchar *obj = NULL;
+	GString *obj = NULL;
 	
-	obj = obj_printf(NULL, "/Type /XObject\n");
-	obj = obj_printf(obj, "/Subtype /Image\n");	
+	obj = obj_concat(NULL, "/Type /XObject\n");
+	obj = obj_concat(obj, "/Subtype /Image\n");	
 	obj = obj_printf(obj, "/Name /IMrpdf%d\n", image->number);
 	obj = obj_printf(obj, "/Width %d\n", jpeg->width);
 	obj = obj_printf(obj, "/Height %d\n", jpeg->height);
-	obj = obj_printf(obj, "/Filter /DCTDecode\n");
+	obj = obj_concat(obj, "/Filter /DCTDecode\n");
 	obj = obj_printf(obj, "/BitsPerComponent %d\n", jpeg->precision);
-	obj = obj_printf(obj, "/ColorSpace /");
+	obj = obj_concat(obj, "/ColorSpace /");
 
 	if(jpeg->components == 3)
-		obj = obj_printf(obj, "DeviceRGB");
+		obj = obj_concat(obj, "DeviceRGB");
 	else if(jpeg->components == 4)
-		obj = obj_printf(obj, "DeviceCMYK");
+		obj = obj_concat(obj, "DeviceCMYK");
 	else 
-		obj = obj_printf(obj, "DeviceGray");
+		obj = obj_concat(obj, "DeviceGray");
 
-	obj = obj_printf(obj, "\n");
+	obj = obj_concat(obj, "\n");
 	
 	obj = obj_printf(obj, "/Length %ld\n", image->length);
 
@@ -395,16 +414,16 @@ static void rpdf_make_page_image_obj(gpointer data, gpointer user_data) {
 static void rpdf_make_page_annot_obj(gpointer data, gpointer user_data) {
 	struct rpdf *pdf = user_data;
 	struct rpdf_annots *annot = data;
-	gchar *obj = NULL;
-	obj = obj_printf(NULL, "/Type /Annot\n");
-	obj = obj_printf(obj, "/Subtype /Link\n");
+	GString *obj = NULL;
+	obj = obj_concat(NULL, "/Type /Annot\n");
+	obj = obj_concat(obj, "/Subtype /Link\n");
 	obj = obj_printf(obj, "/Rect [%d %d %d %d]\n", (gint)(annot->start_x*RPDF_DPI), (gint)(annot->start_y*RPDF_DPI), (gint)(annot->end_x*RPDF_DPI), (gint)(annot->end_y*RPDF_DPI));
-	obj = obj_printf(obj, "/A << /S /URI\n");
+	obj = obj_concat(obj, "/A << /S /URI\n");
 	obj = obj_printf(obj, "/URI (%s)\n", annot->url);
-	obj = obj_printf(obj, ">>\n");
-	obj = obj_printf(obj, "/Border [0 0 0]\n");
-	obj = obj_printf(obj, "/C [0.0000 0.0000 1.0000]\n");
-	obj = obj_printf(obj, "/F 0\n");
+	obj = obj_concat(obj, ">>\n");
+	obj = obj_concat(obj, "/Border [0 0 0]\n");
+	obj = obj_concat(obj, "/C [0.0000 0.0000 1.0000]\n");
+	obj = obj_concat(obj, "/F 0\n");
 	rpdf_object_append(pdf, TRUE, obj, NULL, 0);
 	g_free(annot->url);
 	g_free(annot);
@@ -425,8 +444,8 @@ static void rpdf_make_page_fonts_stream(gpointer key, gpointer value, gpointer u
 static void rpdf_make_fonts_stream(gpointer key, gpointer value, gpointer user_data) {
 	struct rpdf *pdf = user_data;
 	struct rpdf_font_object *font = value;
-	gchar *obj;
-	obj = obj_printf(NULL, "/Type /Font\n");
+	GString *obj;
+	obj = obj_concat(NULL, "/Type /Font\n");
 	obj = obj_printf(obj, "/Subtype /%s\n", font->font->subtype);
 	obj = obj_printf(obj, "/Name /F%s\n", font->name);
 	obj = obj_printf(obj, "/BaseFont /%s\n", font->font->name);
@@ -459,30 +478,35 @@ struct rpdf *rpdf_new(void) {
 
 gboolean rpdf_finalize(struct rpdf *pdf) {
 	gint i, save_size;
-	gchar *obj = NULL;
+	GString *obj = NULL;
 	char  *saved_locale;
 	gchar buf[128];
+	struct tm my_tm;
+	time_t now;
+	
+	time(&now);
+	localtime_r(&now, &my_tm);
 
 	rpdf_out_string(pdf, pdf->header);
 	g_hash_table_foreach(pdf->fonts, rpdf_number_fonts, pdf);
 	
 	saved_locale = strdup(setlocale(LC_ALL, NULL));
 	setlocale(LC_ALL, "C");
-	obj = obj_printf(NULL, "/Type /Catalog\n");
-	obj = obj_printf(obj, "/Pages 3 0 R\n"); 
-	obj = obj_printf(obj, "/Outlines 2 0 R\n"); 
+	obj = obj_concat(NULL, "/Type /Catalog\n");
+	obj = obj_concat(obj, "/Pages 3 0 R\n"); 
+	obj = obj_concat(obj, "/Outlines 2 0 R\n"); 
 	rpdf_object_append(pdf, TRUE, obj, NULL, 0);
 	
-	obj = obj_printf(NULL, "/Type /Outlines\n");
-	obj = obj_printf(obj, "/Count 0\n"); 
+	obj = obj_concat(NULL, "/Type /Outlines\n");
+	obj = obj_concat(obj, "/Count 0\n"); 
 	rpdf_object_append(pdf, TRUE, obj, NULL, 0);
 
-	obj = obj_printf(NULL, "/Type /Pages\n");
+	obj = obj_concat(NULL, "/Type /Pages\n");
 	obj = obj_printf(obj, "/Count %d\n", pdf->page_count); 
-	obj = obj_printf(obj, "/Kids ["); 
+	obj = obj_concat(obj, "/Kids ["); 
 	for(i=0;i<pdf->page_count;i++) 
 		obj = obj_printf(obj, " %d 0 R ", 3+2*(i+1)); 
-	obj = obj_printf(obj, "]\n"); 
+	obj = obj_concat(obj, "]\n"); 
 	rpdf_object_append(pdf, TRUE, obj, NULL, 0);
 
 	buf[0] = 0;
@@ -505,37 +529,37 @@ gboolean rpdf_finalize(struct rpdf *pdf) {
 
 		rpdf_finalize_page_stream(pdf);
 
-		obj = obj_printf(NULL, "/Type /Page\n");
-		obj = obj_printf(obj, "/Parent 3 0 R\n");
-		obj = obj_printf(obj, "/Resources <<\n");
+		obj = obj_concat(NULL, "/Type /Page\n");
+		obj = obj_concat(obj, "/Parent 3 0 R\n");
+		obj = obj_concat(obj, "/Resources <<\n");
 		if(g_hash_table_size(pdf->page_fonts) > 0) {
-			obj = obj_printf(obj, "/Font <<\n");
+			obj = obj_concat(obj, "/Font <<\n");
 			pdf->working_obj = obj;
 			g_hash_table_foreach(pdf->page_fonts, rpdf_make_page_fonts_stream, pdf);
 			obj = pdf->working_obj;
-			obj = obj_printf(obj, ">>\n");
+			obj = obj_concat(obj, ">>\n");
 		}
 
 		if(page_info->images != NULL) {
-			obj = obj_printf(obj, "/XObject <<\n");
+			obj = obj_concat(obj, "/XObject <<\n");
 			pdf->working_obj = obj;
 			g_slist_foreach(page_info->images, rpdf_make_page_images, pdf);
 			obj = pdf->working_obj;
-			obj = obj_printf(obj, ">>\n");
+			obj = obj_concat(obj, ">>\n");
 		}
 		
-		obj = obj_printf(obj, "/ProcSet 4 0 R >>\n");
+		obj = obj_concat(obj, "/ProcSet 4 0 R >>\n");
 		obj = obj_printf(obj, "/MediaBox [0 0 %d %d]\n", page_info->paper->x, page_info->paper->y);
 		obj = obj_printf(obj, "/CropBox [0 0 %d %d]\n", page_info->paper->x, page_info->paper->y);
 		obj = obj_printf(obj, "/Rotate %d\n", page_info->orientation == RPDF_PORTRAIT ? 0 : 270);
 		obj = obj_printf(obj, "/Contents %d 0 R\n", 6+(i*2));
 		
 		if(page_info->annots != NULL) {
-			obj = obj_printf(obj, "/Annots [ ");
+			obj = obj_concat(obj, "/Annots [ ");
 			pdf->working_obj = obj;
 			g_slist_foreach(page_info->annots, rpdf_make_page_annot_list, pdf);
 			obj = pdf->working_obj;
-			obj = obj_printf(obj, "]\n");
+			obj = obj_concat(obj, "]\n");
 		}
 		
 		rpdf_object_append(pdf, TRUE, obj, NULL, 0);
@@ -558,14 +582,13 @@ gboolean rpdf_finalize(struct rpdf *pdf) {
 			slen = pdf->page_data->len + 1;
 		}
 		obj = obj_printf(NULL, "<</Length %d>>\n", slen);
-		obj = obj_printf(obj, "stream\n");
-		obj = obj_printf(obj, "\n");
+		obj = obj_concat(obj, "stream\n");
+		obj = obj_concat(obj, "\n");
 		if(slen > 0) {
-			gchar *save_obj = obj;
-			obj = g_strconcat(obj, pdf->page_data->str, "\n", NULL);
-			g_free(save_obj);
+			obj = g_string_append(obj,  pdf->page_data->str);
+			obj = g_string_append(obj,  "\n");
 		}
-		obj = obj_printf(obj, "endstream\n");
+		obj = obj_concat(obj, "endstream\n");
 		rpdf_object_append(pdf, FALSE,  obj, NULL, 0);
 		g_hash_table_destroy(pdf->page_fonts);
 		g_string_free(pdf->page_data, TRUE);
@@ -594,30 +617,30 @@ gboolean rpdf_finalize(struct rpdf *pdf) {
 	if(pdf->creator != NULL) 
 		obj = obj_printf(NULL, "/Creator %s\n", pdf->creator); 
 	else
-		obj = obj_printf(NULL, "/Creator (RPDF By SICOM Systems)\n"); 
+		obj = obj_concat(NULL, "/Creator (RPDF By SICOM Systems)\n"); 
 
-	obj = obj_printf(obj, "/CreationDate (D:20050220143402)\n"); 
-	obj = obj_printf(obj, "/Producer (RPDF 1.0)\n");
+	obj = obj_printf(obj, "/CreationDate (D:%04ld%02d%02d%02d%02d%02d)\n", my_tm.tm_year+1900, my_tm.tm_mon+1, my_tm.tm_mday, my_tm.tm_hour, my_tm.tm_min, my_tm.tm_sec); 
+	obj = obj_concat(obj, "/Producer (RPDF 1.0)\n");
 	
 	if(pdf->author != NULL)
 		obj = obj_printf(obj, "/Author %s\n", pdf->author); 
 	else		
-		obj = obj_printf(obj, "/Author (RPDF)\n"); 
+		obj = obj_concat(obj, "/Author (RPDF)\n"); 
 	
 	if(pdf->title != NULL)
 		obj = obj_printf(obj, "/Title %s\n", pdf->title); 
 	else 
-		obj = obj_printf(obj, "/Title (No Title)\n"); 
+		obj = obj_concat(obj, "/Title (No Title)\n"); 
 
 	if(pdf->subject != NULL)
 		obj = obj_printf(obj, "/Subject %s\n", pdf->subject); 
 	else
-		obj = obj_printf(obj, "/Subject (None)\n"); 
+		obj = obj_concat(obj, "/Subject (None)\n"); 
 				
 	if(pdf->keywords != NULL)
 		obj = obj_printf(obj, "/Keywords %s\n", pdf->keywords); 
 	else
-		obj = obj_printf(obj, "/Keywords (RPDF)\n"); 
+		obj = obj_concat(obj, "/Keywords (RPDF)\n"); 
 		
 
 	rpdf_object_append(pdf, TRUE, obj, NULL, 0);

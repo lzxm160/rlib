@@ -77,6 +77,8 @@ rlib * rlib_init_with_environment(struct environment_filter *environment) {
 #endif
 /*	strcpy(r->pdf_encoding, "WinAnsiEncoding"); */
 	r->did_execute = FALSE;
+	r->current_locale = g_strdup(setlocale(LC_ALL, NULL));
+	rlib_pcode_find_index(r);
 	return r;
 }
 
@@ -364,6 +366,7 @@ gint rlib_add_parameter(rlib *r, const gchar *name, const gchar *value) {
 *  Returns TRUE if locale was actually set, otherwise, FALSE
 */
 gint rlib_set_locale(rlib *r, gchar *locale) {
+
 #if DISABLE_UTF8
 	r->special_locale = g_strdup(locale);
 #else

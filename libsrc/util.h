@@ -32,16 +32,6 @@ struct rlib_rgb {
 	gfloat b;
 };
 
-struct rlib_string {
-	gchar *string;
-	gint slen;
-	gint buf_size;
-};
-
-struct rlib_string * rlib_string_new(void);
-void rlib_string_append(struct rlib_string *rs, const gchar *str);
-void rlib_string_free(struct rlib_string *rs);
-struct rlib_string * rlib_string_new_with_string(const gchar *string);
 
 gchar *strlwrexceptquoted (gchar *s);
 gchar *rmwhitespacesexceptquoted(gchar *s);

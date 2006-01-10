@@ -488,7 +488,7 @@ gint rlib_free(rlib *r) {
 	g_hash_table_destroy(r->input_metadata);
 	g_hash_table_destroy(r->parameters);
 	rlib_free_follower(r);
-				
-	g_free(r);
+	g_free(r->special_locale);
+	g_free(r->current_locale);
 	return 0;
 }
