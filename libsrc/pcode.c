@@ -775,9 +775,9 @@ struct rlib_value * rlib_value_dup_contents(struct rlib_value *rval) {
 gint rlib_value_free(struct rlib_value *rval) {
 	if(rval == NULL)
 		return FALSE;
-	if(rval->free == FALSE)
+	else if(rval->free == FALSE)
 		return FALSE;
-	if(rval->type == RLIB_VALUE_STRING) {
+	else if(rval->type == RLIB_VALUE_STRING) {
 		g_free(rval->string_value);
 		rval->free = FALSE;
 		RLIB_VALUE_TYPE_NONE(rval);
@@ -787,7 +787,10 @@ gint rlib_value_free(struct rlib_value *rval) {
 }
 
 struct rlib_value * rlib_value_new_number(struct rlib_value *rval, gint64 value) {
-	return rlib_value_new(rval, RLIB_VALUE_NUMBER, FALSE, &value);
+	rval->type = RLIB_VALUE_NUMBER;
+	rval->free = FALSE;
+	rval->number_value = value;
+	return rval;
 }
 
 struct rlib_value * rlib_value_new_string(struct rlib_value *rval, const gchar *value) {
@@ -946,8 +949,9 @@ gint rlib_execute_as_int(rlib *r, struct rlib_pcode *pcode, gint *result) {
 				gotval = RLIB_VALUE_GET_AS_STRING((&val));
 			}
 			r_error(r, "Expecting numeric value from pcode. Got %s=%s", whatgot, gotval);
+			rlib_value_free(&val); /* We only free if it's not a number because numbers don't alloc anything */
 		}
-		rlib_value_free(&val);
+		
 	}
 	return isok;
 }

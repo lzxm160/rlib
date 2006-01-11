@@ -1,3 +1,7 @@
+2006-01-11  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/formatstring.c: Use gstrings to get speed increase
+	* libsrc/pcode.c: Improve speed a tad
+
 2006-01-10  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/api.c: Speed things up by using gstrings, hash the function table, don't do silly thinks like keep looking up the existing locale
 	* libsrc/formatstring.c: likewise

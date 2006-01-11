@@ -38,6 +38,8 @@
 #include "rlib_langinfo.h"
 
 
+#define MAX_FORMAT_STRING 20
+
 /*
 * Formats numbers in money format using locale parameters and moneyformat codes
 */
@@ -70,7 +72,9 @@ static gint rlib_string_sprintf(rlib *r, gchar **dest, gchar *fmtstr, struct rli
 	return TRUE;
 }
 
-gint rlib_number_sprintf(rlib *r, gchar **dest, gchar *fmtstr, const struct rlib_value *rval, gint special_format, gchar *infix, gint line_number) {
+#define MAX_NUMBER 128
+
+gint rlib_number_sprintf(rlib *r, gchar **woot_dest, gchar *fmtstr, const struct rlib_value *rval, gint special_format, gchar *infix, gint line_number) {
 	gint dec=0;
 	gint left_padzero=0;
 	gint left_pad=0;
@@ -80,9 +84,9 @@ gint rlib_number_sprintf(rlib *r, gchar **dest, gchar *fmtstr, const struct rlib
 	gint commatize=0;
 	gchar *c;
 	gchar *radixchar = nl_langinfo(RADIXCHAR);
+	GString *dest = g_string_sized_new(MAX_NUMBER);
+	gint slen;
 	
-	*dest = g_malloc(MAXSTRLEN);
-
 	for(c=fmtstr;*c && (*c != 'd');c++) {
 		if(*c=='$') {
 			commatize=1;
@@ -109,26 +113,24 @@ gint rlib_number_sprintf(rlib *r, gchar **dest, gchar *fmtstr, const struct rlib
 	if (!right_pad)
 		right_padzero = 1;
 	if(rval != NULL) {
-		gchar fleft[20];
-		gchar fright[20];
-		gchar *left_holding=NULL;
-		gchar *right_holding=NULL;
+		gchar fleft[MAX_FORMAT_STRING];
+		gchar fright[MAX_FORMAT_STRING];
+		gchar left_holding[MAX_NUMBER];
+		gchar right_holding[MAX_NUMBER];
 		gint ptr=0;
 		gint64 left=0, right=0;
 		
-		if(left_pad > 20) {
+		if(left_pad > MAX_FORMAT_STRING) {
 			r_error(r, "FORMATTING ERROR ON LINE %d: %s\n", line_number, infix);
 			r_error(r, "FORMATTING ERROR:  LEFT PAD IS WAY TO BIG! (%d)\n", left_pad);
-			left_pad = 20;
+			left_pad = MAX_FORMAT_STRING;
 		} 
-		if(right_pad > 20) {
+		if(right_pad > MAX_FORMAT_STRING) {
 			r_error(r, "FORMATTING ERROR ON LINE %d: %s\n", line_number, infix);
 			r_error(r, "FORMATTING ERROR:  LEFT PAD IS WAY TO BIG! (%d)\n", right_pad);			
-			right_pad = 20;
+			right_pad = MAX_FORMAT_STRING;
 		} 
 		
-		left_holding = g_malloc0(left_pad + 16);
-		right_holding = g_malloc0(right_pad + 16);
 		left = RLIB_VALUE_GET_AS_NUMBER(rval) / RLIB_DECIMAL_PRECISION;
 		if(special_format)
 			left = llabs(left);
@@ -154,16 +156,14 @@ gint rlib_number_sprintf(rlib *r, gchar **dest, gchar *fmtstr, const struct rlib
 		} else {
 			sprintf(left_holding, fleft, left);
 		}
-		strcpy(*dest, left_holding);
-		(*dest)[strlen(left_holding)] = '\0';
+		dest = g_string_append(dest, left_holding);
 		if(dec) {
 			ptr=0;
 			if(!special_format && RLIB_VALUE_GET_AS_NUMBER(rval) < 0 && left == 0) {
 				gchar tmp[MAXSTRLEN];
 				sprintf(tmp, "-%s", left_holding);
 				strcpy(left_holding, tmp);
-				strcpy(*dest, left_holding);
-				(*dest)[strlen(left_holding)] = '\0';
+				dest = g_string_append(dest, left_holding);
 			}
 				
 			right = llabs(RLIB_VALUE_GET_AS_NUMBER(rval)) % RLIB_DECIMAL_PRECISION;
@@ -180,13 +180,14 @@ gint rlib_number_sprintf(rlib *r, gchar **dest, gchar *fmtstr, const struct rlib
 			}
 			right /= tentothe(RLIB_FXP_PRECISION-right_pad);
 			sprintf(right_holding, fright, right);
-			strcat(*dest, radixchar);
-			strcat(*dest, right_holding);
+			dest = g_string_append(dest, radixchar);
+			dest = g_string_append(dest, right_holding);
 		}
-		g_free(left_holding);
-		g_free(right_holding);
 	}
-	return strlen(*dest);
+	*woot_dest = dest->str;
+	slen = dest->len;
+	g_string_free(dest, FALSE);
+	return slen;
 }
 
 static gint rlib_format_string_default(rlib *r, struct rlib_report_field *rf, struct rlib_value *rval, gchar **dest) {
@@ -200,7 +201,7 @@ static gint rlib_format_string_default(rlib *r, struct rlib_report_field *rf, st
 		if(RLIB_VALUE_GET_AS_STRING(rval) == NULL)
 			*dest = NULL;
 		else
-			*dest = g_strdup_printf("%s", RLIB_VALUE_GET_AS_STRING(rval));
+			*dest = g_strdup(RLIB_VALUE_GET_AS_STRING(rval));
 	} else if(RLIB_VALUE_IS_DATE(rval))  {
 		struct rlib_datetime *dt = &RLIB_VALUE_GET_AS_DATE(rval);
 		rlib_datetime_format(r, dest, dt, "%m/%d/%Y");
@@ -284,7 +285,7 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 					formatted_it = TRUE;
 				} else {	
 					gint i=0,/*j=0,pos=0,*/fpos=0;
-					gchar fmtstr[20];
+					gchar fmtstr[MAX_FORMAT_STRING];
 					gint special_format=0;
 					gchar *idx;
 					gint len_formatstring;
