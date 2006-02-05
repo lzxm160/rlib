@@ -68,47 +68,58 @@ void rlib_process_variables(rlib *r, struct rlib_report *report, gboolean precal
 		struct rlib_value *count = &RLIB_VARIABLE_CA(rv)->count;
 		struct rlib_value *amount = &RLIB_VARIABLE_CA(rv)->amount;
 		struct rlib_value execute_result, *er = &execute_result;
+		gboolean ignore = FALSE;
 		if(rv->code != NULL)
-			 rlib_execute_pcode(r, &execute_result, rv->code, NULL);
-		if(rv->type == RLIB_REPORT_VARIABLE_COUNT) {
-			RLIB_VALUE_GET_AS_NUMBER(count) += RLIB_DECIMAL_PRECISION;
-		} else if(rv->type == RLIB_REPORT_VARIABLE_EXPRESSION) {
-			if(RLIB_VALUE_IS_NUMBER(er)) {
-				rlib_value_free(amount);
-				rlib_value_new_number(amount, RLIB_VALUE_GET_AS_NUMBER(er));
-			} else if (RLIB_VALUE_IS_STRING(er)) {
-				rlib_value_free(amount);
-				rlib_value_new_string(amount, RLIB_VALUE_GET_AS_STRING(er));
-			} else
-				r_error(r, "rlib_process_variables EXPECTED TYPE NUMBER OR STRING FOR RLIB_REPORT_VARIABLE_EXPRESSION\n");
-		} else if(rv->type == RLIB_REPORT_VARIABLE_SUM) {
-			if(RLIB_VALUE_IS_NUMBER(er))
-				RLIB_VALUE_GET_AS_NUMBER(amount) += RLIB_VALUE_GET_AS_NUMBER(er);
-			else
-				r_error(r, "rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_SUM\n");
-				
-		} else if(rv->type == RLIB_REPORT_VARIABLE_AVERAGE) {
-			RLIB_VALUE_GET_AS_NUMBER(count) += RLIB_DECIMAL_PRECISION;
-			if(RLIB_VALUE_IS_NUMBER(er))
-				RLIB_VALUE_GET_AS_NUMBER(amount) += RLIB_VALUE_GET_AS_NUMBER(er);
-			else
-				r_error(r, "rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_AVERAGE\n");
-		} else if(rv->type == RLIB_REPORT_VARIABLE_LOWEST) {
-			if(RLIB_VALUE_IS_NUMBER(er)) {
-				if(RLIB_VALUE_GET_AS_NUMBER(er) < RLIB_VALUE_GET_AS_NUMBER(amount) || RLIB_VALUE_GET_AS_NUMBER(amount) == 0) /* TODO: EVIL HACK */
-					RLIB_VALUE_GET_AS_NUMBER(amount) = RLIB_VALUE_GET_AS_NUMBER(er);
-			} else
-				r_error(r, "rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_LOWEST\n");
-		} else if(rv->type == RLIB_REPORT_VARIABLE_HIGHEST) {
-			if(RLIB_VALUE_IS_NUMBER(er)) {
-				if(RLIB_VALUE_GET_AS_NUMBER(er) > RLIB_VALUE_GET_AS_NUMBER(amount) || RLIB_VALUE_GET_AS_NUMBER(amount) == 0) /* TODO: EVIL HACK */
-					RLIB_VALUE_GET_AS_NUMBER(amount) = RLIB_VALUE_GET_AS_NUMBER(er);
-			} else
-				r_error(r, "rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_HIGHEST\n");
+			rlib_execute_pcode(r, &execute_result, rv->code, NULL);
+			 
+		if(rv->ignore_code != NULL) {
+			gboolean test_ignore;
+			if(rlib_execute_as_boolean(r, rv->ignore_code, &test_ignore)) {
+				ignore = test_ignore;
+			}
 		}
-		if(precalculate == FALSE && rv->precalculate == TRUE) {
-			if(rv->precalculated_values != NULL)
-				memcpy(&rv->data, rv->precalculated_values->data, sizeof(rv->data));
+
+		if(ignore == FALSE) {
+			if(rv->type == RLIB_REPORT_VARIABLE_COUNT) {
+				RLIB_VALUE_GET_AS_NUMBER(count) += RLIB_DECIMAL_PRECISION;
+			} else if(rv->type == RLIB_REPORT_VARIABLE_EXPRESSION) {
+				if(RLIB_VALUE_IS_NUMBER(er)) {
+					rlib_value_free(amount);
+					rlib_value_new_number(amount, RLIB_VALUE_GET_AS_NUMBER(er));
+				} else if (RLIB_VALUE_IS_STRING(er)) {
+					rlib_value_free(amount);
+					rlib_value_new_string(amount, RLIB_VALUE_GET_AS_STRING(er));
+				} else
+					r_error(r, "rlib_process_variables EXPECTED TYPE NUMBER OR STRING FOR RLIB_REPORT_VARIABLE_EXPRESSION\n");
+			} else if(rv->type == RLIB_REPORT_VARIABLE_SUM) {
+				if(RLIB_VALUE_IS_NUMBER(er))
+					RLIB_VALUE_GET_AS_NUMBER(amount) += RLIB_VALUE_GET_AS_NUMBER(er);
+				else
+					r_error(r, "rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_SUM\n");
+
+			} else if(rv->type == RLIB_REPORT_VARIABLE_AVERAGE) {
+				RLIB_VALUE_GET_AS_NUMBER(count) += RLIB_DECIMAL_PRECISION;
+				if(RLIB_VALUE_IS_NUMBER(er))
+					RLIB_VALUE_GET_AS_NUMBER(amount) += RLIB_VALUE_GET_AS_NUMBER(er);
+				else
+					r_error(r, "rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_AVERAGE\n");
+			} else if(rv->type == RLIB_REPORT_VARIABLE_LOWEST) {
+				if(RLIB_VALUE_IS_NUMBER(er)) {
+					if(RLIB_VALUE_GET_AS_NUMBER(er) < RLIB_VALUE_GET_AS_NUMBER(amount) || RLIB_VALUE_GET_AS_NUMBER(amount) == 0) /* TODO: EVIL HACK */
+						RLIB_VALUE_GET_AS_NUMBER(amount) = RLIB_VALUE_GET_AS_NUMBER(er);
+				} else
+					r_error(r, "rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_LOWEST\n");
+			} else if(rv->type == RLIB_REPORT_VARIABLE_HIGHEST) {
+				if(RLIB_VALUE_IS_NUMBER(er)) {
+					if(RLIB_VALUE_GET_AS_NUMBER(er) > RLIB_VALUE_GET_AS_NUMBER(amount) || RLIB_VALUE_GET_AS_NUMBER(amount) == 0) /* TODO: EVIL HACK */
+						RLIB_VALUE_GET_AS_NUMBER(amount) = RLIB_VALUE_GET_AS_NUMBER(er);
+				} else
+					r_error(r, "rlib_process_variables EXPECTED TYPE NUMBER FOR RLIB_REPORT_VARIABLE_HIGHEST\n");
+			}
+			if(precalculate == FALSE && rv->precalculate == TRUE) {
+				if(rv->precalculated_values != NULL)
+					memcpy(&rv->data, rv->precalculated_values->data, sizeof(rv->data));
+			}
 		}
 	}
 }

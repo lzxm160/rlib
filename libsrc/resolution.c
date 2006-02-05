@@ -182,6 +182,8 @@ static void rlib_variable_resolve_pcode(rlib *r, struct rlib_part *part, struct 
 	rv->code = rlib_infix_to_pcode(r, part, report, (gchar *)rv->xml_value.xml, rv->xml_value.line, TRUE);
 
 	code = rlib_infix_to_pcode(r, part, report, (gchar *)rv->xml_precalculate.xml, rv->xml_precalculate.line, TRUE);
+	rv->ignore_code = rlib_infix_to_pcode(r, part, report, (gchar *)rv->xml_ignore.xml, rv->xml_ignore.line, TRUE);
+
 	if (rlib_execute_as_boolean(r, code, &t)) {
 		rv->precalculate = t;
 	} else {

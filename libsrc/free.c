@@ -318,11 +318,13 @@ void rlib_free_report(rlib *r, struct rlib_report *report) {
 			struct rlib_report_variable *rv = e->data;
 
 			rlib_pcode_free(rv->code);
+			rlib_pcode_free(rv->ignore_code);
 
 			xmlFree(rv->xml_name.xml);
 			xmlFree(rv->xml_str_type.xml);
 			xmlFree(rv->xml_value.xml);
 			xmlFree(rv->xml_resetonbreak.xml);
+			xmlFree(rv->xml_ignore.xml);
 
 			if(rv->precalculated_values != NULL) {
 				g_free(rv->precalculated_values->data);

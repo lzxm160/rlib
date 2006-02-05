@@ -1,3 +1,11 @@
+2006-02-04  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/free.c: "Ignore" keyword for variables
+	* libsrc/parsexml.c: likewise
+	* libsrc/resolution.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/variables.c: likewise
+	* src/examples/php/csv.xml: likewise
+
 2006-01-11  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/formatstring.c: Use gstrings to get speed increase
 	* libsrc/pcode.c: Improve speed a tad

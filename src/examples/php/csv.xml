@@ -10,7 +10,10 @@
 			</Output>
 		</NoData>
 	</Alternate>
-		
+
+	<Variables>
+		<Variable name="steve" value="val(value)" type="sum" ignore="iif(val(value) &lt;= 50,yes,no)"/>
+	</Variables>		
 	
 	<Detail>
 		<FieldHeaders>
@@ -43,5 +46,11 @@
 	</PageFooter>
 
 	<ReportFooter>
+		<Output>
+			<Line>
+				<literal>Steve </literal>	
+				<field value="v.steve" width="4" align="right"/>
+			</Line>
+		</Output>
 	</ReportFooter>
 </Report>
