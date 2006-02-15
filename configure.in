@@ -475,44 +475,6 @@ AC_SUBST(PERL_CFLAGS)
 AC_SUBST(PERL_EXTENSION_DIR)
 
 
-dnl check for iconv.h
-AC_CHECK_HEADERS(iconv.h,,AC_MSG_ERROR(cannot find iconf.h))
-
-dnl if we have iconv library, we have to decide if it
-dnl is present in libc
-AC_CHECK_FUNCS(iconv_open, iconv_in_libc=1, iconv_in_libc=0)
-AC_CHECK_LIB(iconv, iconv_open, iconv_in_iconv=1, iconv_in_iconv=0)
-AC_CHECK_LIB(iconv, libiconv_open, libiconv_in_iconv=1,libiconv_in_iconv=0)
-
-dnl standalone library rules over libc
-AC_MSG_CHECKING(where to find iconv_open)
-if test $iconv_in_iconv = 1 -o $libiconv_in_iconv = 1; then
-        AC_MSG_RESULT(libiconv)
-        ICONVLIBS=" -liconv"
-elif test $iconv_in_libc = 1; then
-        AC_MSG_RESULT(libc)
-else
-        AC_MSG_RESULT(not found (panic))
-        AC_MSG_ERROR([iconv.h found, while iconv library not found])
-fi
-
-
-AC_MSG_CHECKING(whether iconv takes const char ** or char **)
-AC_TRY_COMPILE([#include <iconv.h>],[
-{
-size_t iconv (iconv_t a, const char ** b, size_t *c, char **d, size_t *e);
-}],
-iconv_oldstyle=1, iconv_oldstyle=0)
-if test $iconv_oldstyle = 1; then
-        AC_MSG_RESULT(const char **)
-        AC_DEFINE(ICONV_CONST_CHAR_PP, [1], [ICONV Pointer Test])
-else
-
-        AC_MSG_RESULT(char **)
-        AC_DEFINE(ICONV_CONST_CHAR_PP, [0], [ICONV Pointer Test])
-fi
-
-
 AC_MSG_CHECKING(whether iconv takes ISO8859-1 or ISO-8859-1)
 AC_RUN_IFELSE(
         [

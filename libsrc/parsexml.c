@@ -33,8 +33,6 @@
 
 void dump_part(struct rlib_part *part);
 
-iconv_t cd = (void *)-1;
-
 static struct rlib_report * parse_report_file(rlib *r, gchar *filename, gchar *query);
 
 void safestrncpy(gchar *dest, gchar *str, int n) {
@@ -45,19 +43,15 @@ void safestrncpy(gchar *dest, gchar *str, int n) {
 
 
 #if DISABLE_UTF8
-static void utf8_to_8813(gchar *dest, gchar *str) {
+static void utf8_to_8813(rlib *r, gchar *dest, gchar *str) {
 	size_t len = MAXSTRLEN;
 	size_t slen;
 	gchar *olddest = dest;
 	if(str != NULL && str[0] != 0) {
-		if(cd != NULL && cd != (void *)-1) {
+		if(r->xml_encoder != NULL && r->xml_encoder != (void *)-1) {
 			slen = strlen(str);
 			memset(dest, 0, MAXSTRLEN);
-#if ICONV_CONST_CHAR_PP
-			iconv(cd, (const char **) &str, &slen, &olddest, &len);
-#else
-			iconv(cd, (char **)&str, &slen, &olddest, &len);
-#endif
+			g_iconv(r->xml_encoder, (char **)&str, &slen, &olddest, &len);
 		} else {
 			strcpy(dest, str);
 		}
@@ -104,7 +98,7 @@ static struct rlib_element * parse_line_array(rlib *r, xmlDocPtr doc, xmlNsPtr n
 			current = (void *)g_new0(struct rlib_element, 1);
 			sp = xmlGetProp(cur, (const xmlChar *) "value");
 #if DISABLE_UTF8
-			utf8_to_8813(f->value, (gchar *)sp);
+			utf8_to_8813(r, f->value, (gchar *)sp);
 #else
 			safestrncpy(f->value, (gchar *)sp, sizeof(f->value));
 #endif
@@ -135,7 +129,7 @@ static struct rlib_element * parse_line_array(rlib *r, xmlDocPtr doc, xmlNsPtr n
 			current = g_new0(struct rlib_element, 1);
 			sp = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 #if DISABLE_UTF8
-			utf8_to_8813(t->value, (char *)sp);
+			utf8_to_8813(r, t->value, (char *)sp);
 #else
 			safestrncpy(t->value, (gchar *)sp, sizeof(t->value));
 #endif
@@ -704,8 +698,7 @@ struct rlib_part * parse_part_file(rlib *r, gchar *filename, gchar type) {
 	xmlLineNumbersDefault(1);
 
 #if DISABLE_UTF8
-	cd = iconv_open(ICONV_ISO, "UTF-8");
-/*	cd = (void *)-1; */
+	r->xml_encoder = g_iconv_open(ICONV_ISO, "UTF-8");
 #endif
 
 	if(type == RLIB_REPORT_TYPE_BUFFER) 
@@ -794,8 +787,8 @@ struct rlib_part * parse_part_file(rlib *r, gchar *filename, gchar type) {
 	xmlFreeDoc(doc);
 	
 #if DISABLE_UTF8
-	if((long)cd != -1)
-		iconv_close(cd);
+	if((long)r->xml_encoder != -1)
+		g_iconv_close(r->xml_encoder);
 #endif	
 
 	return part;

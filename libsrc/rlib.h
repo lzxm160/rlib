@@ -765,6 +765,8 @@ struct rlib {
 	
 	gint pcode_alpha_index;
 	gint pcode_alpha_m_index;
+
+	GIConv xml_encoder;
 };
 
 #define INPUT(r, i) (r->results[i].input)

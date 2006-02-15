@@ -138,9 +138,9 @@ gint rlib_number_sprintf(rlib *r, gchar **woot_dest, gchar *fmtstr, const struct
 		if(left_padzero)
 			fleft[ptr++]='0';
 		if(left_pad)
-			if(commatize)
+			if(commatize) {
 				sprintf(fleft +ptr, "%d'lld", left_pad);
-			else
+			} else
 				sprintf(fleft +ptr, "%dlld", left_pad);
 		else {
 			if(commatize)
@@ -151,21 +151,17 @@ gint rlib_number_sprintf(rlib *r, gchar **woot_dest, gchar *fmtstr, const struct
 			fleft[ptr++] = '\0';
 		}
 		if(left_pad == 0 && left == 0) {
-			left_holding[0] = '0';
-			left_holding[1] = 0;			
+			gint spot=0;
+			if(RLIB_VALUE_GET_AS_NUMBER(rval) < 0)
+				left_holding[spot++] = '-';
+			left_holding[spot++] = '0';
+			left_holding[spot++] = 0;			
 		} else {
 			sprintf(left_holding, fleft, left);
 		}
 		dest = g_string_append(dest, left_holding);
 		if(dec) {
 			ptr=0;
-			if(!special_format && RLIB_VALUE_GET_AS_NUMBER(rval) < 0 && left == 0) {
-				gchar tmp[MAXSTRLEN];
-				sprintf(tmp, "-%s", left_holding);
-				strcpy(left_holding, tmp);
-				dest = g_string_append(dest, left_holding);
-			}
-				
 			right = llabs(RLIB_VALUE_GET_AS_NUMBER(rval)) % RLIB_DECIMAL_PRECISION;
 			fright[ptr++]='%';
 			if(right_padzero)
@@ -366,22 +362,23 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 }
 
 gchar *rlib_align_text(rlib *r, gchar **my_rtn, gchar *src, gint align, gint width) {
-	gint len = 0, size = 0;
+	gint len = 0, size = 0, lastidx = 0;
 	gchar *rtn;
 
 	if(src != NULL) {
 		len = r_strlen(src);
 		size = strlen(src);
+		lastidx = width + size - len;
 	}
 
 	if(len > width) {
 		rtn = *my_rtn = g_strdup(src);
 		return rtn;
 	} else {
-		rtn = *my_rtn  = g_malloc(width + 1);
+		rtn = *my_rtn  = g_malloc(lastidx + 1);
 		if(width >= 1) {
-			memset(rtn, ' ', width);
-			rtn[width] = 0;
+			memset(rtn, ' ', lastidx);
+			rtn[lastidx] = 0;
 		}  
 		if(src != NULL)
 			memcpy(rtn, src, size);
@@ -393,13 +390,13 @@ gchar *rlib_align_text(rlib *r, gchar **my_rtn, gchar *src, gint align, gint wid
 	if(align == RLIB_ALIGN_LEFT || width == -1) {
 	} else {
 		if(align == RLIB_ALIGN_RIGHT) {        
-			gint x = width - len;
+			gint x = lastidx - size;
 			if(x > 0) {
 				memset(rtn, ' ', x);
 				if(src == NULL)
 					rtn[x] = 0;
 				else
-					g_strlcpy(rtn+x, src, width);
+					g_strlcpy(rtn+x, src, lastidx);
 			}
 		}
 		if(align == RLIB_ALIGN_CENTER) {

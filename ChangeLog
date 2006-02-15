@@ -1,3 +1,15 @@
+2006-02-15  Zoltan Boszormenyi <zboszor@dunaweb.hu>
+	* libsrc/formatstring.c: Use correct string size when working the strings (utf8 fix...)
+
+2006-02-15  Bob Doan  <bdoan@sicompos.com>
+	* configure.in: Use glib iconv
+	* libsrc/parsexml.c: likewise
+	* libsrc/rlib.h: likewise
+	* libsrc/breaks.c: if problem where break footer would not come out if it would not fit on a page and breaks are not foreced
+	* libsrc/formatstring.c: Fix formatting if negative devimal numbers
+	* src/examples/php/array.php: testing
+	* src/examples/php/array.xml: likewise
+
 2006-02-04  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/free.c: "Ignore" keyword for variables
 	* libsrc/parsexml.c: likewise

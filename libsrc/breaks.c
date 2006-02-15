@@ -42,8 +42,7 @@ static void rlib_print_break_header_output(rlib *r, struct rlib_part *part, stru
 				blank = TRUE;
 			else
 				blank = FALSE;
-		}		
-		
+		}				
 	}
 	if(!suppress || (suppress && !blank)) {
 		rb->didheader = TRUE;
@@ -57,9 +56,9 @@ static void rlib_print_break_header_output(rlib *r, struct rlib_part *part, stru
 static void rlib_print_break_footer_output(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb, struct rlib_element *e, gint backwards) {
 	if(!OUTPUT(r)->do_breaks)
 		return;
-
-	if(rb->didheader)
+	if(rb->didheader) {
 		rlib_layout_report_output(r, part, report, e, backwards, FALSE);
+	}
 }
 
 void rlib_force_break_headers(rlib *r, struct rlib_part *part, struct rlib_report *report, gboolean precalculate) {
@@ -183,9 +182,9 @@ static void rlib_break_all_below_in_reverse_order(rlib *r, struct rlib_part *par
 	gboolean t;
 	struct rlib_report_break *rb;
 	struct rlib_element *xxx, *be;
-	struct rlib_break_fields *bf;
+	struct rlib_break_fields *bf = NULL;
 
-	for(xxx =e; xxx != NULL; xxx=xxx->next)
+	for(xxx = e; xxx != NULL; xxx=xxx->next)
 		count++;
 
 	for(i=count;i > 0;i--) {
@@ -209,8 +208,12 @@ static void rlib_break_all_below_in_reverse_order(rlib *r, struct rlib_part *par
 				rlib_navigate_previous(r, r->current_result);
 
 			if(precalculate == FALSE) {
-				if(did_end_page)
+				if(did_end_page) {
+					bf->rval = rlib_execute_pcode(r, &bf->rval2, bf->code, NULL);
 					rlib_print_break_header_output(r, part, report, rb, rb->header, FALSE);
+					rlib_value_free(bf->rval);
+					bf->rval = NULL;		
+				}
 
 				rlib_print_break_footer_output(r, part, report, rb, rb->footer, FALSE);
 			}

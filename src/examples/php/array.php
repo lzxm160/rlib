@@ -50,6 +50,7 @@
 	rlib_add_function($rlib, "mikeroth", "mike_roth", 2);
 	rlib_set_output_format_from_text($rlib, "txt");
 	rlib_set_output_parameter($rlib, "debugging", "yes");
+	rlib_set_locale($rlib, "en_US");
 	rlib_execute($rlib);
 	header(rlib_get_content_type($rlib));
 	rlib_spool($rlib);
