@@ -1,3 +1,10 @@
+2006-03-15  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/html.c: Valid XHTML Output
+	* libsrc/reportgen.c: 
+	* src/examples/php/array.php:
+	* src/examples/php/graph.php:
+	* src/examples/php/multiline.php:
+
 2006-02-15  Zoltan Boszormenyi <zboszor@dunaweb.hu>
 	* libsrc/formatstring.c: Use correct string size when working the strings (utf8 fix...)
 

@@ -456,6 +456,7 @@ void rlib_layout_part_td(rlib *r, struct rlib_part *part, GSList *part_deviation
 	for(element = part_deviations;element != NULL;element = g_slist_next(element)) {
 		struct rlib_part_td *td = element->data;
 		gfloat running_top_margin = 0;
+		gint i;
 		gint width, height, border_width;
 		gchar border_color[MAXSTRLEN];
 		struct rlib_rgb bgcolor;
@@ -474,8 +475,11 @@ void rlib_layout_part_td(rlib *r, struct rlib_part *part, GSList *part_deviation
 
 		rlib_parsecolor(&bgcolor, border_color);
 		
-		OUTPUT(r)->start_td(r, part, running_left_margin+part->left_margin, rlib_layout_get_next_line_by_font_point(r, part, running_top_margin+position_top+part->position_top[0], 0), width,  height, border_width, border_color[0] == 0 ? NULL : &bgcolor);
-
+		for(i=0;i<part->pages_across;i++) {
+			OUTPUT(r)->set_working_page(r, part, i);
+			OUTPUT(r)->start_td(r, part, running_left_margin+part->left_margin, rlib_layout_get_next_line_by_font_point(r, part, running_top_margin+position_top+part->position_top[0], 0), width,  height, border_width, border_color[0] == 0 ? NULL : &bgcolor);
+		}
+		
 		for(report_element=td->reports;report_element != NULL;report_element = g_slist_next(report_element)) {
 			struct rlib_report *report = report_element->data;
 			report->page_width = (((gfloat)width/100) * paper_width);
@@ -492,12 +496,16 @@ void rlib_layout_part_td(rlib *r, struct rlib_part *part, GSList *part_deviation
 			}
 		}
 		running_left_margin += (((gfloat)width/100) * paper_width);
-		OUTPUT(r)->end_td(r);
+		for(i=0;i<part->pages_across;i++) {
+			OUTPUT(r)->set_working_page(r, part, i);
+			OUTPUT(r)->end_td(r);
+		}
 	}	
 }
 
 static void rlib_layout_part_tr(rlib *r, struct rlib_part *part) {
 	struct rlib_report_position rrp;
+	gint i;
 	char buf[MAXSTRLEN];
 	GSList *element;
 	memset(&rrp, 0, sizeof(rrp));
@@ -516,7 +524,11 @@ static void rlib_layout_part_tr(rlib *r, struct rlib_part *part) {
 			}
 		}
 		
-		OUTPUT(r)->start_tr(r);
+		for(i=0;i<part->pages_across;i++) {
+			OUTPUT(r)->set_working_page(r, part, i);
+			OUTPUT(r)->start_tr(r);
+		}
+		
 		save_page_number = r->current_page_number;
 		
 		if(rrp.position_top > 0)
@@ -529,8 +541,11 @@ static void rlib_layout_part_tr(rlib *r, struct rlib_part *part) {
 		memset(&rrp, 0, sizeof(rrp));
 
 		rlib_layout_part_td(r, part, tr->part_deviations, save_page_number, save_position_top, &rrp);
-		OUTPUT(r)->end_tr(r);
 
+		for(i=0;i<part->pages_across;i++) {
+			OUTPUT(r)->set_working_page(r, part, i);
+			OUTPUT(r)->end_tr(r);
+		}
 		
 	}	
 }
@@ -609,7 +624,6 @@ gint rlib_make_report(rlib *r) {
 	r->start_of_new_report = TRUE;
 
 	OUTPUT(r)->init_output(r);
-
 
 	for(i=0;i<r->parts_count;i++) {
 		struct rlib_part *part = r->parts[i];
