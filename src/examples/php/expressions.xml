@@ -112,8 +112,14 @@
 				<literal>SHOULD GET: 1,23                GOT: </literal>
 				<field value="fxpval('123',2)" format="'%.2d'" width="20"/>
 			</Line>
-
-
+			<Line>
+				<literal>SHOULD GET: 200.00              GOT: </literal>
+				<field value="str(val('10')/val('5')*100.0,3,2)" format="'%s'" width="20"/>
+			</Line>
+			<Line>
+				<literal>SHOULD GET: 200,00              GOT: </literal>
+				<field value="val(str(val('10')/val('5')*100.0,3,2))" format="'%.02d'" width="20"/>
+			</Line>
 		</Output>
 	</ReportHeader>		
 </Report>

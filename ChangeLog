@@ -1,3 +1,7 @@
+2006-03-16  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/pcode.c: Fix RLIB expression compiler error
+	* src/examples/php/expressions.xml: test case
+
 2006-03-15  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/html.c: Valid XHTML Output
 	* libsrc/reportgen.c: 

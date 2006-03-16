@@ -394,7 +394,7 @@ void rlib_pcode_dump(rlib *r, struct rlib_pcode *p, gint offset) {
 				rlogit(r, "%lld", *((gint64 *)o->value));
 #endif
 			else if(o->type == OPERAND_STRING) 
-				rlogit(r, "%s", (char *)o->value);
+				rlogit(r, "'%s'", (char *)o->value);
 			else if(o->type == OPERAND_FIELD) {
 				struct rlib_resultset_field *rf = o->value;
 				rlogit(r, "Result Set = [%d]; Field = [%d]", rf->resultset, rf->field);
@@ -437,11 +437,14 @@ int operator_stack_push(struct rlib_operator_stack *os, struct rlib_pcode_operat
 
 	if(op->tag[0] != ')' && op->tag[0] != ',')
 		os->op[os->count++] = op;
+
+//r_error(NULL, "+++++++ operator_stack_push:: [%s]\n", op->tag);
 	return 0;
 }
 
 struct rlib_pcode_operator * operator_stack_pop(struct rlib_operator_stack *os) {
 	if(os->count > 0) {
+//r_error(NULL, "------- operator_stack_pop:: [%s]\n", os->op[os->count-1]->tag);
 		return os->op[--os->count];
 	} else
 		return NULL;
@@ -449,6 +452,7 @@ struct rlib_pcode_operator * operator_stack_pop(struct rlib_operator_stack *os) 
 
 struct rlib_pcode_operator * operator_stack_peek(struct rlib_operator_stack *os) {
 	if(os->count > 0) {
+//r_error(NULL, "======== operator_stack_peek:: [%s]\n", os->op[os->count-1]->tag);
 		return os->op[os->count-1];
 	} else
 		return NULL;
@@ -502,12 +506,14 @@ void popopstack(struct rlib_pcode *p, struct rlib_operator_stack *os, struct rli
 			operator_stack_pop(os);
 		}		
 	} else {
+//r_error(NULL, "#################### OP IS [%s]\n", op->tag);
 		while((o=operator_stack_peek(os))) {
-			if(o->is_op == TRUE) {
-				rlib_pcode_add(p, rlib_new_pcode_instruction(&rpi, PCODE_EXECUTE, o));
-			}
 			if(o->tag[0] == '(' || o->is_function == TRUE) {
 				break;
+			}
+			if(o->is_op == TRUE) {
+//r_error(NULL, "@@@@@@@@@@@@@@@@@@@ ADDING [%s]\n", o->tag);
+				rlib_pcode_add(p, rlib_new_pcode_instruction(&rpi, PCODE_EXECUTE, o));
 			}
 			operator_stack_pop(os);
 		}	
@@ -518,18 +524,23 @@ static void forcepopstack(rlib *r, struct rlib_pcode *p, struct rlib_operator_st
 	struct rlib_pcode_operator *o;
 	struct rlib_pcode_instruction rpi;
 	while((o=operator_stack_pop(os))) {
-		if(o->is_op == TRUE)
+		if(o->is_op == TRUE) {
+//r_error(r, "forcepopstack:: Forcing [%s] Off the Stack\n", o->tag);	
 			rlib_pcode_add(p, rlib_new_pcode_instruction(&rpi, PCODE_EXECUTE, o));
+		}
 	}
 	
 	
 }
 
 void smart_add_pcode(struct rlib_pcode *p, struct rlib_operator_stack *os, struct rlib_pcode_operator *op) {
+//r_error(NULL, "smart_add_pcode:: Adding [%s]\n", op->tag);	
 
 	if(operator_stack_is_all_less(os, op)) {
+//r_error(NULL, "\tsmart_add_pcode:: JUST PUSH [%s]\n", op->tag);	
 		operator_stack_push(os, op);
 	} else {		
+//r_error(NULL, "\tsmart_add_pcode:: POP AND PUSH [%s]\n", op->tag);	
 		popopstack(p, os, op);
 		operator_stack_push(os, op);
 	}
