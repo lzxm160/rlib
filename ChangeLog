@@ -1,3 +1,8 @@
+2006-03-17  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/html.c: More XHTML Output goodies
+	* libsrc/reportgen.c: likewise
+	* libsrc/rlib.h: likewise
+
 2006-03-16  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/pcode.c: Fix RLIB expression compiler error
 	* src/examples/php/expressions.xml: test case

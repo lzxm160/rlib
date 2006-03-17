@@ -165,7 +165,6 @@ static gint convert_font_point(gint point) {
 }
 
 static void rlib_html_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, gint col) {
-	gint did_fg = 0;
 	gchar font_size[MAXSTRLEN];
 	gchar foreground_color[MAXSTRLEN];
 	gchar background_color[MAXSTRLEN];
@@ -237,16 +236,36 @@ static void rlib_html_set_bg_color(rlib *r, gfloat red, gfloat green, gfloat blu
 static void rlib_html_hr(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
 struct rlib_rgb *color, gfloat indent, gfloat length) {
 	gchar buf[MAXSTRLEN];
+	gchar nbsp[MAXSTRLEN];
 	gchar color_str[40];
+	gchar td[MAXSTRLEN];
+	int i;
 	get_html_color(color_str, color);
 	
+	
 	if( how_tall > 0 ) { 
-		sprintf(buf, "<span style=\"height:%dpx; background-color:%s; width:100%%; display:block;\">&nbsp;</span>",  (int)how_tall, color_str);
+/*		sprintf(buf, "<span style=\"padding-left:20px; width:100%%; display:block; background-color:%s; height:%dpx; line-height:%dpx; \">", color_str, (int)how_tall, (int)how_tall);
 		print_text(r, buf, backwards);
-/*		sprintf(buf,"<td style=\"height:%dpx; background-color:%s;\"></td>",);
-		print_text(r, "<table><tr>", backwards);
+
+//		sprintf(buf, "<span style=\"height:%dpx; line-height:%dpx; font-size:xx-small; background-color:white; \">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>", (int)how_tall, (int)how_tall);
+//		print_text(r, buf, backwards);
+
+
+		print_text(r, "&nbsp;</span>", backwards);
+*/
+		nbsp[0] = 0;
+		td[0] = 0;
+		if(indent > 0) {
+			for(i=0;i<(int)indent;i++) 
+				strcpy(nbsp + (i*6), "&nbsp;");
+			sprintf(td, "<td style=\"height:%dpx; line-height:%dpx;\"><pre>%s</pre></td>", (int)how_tall, (int)how_tall, nbsp);
+		}
+		
+		print_text(r, "<table cellspacing=\"0\" cellpadding=\"0\" style=\"width:100%%;\"><tr>", backwards);
+		sprintf(buf,"</pre>%s<td style=\"height:%dpx; background-color:%s; width:100%%\"></td>",  td, (int)how_tall,color_str);
 		print_text(r, buf, backwards);
-		print_text(r, "</tr></table>", backwards);*/
+		print_text(r, "</tr></table><pre>\n", backwards);
+		
 	}
 }
 
@@ -280,8 +299,8 @@ static void rlib_html_background_image(rlib *r, gfloat left_origin, gfloat botto
 gfloat nheight) {
 	gchar buf[MAXSTRLEN];
 
-	print_text(r, "<span>", FALSE);	
-    sprintf(buf, "<img src=\"%s\" width=\"%f\" height=\"%f\" alt=\"background image\"/>", nname, nwidth, nheight);
+	print_text(r, "<span style=\"float: left; position:absolute;\">", FALSE);	
+	sprintf(buf, "<img src=\"%s\" width=\"%f\" height=\"%f\" alt=\"background image\"/>", nname, nwidth, nheight);
 	print_text(r, buf, FALSE);
 	print_text(r, "</span>", FALSE);
 }
@@ -349,14 +368,21 @@ static void rlib_html_start_report(rlib *r, struct rlib_part *part) {
     	suppress_head = g_hash_table_lookup(r->output_parameters, "suppress_head");
     	if(suppress_head == NULL) {
 			char *doctype = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n <html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">\n";
+			
 			if(OUTPUT_PRIVATE(r)->did_doctype == FALSE) {
+				int font_size = part->font_size;
+				if(font_size <= 0)
+					font_size = r->font_point;
+				if(font_size <= 0)
+					font_size = RLIB_DEFUALT_FONTPOINT;
+				
 				print_text(r, doctype, FALSE);
     			sprintf(buf, "<head>\n<style type=\"text/css\">\n");
     			print_text(r, buf, FALSE);
-    			sprintf(buf, "pre { margin:0; padding:0; margin-top:0; margin-bottom:0;}\n");
+    			sprintf(buf, "pre { margin:0; padding:0; margin-top:0; margin-bottom:0; font-size:%dpt;}\n", part->font_size);
     			print_text(r, buf, FALSE);
     			print_text(r, "div { position: absolute; left: 0; }\n", FALSE);
-    			print_text(r, "TABLE { border: 0; cellspacing: 0; cellpadding: 0; width: 100%; }\n", FALSE);
+    			print_text(r, "TABLE { border: 0; cellspacing: 0; cellpadding: 0; width:100%; }\n", FALSE);
     			print_text(r, "</style>\n", FALSE);
 
     			meta = g_hash_table_lookup(r->output_parameters, "meta");
@@ -375,7 +401,7 @@ static void rlib_html_start_report(rlib *r, struct rlib_part *part) {
 static void rlib_html_end_part(rlib *r, struct rlib_part *part) {
 	gint i;
 	gchar *old;
-	print_text(r, "<!-- END PART (TOP)-->\n", TRUE);
+	print_text(r, "\n", TRUE);
 	for(i=0;i<part->pages_across;i++) {
 		GSList *tmp = OUTPUT_PRIVATE(r)->top[i]; 
 		GSList *list = NULL;
@@ -446,7 +472,7 @@ static void rlib_html_end_part(rlib *r, struct rlib_part *part) {
 
 	}
 	old = OUTPUT_PRIVATE(r)->both;
-	OUTPUT_PRIVATE(r)->both = g_strconcat(OUTPUT_PRIVATE(r)->both, "</tr></table> <!-- END PART (BOTTOM)-->", NULL);
+	OUTPUT_PRIVATE(r)->both = g_strconcat(OUTPUT_PRIVATE(r)->both, "</tr></table>", NULL);
 	g_free(old);
 	OUTPUT_PRIVATE(r)->length = strlen(OUTPUT_PRIVATE(r)->both);
 }
@@ -485,7 +511,7 @@ static void rlib_html_start_tr(rlib *r) {
 }
 
 static void rlib_html_end_tr(rlib *r) {
-	print_text(r, "</tr></table><pre> <!-- END TR -->", FALSE);
+	print_text(r, "</tr></table><pre>", FALSE);
 }
 
 static void rlib_html_start_td(rlib *r, struct rlib_part *part, gfloat left_margin, gfloat top_margin, int width, int height, int border_width, struct rlib_rgb *color) {
@@ -501,7 +527,7 @@ static void rlib_html_start_td(rlib *r, struct rlib_part *part, gfloat left_marg
 		sprintf(buf, "<td valign=\"top\" style=\"border:solid %dpx %s; width:%d%%; \"><pre>", border_width, border_color, width);
 	}
 	else
-		sprintf(buf, "<!-- WOOT --><td style=\"width:%d%%;\" valign=\"top\"><pre>", width);
+		sprintf(buf, "<td style=\"width:%d%%;\" valign=\"top\"><pre>", width);
 	print_text(r, buf, FALSE);
 }
 

@@ -34,8 +34,6 @@
 #include "rlib_input.h"
 #include "rlib_langinfo.h"
 
-#define FONTPOINT 	10.0
-
 /* Not used: static struct rlib_rgb COLOR_BLACK = {0, 0, 0}; */
 
 struct _rlib_format_table {
