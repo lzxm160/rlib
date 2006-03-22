@@ -1,3 +1,6 @@
+2006-03-22  Zoltan Boszormenyi <zboszor@dunaweb.hu>
+	* inputs/odbc/Makefile.am: Fix linking
+
 2006-03-17  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/html.c: More XHTML Output goodies
 	* libsrc/reportgen.c: likewise
