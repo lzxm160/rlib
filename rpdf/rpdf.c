@@ -21,6 +21,10 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
@@ -34,6 +38,10 @@
 #include <math.h>
 
 #include <glib.h>
+
+#ifdef RPDF_COMPRESS_STREAM
+#include <zlib.h>
+#endif
 
 #include "rpdf.h"
 
@@ -137,9 +145,6 @@ static GString * obj_printf(GString *obj, const gchar *fmt, ...) {
 }
 
 static GString * obj_concat(GString *obj, gchar *data) {
-	va_list vl;
-	gchar *result = NULL;
-
 	if(obj == NULL)
 		obj = g_string_new("");
 
@@ -147,13 +152,29 @@ static GString * obj_concat(GString *obj, gchar *data) {
 	return obj;
 }
 
-static void rpdf_object_append(struct rpdf *pdf, gboolean put_wrapper, GString *contents, gchar *stream, gint stream_length) {
+static gint rpdf_object_number_skip(struct rpdf *pdf) {
+	return ++pdf->object_count;
+}
+
+static void rpdf_object_insert(struct rpdf *pdf, gint object_number, gboolean put_wrapper, GString *contents, gchar *stream, gint stream_length) {
 	struct rpdf_object *object = g_new0(struct rpdf_object, 1);
+	object->object_number = object_number;
+	object->put_wrapper = put_wrapper;
+	object->contents = contents;
+	object->stream = stream;
+	object->stream_length = stream_length;
+	pdf->objects = g_slist_insert(pdf->objects, object, object_number - 1);
+}
+
+static gint rpdf_object_append(struct rpdf *pdf, gboolean put_wrapper, GString *contents, gchar *stream, gint stream_length) {
+	struct rpdf_object *object = g_new0(struct rpdf_object, 1);
+	object->object_number = ++pdf->object_count;
 	object->put_wrapper = put_wrapper;
 	object->contents = contents;
 	object->stream = stream;
 	object->stream_length = stream_length;
 	pdf->objects = g_slist_append(pdf->objects, object);
+	return object->object_number;
 }
 
 static struct rpdf_stream * rpdf_stream_new(gint type, gpointer data) {
@@ -194,10 +215,9 @@ static void rpdf_finalize_objects(gpointer data, gpointer user_data) {
 	gchar buf[128];
 	struct rpdf_object *object = data;
 	struct rpdf *pdf = user_data;
-	pdf->object_count++;
 
 	pdf->xref = g_slist_append(pdf->xref, GINT_TO_POINTER(pdf->size));
-	sprintf(buf, "%d 0 obj\n", pdf->object_count);
+	sprintf(buf, "%d 0 obj\n", object->object_number);
 	rpdf_out_string(pdf, buf);
 	if(object->put_wrapper)
 		rpdf_out_string(pdf, "<<\n");
@@ -235,7 +255,6 @@ static void rpdf_make_page_stream(gpointer data, gpointer user_data) {
 	struct rpdf_stream *stream = data;
 	gchar *result = NULL, extra[512];
 	struct rpdf *pdf = user_data;
-	gchar *old_page_data;
 	extra[0] = 0;
 	
 	if(stream->type == RPDF_TYPE_FONT || stream->type == RPDF_TYPE_TEXT) {
@@ -374,17 +393,12 @@ static void rpdf_make_page_stream(gpointer data, gpointer user_data) {
 	}
 }
 
-static void rpdf_make_page_images(gpointer data, gpointer user_data) {
-	struct rpdf *pdf = user_data;
-	struct rpdf_images *image = data;
-	pdf->working_obj = obj_printf(pdf->working_obj, "/IMrpdf%d %d 0 R\n", image->number, 5+(pdf->page_count*2)+pdf->font_count+pdf->annot_count+image->number);
-}
-
 static void rpdf_make_page_image_obj(gpointer data, gpointer user_data) {
 	struct rpdf *pdf = user_data;
 	struct rpdf_images *image = data;
 	struct rpdf_image_jpeg *jpeg = image->metadata;
 	GString *obj = NULL;
+	gint object_number;
 	
 	obj = obj_concat(NULL, "/Type /XObject\n");
 	obj = obj_concat(obj, "/Subtype /Image\n");	
@@ -406,7 +420,8 @@ static void rpdf_make_page_image_obj(gpointer data, gpointer user_data) {
 	
 	obj = obj_printf(obj, "/Length %ld\n", image->length);
 
-	rpdf_object_append(pdf, TRUE, obj, image->data, image->length);
+	object_number = rpdf_object_append(pdf, TRUE, obj, image->data, image->length);
+	pdf->working_obj = obj_printf(pdf->working_obj, "/IMrpdf%d %d 0 R\n", image->number, object_number);
 	g_free(image->metadata);
 	g_free(image);
 }
@@ -414,6 +429,7 @@ static void rpdf_make_page_image_obj(gpointer data, gpointer user_data) {
 static void rpdf_make_page_annot_obj(gpointer data, gpointer user_data) {
 	struct rpdf *pdf = user_data;
 	struct rpdf_annots *annot = data;
+	gint object_number;
 	GString *obj = NULL;
 	obj = obj_concat(NULL, "/Type /Annot\n");
 	obj = obj_concat(obj, "/Subtype /Link\n");
@@ -424,21 +440,16 @@ static void rpdf_make_page_annot_obj(gpointer data, gpointer user_data) {
 	obj = obj_concat(obj, "/Border [0 0 0]\n");
 	obj = obj_concat(obj, "/C [0.0000 0.0000 1.0000]\n");
 	obj = obj_concat(obj, "/F 0\n");
-	rpdf_object_append(pdf, TRUE, obj, NULL, 0);
+	object_number = rpdf_object_append(pdf, TRUE, obj, NULL, 0);
+	pdf->working_obj = obj_printf(pdf->working_obj, "%d 0 R ", object_number);
 	g_free(annot->url);
 	g_free(annot);
-}
-
-static void rpdf_make_page_annot_list(gpointer data, gpointer user_data) {
-	struct rpdf *pdf = user_data;
-	struct rpdf_annots *annot = data;
-	pdf->working_obj = obj_printf(pdf->working_obj, "%d 0 R ", 5+(pdf->page_count*2)+pdf->font_count+annot->number);
 }
 
 static void rpdf_make_page_fonts_stream(gpointer key, gpointer value, gpointer user_data) {
 	struct rpdf *pdf = user_data;
 	struct rpdf_stream_font *stream_font = value;
-	pdf->working_obj = obj_printf(pdf->working_obj, "/F%s %d 0 R\n", stream_font->font_object->name, 5+(pdf->page_count*2)+stream_font->font_object->number);
+	pdf->working_obj = obj_printf(pdf->working_obj, "/F%s %d 0 R\n", stream_font->font_object->name, stream_font->font_object->object_number);
 }
 
 static void rpdf_make_fonts_stream(gpointer key, gpointer value, gpointer user_data) {
@@ -450,7 +461,7 @@ static void rpdf_make_fonts_stream(gpointer key, gpointer value, gpointer user_d
 	obj = obj_printf(obj, "/Name /F%s\n", font->name);
 	obj = obj_printf(obj, "/BaseFont /%s\n", font->font->name);
 	obj = obj_printf(obj, "/Encoding /%s\n", font->encoding);
-	rpdf_object_append(pdf, TRUE,  obj, NULL, 0);
+	font->object_number = rpdf_object_append(pdf, TRUE,  obj, NULL, 0);
 }
 
 static void rpdf_number_fonts(gpointer key, gpointer value, gpointer user_data) {
@@ -471,13 +482,126 @@ static void rpdf_string_destroyer (gpointer data) {
 
 struct rpdf *rpdf_new(void) {
 	struct rpdf *pdf = g_new0(struct rpdf, 1);
+#ifdef RPDF_COMPRESS_STREAM
+	z_stream *c_stream = g_new(z_stream, 1);
+	gint err;
+#endif
 	pdf->header = g_strdup_printf("%%PDF-1.3\n");
 	pdf->fonts = g_hash_table_new_full (g_str_hash, g_str_equal, rpdf_string_destroyer, rpdf_string_destroyer);	
+#ifdef RPDF_COMPRESS_STREAM
+	if (c_stream != NULL) {
+		c_stream->zalloc = (alloc_func)0;
+		c_stream->zfree = (free_func)0;
+		c_stream->opaque = (voidpf)0;
+
+		err = deflateInit(c_stream, Z_BEST_SPEED);
+	 	if (err == Z_OK)
+			pdf->zlib_stream = c_stream;
+		else
+			g_free(c_stream);
+	}
+#endif
 	return pdf;
+}
+
+void rpdf_set_compression(struct rpdf *pdf, gboolean use_compression) {
+	pdf->use_compression = use_compression;
+}
+
+gboolean rpdf_get_compression(struct rpdf *pdf) {
+	return pdf->use_compression;
+}
+
+static GString *rpdf_add_page_content_uncompressed(struct rpdf *pdf) {
+	GString *obj;
+	
+	obj = obj_printf(NULL, "<</Length %d>>\n", pdf->page_data->len);
+	obj = obj_concat(obj, "stream\n");
+	if(pdf->page_data->len > 0) {
+		obj = g_string_append(obj,  pdf->page_data->str);
+		obj = g_string_append(obj,  "\n");
+	}
+	obj = obj_concat(obj, "endstream\n");
+	return obj;
+}
+
+#ifdef RPDF_COMPRESS_STREAM
+static GString *rpdf_add_page_content_compressed(struct rpdf *pdf) {
+	GString *obj = NULL;
+	z_stream *c_stream;
+	gchar *compr;
+	int err;
+
+	if(pdf->page_data->str == NULL || pdf->page_data->len <= 0)
+		return NULL;
+
+	c_stream = pdf->zlib_stream;
+	compr = g_malloc0(pdf->page_data->len);
+	c_stream->next_out = (unsigned char *)compr;
+	c_stream->avail_out = pdf->page_data->len;
+	c_stream->next_in = (unsigned char *)pdf->page_data->str;
+	c_stream->avail_in = pdf->page_data->len;
+
+	err = deflate(c_stream, Z_NO_FLUSH);
+	if (err != Z_OK)
+		goto out;
+	if (c_stream->avail_in != 0)
+		goto out;
+	err = deflate(c_stream, Z_FINISH);
+	if (err != Z_STREAM_END)
+		goto out;
+
+	obj = obj_printf(NULL, "<</Filter /FlateDecode /Length %d>>\n", c_stream->total_out);
+	obj = obj_concat(obj, "stream\n");
+	obj = g_string_append_len(obj,  compr, c_stream->total_out);
+	obj = g_string_append(obj,  "\n");
+	obj = obj_concat(obj, "endstream\n");
+
+	err = deflateReset(c_stream);
+	if (err != Z_OK)
+		pdf->use_compression = FALSE;
+	g_free(compr);
+	return obj;
+
+out:
+	pdf->use_compression = FALSE;
+	g_free(compr);
+	return NULL;
+}
+#endif
+
+static gint rpdf_add_page_content(struct rpdf *pdf, struct rpdf_page_info *page_info) {
+	GString *obj = NULL;
+
+	if(pdf->page_data != NULL) {
+		gchar buf1[512], buf2[512];
+		if(page_info->has_rotation == TRUE) {
+			gdouble angle = M_PI * page_info->rotation_angle / 180.0;
+			gdouble text_sin= sin(angle);
+			gdouble text_cos = cos(angle);
+			sprintf(buf2, "%.04f %.04f %.04f %.04f 0.0 0.0 cm\n", text_cos, text_sin, -text_sin, text_cos);
+			g_string_prepend(pdf->page_data, buf2);
+		}
+		if(page_info->has_translation == TRUE) {
+			sprintf(buf1, "1.0000 0.0000 0.0000 1.0000 %.04f %.04f cm\n", page_info->translate_x*RPDF_DPI, page_info->translate_y*RPDF_DPI);
+			g_string_prepend(pdf->page_data, buf1);
+		}
+	}
+
+#ifdef RPDF_COMPRESS_STREAM
+	if ((pdf->zlib_stream != NULL) && (pdf->use_compression == TRUE))
+		obj = rpdf_add_page_content_compressed(pdf);
+	if (obj == NULL)
+#endif
+		obj = rpdf_add_page_content_uncompressed(pdf);
+
+	return rpdf_object_append(pdf, FALSE,  obj, NULL, 0);
 }
 
 gboolean rpdf_finalize(struct rpdf *pdf) {
 	gint i, save_size;
+	gint pages_ref, page_ref, outlines_ref, procset_ref;
+	gint info_ref, catalog_ref;
 	GString *obj = NULL;
 	char  *saved_locale;
 	gchar buf[128];
@@ -492,33 +616,24 @@ gboolean rpdf_finalize(struct rpdf *pdf) {
 	
 	saved_locale = strdup(setlocale(LC_ALL, NULL));
 	setlocale(LC_ALL, "C");
-	obj = obj_concat(NULL, "/Type /Catalog\n");
-	obj = obj_concat(obj, "/Pages 3 0 R\n"); 
-	obj = obj_concat(obj, "/Outlines 2 0 R\n"); 
-	rpdf_object_append(pdf, TRUE, obj, NULL, 0);
-	
+
+	pages_ref = rpdf_object_number_skip(pdf);
+
+	g_hash_table_foreach(pdf->fonts, rpdf_make_fonts_stream, pdf);
+
 	obj = obj_concat(NULL, "/Type /Outlines\n");
 	obj = obj_concat(obj, "/Count 0\n"); 
-	rpdf_object_append(pdf, TRUE, obj, NULL, 0);
-
-	obj = obj_concat(NULL, "/Type /Pages\n");
-	obj = obj_printf(obj, "/Count %d\n", pdf->page_count); 
-	obj = obj_concat(obj, "/Kids ["); 
-	for(i=0;i<pdf->page_count;i++) 
-		obj = obj_printf(obj, " %d 0 R ", 3+2*(i+1)); 
-	obj = obj_concat(obj, "]\n"); 
-	rpdf_object_append(pdf, TRUE, obj, NULL, 0);
+	outlines_ref = rpdf_object_append(pdf, TRUE, obj, NULL, 0);
 
 	buf[0] = 0;
 	if(pdf->has_images)
 		sprintf(buf, " /ImageC");
 	obj = obj_printf(NULL, "[/PDF /Text%s ]\n",buf);
-	rpdf_object_append(pdf, FALSE, obj, NULL, 0);
+	procset_ref = rpdf_object_append(pdf, FALSE, obj, NULL, 0);
 
 	for(i=0;i<pdf->page_count;i++) {
 		struct rpdf_page_info *page_info = pdf->page_info[i];
 		GSList *list = pdf->page_contents[i];
-		gint slen = 0;
 
 		pdf->text_on = FALSE;
 		pdf->page_data = NULL;
@@ -529,8 +644,10 @@ gboolean rpdf_finalize(struct rpdf *pdf) {
 
 		rpdf_finalize_page_stream(pdf);
 
+		page_ref = rpdf_add_page_content(pdf, page_info);
+
 		obj = obj_concat(NULL, "/Type /Page\n");
-		obj = obj_concat(obj, "/Parent 3 0 R\n");
+		obj = obj_printf(obj, "/Parent %d 0 R\n", pages_ref);
 		obj = obj_concat(obj, "/Resources <<\n");
 		if(g_hash_table_size(pdf->page_fonts) > 0) {
 			obj = obj_concat(obj, "/Font <<\n");
@@ -543,77 +660,41 @@ gboolean rpdf_finalize(struct rpdf *pdf) {
 		if(page_info->images != NULL) {
 			obj = obj_concat(obj, "/XObject <<\n");
 			pdf->working_obj = obj;
-			g_slist_foreach(page_info->images, rpdf_make_page_images, pdf);
+			g_slist_foreach(page_info->images, rpdf_make_page_image_obj, pdf);
 			obj = pdf->working_obj;
 			obj = obj_concat(obj, ">>\n");
+			g_slist_free(page_info->images);
 		}
-		
-		obj = obj_concat(obj, "/ProcSet 4 0 R >>\n");
+
+		obj = obj_printf(obj, "/ProcSet %d 0 R >>\n", procset_ref);
 		obj = obj_printf(obj, "/MediaBox [0 0 %d %d]\n", page_info->paper->x, page_info->paper->y);
 		obj = obj_printf(obj, "/CropBox [0 0 %d %d]\n", page_info->paper->x, page_info->paper->y);
 		obj = obj_printf(obj, "/Rotate %d\n", page_info->orientation == RPDF_PORTRAIT ? 0 : 270);
-		obj = obj_printf(obj, "/Contents %d 0 R\n", 6+(i*2));
+		obj = obj_printf(obj, "/Contents %d 0 R\n", page_ref);
 		
 		if(page_info->annots != NULL) {
 			obj = obj_concat(obj, "/Annots [ ");
 			pdf->working_obj = obj;
-			g_slist_foreach(page_info->annots, rpdf_make_page_annot_list, pdf);
+			g_slist_foreach(page_info->annots, rpdf_make_page_annot_obj, pdf);
+			g_slist_free(page_info->annots);
 			obj = pdf->working_obj;
 			obj = obj_concat(obj, "]\n");
 		}
 		
-		rpdf_object_append(pdf, TRUE, obj, NULL, 0);
+		page_info->object_number = rpdf_object_append(pdf, TRUE, obj, NULL, 0);
 		
-		if(pdf->page_data != NULL) {
-			gchar buf1[512], buf2[512];
-			gchar *save_page_data;
-			if(page_info->has_rotation == TRUE) {
-				gdouble angle = M_PI * page_info->rotation_angle / 180.0;
-				gdouble text_sin= sin(angle);
-				gdouble text_cos = cos(angle);
-				sprintf(buf2, "%.04f %.04f %.04f %.04f 0.0 0.0 cm\n", text_cos, text_sin, -text_sin, text_cos);
-				g_string_prepend(pdf->page_data, buf2);
-			}
-			if(page_info->has_translation == TRUE) {
-				sprintf(buf1, "1.0000 0.0000 0.0000 1.0000 %.04f %.04f cm\n", page_info->translate_x*RPDF_DPI, page_info->translate_y*RPDF_DPI);
-				g_string_prepend(pdf->page_data, buf1);
-			}
-
-			slen = pdf->page_data->len + 1;
-		}
-		obj = obj_printf(NULL, "<</Length %d>>\n", slen);
-		obj = obj_concat(obj, "stream\n");
-		obj = obj_concat(obj, "\n");
-		if(slen > 0) {
-			obj = g_string_append(obj,  pdf->page_data->str);
-			obj = g_string_append(obj,  "\n");
-		}
-		obj = obj_concat(obj, "endstream\n");
-		rpdf_object_append(pdf, FALSE,  obj, NULL, 0);
 		g_hash_table_destroy(pdf->page_fonts);
 		g_string_free(pdf->page_data, TRUE);
 	}
 
+	obj = obj_concat(NULL, "/Type /Pages\n");
+	obj = obj_printf(obj, "/Count %d\n", pdf->page_count); 
+	obj = obj_concat(obj, "/Kids ["); 
+	for(i=0;i<pdf->page_count;i++) 
+		obj = obj_printf(obj, " %d 0 R ", pdf->page_info[i]->object_number);
+	obj = obj_concat(obj, "]\n"); 
+	rpdf_object_insert(pdf, pages_ref, TRUE, obj, NULL, 0);
 
-
-	g_hash_table_foreach(pdf->fonts, rpdf_make_fonts_stream, pdf);
-
-	for(i=0;i<pdf->page_count;i++) {
-		struct rpdf_page_info *page_info = pdf->page_info[i];
-		if(page_info->annots != NULL) {
-			g_slist_foreach(page_info->annots, rpdf_make_page_annot_obj, pdf);
-			g_slist_free(page_info->annots);
-		}
-	}
-	
-	for(i=0;i<pdf->page_count;i++) {
-		struct rpdf_page_info *page_info = pdf->page_info[i];
-		if(page_info->images != NULL) {
-			g_slist_foreach(page_info->images, rpdf_make_page_image_obj, pdf);
-			g_slist_free(page_info->images);
-		}
-	}
-	
 	if(pdf->creator != NULL) 
 		obj = obj_printf(NULL, "/Creator %s\n", pdf->creator); 
 	else
@@ -641,9 +722,13 @@ gboolean rpdf_finalize(struct rpdf *pdf) {
 		obj = obj_printf(obj, "/Keywords %s\n", pdf->keywords); 
 	else
 		obj = obj_concat(obj, "/Keywords (RPDF)\n"); 
-		
 
-	rpdf_object_append(pdf, TRUE, obj, NULL, 0);
+	info_ref = rpdf_object_append(pdf, TRUE, obj, NULL, 0);
+
+	obj = obj_concat(NULL, "/Type /Catalog\n");
+	obj = obj_printf(obj, "/Pages %d 0 R\n", pages_ref); 
+	obj = obj_printf(obj, "/Outlines %d 0 R\n", outlines_ref); 
+	catalog_ref = rpdf_object_append(pdf, TRUE, obj, NULL, 0);
 
 	g_slist_foreach(pdf->objects, rpdf_finalize_objects, pdf);
 	
@@ -656,10 +741,11 @@ gboolean rpdf_finalize(struct rpdf *pdf) {
 	
 	rpdf_out_string(pdf, "trailer\n");
 	rpdf_out_string(pdf, "<<\n");
-	sprintf(buf, "/Size %d\n", 5+(pdf->page_count*2)+1+pdf->font_count+pdf->annot_count+pdf->image_count);
+	sprintf(buf, "/Size %d\n", pdf->object_count+1);
 	rpdf_out_string(pdf, buf);
-	rpdf_out_string(pdf, "/Root 1 0 R\n");
-	sprintf(buf, "/Info %d 0 R\n", 5+(pdf->page_count*2)+pdf->font_count+pdf->annot_count+pdf->image_count);
+	sprintf(buf, "/Root %d 0 R\n", catalog_ref);
+	rpdf_out_string(pdf, buf);
+	sprintf(buf, "/Info %d 0 R\n", info_ref);
 	rpdf_out_string(pdf, buf);
 	rpdf_out_string(pdf, ">>\n");
 	sprintf(buf, "startxref\n%d\n", save_size);
@@ -720,7 +806,6 @@ gboolean rpdf_new_page(struct rpdf *pdf, gint paper, gint orientation) {
 }
 
 gboolean rpdf_set_page(struct rpdf *pdf, gint page) {
-	static gint six = 0;
 	if(page < 0 || page >= pdf->page_count)
 		return FALSE;
 
@@ -1150,7 +1235,12 @@ gchar *rpdf_get_buffer(struct rpdf *pdf, gint *length) {
 
 void rpdf_free(struct rpdf *pdf) {
 	gint i;
-
+#ifdef RPDF_COMPRESS_STREAM
+	if (pdf->zlib_stream != NULL) {
+		z_stream *c_stream = pdf->zlib_stream;
+		deflateEnd(c_stream);
+	}
+#endif
 	g_free(pdf->header);
 	g_free(pdf->title);
 	g_free(pdf->subject);

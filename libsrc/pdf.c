@@ -138,7 +138,6 @@ static void pdf_print_text_API(rlib *r, gfloat left_origin, gfloat bottom_origin
 	pdf_print_text(r, left_origin, bottom_origin, text, 0); 
 }
 
-
 static void pdf_set_fg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {
 	if(OUTPUT_PRIVATE(r)->current_color.r != red || OUTPUT_PRIVATE(r)->current_color.g != green 
 	|| OUTPUT_PRIVATE(r)->current_color.b != blue) {
@@ -268,9 +267,16 @@ static void pdf_init_end_page(rlib *r) {
 
 static void pdf_init_output(rlib *r) {
 	struct rpdf *pdf;
+	gchar *compress;
 
 	pdf = rpdf_new();
 	rpdf_set_title(pdf, "RLIB Report");
+	compress = g_hash_table_lookup(r->output_parameters, "compress");
+	if(compress != NULL) {
+		rpdf_set_compression(pdf, TRUE);
+	}
+
+	
 	OUTPUT_PRIVATE(r)->pdf = pdf;
 }
 

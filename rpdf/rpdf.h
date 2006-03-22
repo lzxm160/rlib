@@ -105,6 +105,8 @@ struct rpdf_page_info {
 	gdouble font_size;
 	GSList *annots;
 	GSList *images;
+
+	gint object_number;
 };
 
 struct rpdf_annots {
@@ -144,6 +146,7 @@ struct rpdf_images {
 };
 
 struct rpdf_object {
+	gint object_number;
 	gboolean put_wrapper;
 	GString *contents;
 	gchar *stream;
@@ -152,6 +155,7 @@ struct rpdf_object {
 
 struct rpdf_font_object {
 	gint number;
+	gint object_number;
 	gchar name[64];
 	gchar encoding[64];
 	struct _rpdf_fonts *font;
@@ -240,9 +244,14 @@ struct rpdf {
 	GString *working_obj;
 	gint font_obj_number;
 	GSList *stream_font_destroyer;
+
+	gpointer zlib_stream;
+	gint use_compression;
 };
 
 struct rpdf *rpdf_new(void);
+void rpdf_set_compression(struct rpdf *pdf, gboolean use_compression);
+gboolean rpdf_get_compression(struct rpdf *pdf);
 gboolean rpdf_finalize(struct rpdf *pdf);
 void rpdf_set_title(struct rpdf *pdf, const gchar *title);
 void rpdf_set_subject(struct rpdf *pdf, const gchar *subject);

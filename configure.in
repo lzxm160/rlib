@@ -57,6 +57,17 @@ AC_HAVE_HEADERS(sys/time.h,
 dnl Checks for libraries.
 AC_CHECK_LIB(c, exit)
 AC_CHECK_LIB(m, exp)
+AC_CHECK_HEADER
+AC_CHECK_HEADER([zlib.h],
+	[AC_CHECK_LIB(z, zlibVersion,
+		enable_compressed_pdf=yes,
+		enable_compressed_pdf=no)],
+	[enable_compressed_pdf=no])
+if test x$enable_compressed_pdf = xyes; then
+	AC_DEFINE([RPDF_COMPRESS_STREAM], [], [RPDF can compress streams])
+	ZLIB_LIBS="-lz"
+fi
+AC_SUBST(ZLIB_LIBS)
 
 AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
 
@@ -523,7 +534,7 @@ AC_SUBST(RLIB_CFLAGS)
 AC_SUBST(RLIB_LIBS)
 
 RPDF_CFLAGS="-D_GNU_SOURCE $LIBGLIB_CFLAGS $LIBGMODULE_CFLAGS $RLIB_WIN32"
-RPDF_LIBS="$LIBGLIB_LIBS $LIBGMODULE_LIBS"
+RPDF_LIBS="$LIBGLIB_LIBS $LIBGMODULE_LIBS $ZLIB_LIBS"
 AC_SUBST(RPDF_CFLAGS)
 AC_SUBST(RPDF_LIBS)
 
@@ -604,6 +615,9 @@ rlib-$VERSION:
     MYSQL:                   ${enable_mysql}
     POSTGRES:                ${enable_postgres}
     ODBC:                    ${enable_odbc}
+
+   COMPRESSION:
+    PDF:                     ${enable_compressed_pdf}
 
    GRAPHING:
     PDF:                     Always
