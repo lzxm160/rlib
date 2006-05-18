@@ -970,7 +970,9 @@ static gint rlib_pcode_operator_stod_common(rlib *r, struct rlib_pcode *code, st
 			}
 		} else { /* convert date */
 			gint year, month, day;
-			if (sscanf(tstr, "%4d-%2d-%2d", &year, &month, &day) != 3) {
+			if(tstr == NULL) {
+				err = TRUE;
+			} else if (sscanf(tstr, "%4d-%2d-%2d", &year, &month, &day) != 3) {
 				if (sscanf(tstr, "%4d%2d%2d", &year, &month, &day) != 3) {
 					r_error(r, "Invalid Date format: stod(%s)", tstr);
 					err = TRUE;

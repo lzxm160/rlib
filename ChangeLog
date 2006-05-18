@@ -1,3 +1,7 @@
+2006-05-18  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/layout.c: Don't crash on null dates
+	* libsrc/pcode_op_functions.c: likewise
+
 2006-03-22  Zoltan Boszormenyi <zboszor@dunaweb.hu>
 	* configure.in: RPDF Compression
 	* libsrc/pdf.c: 

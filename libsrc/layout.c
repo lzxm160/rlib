@@ -921,9 +921,12 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 						for(e = rl->e; e != NULL; e=e->next) {
 							if(extra_data[count].found_color == FALSE && extra_data[count].is_bold == FALSE && extra_data[count].is_italics == FALSE 
 							&& extra_data[count].is_memo == FALSE && extra_data[count].type != RLIB_ELEMENT_IMAGE) {
+								gchar *strcatbuf;
 								if(start_count == -1)
 									start_count = count;
-								strcat(buf, rlib_layout_suppress_non_memo_on_extra_lines(r, &extra_data[count], i, spaced_out));
+								strcatbuf = rlib_layout_suppress_non_memo_on_extra_lines(r, &extra_data[count], i, spaced_out);
+								if(strcatbuf != NULL) 
+									strcat(buf, strcatbuf);
 								fun_width += extra_data[count].output_width;
 							} else {
 								if(start_count != -1) {
