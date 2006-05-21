@@ -179,7 +179,11 @@ static void pdf_start_boxurl(rlib *r, struct rlib_part *part, gfloat left_origin
 
 static void pdf_line_image(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *nname, gchar *type, gfloat nwidth, 
 gfloat nheight) {
-	gint realtype=RPDF_IMAGE_JPEG;
+	gint realtype = RPDF_IMAGE_JPEG;
+	
+	if(strcasestr(type, "png"))
+		realtype = RPDF_IMAGE_PNG;
+	
 	rpdf_image(OUTPUT_PRIVATE(r)->pdf, left_origin, bottom_origin, nwidth, nheight, realtype, nname);
 
 	OUTPUT(r)->set_bg_color(r, 0, 0, 0);

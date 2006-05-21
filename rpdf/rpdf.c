@@ -397,31 +397,87 @@ static void rpdf_make_page_image_obj(gpointer data, gpointer user_data) {
 	struct rpdf *pdf = user_data;
 	struct rpdf_images *image = data;
 	struct rpdf_image_jpeg *jpeg = image->metadata;
+	struct rpdf_image_png *png = image->metadata;
 	GString *obj = NULL;
+	long width, height, bpc, color_space;
 	gint object_number;
+	gboolean did_color_space = FALSE;
 	
+	if(image->image_type == RPDF_IMAGE_JPEG) {
+		width = jpeg->width;
+		height = jpeg->height;
+		bpc = jpeg->precision;
+		color_space = jpeg->components;
+	} else {
+		width = png->width;
+		height = png->height;	
+		bpc = png->bpc;
+		color_space = png->ct;
+	}
+
 	obj = obj_concat(NULL, "/Type /XObject\n");
 	obj = obj_concat(obj, "/Subtype /Image\n");	
 	obj = obj_printf(obj, "/Name /IMrpdf%d\n", image->number);
-	obj = obj_printf(obj, "/Width %d\n", jpeg->width);
-	obj = obj_printf(obj, "/Height %d\n", jpeg->height);
-	obj = obj_concat(obj, "/Filter /DCTDecode\n");
-	obj = obj_printf(obj, "/BitsPerComponent %d\n", jpeg->precision);
-	obj = obj_concat(obj, "/ColorSpace /");
+	obj = obj_printf(obj, "/Width %d\n", width);
+	obj = obj_printf(obj, "/Height %d\n", height);
+	obj = obj_printf(obj, "/BitsPerComponent %d\n", bpc);
 
-	if(jpeg->components == 3)
-		obj = obj_concat(obj, "DeviceRGB");
-	else if(jpeg->components == 4)
-		obj = obj_concat(obj, "DeviceCMYK");
-	else 
-		obj = obj_concat(obj, "DeviceGray");
+	if(image->image_type == RPDF_IMAGE_PNG) {
+		if(png->trans_list != NULL) {
+			GSList *tmp;
+			obj = obj_printf(obj, "/Mask [");
+			for(tmp = png->trans_list;tmp != NULL; tmp = tmp->next) {
+				obj = obj_printf(obj, "%d %d ", GPOINTER_TO_INT(tmp->data), GPOINTER_TO_INT(tmp->data));
+			
+			}
+			obj = obj_printf(obj, "]\n");
+			g_slist_free(png->trans_list);		
+		}
 
-	obj = obj_concat(obj, "\n");
+
+		if(png->ct == 3) { //Indexed
+			obj = obj_printf(obj, "/ColorSpace [/Indexed /DeviceRGB %d %d 0 R]\n", png->palette->len/3-1, pdf->object_count+2);
+			did_color_space = TRUE;
+		} 
+		obj = obj_concat(obj, "/Filter /FlateDecode\n");	
+		obj = obj_concat(obj, png->params);
+	} else {
+		obj = obj_concat(obj, "/Filter /DCTDecode\n");
+	}
+
+	if(!did_color_space) {
+		obj = obj_concat(obj, "/ColorSpace /");
+
+		if(color_space == 3)
+			obj = obj_concat(obj, "DeviceRGB");
+		else if(color_space == 4)
+			obj = obj_concat(obj, "DeviceCMYK");
+		else 
+			obj = obj_concat(obj, "DeviceGray");
+
+		obj = obj_concat(obj, "\n");
+	}
 	
-	obj = obj_printf(obj, "/Length %ld\n", image->length);
+	if(image->image_type == RPDF_IMAGE_JPEG) {
+		obj = obj_printf(obj, "/Length %ld\n", image->length);
+		object_number = rpdf_object_append(pdf, TRUE, obj, image->data, image->length);
+	} else {
+		obj = obj_printf(obj, "/Length %ld\n", png->data->len);
+		object_number = rpdf_object_append(pdf, TRUE, obj, png->data->str, png->data->len);
+	}
 
-	object_number = rpdf_object_append(pdf, TRUE, obj, image->data, image->length);
 	pdf->working_obj = obj_printf(pdf->working_obj, "/IMrpdf%d %d 0 R\n", image->number, object_number);
+
+	if(image->image_type == RPDF_IMAGE_PNG) {
+		if(png->ct == 3) {
+			GString *obj = NULL;
+			obj = obj_printf(obj, "<</Length %d>>\n", png->palette->len);
+			object_number = rpdf_object_append(pdf, FALSE, obj, png->palette->str, png->palette->len);
+
+		}
+		g_free(image->data);	
+	}
+	
 	g_free(image->metadata);
 	g_free(image);
 }
@@ -959,10 +1015,15 @@ static guint16 stream_read_two_bytes(gchar *stream, gint *spot, gint size) {
 }
 
 static gint64 stream_read_long(gchar *stream, gint *spot, gint size) {
-	gint64 data;
+	gint64 data = 0;
+	guchar *string;;
 	if(*spot >= size)
 		return -1;
-	data = ((gint64)stream[*spot] << 24) + ((gint64)stream[*spot + 1] << 16) + ((gint64)stream[*spot + 2] << 8) + (gint64)stream[*spot + 3];
+	string = &stream[*spot];
+	((char *)&data)[0] = string[3];
+	((char *)&data)[1] = string[2];
+	((char *)&data)[2] = string[1];
+	((char *)&data)[3] = string[0];
 	*spot = *spot + 4;
 	return data;
 }
@@ -1034,6 +1095,7 @@ gboolean rpdf_image(struct rpdf *pdf, gdouble x, gdouble y, gdouble width, gdoub
 	if(image_type == RPDF_IMAGE_PNG) {
 		struct rpdf_image_png *png_info = g_new0(struct rpdf_image_png, 1);
 		gchar header[9];
+
 		sprintf(header, "%cPNG%c%c%c%c", 137,13,10,26,10);			
 		if(memcmp(stream_read_bytes(image->data,&read_spot,8,size), header, 8) != 0) {
 			g_free(image->data);
@@ -1048,6 +1110,9 @@ gboolean rpdf_image(struct rpdf *pdf, gdouble x, gdouble y, gdouble width, gdoub
 		}
 		png_info->width = image->width = stream_read_long(image->data,&read_spot,size);
 		png_info->height = image->height = stream_read_long(image->data,&read_spot,size);
+		png_info->data = g_string_new("");
+		png_info->palette = g_string_new("");
+		png_info->trans = g_string_new("");
 		
 		png_info->bpc = stream_read_byte(image->data, &read_spot, size);
 
@@ -1065,7 +1130,57 @@ gboolean rpdf_image(struct rpdf *pdf, gdouble x, gdouble y, gdouble width, gdoub
 			fprintf(stderr, "Unknown filter method\n");
 		if(stream_read_byte(image->data, &read_spot, size) != 0)
 			fprintf(stderr, "Interlacing not supported\n");
+
+		stream_read_long(image->data, &read_spot, size);
+
+		sprintf(png_info->params, "/DecodeParms <</Predictor 15 /Colors %d /BitsPerComponent %d /Columns %d>>\n",
+			png_info->ct == 2 ? 3 : 1, png_info->bpc,	png_info->width);
+
+		while(1) {
+			long length = stream_read_long(image->data,&read_spot,size);
 			
+			gchar type[5];
+			memcpy(type, stream_read_bytes(image->data,&read_spot,4,size), 4);
+			type[4] = '\0';
+			if(strcmp(type, "IDAT") == 0) {
+				g_string_append_len(png_info->data, stream_read_bytes(image->data,&read_spot,length,size), length);
+				stream_read_long(image->data, &read_spot, size);
+			} else if(strcmp(type, "PLTE") == 0) {
+				g_string_append_len(png_info->palette, stream_read_bytes(image->data,&read_spot,length,size), length);
+				stream_read_long(image->data, &read_spot, size);
+			} else if(strcmp(type, "tRNS") == 0) {
+				gint tmp;
+				g_string_append_len(png_info->trans, stream_read_bytes(image->data,&read_spot,length,size), length);
+				if(png_info->ct == 0) {
+					tmp = png_info->trans->str[1];
+					png_info->trans_list = g_slist_append(NULL, GINT_TO_POINTER((tmp)));
+				} else if(png_info->ct == 2) {
+					tmp = png_info->trans->str[1];
+					png_info->trans_list = g_slist_append(NULL, GINT_TO_POINTER((tmp)));
+					tmp = png_info->trans->str[3];
+					png_info->trans_list = g_slist_append(NULL, GINT_TO_POINTER((tmp)));
+					tmp = png_info->trans->str[5];
+					png_info->trans_list = g_slist_append(NULL, GINT_TO_POINTER((tmp)));
+				} else {
+					int i;
+					for(i=0;i<png_info->trans->len;i++) {
+						if(png_info->trans->str[i] == 0) {
+							tmp = png_info->trans->str[i];
+							png_info->trans_list = g_slist_append(NULL, GINT_TO_POINTER((tmp)));
+							break;
+						}					
+					}
+				}
+				g_string_free(png_info->trans, TRUE);
+				stream_read_long(image->data, &read_spot, size);
+			} else if(strcmp(type, "IEND") == 0) {
+				break;
+			} else { /*Skip Over Unknown*/
+				stream_read_bytes(image->data,&read_spot,length,size);
+				stream_read_long(image->data, &read_spot, size);
+			}
+		}
+		image->metadata = png_info;
 	} else if(image_type == RPDF_IMAGE_JPEG) {
 		struct rpdf_image_jpeg *jpeg_info = g_new0(struct rpdf_image_jpeg, 1);
 		guint test1, test2;
@@ -1239,6 +1354,7 @@ void rpdf_free(struct rpdf *pdf) {
 	if (pdf->zlib_stream != NULL) {
 		z_stream *c_stream = pdf->zlib_stream;
 		deflateEnd(c_stream);
+		g_free(c_stream);
 	}
 #endif
 	g_free(pdf->header);

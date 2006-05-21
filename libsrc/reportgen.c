@@ -480,17 +480,19 @@ void rlib_layout_part_td(rlib *r, struct rlib_part *part, GSList *part_deviation
 		
 		for(report_element=td->reports;report_element != NULL;report_element = g_slist_next(report_element)) {
 			struct rlib_report *report = report_element->data;
-			report->page_width = (((gfloat)width/100) * paper_width);
-			OUTPUT(r)->set_raw_page(r, part, page_number);
-			report->raw_page_number = page_number;
-			rlib_layout_report(r, part, report, running_left_margin, running_top_margin+position_top);
-			running_top_margin = report->position_top[0] - part->position_top[0];
-			if(report->raw_page_number > rrp->page) {
-				rrp->page = report->raw_page_number;
-				rrp->position_top = report->position_top[0];				
-			} else if(report->raw_page_number == rrp->page) {
-				if(report->position_top[0] > rrp->position_top)
-					rrp->position_top = report->position_top[0];
+			if(report != NULL) {
+				report->page_width = (((gfloat)width/100) * paper_width);
+				OUTPUT(r)->set_raw_page(r, part, page_number);
+				report->raw_page_number = page_number;
+				rlib_layout_report(r, part, report, running_left_margin, running_top_margin+position_top);
+				running_top_margin = report->position_top[0] - part->position_top[0];
+				if(report->raw_page_number > rrp->page) {
+					rrp->page = report->raw_page_number;
+					rrp->position_top = report->position_top[0];				
+				} else if(report->raw_page_number == rrp->page) {
+					if(report->position_top[0] > rrp->position_top)
+						rrp->position_top = report->position_top[0];
+				}
 			}
 		}
 		running_left_margin += (((gfloat)width/100) * paper_width);

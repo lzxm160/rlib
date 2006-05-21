@@ -365,7 +365,8 @@ void rlib_free_part_td(rlib *r, struct rlib_part *part, GSList *part_deviations)
 
 		for(reports=td->reports;reports != NULL;reports = g_slist_next(reports)) {
 			struct rlib_report *report = reports->data;
-			rlib_free_report(r, report);
+			if(report != NULL)
+				rlib_free_report(r, report);
 		}
 		g_slist_free(reports);
 		g_free(td);

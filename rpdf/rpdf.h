@@ -131,6 +131,11 @@ struct rpdf_image_png {
 	gint height;
 	gint bpc;
 	gint ct;
+	gchar params[128];
+	GString *data;
+	GString *palette;
+	GString *trans;
+	GSList *trans_list;
 };
 
 struct rpdf_images {

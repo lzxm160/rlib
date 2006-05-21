@@ -296,9 +296,20 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, struct rlib_part *part, st
 	gint rvar;
 	o = g_new0(struct rlib_pcode_operand, 1);
 	if(str[0] == '\'') {
-		gchar *newstr = g_malloc(r_strlen(str)-1);
-		memcpy(newstr, str+1, r_strlen(str)-1);
-		newstr[strlen(str)-2] = '\0';
+		gint slen;
+		gint rslen = r_strlen(str);
+		gchar *newstr;
+		slen = strlen(str);	
+		if(slen < 2) {
+			newstr = g_malloc(2);
+			newstr[0] = ' ';
+			newstr[1] = 0;
+			r_error(r, "rlib_new_operand:: Invalid String!  Bad PCODE [%s] [%d]\n", infix, line_number);		
+		} else {
+			newstr = g_malloc(rslen-1);
+			memcpy(newstr, str+1, rslen-1);
+			newstr[slen-2] = '\0';
+		}
 		o->type = OPERAND_STRING;
 		o->value = newstr;
 	} else if(str[0] == '{') {

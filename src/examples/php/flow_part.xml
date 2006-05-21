@@ -15,32 +15,34 @@
 	</PageHeader>		
 	<pr>
 		<pd width="47">
-			<load name="array.xml"/>
-			<load name="array2.xml"/>
+			<load name="iif(0, '', 'array.xml')"/>
+			<load name="iif(0, '', 'array2.xml')"/>
 		</pd>
 		<pd width="5"/>
 		<pd width="47">
-			<load name="array2.xml"/>
+			<load name="iif(0, '', 'array2.xml')"/>
+		</pd>
+	</pr>
+<!--
+	<pr>
+		<pd width="47">
+			<load name="'array.xml'"/>
+		</pd>
+		<pd width="5"/>
+		<pd width="47">
+			<load name="'array.xml'"/>
 		</pd>
 	</pr>
 	<pr>
 		<pd width="47">
-			<load name="array.xml"/>
+			<load name="'array2.xml'"/>
 		</pd>
 		<pd width="5"/>
 		<pd width="47">
-			<load name="array.xml"/>
+			<load name="'array2.xml'"/>
 		</pd>
 	</pr>
-	<pr>
-		<pd width="47">
-			<load name="array2.xml"/>
-		</pd>
-		<pd width="5"/>
-		<pd width="47">
-			<load name="array2.xml"/>
-		</pd>
-	</pr>
+-->	
 	<PageFooter>
 		<Output>
 			<Line>

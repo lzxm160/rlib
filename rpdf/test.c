@@ -66,7 +66,8 @@ int main(int argc, char **argv) {
 	rpdf_fill(pdf);
 	rpdf_stroke(pdf); 
 
-/*	rpdf_image(pdf, 1, 1, 200, 200, RPDF_IMAGE_JPEG, "geologo.jpg"); */
+	rpdf_image(pdf, 0, 0, 50, 50, RPDF_IMAGE_JPEG, "logo.jpg"); 
+	rpdf_image(pdf, 1, 1, 50, 50, RPDF_IMAGE_PNG, "logo.png"); 
 
 	rpdf_new_page(pdf, RPDF_PAPER_LETTER, RPDF_PORTRAIT);
 	rpdf_set_font(pdf, "Times-Italic", "MacRomanEncoding", 30.0);

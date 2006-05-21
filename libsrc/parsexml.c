@@ -577,12 +577,30 @@ static void parse_report(rlib *r, struct rlib_part *part, struct rlib_report *re
 	}
 }
 
-static struct rlib_report * parse_part_load(rlib *r, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
+static struct rlib_report * parse_part_load(rlib *r, struct rlib_part *part, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
 	struct rlib_report *report;
 	gchar *name, *query;
+	struct rlib_pcode *name_code, *query_code;
+	gchar real_name[MAXSTRLEN], real_query[MAXSTRLEN];
+	gboolean result_name, result_query;
+	
 	name =  (gchar *)xmlGetProp(cur, (const xmlChar *) "name");
 	query =  (gchar *)xmlGetProp(cur, (const xmlChar *) "query");
-	report = parse_report_file(r, name, query);
+	
+	name_code = rlib_infix_to_pcode(r, part, NULL, name, xmlGetLineNo (cur), TRUE);
+	query_code = rlib_infix_to_pcode(r, part, NULL, query,xmlGetLineNo (cur), TRUE);
+
+	result_name = rlib_execute_as_string(r, name_code,real_name, MAXSTRLEN-1);
+	result_query = rlib_execute_as_string(r, query_code,real_query, MAXSTRLEN-1);
+	
+	if(result_name && result_name) {
+		report = parse_report_file(r, real_name, real_query);
+	} else {
+		r_error(r, "parse_part_load - Query or Name Is Invalid\nc");
+		report = NULL;
+	}
+	rlib_pcode_free(name_code);
+	rlib_pcode_free(query_code);
 	return report;
 }
 
@@ -598,7 +616,7 @@ static struct rlib_part_td * parse_part_td(rlib *r, struct rlib_part *part, xmlD
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {      
 		if ((!xmlStrcmp(cur->name, (const xmlChar *) "load"))) {
-			td->reports = g_slist_append(td->reports, parse_part_load(r, doc, ns, cur));
+			td->reports = g_slist_append(td->reports, parse_part_load(r, part, doc, ns, cur));
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "Report"))) {
 			struct rlib_report *report;
 			report = (struct rlib_report *) g_new0(struct rlib_report, 1);
