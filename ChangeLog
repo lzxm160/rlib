@@ -1,3 +1,10 @@
+2006-06-06  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/pcode.c: Add Bit Compare PCODE "&"
+	* libsrc/pcode.h: 
+	* libsrc/pcode_op_functions.c: 
+	* src/examples/php/array.php:
+	* src/examples/php/array.xml:
+
 2006-05-20  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/free.c: PNG image support and the part load tag is now a PCODE
 	* libsrc/parsexml.c: 

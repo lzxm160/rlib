@@ -62,6 +62,7 @@ struct rlib_pcode_operator rlib_pcode_verbs[] = {
       {"==",	 	2, 2,	TRUE,	OP_EQL,		FALSE,	rlib_pcode_operator_eql, NULL},
       {"!=",	 	2, 2,	TRUE,	OP_NOTEQL,	FALSE,	rlib_pcode_operator_noteql, NULL},
       {"&&",	 	2, 1,	TRUE,	OP_AND,		FALSE,	rlib_pcode_operator_and, NULL},
+      {"&",	    	1, 1,	TRUE,	OP_LOGICALAND,		FALSE,	rlib_pcode_operator_logical_and, NULL},
       {"||",	 	2, 1,	TRUE,	OP_OR,		FALSE,	rlib_pcode_operator_or, NULL},
       {"(",		 	1, 0,	FALSE,OP_LPERN,	FALSE,	NULL, NULL},
       {")",		 	1, 99,FALSE,OP_RPERN,	FALSE,	NULL, NULL},

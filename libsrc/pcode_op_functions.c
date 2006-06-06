@@ -648,6 +648,33 @@ gint rlib_pcode_operator_and(rlib *r, struct rlib_pcode *code, struct rlib_value
 	return FALSE;		
 }
 
+gint rlib_pcode_operator_logical_and(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
+	struct rlib_value *v1, *v2, rval_rtn;
+	v1 = rlib_value_stack_pop(vs);
+	v2 = rlib_value_stack_pop(vs);
+
+	if(RLIB_VALUE_IS_NUMBER(v1) && RLIB_VALUE_IS_NUMBER(v2)) {
+		long v1_num = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v1));
+		long v2_num = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v2));
+		
+		if(v2_num & v1_num)	{
+			rlib_value_free(v1);
+			rlib_value_free(v2);
+			rlib_value_stack_push(r,vs, rlib_value_new_number(&rval_rtn, (v2_num & v1_num)*RLIB_DECIMAL_PRECISION));
+		} else {
+			rlib_value_free(v1);
+			rlib_value_free(v2);
+			rlib_value_stack_push(r,vs, rlib_value_new_number(&rval_rtn, 0));
+		}
+		return TRUE;
+	}
+	rlib_value_free(v1);
+	rlib_value_free(v2);
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_pcode_operator_fatal_execption(r,"LOGICAL AND", code, 2, v1, v2, NULL);
+	return FALSE;		
+}
+
 gint rlib_pcode_operator_or(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
