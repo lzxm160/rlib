@@ -17,7 +17,7 @@
 		<FieldDetails>
 			<Output>
 				<Line bgcolor="iif(r.detailcnt%2,'0xe5e5e5','white')">
-				<field value="3 &amp; 2" width="6" align="right" col="3"/>
+				<field value="iif('oscar' == 'meyer', 1)" width="6" align="right" col="3"/>
 
 				</Line>
 			</Output>

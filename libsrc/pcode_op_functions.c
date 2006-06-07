@@ -997,9 +997,7 @@ static gint rlib_pcode_operator_stod_common(rlib *r, struct rlib_pcode *code, st
 			}
 		} else { /* convert date */
 			gint year, month, day;
-			if(tstr == NULL) {
-				err = TRUE;
-			} else if (sscanf(tstr, "%4d-%2d-%2d", &year, &month, &day) != 3) {
+			if (sscanf(tstr, "%4d-%2d-%2d", &year, &month, &day) != 3) {
 				if (sscanf(tstr, "%4d%2d%2d", &year, &month, &day) != 3) {
 					r_error(r, "Invalid Date format: stod(%s)", tstr);
 					err = TRUE;
@@ -1036,37 +1034,43 @@ gboolean rlib_pcode_operator_iif(rlib *r, struct rlib_pcode *code, struct rlib_v
 	if(RLIB_VALUE_IS_IIF(v1)) {
 		struct rlib_pcode_if *rif = RLIB_VALUE_GET_AS_IIF(v1);
 		struct rlib_value *result;
-		execute_pcode(r, rif->evaulation, vs, this_field_value, FALSE);
-		result = rlib_value_stack_pop(vs);
-		if(RLIB_VALUE_IS_NUMBER(result)) {
-			if(RLIB_VALUE_GET_AS_NUMBER(result) == 0) {
-				rlib_value_free(result);
-				rlib_value_free(v1);
-				thisresult = execute_pcode(r, rif->false, vs, this_field_value, FALSE);
 
-			} else {
-				rlib_value_free(result);
-				rlib_value_free(v1);
-				thisresult = execute_pcode(r, rif->true, vs, this_field_value, FALSE);
-			}
-		} else if(RLIB_VALUE_IS_STRING(result)) {
-			if(RLIB_VALUE_GET_AS_STRING(result) == NULL) {
-				rlib_value_free(result);
-				rlib_value_free(v1);
-				thisresult = execute_pcode(r, rif->false, vs, this_field_value, FALSE);
-			} else {
-				rlib_value_free(result);
-				rlib_value_free(v1);
-				thisresult = execute_pcode(r, rif->true, vs, this_field_value, FALSE);
-			}
+		if(rif->false == NULL || rif->true == NULL) {
+			r_error(r, "IIF STATEMENT IS INVALID [%s] @ %d\n", code->infix_string, code->line_number);
 		} else {
-			rlib_value_free(result);
-			rlib_value_free(v1);
-			r_error(r, "CAN'T COMPARE IIF VALUE [%d]\n", RLIB_VALUE_GET_TYPE(result));
+			execute_pcode(r, rif->evaulation, vs, this_field_value, FALSE);
+			result = rlib_value_stack_pop(vs);
+
+			if(RLIB_VALUE_IS_NUMBER(result)) {
+				if(RLIB_VALUE_GET_AS_NUMBER(result) == 0) {
+					rlib_value_free(result);
+					rlib_value_free(v1);
+					thisresult = execute_pcode(r, rif->false, vs, this_field_value, FALSE);
+
+				} else {
+					rlib_value_free(result);
+					rlib_value_free(v1);
+					thisresult = execute_pcode(r, rif->true, vs, this_field_value, FALSE);
+				}
+			} else if(RLIB_VALUE_IS_STRING(result)) {
+				if(RLIB_VALUE_GET_AS_STRING(result) == NULL) {
+					rlib_value_free(result);
+					rlib_value_free(v1);
+					thisresult = execute_pcode(r, rif->false, vs, this_field_value, FALSE);
+				} else {
+					rlib_value_free(result);
+					rlib_value_free(v1);
+					thisresult = execute_pcode(r, rif->true, vs, this_field_value, FALSE);
+				}
+			} else {
+				rlib_value_free(result);
+				rlib_value_free(v1);
+				r_error(r, "CAN'T COMPARE IIF VALUE [%d]\n", RLIB_VALUE_GET_TYPE(result));
+			}
 		}
 	}
 	if (!thisresult) 
-	rlib_pcode_operator_fatal_execption(r,"iif", code, 1, v1, NULL, NULL);
+		rlib_pcode_operator_fatal_execption(r,"iif", code, 1, v1, NULL, NULL);
 	return thisresult;
 }
 

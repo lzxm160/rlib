@@ -863,13 +863,7 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 				for(i=1; i <= max_memo_lines; i++) {				
 					margin = my_left_margin;
 					
-					
-					
-/* Memo Fields that won't fit */
-/*
-	TODO?? This shoudl really look @ the size of the line and not the output
-*/
-					if(rlib_will_this_fit(r, part, report, get_output_size(r, part, report, roa), 1) == FALSE && max_memo_lines > 1) {
+					if(rlib_will_this_fit(r, part, report, RLIB_GET_LINE(get_font_point(r, part, report, rl)), 1) == FALSE && max_memo_lines > 1) {
 						if(page_header_layout == FALSE) {
 							if(report != NULL) {
 /* We need to let the layout engine know this has nothing to do w/ pages across and then we have a really long memo field in the report header some how */							
@@ -921,12 +915,9 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 						for(e = rl->e; e != NULL; e=e->next) {
 							if(extra_data[count].found_color == FALSE && extra_data[count].is_bold == FALSE && extra_data[count].is_italics == FALSE 
 							&& extra_data[count].is_memo == FALSE && extra_data[count].type != RLIB_ELEMENT_IMAGE) {
-								gchar *strcatbuf;
 								if(start_count == -1)
 									start_count = count;
-								strcatbuf = rlib_layout_suppress_non_memo_on_extra_lines(r, &extra_data[count], i, spaced_out);
-								if(strcatbuf != NULL) 
-									strcat(buf, strcatbuf);
+								strcat(buf, rlib_layout_suppress_non_memo_on_extra_lines(r, &extra_data[count], i, spaced_out));
 								fun_width += extra_data[count].output_width;
 							} else {
 								if(start_count != -1) {

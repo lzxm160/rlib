@@ -1,4 +1,11 @@
 2006-06-06  Bob Doan  <bdoan@sicompos.com>
+	* bindings/php/environment.c: write in chunks
+	* libsrc/breaks.c:  break layout bug
+	* libsrc/layout.c: Memo Layout fixes
+	* libsrc/pcode_op_functions.c: Don't Crash on incomplete iifs
+	* src/examples/php/array.xml:
+
+2006-06-06  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/pcode.c: Add Bit Compare PCODE "&"
 	* libsrc/pcode.h: 
 	* libsrc/pcode_op_functions.c: 

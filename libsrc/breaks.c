@@ -57,7 +57,7 @@ static void rlib_print_break_footer_output(rlib *r, struct rlib_part *part, stru
 	if(!OUTPUT(r)->do_breaks)
 		return;
 	if(rb->didheader) {
-		rlib_layout_report_output(r, part, report, e, backwards, FALSE);
+		rlib_layout_report_output(r, part, report, e, backwards, TRUE);
 	}
 }
 

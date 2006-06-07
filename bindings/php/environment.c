@@ -52,7 +52,20 @@ static char * rlib_php_resolve_memory_variable(char *name) {
 }
 
 static int rlib_php_write_output(char *data, int len) {
-	return php_write(data, len TSRMLS_CC);
+	long wrote = 0;
+/*
+	PHP Has some odd bug on the LO that doesn't allow you to write more then 15785 at a time.
+*/
+	while(wrote < len) {	
+		int size = 4096;
+		
+		if(size+wrote > len)
+			size = len-wrote;
+		
+		php_write(data+wrote, size TSRMLS_CC);
+		wrote += size;
+	}
+	return TRUE;
 }
 
 void rlib_php_free(rlib *r) {
