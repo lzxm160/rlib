@@ -120,6 +120,10 @@
 				<literal>SHOULD GET: 200,00              GOT: </literal>
 				<field value="val(str(val('10')/val('5')*100.0,3,2))" format="'%.02d'" width="20"/>
 			</Line>
+			<Line>
+				<literal>SHOULD GET: blue                GOT: </literal>
+				<field value="iif(color!='[0] Undefined',color,'')" width="20"/>
+			</Line>
 		</Output>
 	</ReportHeader>		
 </Report>

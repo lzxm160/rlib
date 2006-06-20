@@ -1,3 +1,8 @@
+2006-06-20  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/layout.c: Fix crash with NULL data
+	* libsrc/pcode_op_functions.c: likewise
+	* src/examples/php/expressions.xml: nada
+
 2006-06-06  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/environment.c: write in chunks
 	* libsrc/breaks.c:  break layout bug

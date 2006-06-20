@@ -114,8 +114,7 @@ gfloat rlib_layout_estimate_string_width_from_extra_data(rlib *r, struct rlib_li
 
 static gchar *rlib_encode_text(rlib *r, gchar *text, gchar **result) {
 	if (text == NULL) {
-		r_error(r, "rlib_encode_text called with NULL text");
-		*result = g_strdup("!ERR_ENC1");
+		*result = g_strdup("");
 	} else {
 		gsize len = strlen(text);
 		gsize result_len;
@@ -915,9 +914,12 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 						for(e = rl->e; e != NULL; e=e->next) {
 							if(extra_data[count].found_color == FALSE && extra_data[count].is_bold == FALSE && extra_data[count].is_italics == FALSE 
 							&& extra_data[count].is_memo == FALSE && extra_data[count].type != RLIB_ELEMENT_IMAGE) {
+								gchar *tmp_string;
 								if(start_count == -1)
 									start_count = count;
-								strcat(buf, rlib_layout_suppress_non_memo_on_extra_lines(r, &extra_data[count], i, spaced_out));
+								tmp_string = rlib_layout_suppress_non_memo_on_extra_lines(r, &extra_data[count], i, spaced_out);
+								if(tmp_string != NULL)
+									strcat(buf, tmp_string);
 								fun_width += extra_data[count].output_width;
 							} else {
 								if(start_count != -1) {

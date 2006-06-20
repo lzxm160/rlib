@@ -577,15 +577,22 @@ gint rlib_pcode_operator_noteql(rlib *r, struct rlib_pcode *code, struct rlib_va
 		return TRUE;
 	}
 	if(RLIB_VALUE_IS_STRING(v1) && RLIB_VALUE_IS_STRING(v2)) {
-		if (r_strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) != 0) {
-			rlib_value_free(v1);
-			rlib_value_free(v2);
-			rlib_value_stack_push(r,vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
-		} else {
-			rlib_value_free(v1);
-			rlib_value_free(v2);
-			rlib_value_stack_push(r,vs, rlib_value_new_number(&rval_rtn, 0));
+		gint64 push;
+		if(RLIB_VALUE_GET_AS_STRING(v2) == NULL && RLIB_VALUE_GET_AS_STRING(v1) == NULL)
+			push = 0;
+		else if(RLIB_VALUE_GET_AS_STRING(v2) == NULL || RLIB_VALUE_GET_AS_STRING(v1) == NULL)
+			push = RLIB_DECIMAL_PRECISION;
+		else {
+			if(r_strcmp(RLIB_VALUE_GET_AS_STRING(v2), RLIB_VALUE_GET_AS_STRING(v1)) == 0) {
+				push = 0;
+			} else {
+				push = RLIB_DECIMAL_PRECISION;
+			}
 		}
+		rlib_value_free(v1);
+		rlib_value_free(v2);
+		rlib_value_new_number(&rval_rtn, push);
+		rlib_value_stack_push(r,vs, &rval_rtn);
 		return TRUE;
 	}
 	if(RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_DATE(v2)) {
