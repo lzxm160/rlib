@@ -1,3 +1,6 @@
+2006-07-12  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/parsexml.c: pass unevaulated query from parse_part_load
+
 2006-06-20  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/layout.c: Fix crash with NULL data
 	* libsrc/pcode_op_functions.c: likewise

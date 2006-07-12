@@ -592,15 +592,16 @@ static struct rlib_report * parse_part_load(rlib *r, struct rlib_part *part, xml
 
 	result_name = rlib_execute_as_string(r, name_code,real_name, MAXSTRLEN-1);
 	result_query = rlib_execute_as_string(r, query_code,real_query, MAXSTRLEN-1);
-	
+
 	if(result_name && result_name) {
-		report = parse_report_file(r, real_name, real_query);
+		report = parse_report_file(r, real_name, query);
 	} else {
-		r_error(r, "parse_part_load - Query or Name Is Invalid\nc");
+		r_error(r, "parse_part_load - Query or Name Is Invalid\n");
 		report = NULL;
 	}
 	rlib_pcode_free(name_code);
 	rlib_pcode_free(query_code);
+
 	return report;
 }
 
