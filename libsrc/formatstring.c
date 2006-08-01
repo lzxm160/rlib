@@ -420,7 +420,12 @@ GSList * rlib_format_split_string(rlib *r, gchar *data, gint width, gint max_lin
 	gint line_spot = 0;
 	gboolean at_the_end = FALSE;
 	GSList *list = NULL;
-
+	
+	if(data == NULL) {
+		*line_count = 0;
+		return NULL;
+	}
+	
 	slen = strlen(data);
 	while(1) {
 		gchar *this_line = g_malloc(width);
