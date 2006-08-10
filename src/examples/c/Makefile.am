@@ -25,7 +25,7 @@ noinst_PROGRAMS = example
 AM_CFLAGS = $(RLIB_CFLAGS) -I${top_srcdir}/libsrc
 
 example_SOURCES= example.c
-example_LDADD = $(top_builddir)/libsrc/libr.la $(top_builddir)/inputs/mysql/libr-mysql.la $(RLIB_LIBS)
+example_LDADD = $(top_builddir)/libsrc/libr.la  $(RLIB_LIBS)
 
 noinst_SCRIPTS = products.xml
 

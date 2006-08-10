@@ -422,8 +422,11 @@ GSList * rlib_format_split_string(rlib *r, gchar *data, gint width, gint max_lin
 	GSList *list = NULL;
 	
 	if(data == NULL) {
-		*line_count = 0;
-		return NULL;
+		gchar *this_line = g_malloc(width);
+		list = g_slist_append(list, this_line);
+		memset(this_line, 0, width);
+		*line_count = 1;
+		return list;
 	}
 	
 	slen = strlen(data);

@@ -1019,7 +1019,7 @@ static gint64 stream_read_long(gchar *stream, gint *spot, gint size) {
 	guchar *string;;
 	if(*spot >= size)
 		return -1;
-	string = &stream[*spot];
+	string = (guchar *)&stream[*spot];
 	((char *)&data)[0] = string[3];
 	((char *)&data)[1] = string[2];
 	((char *)&data)[2] = string[1];

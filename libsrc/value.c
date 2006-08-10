@@ -28,6 +28,7 @@
 
 #include "config.h"
 #include "util.h"
+#include "rlib.h"
 
 
 /*--- string functions ---*/

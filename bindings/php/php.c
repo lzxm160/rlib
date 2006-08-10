@@ -19,11 +19,12 @@
  */
  
 #include <config.h>
-#include <php.h>
 
 #include "rlib.h"
 #include "pcode.h"
 #include "rlib_php.h"
+
+#include <php.h>
 
 /*
 	here we define the PHP interface to rlib.  always assume no access to this source when making methods

@@ -1,3 +1,11 @@
+2006-08-10  Bob Doan  <bdoan@sicompos.com>
+	* NEWS: Release Time
+	* bindings/php/php.c: OSX Build/Link Fixes
+	* libsrc/formatstring.c: Fix crash
+	* libsrc/value.c:
+	* rpdf/rpdf.c: 
+	* src/examples/c/Makefile.am:
+
 2006-08-01  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/formatstring.c: Don't crash on NULL memo fields
 

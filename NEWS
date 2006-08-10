@@ -1,3 +1,12 @@
+1.3.7
+- Fix Crashes (Me, Zoltan)
+- "do_break" - Output Parameter 
+- Support cursors w/ forward only navigation (Me, Zoltan)
+- CSV Data Source (Me)
+- Valid XHTML HTML Output (Me, Al)
+- RPDF Compression (Zoltan)
+- OSX Build/Link Fixes
+
 1.3.6
 ===
 - Pre Calculcated Variables (me)
