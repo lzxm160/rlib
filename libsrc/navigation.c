@@ -132,6 +132,12 @@ gint rlib_navigate_previous(rlib *r, gint resultset_num) {
 
 gint rlib_navigate_first(rlib *r, gint resultset_num) {
 	gint rtn;
+	
+	if(r->results[resultset_num].result == NULL) {
+		r->results[resultset_num].navigation_failed = TRUE;
+		return FALSE;
+	}
+
 	rtn = INPUT(r, resultset_num)->first(INPUT(r, resultset_num), r->results[resultset_num].result);
 	if(rtn == TRUE)
 		return rlib_navigate_followers(r, resultset_num, RLIB_NAVIGATE_FIRST);

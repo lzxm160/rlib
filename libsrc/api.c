@@ -147,6 +147,12 @@ gint rlib_add_report_from_buffer(rlib *r, gchar *buffer) {
 
 static gint rlib_execute_queries(rlib *r) {
 	gint i;
+
+	for(i=0;i<r->queries_count;i++) {
+		r->results[i].input = NULL;
+		r->results[i].result = NULL;
+	}
+
 	for(i=0;i<r->queries_count;i++) {
 
 		r->results[i].input = r->queries[i].input;

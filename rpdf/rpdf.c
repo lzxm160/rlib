@@ -1056,7 +1056,7 @@ static void jpeg_process_SOFn(gchar *stream, gint *spot, gint size, gint marker,
 	info->width = stream_read_two_bytes(stream, spot, size);
 	info->components = stream_read_byte(stream, spot, size);
 	if(length != (guint)(8 + info->components * 3)) {
-		fprintf(stderr, "BAD IMAGE\n");
+		rpdf_error("BAD IMAGE\n");
 		return;
 	}
 	*spot = *spot + (3 * info->components);
@@ -1065,10 +1065,12 @@ static void jpeg_process_SOFn(gchar *stream, gint *spot, gint size, gint marker,
 gboolean rpdf_image(struct rpdf *pdf, gdouble x, gdouble y, gdouble width, gdouble height, gint image_type, gchar *file_name) {
 	struct rpdf_page_info *page_info = pdf->page_info[pdf->current_page];
 	gint fd;
-	gint size;
+	off_t size, compare_size, pos;
 	gint read_spot = 0;
 	gboolean loop = TRUE;
 	struct rpdf_images *image;
+	ssize_t	readbytes;
+
 	if(file_name == NULL)
 		return FALSE;
 		
@@ -1077,7 +1079,7 @@ gboolean rpdf_image(struct rpdf *pdf, gdouble x, gdouble y, gdouble width, gdoub
 	if(fd <= 0)
 		return FALSE;
 	
-	size = lseek(fd, 0, SEEK_END);
+	compare_size = size = lseek(fd, 0, SEEK_END);
 	lseek(fd, 0, SEEK_SET);
 	
 	image = g_new0(struct rpdf_images, 1);
@@ -1088,8 +1090,19 @@ gboolean rpdf_image(struct rpdf *pdf, gdouble x, gdouble y, gdouble width, gdoub
 	image->data = g_malloc(size);
 	image->image_type = image_type;
 	image->length = size;
-	
-	read(fd, image->data, size);
+	pos = 0;
+	while (compare_size > 0) {
+		readbytes = read(fd, image->data + pos, compare_size);
+		if (readbytes > 0) {
+			pos += readbytes;
+			compare_size -= readbytes;
+		} else {
+			g_free(image->data);
+			g_free(image);
+			close(fd);
+			return FALSE;
+		}
+	}
 	close(fd);
 
 	if(image_type == RPDF_IMAGE_PNG) {
@@ -1117,19 +1130,19 @@ gboolean rpdf_image(struct rpdf *pdf, gdouble x, gdouble y, gdouble width, gdoub
 		png_info->bpc = stream_read_byte(image->data, &read_spot, size);
 
 		if(png_info->bpc > 8)
-			fprintf(stderr, "16 but depths not supported\n");
+			rpdf_error("16 but depths not supported\n");
 		
 		png_info->ct = stream_read_byte(image->data, &read_spot, size);
 		
 		if(png_info->ct == 1 || png_info->ct >= 4)
-			fprintf(stderr, "Unsuported Ct (Alpha Channel?)\n");
+			rpdf_error("Unsuported Ct (Alpha Channel?)\n");
 
 		if(stream_read_byte(image->data, &read_spot, size) != 0)
-			fprintf(stderr, "Unknown compression method\n");
+			rpdf_error("Unknown compression method\n");
 		if(stream_read_byte(image->data, &read_spot, size) != 0)
-			fprintf(stderr, "Unknown filter method\n");
+			rpdf_error("Unknown filter method\n");
 		if(stream_read_byte(image->data, &read_spot, size) != 0)
-			fprintf(stderr, "Interlacing not supported\n");
+			rpdf_error("Interlacing not supported\n");
 
 		stream_read_long(image->data, &read_spot, size);
 

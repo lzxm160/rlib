@@ -1,3 +1,9 @@
+2006-09-13  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/api.c: Set queries to null to avoid crash if follower can't be followed
+	* libsrc/navigation.c: likewise
+	* rpdf/rpdf.c: Be more careful reading file / avoid warnings
+	* rpdf/test.c: likewise
+
 2006-08-10  Bob Doan  <bdoan@sicompos.com>
 	* NEWS: Release Time
 	* bindings/php/php.c: OSX Build/Link Fixes

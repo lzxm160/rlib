@@ -33,6 +33,9 @@ static void callback_test(gchar *data, gint len, gpointer user_data) {
 }
 
 int main(int argc, char **argv) {
+	ssize_t	byteswritten;
+	size_t	count, pos;
+
 	struct rpdf *pdf = rpdf_new();
 	rpdf_new_page(pdf, RPDF_PAPER_LEGAL, RPDF_LANDSCAPE);
 /*	rpdf_set_font(pdf, "Times-Italic", "MacRomanEncoding", 30.0); */
@@ -78,7 +81,14 @@ int main(int argc, char **argv) {
 	
 /*	rpdf_image(pdf, 1, 1, 100, 100, RPDF_IMAGE_JPEG, "logo.jpg"); */
 	rpdf_finalize(pdf);
-	write(1, pdf->out_buffer, pdf->size);
+	pos = 0;
+	while (pos < pdf->size) {
+		byteswritten = write(1, pdf->out_buffer + pos, pdf->size - pos);
+		if (byteswritten > 0)
+			pos += byteswritten;
+		else
+			break; /* ignore the error */
+	}
 	rpdf_free(pdf);	
 	return 0;
 }
