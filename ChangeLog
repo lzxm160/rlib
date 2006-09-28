@@ -1,4 +1,7 @@
 2006-09-28  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/pcode_op_functions.c: Don't crash on null date again
+
+2006-09-28  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/csv.c: Don't crash on No data
 	* libsrc/pcode_op_functions.c: Don't crash on null date
 

@@ -1008,14 +1008,19 @@ static gint rlib_pcode_operator_stod_common(rlib *r, struct rlib_pcode *code, st
 			}
 		} else { /* convert date */
 			gint year, month, day;
-			if (sscanf(tstr, "%4d-%2d-%2d", &year, &month, &day) != 3) {
-				if (sscanf(tstr, "%4d%2d%2d", &year, &month, &day) != 3) {
-					r_error(r, "Invalid Date format: stod(%s)", tstr);
-					err = TRUE;
+			if(tstr != NULL) {
+				if (sscanf(tstr, "%4d-%2d-%2d", &year, &month, &day) != 3) {
+					if (sscanf(tstr, "%4d%2d%2d", &year, &month, &day) != 3) {
+						r_error(r, "Invalid Date format: stod(%s)", tstr);
+						err = TRUE;
+					}
 				}
-			}
-			if (!err) {
-				rlib_datetime_set_date(&dt, year, month, day);
+				if (!err) {
+					rlib_datetime_set_date(&dt, year, month, day);
+				}
+			} else {
+				r_error(r, "Invalid Date format: stod(%s)", tstr);
+				err = TRUE;
 			}			
 		}
 		if (!err) {
