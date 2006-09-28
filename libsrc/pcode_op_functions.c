@@ -978,29 +978,33 @@ static gint rlib_pcode_operator_stod_common(rlib *r, struct rlib_pcode *code, st
 		if (which) { /* convert time */
 			gint hour = 12, minute = 0, second = 0; /* safe time for date only. */
 			gchar ampm = 'a';
-
-			if (sscanf(tstr, "%2d:%2d:%2d%c", &hour, &minute, &second, &ampm) != 4) {
-				if (sscanf(tstr, "%2d:%2d:%2d", &hour, &minute, &second) != 3) {
-					second = 0;
-					if (sscanf(tstr, "%2d:%2d%c", &hour, &minute, &ampm) != 3) {
+			if(tstr != NULL) {
+				if (sscanf(tstr, "%2d:%2d:%2d%c", &hour, &minute, &second, &ampm) != 4) {
+					if (sscanf(tstr, "%2d:%2d:%2d", &hour, &minute, &second) != 3) {
 						second = 0;
-						ampm = 0;
-						if (sscanf(tstr, "%2d:%2d", &hour, &minute) != 2) {
-							if (sscanf(tstr, "%2d%2d%2d", &hour, &minute, &second) != 3) {
-								second = 0;
-								if (sscanf(tstr, "%2d%2d", &hour, &minute) != 2) {
-									r_error(r, "Invalid Date format: stod(%s)", tstr);
-									err = TRUE;
+						if (sscanf(tstr, "%2d:%2d%c", &hour, &minute, &ampm) != 3) {
+							second = 0;
+							ampm = 0;
+							if (sscanf(tstr, "%2d:%2d", &hour, &minute) != 2) {
+								if (sscanf(tstr, "%2d%2d%2d", &hour, &minute, &second) != 3) {
+									second = 0;
+									if (sscanf(tstr, "%2d%2d", &hour, &minute) != 2) {
+										r_error(r, "Invalid Date format: stod(%s)", tstr);
+										err = TRUE;
+									}
 								}
 							}
 						}
 					}
 				}
-			}
-			if (toupper(ampm) == 'P') hour += 12;
-			hour %= 24;
-			if (!err) {
-				rlib_datetime_set_time(&dt, hour, minute, second);
+				if (toupper(ampm) == 'P') hour += 12;
+				hour %= 24;
+				if (!err) {
+					rlib_datetime_set_time(&dt, hour, minute, second);
+				}
+			} else {
+				r_error(r, "Invalid Date format: stod(%s)", tstr);
+				err = TRUE;	
 			}
 		} else { /* convert date */
 			gint year, month, day;
