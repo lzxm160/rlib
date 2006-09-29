@@ -102,6 +102,7 @@ struct rlib_pcode_operator rlib_pcode_verbs[] = {
       {"stodt(", 	6, 0,	TRUE,	OP_STOD,  	TRUE, 	rlib_pcode_operator_stodt, NULL},
       {"stodtsql(", 9, 0,	TRUE,	OP_STODSQL,  	TRUE, 	rlib_pcode_operator_stodtsql, NULL},
       {"str(", 	4, 0,	TRUE,	OP_STR,  	TRUE, 	rlib_pcode_operator_str, NULL},
+      {"strlen(", 	7, 0,	TRUE,	OP_STRLEN,  	TRUE, 	rlib_pcode_operator_strlen, NULL},
       {"timeof(", 7, 0,	TRUE,	OP_TIMEOF,  	TRUE, 	rlib_pcode_operator_timeof, NULL},
       {"tstod(", 	6, 0,	TRUE,	OP_TSTOD,  	TRUE, 	rlib_pcode_operator_tstod, NULL},
       {"upper(", 	6, 0,	TRUE,	OP_UPPER,  	TRUE, 	rlib_pcode_operator_upper, NULL},

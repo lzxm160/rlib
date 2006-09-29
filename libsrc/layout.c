@@ -1013,7 +1013,8 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 					gfloat font_point;
 					gfloat indent;
 					gfloat length;
-					gfloat mike;					
+					gfloat tmp_rlib_position;
+					gfloat f;					
 					struct rlib_rgb bgcolor;
 					output_count++;
 					colorstring = RLIB_VALUE_GET_AS_STRING(rval);
@@ -1023,6 +1024,11 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 					else
 						font_point = rhl->font_point;
 					OUTPUT(r)->set_font_point(r, font_point);
+					
+					rhl->indent = 0;
+					if (rlib_execute_as_float(r, rhl->indent_code, &f))
+						rhl->indent = f;					
+					
 					indent = rlib_layout_estimate_string_width(r, rhl->indent);			
 					length = rlib_layout_estimate_string_width(r, rhl->length);			
 					OUTPUT(r)->set_font_point(r, r->font_point);
@@ -1034,8 +1040,8 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 						OUTPUT(r)->hr(r, backwards, my_left_margin+indent, rlib_layout_get_next_line_by_font_point(r, part, *rlib_position, rhl->size),
 							length, rhl->size, &bgcolor, indent, length);
 
-					mike = (rhl->size/RLIB_PDF_DPI);
-					*rlib_position += mike;
+					tmp_rlib_position = (rhl->size/RLIB_PDF_DPI);
+					*rlib_position += tmp_rlib_position;
 					rlib_value_free(rval);
 				}
 			}

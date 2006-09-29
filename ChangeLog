@@ -1,3 +1,12 @@
+2006-09-29  Mike Roth  <mroth@sicompos.com>
+
+	* libsrc/layout.c: Dynamic Indentation on Horizontal Lines
+	* libsrc/pcode.c: add strlen function
+	* libsrc/pcode.h: add strlen function
+	* libsrc/pcode_op_functions.c:  add strlen function
+	* libsrc/resolution.c:  add strlen
+	* src/examples/php/expressions.xml: test
+
 2006-09-28  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/pcode_op_functions.c: Don't crash on null date again
 

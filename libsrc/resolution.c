@@ -193,9 +193,6 @@ static void rlib_variable_resolve_pcode(rlib *r, struct rlib_part *part, struct 
 
 
 	rv->precalculated_values = NULL;
-/* rlogit("DUMPING PCODE FOR [%s]\n", rv->xml_value);
-rlib_pcode_dump(rv->code,0);	
-rlogit("\n\n"); */
 }
 
 static void rlib_hr_resolve_pcode(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_horizontal_line * rhl) {

@@ -105,6 +105,7 @@
 #define OP_STODSQL 	58
 #define OP_EVAL 	59
 #define OP_LOGICALAND 	60
+#define OP_STRLEN 	61
 
 
 #define PCODE_PUSH	1
@@ -231,3 +232,4 @@ int rlib_pcode_operator_settimeinsecs(rlib *r, struct rlib_pcode *code, struct r
 int rlib_pcode_operator_format(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
 int rlib_pcode_operator_stodtsql(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
 int rlib_pcode_operator_eval(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);
+int rlib_pcode_operator_strlen(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data);

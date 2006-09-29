@@ -1411,6 +1411,22 @@ gint rlib_pcode_operator_lower(rlib *r, struct rlib_pcode *code, struct rlib_val
 	return FALSE;
 }
 
+gint rlib_pcode_operator_strlen(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
+	struct rlib_value *v1, rval_rtn;
+	v1 = rlib_value_stack_pop(vs);
+	if(RLIB_VALUE_IS_STRING(v1) ) {
+		gint64 slen=0;
+		if( RLIB_VALUE_GET_AS_STRING(v1) != NULL )
+			slen = strlen(RLIB_VALUE_GET_AS_STRING(v1));
+		rlib_value_free(v1);
+		rlib_value_stack_push(r,vs, rlib_value_new_number(&rval_rtn, LONG_TO_FXP_NUMBER(slen) ));
+		return TRUE;
+	}
+	rlib_pcode_operator_fatal_execption(r,"strlen", code, 1, v1, NULL, NULL);
+	rlib_value_free(v1);
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
+	return FALSE;
+}
 
 gint rlib_pcode_operator_left(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, rval_rtn;
