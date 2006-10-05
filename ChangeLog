@@ -1,3 +1,7 @@
+2006-10-05  Mike Roth  <mroth@sicompos.com>
+
+	* libsrc/resolution.c: Free result set name point after error reporting to avoid crash. If result set point is null, return empty string.
+
 2006-09-29  Mike Roth  <mroth@sicompos.com>
 
 	* libsrc/layout.c: Dynamic Indentation on Horizontal Lines

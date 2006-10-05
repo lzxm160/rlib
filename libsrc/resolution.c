@@ -67,9 +67,11 @@ gchar * rlib_resolve_field_value(rlib *r, struct rlib_resultset_field *rf) {
 
 	if(r->results[rf->resultset].navigation_failed == TRUE)
 		return NULL;
-	
-	str = rs->get_field_value_as_string(rs, r->results[rf->resultset].result, rf->field);
 
+	if(rf->field != NULL)
+		str = rs->get_field_value_as_string(rs, r->results[rf->resultset].result, rf->field);
+	else
+		str = "";
 #if DISABLE_UTF8
 	return g_strdup(str);
 #else
@@ -115,9 +117,8 @@ gint rlib_resolve_resultset_field(rlib *r, char *name, void **rtn_field, gint *r
 			resultset = t;
 		} else {
 			if(!isdigit((int)*result_name))
-				rlogit(r, "rlib_resolve_namevalue: INVALID RESULT SET %s, name was [%s]\n", result_name, name);
-		}
-		g_free(result_name);
+				r_error(r, "rlib_resolve_namevalue: INVALID RESULT SET %s, name was [%s]\n", result_name, name);
+		}		
 	}
 	*rtn_field = INPUT(r, resultset)->resolve_field_pointer(INPUT(r, resultset), r->results[resultset].result, name);
 	
@@ -130,6 +131,10 @@ gint rlib_resolve_resultset_field(rlib *r, char *name, void **rtn_field, gint *r
 			r_error(r, "The field [%s.%s] does not exist\n", result_name, name);
 	}
 	*rtn_resultset = resultset;
+	
+	if(result_name != NULL)
+		g_free(result_name);
+	
 	return found;
 }
 
