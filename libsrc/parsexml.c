@@ -153,7 +153,7 @@ static struct rlib_element * parse_line_array(rlib *r, xmlDocPtr doc, xmlNsPtr n
 		} else if (ignoreElement((const char *)cur->name)) {
 			/* ignore comments, etc */
 		} else {
-			r_error(r, "Unknown element [%s] in <Line>\n", cur->name);
+			r_error(r, "Line: %d - Unknown element  [%s] in <Line> \n", xmlGetLineNo (cur),cur->name);
 		}
 		if (current != NULL) {
 			if(e == NULL) {
@@ -232,7 +232,7 @@ static struct rlib_element * parse_report_output(rlib *r, xmlDocPtr doc, xmlNsPt
 		} else if (ignoreElement((const char *)cur->name)) {
 			/* ignore comments, etc */
 		} else {
-			r_error(r, "Unknown element [%s] in <Output>. Expected: Line, HorizontalLine or Image\n", cur->name);
+			r_error(r, "Line: %d - Unknown element  [%s] in <Output>. Expected: Line, HorizontalLine or Image On Line \n",xmlGetLineNo (cur), cur->name);
 		}
 		cur = cur->next;
 	}	
@@ -255,7 +255,7 @@ static struct rlib_element * parse_report_outputs(rlib *r, xmlDocPtr doc, xmlNsP
 		} else if (ignoreElement((const char *)cur->name)) {
 			/* ignore comments, etc */
 		} else {
-			r_error(r, "Invalid element :<%s>. Expected: <Output>\n", cur->name);
+			r_error(r, "Line: %d - Invalid element: [%s] Expected: <Output> \n",xmlGetLineNo (cur), cur->name );
 		}
 		cur = cur->next;
 	}	
@@ -276,7 +276,7 @@ static struct rlib_element * parse_break_field(rlib *r, xmlDocPtr doc, xmlNsPtr 
 		} else if (ignoreElement((const char *)cur->name)) {
 			/* ignore comments, etc */
 		} else {
-			r_error(r, "Unknown element [%s] in <Break>. Expected BreakField\n", cur->name);
+			r_error(r, "Line: %d - Unknown element  [%s] in <Break>. Expected BreakField \n",xmlGetLineNo (cur), cur->name );
 		}
 		cur = cur->next;
 	}
@@ -313,7 +313,7 @@ static struct rlib_element * parse_report_break(rlib *r, struct rlib_report *rep
 		} else if (ignoreElement((const char *)cur->name)) {
 			/* ignore comments, etc */
 		} else {
-			r_error(r, "Unknown element [%s] in <ReportBreak>. Expected BreakHeader, BreakFooter, BreakFields\n", cur->name);
+			r_error(r, "Line: %d - Unknown element [%s] in <ReportBreak>. Expected BreakHeader, BreakFooter, BreakFieldsn \n",xmlGetLineNo (cur), cur->name );
 		}
 		cur = cur->next;
 	}
@@ -337,7 +337,7 @@ static struct rlib_element * parse_report_breaks(rlib *r, struct rlib_report *re
 		} else if (ignoreElement((const char *)cur->name)) {
 			/* ignore comments, etc */
 		} else {
-			r_error(r, "Unknown element [%s] in <Breaks>. Expected Break.\n", cur->name);
+			r_error(r, "Line: %d - Unknown element [%s] in <Breaks>. Expected Break.\n",xmlGetLineNo (cur), cur->name );
 		}
 		cur = cur->next;
 	}	
@@ -354,7 +354,7 @@ static void parse_detail(rlib *r, struct rlib_report *report, xmlDocPtr doc, xml
 		} else if (ignoreElement((const char *)cur->name)) {
 			/* ignore comments, etc */
 		} else {
-			r_error(r, "Unknown element [%s] in <Detail>. Expected FieldHeaders or FieldDetails\n", cur->name);
+			r_error(r, "Line: %d - Unknown element [%s] in <Detail>. Expected FieldHeaders or FieldDetails\n",xmlGetLineNo (cur), cur->name );
 		}
 		cur = cur->next;
 	}
@@ -369,7 +369,7 @@ static void parse_alternate(rlib *r, struct rlib_report *report, xmlDocPtr doc, 
 		} else if (ignoreElement((const char *)cur->name)) {
 			/* ignore comments, etc */
 		} else {
-			r_error(r, "Unknown element [%s] in <Alternate>. Expected NoData\n", cur->name);
+			r_error(r, "Line: %d - Unknown element [%s] in <Alternate>. Expected NoData\n",xmlGetLineNo (cur), cur->name );
 		}
 		cur = cur->next;
 	}
@@ -417,7 +417,7 @@ static void parse_graph(rlib *r, struct rlib_report *report, xmlDocPtr doc, xmlN
 		} else if (ignoreElement((const char *)cur->name)) {
 			/* ignore comments, etc */
 		} else {
-			r_error(r, "Unknown element [%s] in <Graph>. Expected Plot\n", cur->name);
+			r_error(r, "Line: %d - Unknown element [%s] in  <Graph>. Expected Plot\n",xmlGetLineNo (cur), cur->name );
 		}
 		cur = cur->next;
 	}
@@ -451,7 +451,7 @@ static struct rlib_element * parse_report_variable(rlib *r, xmlDocPtr doc, xmlNs
 		else if(!strcmp((char *)rv->xml_str_type.xml, "highest"))
 			rv->type = RLIB_REPORT_VARIABLE_HIGHEST;
 		else
-			r_error(r, "Unknown report variable type [%s] in <Variable>\n", rv->xml_str_type.xml);
+			r_error(r, "Line: %d - Unknown report variable type [%s] in <Variable>\n", xmlGetLineNo (cur), rv->xml_str_type.xml);
 	}
 
 	return e;
@@ -473,7 +473,7 @@ static struct rlib_element * parse_report_variables(rlib *r, xmlDocPtr doc, xmlN
 		} else if (ignoreElement((const char *)cur->name)) {
 			/* ignore comments, etc */
 		} else {
-			r_error(r, "Unknown element [%s] in <Variables>. Expected Variable.\n", cur->name);
+			r_error(r, "Line: %d - Unknown element [%s] in <Variables>. Expected Variable.\n", xmlGetLineNo (cur), cur->name);
 		}
 		cur = cur->next;
 	}	
@@ -504,7 +504,7 @@ static void parse_metadata_item(rlib *r, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr 
 		} else if (ignoreElement((const char *)cur->name)) {
 			/* ignore comments, etc */
 		} else {
-			r_error(r, "Unknown element [%s] in <MetaData>. Expected MetaData.\n", cur->name);
+			r_error(r, "Line: %d - Unknown element [%s] in <MetaData>. Expected MetaData.\n", xmlGetLineNo (cur), cur->name);
 		}
 		cur = cur->next;
 	}	
@@ -572,7 +572,7 @@ static void parse_report(rlib *r, struct rlib_part *part, struct rlib_report *re
 			parse_metadata_item(r, doc, ns, cur, r->input_metadata);
 		else if (!ignoreElement((const char *)cur->name)) /* must be last */
 			/* ignore comments, etc */
-			r_error(r, "Unknown element [%s] in <Report>\n", cur->name);
+			r_error(r, "Line: %d - Unknown element [%s] in <Report>\n", xmlGetLineNo (cur), cur->name);
 		cur = cur->next;
 	}
 }
@@ -626,7 +626,7 @@ static struct rlib_part_td * parse_part_td(rlib *r, struct rlib_part *part, xmlD
 		} else if (ignoreElement((const char *)cur->name)) {
 			/* ignore comments, etc */
 		} else {
-			r_error(r, "Unknown element [%s] in <tr>. Expected td.\n", cur->name);
+			r_error(r, "Line: %d - Unknown element [%s] in <tr>. Expected td.\n", xmlGetLineNo (cur), cur->name);
 		}
 		cur = cur->next;
 	}	
@@ -646,7 +646,7 @@ static struct rlib_part_tr * parse_part_tr(rlib *r, struct rlib_part *part, xmlD
 		} else if (ignoreElement((const char *)cur->name)) {
 			/* ignore comments, etc */
 		} else {
-			r_error(r, "Unknown element [%s] in <tr>. Expected td.\n", cur->name);
+			r_error(r, "Line: %d - Unknown element [%s] in <tr>. Expected td.\n", xmlGetLineNo (cur), cur->name);
 		}
 		cur = cur->next;
 	}	
@@ -689,7 +689,7 @@ static void parse_part(rlib *r, struct rlib_part *part, xmlDocPtr doc, xmlNsPtr 
 			part->page_footer = parse_report_outputs(r, doc, ns, cur);
 		} else if (!ignoreElement((const char *)cur->name)) /* must be last */
 			/* ignore comments, etc */
-			r_error(r, "Unknown element [%s] in <Part>\n", cur->name);
+			r_error(r, "Line: %d - Unknown element [%s] in <Part>\n", xmlGetLineNo (cur), cur->name);
 		cur = cur->next;
 	}
 }

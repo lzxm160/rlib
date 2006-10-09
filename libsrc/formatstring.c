@@ -121,12 +121,12 @@ gint rlib_number_sprintf(rlib *r, gchar **woot_dest, gchar *fmtstr, const struct
 		gint64 left=0, right=0;
 		
 		if(left_pad > MAX_FORMAT_STRING) {
-			r_error(r, "FORMATTING ERROR ON LINE %d: %s\n", line_number, infix);
+			r_error(r, "LINE %d FORMATTING ERROR: %s\n", line_number, infix);
 			r_error(r, "FORMATTING ERROR:  LEFT PAD IS WAY TO BIG! (%d)\n", left_pad);
 			left_pad = MAX_FORMAT_STRING;
 		} 
 		if(right_pad > MAX_FORMAT_STRING) {
-			r_error(r, "FORMATTING ERROR ON LINE %d: %s\n", line_number, infix);
+			r_error(r, "LINE %d FORMATTING ERROR: %s\n", line_number, infix);
 			r_error(r, "FORMATTING ERROR:  LEFT PAD IS WAY TO BIG! (%d)\n", right_pad);			
 			right_pad = MAX_FORMAT_STRING;
 		} 

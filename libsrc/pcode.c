@@ -306,7 +306,7 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, struct rlib_part *part, st
 			newstr = g_malloc(2);
 			newstr[0] = ' ';
 			newstr[1] = 0;
-			r_error(r, "rlib_new_operand:: Invalid String!  Bad PCODE [%s] [%d]\n", infix, line_number);		
+			r_error(r, "Line: %d Invalid String! <rlib_new_operand>:: Bad PCODE [%s]\n", line_number, infix);		
 		} else {
 			newstr = g_malloc(rslen-1);
 			memcpy(newstr, str+1, rslen-1);
@@ -383,8 +383,7 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, struct rlib_part *part, st
 		strcpy(newstr, err);
 		o->type = OPERAND_STRING;
 		o->value = newstr;
-		r_error(r, "Unrecognized operand: [%s]\n", str);
-		r_error(r, "Error on Line %d: The Expression Was [%s]\n", line_number, infix);
+		r_error(r, "Line: %d Unrecognized operand [%s]\n The Expression Was [%s]\n", line_number, str, infix);
 	}
 	return o;
 }
@@ -731,8 +730,7 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, struct rlib_part *part, struct 
 	}
 	forcepopstack(r, pcodes, &os);
 	if(os.pcount != 0) {
-		r_error(r, "Compiler Error. Parenthesis Mismatch\n");
-		r_error(r, "Error Occured On Line %d: %s\n", line_number, infix);
+		r_error(r, "Line: %d Compiler Error.  Parenthesis Mismatch [%s]\n", line_number, infix);
 	}
 
 	return pcodes;	
@@ -884,7 +882,7 @@ struct rlib_value *this_field_value) {
 		amount = &RLIB_VARIABLE_CA(rv)->amount;
 
 		if(rv->code == NULL && rv->type != RLIB_REPORT_VARIABLE_COUNT) {
-			r_error(r, "Variable Resolution: Assuming 0 value for variable [%s] on line [%d] with a bad expression\n", rv->xml_name.xml, rv->xml_name.line);	
+			r_error(r, "Line: %d - Bad Expression in variable [%s] Variable Resolution: Assuming 0 value for variable	\n",rv->xml_name.line,rv->xml_name.xml);
 		} else {
 			if(rv->type == RLIB_REPORT_VARIABLE_COUNT) {
 				val = RLIB_VALUE_GET_AS_NUMBER(count);
@@ -927,8 +925,7 @@ gint execute_pcode(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs
 			struct rlib_pcode_operator *o = code->instructions[i].value;
 			if(o->execute != NULL) {
 				if(o->execute(r, code, vs, this_field_value, o->user_data) == FALSE) {
-					r_error(r, "PCODE Execution Error: %s Didn't Work\n", o->tag);
-					r_error(r, "PCODE Execution Error: [%s] on line [%d]\n", code->infix_string, code->line_number);
+					r_error(r, "Line: %d - PCODE Execution Error: [%s] %s Didn't Work \n",code->line_number, code->infix_string,o->tag);
 					break;
 				}
 			}
@@ -937,7 +934,7 @@ gint execute_pcode(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs
 	
 	if(vs->count != 1 && show_stack_errors) {
 		r_error(r, "PCODE Execution Error: Stack Elements %d != 1\n", vs->count);
-		r_error(r, "PCODE Execution Error: [%s] on line [%d]\n", code->infix_string, code->line_number);
+		r_error(r, "Line: %d - PCODE Execution Error: [%s]\n", code->line_number,code->infix_string );
 	}
 	
 	return TRUE;
