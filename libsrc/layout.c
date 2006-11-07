@@ -448,28 +448,28 @@ static gint rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 			
 			rlib_execute_pcode(r, &extra_data[i].rval_code, rf->code, NULL);	
 			if(rf->link_code != NULL) {	
-				rlib_execute_pcode(r, &extra_data[i].rval_link, rf->link_code, NULL);
+				rlib_execute_pcode(r, &extra_data[i].rval_link, rf->link_code, &extra_data[i].rval_code);
 			}
 			if(rf->color_code != NULL) {
-				rlib_execute_pcode(r, &extra_data[i].rval_color, rf->color_code, NULL);
+				rlib_execute_pcode(r, &extra_data[i].rval_color, rf->color_code, &extra_data[i].rval_code);
 			} else if(rl->color_code != NULL) {
 				extra_data[i].rval_color = line_rval_color;
 				rlib_value_dup_contents(&extra_data[i].rval_color);
 			}
 			if(rf->bgcolor_code != NULL) {
-				rlib_execute_pcode(r, &extra_data[i].rval_bgcolor, rf->bgcolor_code, NULL);
+				rlib_execute_pcode(r, &extra_data[i].rval_bgcolor, rf->bgcolor_code, &extra_data[i].rval_code);
 			} else if(rl->bgcolor_code != NULL) {
 				extra_data[i].rval_bgcolor = line_rval_bgcolor;
 				rlib_value_dup_contents(&extra_data[i].rval_bgcolor);
 			}
 			if(rf->bold_code != NULL) {
-				rlib_execute_pcode(r, &extra_data[i].rval_bold, rf->bold_code, NULL);
+				rlib_execute_pcode(r, &extra_data[i].rval_bold, rf->bold_code, &extra_data[i].rval_code);
 			} else if(rl->bold_code != NULL) {
 				extra_data[i].rval_bold = line_rval_bold;
 				rlib_value_dup_contents(&extra_data[i].rval_bold);
 			}
 			if(rf->italics_code != NULL) {
-				rlib_execute_pcode(r, &extra_data[i].rval_italics, rf->italics_code, NULL);
+				rlib_execute_pcode(r, &extra_data[i].rval_italics, rf->italics_code, &extra_data[i].rval_code);
 			} else if(rl->italics_code != NULL) {
 				extra_data[i].rval_italics = line_rval_italics;
 				rlib_value_dup_contents(&extra_data[i].rval_italics);

@@ -1,3 +1,6 @@
+2006-11-07  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/layout.c: Pass "r.value" around to all XML properties
+
 2006-11-06  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/api.c: nada
 	* libsrc/layout.c: Make widths < 0 = 0 and warn about it so things don't get funny later while laying out
