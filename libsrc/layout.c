@@ -484,6 +484,10 @@ static gint rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 			if (rf->width_code) {
 				gint t;
 				if (rlib_execute_as_int(r, rf->width_code, &t)) { 
+					if(t < 0) {
+						r_error(r, "Line: %d - Width Can't Be < 0 [%s]\n", rf->xml_width.line, rf->xml_width.xml);
+						t = 0;
+					}
 					rf->width = t;
 				}
 			}
@@ -557,6 +561,10 @@ static gint rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 			if (rt->width_code) {
 				gint t;
 				if (rlib_execute_as_int(r, rt->width_code, &t)) {
+					if(t < 0) {
+						r_error(r, "Line: %d - Width Can't Be < 0 [%s]\n", rt->xml_width.line, rt->xml_width.xml);
+						t = 0;
+					}
 					rt->width = t;
 				}
 			}

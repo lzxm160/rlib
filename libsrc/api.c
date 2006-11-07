@@ -474,6 +474,7 @@ gint rlib_graph_add_bg_region(rlib *r, gchar *graph_name, gchar *region_label, g
 	gr->start = start;
 	gr->end = end;
 	r->graph_regions = g_slist_append(r->graph_regions, gr);
+	
 	return TRUE;
 }
 
