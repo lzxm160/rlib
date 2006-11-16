@@ -165,7 +165,7 @@ void rlib_variables_precalculate(rlib *r, struct rlib_part *part, struct rlib_re
 
 	r->detail_line_count = 0;
 
-	if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
+	if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result]->result)) {
 		while (1) {
 
 			rlib_handle_break_headers(r, part, report, TRUE);

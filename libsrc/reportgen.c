@@ -201,7 +201,7 @@ gint rlib_fetch_first_rows(rlib *r) {
 	gint i;
 	gint result = TRUE;
 	for(i=0;i<r->queries_count;i++) {
-		if(r->results[i].result == NULL) {
+		if(r->results[i]->result == NULL) {
 			result = FALSE;
 		} else {
 			if(rlib_navigate_first(r, i) == FALSE) {
@@ -289,7 +289,7 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 	if(report->query_code != NULL) {
 		rlib_execute_as_string(r, report->query_code, query, MAXSTRLEN);
 		for(i=0;i<r->queries_count;i++) {		
-			if(query != NULL && r->results[i].name != NULL && !strcmp(r->results[i].name, query)) {
+			if(query != NULL && r->results[i]->name != NULL && !strcmp(r->results[i]->name, query)) {
 				r->current_result = i;		
 				break;
 			}
@@ -310,7 +310,7 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 		rlib_resolve_report_fields(r, part, report);
 
 	for(iterations=0;iterations<report->iterations;iterations++) {
-		if(r->queries_count <= 0 || INPUT(r,r->current_result)->first(INPUT(r,r->current_result), r->results[r->current_result].result) == FALSE) {
+		if(r->queries_count <= 0 || INPUT(r,r->current_result)->first(INPUT(r,r->current_result), r->results[r->current_result]->result) == FALSE) {
 			rlib_evaluate_report_attributes(r, report);
 			rlib_set_report_from_part(r, part, report, top_margin_offset);
 			report->left_margin += left_margin_offset + part->left_margin;
@@ -353,7 +353,7 @@ void rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *rep
 			} else {
 				rlib_fetch_first_rows(r);
 				
-				if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
+				if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result]->result)) {
 					while (1) {
 						gint output_count = 0;
 						gfloat position_top = report->position_top[0];
@@ -572,7 +572,7 @@ gint rlib_evaulate_single_report_variables(rlib *r, struct rlib_part *part) {
 				if(report->query_code != NULL) {
 					rlib_execute_as_string(r, report->query_code, query, MAXSTRLEN);
 					for(i=0;i<r->queries_count;i++) {
-						if(!strcmp(r->results[i].name, query)) {
+						if(!strcmp(r->results[i]->name, query)) {
 							r->current_result = i;		
 							break;
 						}

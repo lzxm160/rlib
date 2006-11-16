@@ -365,6 +365,11 @@ gchar *rlib_align_text(rlib *r, gchar **my_rtn, gchar *src, gint align, gint wid
 	gint len = 0, size = 0, lastidx = 0;
 	gchar *rtn;
 
+	if(width == 0) {
+		rtn = *my_rtn = g_strdup("");
+		return rtn;
+	}
+
 	if(src != NULL) {
 		len = r_strlen(src);
 		size = strlen(src);

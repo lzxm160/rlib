@@ -315,7 +315,7 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 			
 	row_count = 0;
 	rlib_fetch_first_rows(r);
-	if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
+	if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result]->result)) {
 		while(1) {
 			row_count++;
 			if(rlib_navigate_next(r, r->current_result) == FALSE) 
@@ -353,7 +353,7 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	OUTPUT(r)->graph_set_bold_titles(r, bold_titles);
 	
 	rlib_fetch_first_rows(r);
-	if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
+	if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result]->result)) {
 		while (1) {
 			data_plot_count = 0;
 			stacked_y_value_max[RLIB_SIDE_LEFT] = 0;;
@@ -365,7 +365,7 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 			for(list=graph->plots;list != NULL; list = g_slist_next(list)) {
 				plot = list->data;
 				if(rlib_execute_as_string(r, plot->axis_code, axis, MAXSTRLEN)) {
-					if(strcmp(axis, "x") == 0) {
+					if(strcmp(axis, "x") == 0 && !is_pie_graph(graph_type)) {
 						if(rlib_execute_as_string(r, plot->field_code, x_axis_label, MAXSTRLEN)) {
 							GSList *list1;
 							gboolean display = TRUE;
@@ -513,7 +513,7 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 		rlib_graph_label_y_axis(r, RLIB_SIDE_RIGHT, FALSE, y_ticks, y_min[RLIB_SIDE_RIGHT], y_max[RLIB_SIDE_RIGHT], y_origin[RLIB_SIDE_RIGHT], right_axis_decimal_hint);
 
 	if(is_pie_graph(graph_type)) {
-		OUTPUT(r)->graph_set_data_plot_count(r, row_count);
+		OUTPUT(r)->graph_set_data_plot_count(r, row_count * data_plot_count);
 		OUTPUT(r)->graph_draw_legend(r);
 		i = 1;
 	} else {	
@@ -596,7 +596,7 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	row_count = 0;
 
 	rlib_fetch_first_rows(r);
-	if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
+	if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result]->result)) {
 		while (1) {
 			data_plot_count = 0;
 			last_height_pos=0;
@@ -663,13 +663,12 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 							} else if(is_line_graph(graph_type)) {
 								if(row_count > 0)
 									OUTPUT(r)->graph_plot_line(r, side, row_count, last_row_values[i], last_row_height[i], value, last_height, &plot_color);
-							} else if(is_pie_graph(graph_type)) {
+							} else if(is_pie_graph(graph_type) && !isnan(value)) {
 								gboolean offset = graph_type == RLIB_GRAPH_TYPE_PIE_OFFSET;
-								OUTPUT(r)->graph_plot_pie(r, running_col_sum, value+running_col_sum, offset, &color[row_count]);
+								OUTPUT(r)->graph_plot_pie(r, running_col_sum, value+running_col_sum, offset, &color[row_count + data_plot_count]);
 								running_col_sum += value;
 								if(rlib_execute_as_string(r, plot->label_code, legend_label, MAXSTRLEN))
-									OUTPUT(r)->graph_draw_legend_label(r, row_count, legend_label, &color[row_count], is_line_graph(graph_type));
-					
+									OUTPUT(r)->graph_draw_legend_label(r, row_count+data_plot_count, legend_label, &color[row_count + data_plot_count], is_line_graph(graph_type));
 							}
 								
 							if(is_percent_graph(graph_type) || is_stacked_graph(graph_type) || is_pie_graph(graph_type)) { 
@@ -679,6 +678,11 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 									last_height_neg += value;
 							}
 							
+							if(is_pie_graph(graph_type) && i > 0) {
+								data_plot_count++;
+								continue;
+							}
+						
 							last_row_values[i] = value;
 							last_row_height[i] = last_height;
 							i++;

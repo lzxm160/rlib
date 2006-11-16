@@ -87,17 +87,27 @@ rlib * rlib_init() {
 	return rlib_init_with_environment(NULL);
 }
 
+static void rlib_alloc_query_space(rlib *r) {
+	if(r->queries_count == 0) {
+		r->queries = g_malloc((r->queries_count + 1) * sizeof(gpointer));
+		r->results = g_malloc((r->queries_count + 1) * sizeof(gpointer));		
+	} else {
+		r->queries = g_realloc(r->queries, (r->queries_count + 1) * sizeof(void *));
+		r->results = g_realloc(r->results, (r->queries_count + 1) * sizeof(void *));
+	}
+	r->queries[r->queries_count] = g_malloc0(sizeof(struct rlib_queries));
+	r->results[r->queries_count] = g_malloc0(sizeof(struct rlib_results));
+}
+
 gint rlib_add_query_pointer_as(rlib *r, const gchar *input_source, gchar *sql, const gchar *name) {
 	gint i;
-	if(r->queries_count > (RLIB_MAXIMUM_QUERIES-1)) {
-		return -1;
-	}
 
-	r->queries[r->queries_count].sql = sql;
-	r->queries[r->queries_count].name = g_strdup(name);
+	rlib_alloc_query_space(r);
+	r->queries[r->queries_count]->sql = sql;
+	r->queries[r->queries_count]->name = g_strdup(name);
 	for(i=0;i<r->inputs_count;i++) {
 		if(!strcmp(r->inputs[i].name, input_source)) {
-			r->queries[r->queries_count].input = r->inputs[i].input;
+			r->queries[r->queries_count]->input = r->inputs[i].input;
 		}
 	}
 	
@@ -108,14 +118,12 @@ gint rlib_add_query_pointer_as(rlib *r, const gchar *input_source, gchar *sql, c
 gint rlib_add_query_as(rlib *r, const gchar *input_source, const gchar *sql, const gchar *name) {
 	gint i;
 
-	if(r->queries_count > (RLIB_MAXIMUM_QUERIES-1))
-		return -1;
-
-	r->queries[r->queries_count].sql = g_strdup(sql);
-	r->queries[r->queries_count].name = g_strdup(name);
+	rlib_alloc_query_space(r);
+	r->queries[r->queries_count]->sql = g_strdup(sql);
+	r->queries[r->queries_count]->name = g_strdup(name);
 	for(i=0;i<r->inputs_count;i++) {
 		if(!strcmp(r->inputs[i].name, input_source)) {
-			r->queries[r->queries_count].input = r->inputs[i].input;
+			r->queries[r->queries_count]->input = r->inputs[i].input;
 			r->queries_count++;
 			return r->queries_count;
 		}
@@ -149,23 +157,23 @@ static gint rlib_execute_queries(rlib *r) {
 	gint i;
 
 	for(i=0;i<r->queries_count;i++) {
-		r->results[i].input = NULL;
-		r->results[i].result = NULL;
+		r->results[i]->input = NULL;
+		r->results[i]->result = NULL;
 	}
 
 	for(i=0;i<r->queries_count;i++) {
 
-		r->results[i].input = r->queries[i].input;
-		r->results[i].result = INPUT(r,i)->new_result_from_query(INPUT(r,i), r->queries[i].sql);
-		r->results[i].next_failed = FALSE;
-		r->results[i].navigation_failed = FALSE;
-		if(r->results[i].result == NULL) {
-			r_error(r, "Failed To Run A Query [%s]: %s\n", r->queries[i].sql, INPUT(r,i)->get_error(INPUT(r,i)));
+		r->results[i]->input = r->queries[i]->input;
+		r->results[i]->result = INPUT(r,i)->new_result_from_query(INPUT(r,i), r->queries[i]->sql);
+		r->results[i]->next_failed = FALSE;
+		r->results[i]->navigation_failed = FALSE;
+		if(r->results[i]->result == NULL) {
+			r_error(r, "Failed To Run A Query [%s]: %s\n", r->queries[i]->sql, INPUT(r,i)->get_error(INPUT(r,i)));
 			return FALSE;
 		} else {
-			INPUT(r,i)->first(INPUT(r,i), r->results[i].result);
+			INPUT(r,i)->first(INPUT(r,i), r->results[i]->result);
 		}
-		r->results[i].name =  r->queries[i].name;
+		r->results[i]->name =  r->queries[i]->name;
 	}
 	return TRUE;
 }
@@ -265,9 +273,9 @@ gint rlib_add_resultset_follower_n_to_1(rlib *r, gchar *leader, gchar *leader_fi
 	}
 
 	for(x=0;x<r->queries_count;x++) {
-		if(!strcmp(r->queries[x].name, leader))
+		if(!strcmp(r->queries[x]->name, leader))
 			ptr_leader = x;
-		if(!strcmp(r->queries[x].name, follower))
+		if(!strcmp(r->queries[x]->name, follower))
 			ptr_follower = x;
 	}
 	

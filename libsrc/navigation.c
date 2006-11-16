@@ -30,11 +30,11 @@ static gint rlib_do_followers(rlib *r, gint i, gint way) {
 	gint rtn = TRUE;
 	follower = r->followers[i].follower;
 
-	if(r->results[follower].navigation_failed == TRUE)
+	if(r->results[follower]->navigation_failed == TRUE)
 		return FALSE;
 
-	if(r->results[follower].next_failed)
-		r->results[follower].navigation_failed = TRUE;
+	if(r->results[follower]->next_failed)
+		r->results[follower]->navigation_failed = TRUE;
 		
 
 	if(way == RLIB_NAVIGATE_NEXT) {
@@ -42,7 +42,7 @@ static gint rlib_do_followers(rlib *r, gint i, gint way) {
 			if(rlib_navigate_last(r, follower) != TRUE) {
 				rtn = FALSE;
 			}
-			r->results[follower].next_failed = TRUE;
+			r->results[follower]->next_failed = TRUE;
 		}	
 	} else if(way == RLIB_NAVIGATE_PREVIOUS) {
 		if(rlib_navigate_previous(r, follower) != TRUE)
@@ -51,8 +51,8 @@ static gint rlib_do_followers(rlib *r, gint i, gint way) {
 		if(rlib_navigate_first(r, follower) != TRUE)
 			rtn = FALSE;
 		else {
-			r->results[follower].next_failed = FALSE;
-			r->results[follower].navigation_failed = FALSE;
+			r->results[follower]->next_failed = FALSE;
+			r->results[follower]->navigation_failed = FALSE;
 		
 		}
 	} else if(way == RLIB_NAVIGATE_LAST) {
@@ -84,7 +84,7 @@ static gint rlib_navigate_followers(rlib *r, gint my_leader, gint way) {
 						} 
 					} 
 					if(found == FALSE) {
-						r->results[r->followers[i].follower].navigation_failed = FALSE;
+						r->results[r->followers[i].follower]->navigation_failed = FALSE;
 						bacon = rlib_do_followers(r, i, RLIB_NAVIGATE_FIRST);
 						do {
 							rlib_execute_pcode(r, &rval_follower, r->followers[i].follower_code, NULL);
@@ -96,7 +96,7 @@ static gint rlib_navigate_followers(rlib *r, gint my_leader, gint way) {
 						} while(rlib_do_followers(r, i, RLIB_NAVIGATE_NEXT) == TRUE);
 					}
 					if(!found)  {
-						r->results[r->followers[i].follower].navigation_failed = TRUE;	
+						r->results[r->followers[i].follower]->navigation_failed = TRUE;	
 					}
 				}
 				
@@ -114,7 +114,7 @@ static gint rlib_navigate_followers(rlib *r, gint my_leader, gint way) {
 
 gint rlib_navigate_next(rlib *r, gint resultset_num) {
 	gint rtn;
-	rtn = INPUT(r, resultset_num)->next(INPUT(r, resultset_num), r->results[resultset_num].result);
+	rtn = INPUT(r, resultset_num)->next(INPUT(r, resultset_num), r->results[resultset_num]->result);
 	if(rtn == TRUE)
 		return rlib_navigate_followers(r, resultset_num, RLIB_NAVIGATE_NEXT);
 	else
@@ -123,7 +123,7 @@ gint rlib_navigate_next(rlib *r, gint resultset_num) {
 
 gint rlib_navigate_previous(rlib *r, gint resultset_num) {
 	gint rtn;
-	rtn = INPUT(r, resultset_num)->previous(INPUT(r, resultset_num), r->results[resultset_num].result);
+	rtn = INPUT(r, resultset_num)->previous(INPUT(r, resultset_num), r->results[resultset_num]->result);
 	if(rtn == TRUE)
 		return rlib_navigate_followers(r, resultset_num, RLIB_NAVIGATE_PREVIOUS);
 	else
@@ -133,12 +133,12 @@ gint rlib_navigate_previous(rlib *r, gint resultset_num) {
 gint rlib_navigate_first(rlib *r, gint resultset_num) {
 	gint rtn;
 	
-	if(r->results[resultset_num].result == NULL) {
-		r->results[resultset_num].navigation_failed = TRUE;
+	if(r->results[resultset_num]->result == NULL) {
+		r->results[resultset_num]->navigation_failed = TRUE;
 		return FALSE;
 	}
 
-	rtn = INPUT(r, resultset_num)->first(INPUT(r, resultset_num), r->results[resultset_num].result);
+	rtn = INPUT(r, resultset_num)->first(INPUT(r, resultset_num), r->results[resultset_num]->result);
 	if(rtn == TRUE)
 		return rlib_navigate_followers(r, resultset_num, RLIB_NAVIGATE_FIRST);
 	else
@@ -147,7 +147,7 @@ gint rlib_navigate_first(rlib *r, gint resultset_num) {
 
 gint rlib_navigate_last(rlib *r, gint resultset_num) {
 	gint rtn;
-	rtn = INPUT(r, resultset_num)->last(INPUT(r, resultset_num), r->results[resultset_num].result);
+	rtn = INPUT(r, resultset_num)->last(INPUT(r, resultset_num), r->results[resultset_num]->result);
 	if(rtn == TRUE)
 		return rlib_navigate_followers(r, resultset_num, RLIB_NAVIGATE_LAST);
 	else

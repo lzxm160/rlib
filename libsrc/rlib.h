@@ -59,7 +59,6 @@
 #define MAXSTRLEN 1024
 #endif
 
-#define RLIB_MAXIMUM_QUERIES	50
 #define RLIB_MAXIMUM_REPORTS	5
 
 #define RLIB_CONTENT_TYPE_ERROR	-1
@@ -736,11 +735,11 @@ struct rlib {
 	
 	struct rlib_signal_functions signal_functions[RLIB_SIGNALS];
 	
-	struct rlib_queries queries[RLIB_MAXIMUM_QUERIES];
+	struct rlib_queries **queries;
 
 	gint queries_count;
 	struct rlib_rip_reports reportstorun[RLIB_MAXIMUM_REPORTS];
-	struct rlib_results results[RLIB_MAXIMUM_QUERIES];
+	struct rlib_results **results;
 	
 	struct rlib_part *parts[RLIB_MAXIMUM_REPORTS];
 	gint parts_count;
@@ -771,7 +770,7 @@ struct rlib {
 	GIConv xml_encoder;
 };
 
-#define INPUT(r, i) (r->results[i].input)
+#define INPUT(r, i) (r->results[i]->input)
 #define ENVIRONMENT(r) (r->environment)
 #define ENVIRONMENT_PRIVATE(r) (((struct _private *)r->evnironment->private))
 

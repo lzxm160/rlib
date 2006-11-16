@@ -204,7 +204,7 @@ static void rlib_break_all_below_in_reverse_order(rlib *r, struct rlib_part *par
 			if(precalculate == FALSE)
 				did_end_page = rlib_end_page_if_line_wont_fit(r, part, report, rb->footer);
 
-			if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result))
+			if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result]->result))
 				rlib_navigate_previous(r, r->current_result);
 
 			if(precalculate == FALSE) {
@@ -217,7 +217,7 @@ static void rlib_break_all_below_in_reverse_order(rlib *r, struct rlib_part *par
 
 				rlib_print_break_footer_output(r, part, report, rb, rb->footer, FALSE);
 			}
-			if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result))
+			if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result]->result))
 				rlib_navigate_next(r, r->current_result);
 		}
 
@@ -228,7 +228,7 @@ static void rlib_break_all_below_in_reverse_order(rlib *r, struct rlib_part *par
 		
 	}
 	if(newpage && OUTPUT(r)->do_breaks) {
-		if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
+		if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result]->result)) {
 			if(OUTPUT(r)->paginate)
 				rlib_layout_end_page(r, part, report, TRUE);
 			rlib_force_break_headers(r, part, report, precalculate);
@@ -256,7 +256,7 @@ void rlib_handle_break_footers(rlib *r, struct rlib_part *part, struct rlib_repo
 			RLIB_VALUE_TYPE_NONE(&rval_tmp);
 			bf = be->data;
 			if(dobreak) {
-				if (INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result].result)) {
+				if (INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result]->result)) {
 					dobreak = 1;
 				} else {
 					struct rlib_value *tmp = rlib_execute_pcode(r, &rval_tmp, bf->code, NULL);	

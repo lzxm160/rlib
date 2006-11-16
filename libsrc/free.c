@@ -442,17 +442,17 @@ void rlib_free_tree(rlib *r) {
 void rlib_free_results(rlib *r) {
 	int i;
 	for(i=0;i<r->queries_count;i++) {
-		INPUT(r, i)->free_result(INPUT(r, i), r->results[i].result);
+		INPUT(r, i)->free_result(INPUT(r, i), r->results[i]->result);
 	}
 }
 
 void rlib_free_results_and_queries(rlib *r) {
 	int i;
 	for(i=0;i<r->queries_count;i++) {
-		if (r->results[i].result)
-			INPUT(r, i)->free_result(INPUT(r, i), r->results[i].result);
-		g_free(r->queries[i].sql);
-		g_free(r->queries[i].name);
+		if (r->results[i]->result)
+			INPUT(r, i)->free_result(INPUT(r, i), r->results[i]->result);
+		g_free(r->queries[i]->sql);
+		g_free(r->queries[i]->name);
 	}
 }
 
@@ -493,5 +493,11 @@ gint rlib_free(rlib *r) {
 	rlib_free_follower(r);
 	g_free(r->special_locale);
 	g_free(r->current_locale);
+	for(i=0;i<r->queries_count;i++) {
+		g_free(r->queries[i]);
+		g_free(r->results[i]);
+	}
+	g_free(r->queries);
+	g_free(r->results);
 	return 0;
 }
