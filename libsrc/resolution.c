@@ -369,6 +369,8 @@ void rlib_resolve_report_fields(rlib *r, struct rlib_part *part, struct rlib_rep
 	report->pages_across_code = rlib_infix_to_pcode(r, part, report, (gchar *)report->xml_pages_across.xml, report->xml_pages_across.line, TRUE);
 	report->suppress_page_header_first_page = FALSE;
 	report->suppress_page_header_first_page_code = rlib_infix_to_pcode(r, part, report, (gchar *)report->xml_suppress_page_header_first_page.xml, report->xml_suppress_page_header_first_page.line, TRUE);
+	report->suppress = FALSE;
+	report->suppress_code = rlib_infix_to_pcode(r, part, report, (gchar *)report->xml_suppress.xml, report->xml_suppress.line, TRUE);
 	report->height_code = rlib_infix_to_pcode(r, part, report, (gchar *)report->xml_height.xml, report->xml_height.line, TRUE);
 	report->iterations = 1;
 	report->iterations_code = rlib_infix_to_pcode(r, part, report, (gchar *)report->xml_iterations.xml, report->xml_iterations.line, TRUE);

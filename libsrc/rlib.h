@@ -471,7 +471,6 @@ struct rlib_part {
 	struct rlib_from_xml xml_iterations;
 	struct rlib_from_xml xml_suppress_page_header_first_page;
 
-
 	GSList *part_rows;
 	struct rlib_element *report_header;
 	struct rlib_element *page_header;
@@ -487,7 +486,6 @@ struct rlib_part {
 	struct rlib_pcode *font_size_code;
 	struct rlib_pcode *iterations_code;
 	struct rlib_pcode *suppress_page_header_first_page_code;
-
 
 	struct rlib_paper *paper;
 	gint orientation;
@@ -620,6 +618,7 @@ struct rlib_report {
 	struct rlib_from_xml xml_detail_columns;
 	struct rlib_from_xml xml_column_pad;
 	struct rlib_from_xml xml_suppress_page_header_first_page;
+	struct rlib_from_xml xml_suppress;
 	struct rlib_from_xml xml_height;
 	struct rlib_from_xml xml_iterations;
 	
@@ -640,7 +639,8 @@ struct rlib_report {
 	gfloat page_width;
 	gint iterations;
 	gint pages_across;
-	gint suppress_page_header_first_page;
+	gboolean suppress_page_header_first_page;
+	gboolean suppress;
 	gboolean is_the_only_report;
 	struct rlib_pcode *iterations_code;
 	
@@ -666,6 +666,7 @@ struct rlib_report {
 	struct rlib_pcode *bottom_margin_code;
 	struct rlib_pcode *pages_across_code;
 	struct rlib_pcode *suppress_page_header_first_page_code;
+	struct rlib_pcode *suppress_code;
 };
 
 struct rlib_queries {

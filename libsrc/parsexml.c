@@ -546,6 +546,7 @@ static void parse_report(rlib *r, struct rlib_part *part, struct rlib_report *re
 
 	get_both(&report->xml_pages_across, cur, "pagesAcross");
 	get_both(&report->xml_suppress_page_header_first_page, cur, "suppressPageHeaderFirstPage");
+	get_both(&report->xml_suppress, cur, "suppress");
 
 	cur = cur->xmlChildrenNode;
 	report->breaks = NULL;

@@ -1,3 +1,12 @@
+2006-11-28  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/free.c: Ability to suppress reports in parts
+	* libsrc/parsexml.c: 
+	* libsrc/reportgen.c: 
+	* libsrc/resolution.c: 
+	* libsrc/rlib.h:
+	* src/examples/php/fixed_part.php:
+	* src/examples/php/fixed_part.xml:
+
 2006-11-16  Bob Doan  <bdoan@sicompos.com>
 	* configure.in: RLIB 1.3.8
 	* libsrc/api.c: Number of queries is now dynamic, width <= 0 won't cause crashes

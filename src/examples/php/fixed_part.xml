@@ -155,7 +155,7 @@
 			</Report>
 
 
-			<Report fontSize="9" query="'coupons'" height="32" leftMargin="0.1">
+			<Report fontSize="9" query="'coupons'" height="32" leftMargin="0.1" suppress="yes">
 				<Alternate>
 					<NoData>
 						<Output>
@@ -169,7 +169,7 @@
 					<Output>
 						<Line/>
 						<Line fontSize="9">
-							<literal>      COUPONS</literal>
+							<literal>      COUPONSXX</literal>
 						</Line>
 						<HorizontalLine size="2" bgcolor="'white'"/>
 					</Output>				
