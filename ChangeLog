@@ -1,3 +1,9 @@
+2006-12-03  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/graphing.c: Respect graphing report headers and topMargins of reports
+	* libsrc/reportgen.c: 
+	* src/examples/php/graph.php:
+	* src/examples/php/graph.xml:
+
 2006-11-28  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/free.c: Ability to suppress reports in parts
 	* libsrc/parsexml.c: 

@@ -8,14 +8,38 @@
 				<literal>YES!</literal>
 			</Line>
 			<HorizontalLine size="4" bgcolor="'black'"/>
-			<HorizontalLine size="10" bgcolor="'white'"/>
+			<HorizontalLine size="10" bgcolor="'green'"/>
 		</Output>
 	</PageHeader>		
 
-
 	<pr>
-		<pd width="98">
-			<Report fontSize="12" orientation="landscape" query="'sales_data'">
+		<pd width="100">
+			<Report fontSize="12" orientation="landscape" query="'sales_data'" leftMargin="0">
+				<ReportHeader>
+					<Output>
+						<HorizontalLine size="10" bgcolor="'red'"/>
+						<Line bgcolor="'0xe5e5e5'">
+							<literal col="1">THIS TEXT SHOULD NOT FLOW INTO THE GRAPH </literal>
+						</Line>
+						<Line bgcolor="'0xe5e5e5'">
+							<literal col="1">THIS TEXT SHOULD NOT FLOW INTO THE GRAPH </literal>
+						</Line>
+						<Line bgcolor="'0xe5e5e5'">
+							<literal col="1">THIS TEXT SHOULD NOT FLOW INTO THE GRAPH </literal>
+						</Line>
+						<Line bgcolor="'0xe5e5e5'">
+							<literal col="1">THIS TEXT SHOULD NOT FLOW INTO THE GRAPH </literal>
+						</Line>
+						<Line bgcolor="'0xe5e5e5'">
+							<literal col="1">THIS TEXT SHOULD NOT FLOW INTO THE GRAPH </literal>
+						</Line>
+						<Line bgcolor="'0xe5e5e5'">
+							<literal col="1">THIS TEXT SHOULD NOT FLOW INTO THE GRAPH </literal>
+						</Line>
+						<HorizontalLine size="10" bgcolor="'red'"/>
+					</Output>
+				</ReportHeader>				
+
 				<Graph type="'line'" subtype="'normal'" width="740" height="250" title="'Double Y Axix!'" x_axis_title="'Day Of Week'" y_axis_title="'Sales $$$'" y_axis_title_right="'Avg Check'">
 					<Plot axis="'x'" field="dow"/>
 					<Plot axis="'y'" field="val(net)" label="'Net Sales'" side="'left'"/>

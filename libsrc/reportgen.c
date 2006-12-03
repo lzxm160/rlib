@@ -282,7 +282,7 @@ static gboolean rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_
 	gint i;
 	char query[MAXSTRLEN];
 	gint report_percent;
-	gfloat at_least = 0.0, origional_position_top = 0;
+	gfloat at_least = 0.0, origional_position_top = 0.0, report_header_advance = 0.0;
 	gint iterations;
 
 	report->query_code = rlib_infix_to_pcode(r, part, report, (gchar *)report->xml_query.xml, report->xml_query.line, TRUE);
@@ -342,6 +342,7 @@ static gboolean rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_
 				at_least = (part->position_bottom[0] - part->position_top[0]) * ((gfloat)report_percent/100);					
 			origional_position_top = report->position_top[0];
 			rlib_layout_report_output(r, part, report, report->report_header, FALSE, TRUE);
+			report_header_advance = (report->position_top[0] - origional_position_top );
 			rlib_layout_init_report_page(r, part, report);
 			r->detail_line_count = 0;
 			if(report->font_size != -1) {
@@ -352,6 +353,7 @@ static gboolean rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_
 			if(report->graph.type_code != NULL) {
 				gfloat top;
 				if(OUTPUT(r)->do_graph == TRUE) {
+					top_margin_offset += report_header_advance;
 					top_margin_offset += rlib_graph(r, part, report, left_margin_offset, &top_margin_offset);
 					top = report->position_top[0];
 					rlib_layout_report_footer(r, part, report);	
