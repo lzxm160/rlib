@@ -82,6 +82,7 @@ static struct rlib_report_image * parse_image(xmlNodePtr cur) {
 	get_both(&ri->xml_type, cur, "type");
 	get_both(&ri->xml_width, cur, "width");
 	get_both(&ri->xml_height, cur, "height");
+	get_both(&ri->xml_textwidth, cur, "textwidth");
 	return ri;
 }
 

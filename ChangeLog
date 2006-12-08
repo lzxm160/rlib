@@ -1,3 +1,11 @@
+2006-12-08  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/breaks.c: Rerun expression variables after navigation from previous
+	* libsrc/free.c: support font width on line images (so things are in alignment in PDF)
+	* libsrc/layout.c: 
+	* libsrc/parsexml.c: 
+	* libsrc/resolution.c: 
+	* libsrc/rlib.h:
+
 2006-12-03  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/graphing.c: Respect graphing report headers and topMargins of reports
 	* libsrc/reportgen.c: 

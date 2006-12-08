@@ -208,6 +208,7 @@ static void rlib_break_all_below_in_reverse_order(rlib *r, struct rlib_part *par
 				rlib_navigate_previous(r, r->current_result);
 
 			if(precalculate == FALSE) {
+				rlib_process_expression_variables(r, report);
 				if(did_end_page) {
 					bf->rval = rlib_execute_pcode(r, &bf->rval2, bf->code, NULL);
 					rlib_print_break_header_output(r, part, report, rb, rb->header, FALSE);

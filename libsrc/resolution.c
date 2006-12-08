@@ -227,6 +227,7 @@ static void rlib_image_resolve_pcode(rlib *r, struct rlib_part *part, struct rli
 	ri->type_code = rlib_infix_to_pcode(r, part, report, (gchar *)ri->xml_type.xml, ri->xml_type.line, TRUE);
 	ri->width_code = rlib_infix_to_pcode(r, part, report, (gchar *)ri->xml_width.xml, ri->xml_width.line, TRUE);
 	ri->height_code = rlib_infix_to_pcode(r, part, report, (gchar *)ri->xml_height.xml, ri->xml_height.line, TRUE);
+	ri->textwidth_code = rlib_infix_to_pcode(r, part, report, (gchar *)ri->xml_textwidth.xml, ri->xml_textwidth.line, TRUE);
 }
 
 static void rlib_resolve_fields2(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_output_array *roa) {

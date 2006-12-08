@@ -220,6 +220,7 @@ struct rlib_line_extra_data {
 	struct rlib_value rval_image_type;
 	struct rlib_value rval_image_width;
 	struct rlib_value rval_image_height;
+	struct rlib_value rval_image_textwidth;
 
 	gint font_point;
 	gchar* formatted_string;
@@ -335,11 +336,13 @@ struct rlib_report_image {
 	struct rlib_from_xml xml_type;
 	struct rlib_from_xml xml_width;
 	struct rlib_from_xml xml_height;
-	
+	struct rlib_from_xml xml_textwidth;
+
 	struct rlib_pcode *value_code;
 	struct rlib_pcode *type_code;
 	struct rlib_pcode *width_code;
 	struct rlib_pcode *height_code;
+	struct rlib_pcode *textwidth_code;
 };
 
 struct rlib_report_lines {

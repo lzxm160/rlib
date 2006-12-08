@@ -33,10 +33,12 @@ static void rlib_image_free_pcode(rlib *r, struct rlib_report_image * ri) {
 	rlib_pcode_free(ri->type_code);
 	rlib_pcode_free(ri->width_code);
 	rlib_pcode_free(ri->height_code);
+	rlib_pcode_free(ri->textwidth_code);
 	xmlFree(ri->xml_value.xml);
 	xmlFree(ri->xml_type.xml);
 	xmlFree(ri->xml_width.xml);
 	xmlFree(ri->xml_height.xml);
+	xmlFree(ri->xml_textwidth.xml);
 	g_free(ri);
 }
 

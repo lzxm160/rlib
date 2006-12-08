@@ -281,10 +281,8 @@ gint flag, gint memo_line) {
 		gfloat width = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(&extra_data->rval_image_width));
 		gchar *name = RLIB_VALUE_GET_AS_STRING(&extra_data->rval_image_name);
 		gchar *type = RLIB_VALUE_GET_AS_STRING(&extra_data->rval_image_type);
-
 		OUTPUT(r)->line_image(r, left_origin, bottom_orgin, name, type, width, height);
-
-		rtn_width = RLIB_GET_LINE(width);
+		rtn_width = extra_data->output_width;
 	} else {
 		OUTPUT(r)->set_font_point(r, extra_data->font_point);
 		if(extra_data->found_color)
@@ -425,10 +423,8 @@ static gint rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 
 	use_font_point = get_font_point(r, part, report, rl);
 
-	if(rl->max_line_height < RLIB_GET_LINE(use_font_point)) {
-			rl->max_line_height = RLIB_GET_LINE(use_font_point);
-	}
-
+	if(rl->max_line_height < RLIB_GET_LINE(use_font_point))
+		rl->max_line_height = RLIB_GET_LINE(use_font_point);
 	
 	for(e=rl->e; e != NULL; e=e->next) {
 		gchar *tmp_align_buf = NULL;
@@ -573,18 +569,24 @@ static gint rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 			extra_data[i].width = rt->width;
 			rlib_execute_pcode(r, &extra_data[i].rval_col, rt->col_code, NULL);	
 		} else if(e->type == RLIB_ELEMENT_IMAGE) {
-			gfloat height, width;
+			gfloat height, width, text_width ;
 			ri = e->data;
 			rlib_execute_pcode(r, &extra_data[i].rval_image_name, ri->value_code, NULL);
 			rlib_execute_pcode(r, &extra_data[i].rval_image_type, ri->type_code, NULL);
 			rlib_execute_pcode(r, &extra_data[i].rval_image_width, ri->width_code, NULL);
 			rlib_execute_pcode(r, &extra_data[i].rval_image_height, ri->height_code, NULL);
+			rlib_execute_pcode(r, &extra_data[i].rval_image_textwidth, ri->textwidth_code, NULL);
 			height = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(&extra_data[i].rval_image_height));
 			width = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(&extra_data[i].rval_image_width));
-			extra_data[i].output_width = RLIB_GET_LINE(width);
+			extra_data[i].font_point = rl->font_point;
+			text_width = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(&extra_data[i].rval_image_textwidth));
+			if(text_width > 0) 
+				extra_data[i].output_width = rlib_layout_advance_horizontal_margin(r, 0, text_width);
+			else
+				extra_data[i].output_width = RLIB_GET_LINE(width);
+			
 			if(rl->max_line_height < RLIB_GET_LINE(height))
 				rl->max_line_height = RLIB_GET_LINE(height);
-			
 		} else {
 			r_error(r, "Line has invalid content");
 		}
@@ -998,6 +1000,7 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 					rlib_value_free(&extra_data[count].rval_image_type);
 					rlib_value_free(&extra_data[count].rval_image_width);
 					rlib_value_free(&extra_data[count].rval_image_height);
+					rlib_value_free(&extra_data[count].rval_image_textwidth);
 					g_free(extra_data[count].formatted_string);
 					if(extra_data[count].memo_lines != NULL) {
 						GSList *list;
