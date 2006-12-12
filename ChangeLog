@@ -1,4 +1,7 @@
 2006-12-12  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/html.c: Put everything in a 1% table, group span tags
+
+2006-12-12  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/php.c: Malloc correct size for param array
 	* libsrc/variables.c: Only process expression varaibles when processing expression variables
 

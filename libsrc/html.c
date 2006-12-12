@@ -390,7 +390,7 @@ static void rlib_html_start_report(rlib *r, struct rlib_part *part) {
     				print_text(r, meta, FALSE);
 
     			print_text(r, "<title>RLIB Report</title></head>\n", FALSE);
-    			print_text(r, "<body>\n", FALSE);
+    			print_text(r, "<body><table style=\"width: 1%;\"><tbody><tr><td>\n", FALSE);
 				OUTPUT_PRIVATE(r)->did_doctype = TRUE;
 			}
 
@@ -1100,7 +1100,7 @@ static void rlib_html_init_output(rlib *r) {}
 static void rlib_html_finalize_private(rlib *r) {
 	char *old;
 	old = OUTPUT_PRIVATE(r)->both;
-	OUTPUT_PRIVATE(r)->both = g_strconcat(OUTPUT_PRIVATE(r)->both, "</body></html>", NULL);
+	OUTPUT_PRIVATE(r)->both = g_strconcat(OUTPUT_PRIVATE(r)->both, "</td></tr></tbody></table></body></html>", NULL);
 	g_free(old);
 	OUTPUT_PRIVATE(r)->length = strlen(OUTPUT_PRIVATE(r)->both);
 }
@@ -1129,7 +1129,7 @@ void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT_PRIVATE(r)->length = 0;
 	OUTPUT(r)->do_align = TRUE;
 	OUTPUT(r)->do_breaks = TRUE;
-	OUTPUT(r)->do_grouptext = FALSE;	
+	OUTPUT(r)->do_grouptext = TRUE;	
 	OUTPUT(r)->paginate = FALSE;
 	OUTPUT(r)->trim_links = FALSE;
 	OUTPUT(r)->table_around_multiple_detail_columns = TRUE;
