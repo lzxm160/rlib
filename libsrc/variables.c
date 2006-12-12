@@ -130,9 +130,9 @@ void rlib_process_expression_variables(rlib *r, struct rlib_report *report) {
 		struct rlib_report_variable *rv = e->data;
 		struct rlib_value *amount = &RLIB_VARIABLE_CA(rv)->amount;
 		struct rlib_value execute_result, *er = &execute_result;
-		if(rv->code != NULL)
-			 rlib_execute_pcode(r, &execute_result, rv->code, NULL);
 		if(rv->type == RLIB_REPORT_VARIABLE_EXPRESSION) {
+			if(rv->code != NULL)
+				rlib_execute_pcode(r, &execute_result, rv->code, NULL);
 			if(RLIB_VALUE_IS_NUMBER(er)) {
 				rlib_value_free(amount);
 				rlib_value_new_number(amount, RLIB_VALUE_GET_AS_NUMBER(er));

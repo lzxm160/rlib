@@ -490,7 +490,7 @@ struct both {
 
 gboolean default_function(rlib *r, struct rlib_pcode * code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct both *b = user_data;
-	zval ***params = emalloc(b->params);
+	zval ***params = emalloc(b->params * sizeof(gpointer));
 	int i;
 	zval *retval;
 	struct rlib_value rval_rtn;
