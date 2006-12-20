@@ -62,6 +62,18 @@ void rlib_init_variables(rlib *r, struct rlib_report *report) {
 
 void rlib_process_variables(rlib *r, struct rlib_report *report, gboolean precalculate) {
 	struct rlib_element *e;
+	gboolean samerow = FALSE;
+
+	if(report->uniquerow_code != NULL) {
+		struct rlib_value tmp_rval;
+		rlib_execute_pcode(r, &tmp_rval, report->uniquerow_code, NULL);
+		if(rvalcmp(&tmp_rval, &report->uniquerow) == 0) {
+			samerow = TRUE;
+		} else {
+			rlib_value_free(&report->uniquerow);
+			report->uniquerow = tmp_rval;
+		}
+	}
 
 	for(e = report->variables; e != NULL; e=e->next) {
 		struct rlib_report_variable *rv = e->data;
@@ -78,6 +90,9 @@ void rlib_process_variables(rlib *r, struct rlib_report *report, gboolean precal
 				ignore = test_ignore;
 			}
 		}
+		
+		if(samerow)
+			ignore = TRUE;
 
 		if(ignore == FALSE) {
 			if(rv->type == RLIB_REPORT_VARIABLE_COUNT) {
@@ -199,5 +214,8 @@ void rlib_variables_precalculate(rlib *r, struct rlib_part *part, struct rlib_re
 	
 	rlib_breaks_clear(r, part, report);
 	rlib_fetch_first_rows(r);
+	rlib_emit_signal(r, RLIB_SIGNAL_PRECALCULATION_DONE);
+	rlib_value_free(&report->uniquerow);
+	RLIB_VALUE_TYPE_NONE(&report->uniquerow);
 
 }

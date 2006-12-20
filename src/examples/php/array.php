@@ -11,36 +11,6 @@
 	$data[1][3] = "1";
 	$data[1][4] = "Green Eggs And Spam I Am I Am";
 
-	$data[2][0] = "Eric";
-	$data[2][1] = "Eburuschkin";
-	$data[2][2] = "Código";
-	$data[2][3] = "1";
-	$data[2][4] = "Green Eggs And Spam I Am I Am";
-
-	$data[3][0] = "Mike\"";
-	$data[3][1] = "Roth";
-	$data[3][2] = "yellow";
-	$data[3][3] = "2";
-	$data[3][4] = "Green Eggs And Spam I Am I Am";
-
-	$data[4][0] = "Bob";
-	$data[4][1] = "Kratz";
-	$data[4][2] = "pink";
-	$data[4][3] = "2";
-	$data[4][4] = "Green Eggs And Spam I Am I Am";
-
-	$data[5][0] = "Steve";
-	$data[5][1] = "Tilden";
-	$data[5][2] = "purple";
-	$data[5][3] = "2";
-	$data[5][4] = "Dude";
-
-	$data[6][0] = "Oscar";
-	$data[6][1] = "Meyer";
-	$data[6][2] = "grey";
-	$data[6][3] = "3";
-	$data[6][4] = "Dude";
-
 	$rlib =	rlib_init();
 	rlib_version();
 	rlib_add_datasource_array($rlib, "local_array");
@@ -48,7 +18,7 @@
 	rlib_add_report($rlib, "array.xml");
 	rlib_add_function($rlib, "bobdoan", "bobdoan", 1);
 	rlib_add_function($rlib, "mikeroth", "mike_roth", 2);
-	rlib_set_output_format_from_text($rlib, "txt");
+	rlib_set_output_format_from_text($rlib, "html");
 	rlib_set_output_parameter($rlib, "debugging", "yes");
 	rlib_set_locale($rlib, "en_US");
 	rlib_execute($rlib);

@@ -357,6 +357,8 @@ gboolean rlib_signal_connect_string(rlib *r, gchar *signal_name, gboolean (*sign
 		signal = RLIB_SIGNAL_REPORT_ITERATION;
 	else if(!strcasecmp(signal_name, "part_iteration"))
 		signal = RLIB_SIGNAL_PART_ITERATION;
+	else if(!strcasecmp(signal_name, "precalculation_done"))
+		signal = RLIB_SIGNAL_PRECALCULATION_DONE;
 	else {
 		r_error(r,"Unknowm SIGNAL [%s]\n", signal_name);
 		return FALSE;

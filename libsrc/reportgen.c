@@ -299,6 +299,7 @@ static gboolean rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_
 		r->current_result = 0;
 	}
 
+
 	if(!part->has_only_one_report) {
 		if(rlib_variabls_needs_precalculate(r, part, report)) {
 			rlib_navigate_first(r, r->current_result);
@@ -581,6 +582,8 @@ gint rlib_evaulate_single_report_variables(rlib *r, struct rlib_part *part) {
 				gint i;
 
 				report->query_code = rlib_infix_to_pcode(r, part, report, (gchar *)report->xml_query.xml, report->xml_query.line, TRUE);
+				RLIB_VALUE_TYPE_NONE(&report->uniquerow);
+
 				r->current_result = 0;
 				if(report->query_code != NULL) {
 					rlib_execute_as_string(r, report->query_code, query, MAXSTRLEN);

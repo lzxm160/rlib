@@ -180,6 +180,7 @@ static void rlib_html_print_text(rlib *r, gfloat left_origin, gfloat bottom_orig
 
 	OUTPUT_PRIVATE(r)->bg_backwards = backwards;
 
+
 	if(OUTPUT_PRIVATE(r)->current_bg_color.r >= 0 && OUTPUT_PRIVATE(r)->current_bg_color.g >= 0 
 	&& OUTPUT_PRIVATE(r)->current_bg_color.b >= 0 && !((OUTPUT_PRIVATE(r)->current_bg_color.r == 1.0 
 	&& OUTPUT_PRIVATE(r)->current_bg_color.g == 1.0 && OUTPUT_PRIVATE(r)->current_bg_color.b == 1.0)) &&
@@ -206,12 +207,13 @@ static void rlib_html_print_text(rlib *r, gfloat left_origin, gfloat bottom_orig
 	if(OUTPUT_PRIVATE(r)->is_italics == TRUE) 
 		sprintf(font_style, "font-style: italics;");
 	
-	sprintf(buf, "<span style=\"%s %s %s %s %s\">", foreground_color, background_color, font_weight, font_style, font_size);
-	print_text(r, buf, backwards);
+	if(foreground_color[0] != 0 || background_color[0] != 0 || font_weight[0] != 0 || font_style[0] != 0 || font_size[0] != 0) {
+		sprintf(buf, "<span style=\"%s %s %s %s %s\">", foreground_color, background_color, font_weight, font_style, font_size);
+		print_text(r, buf, backwards);
+	}
 	print_text(r, text, backwards);
-	print_text(r, "</span>", backwards);
-
-	
+	if(foreground_color[0] != 0 || background_color[0] != 0 || font_weight[0] != 0 || font_style[0] != 0 || font_size[0] != 0)
+		print_text(r, "</span>", backwards);
 }
 
 

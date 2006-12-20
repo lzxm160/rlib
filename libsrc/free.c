@@ -254,6 +254,7 @@ void rlib_free_report(rlib *r, struct rlib_report *report) {
 	rlib_pcode_free(report->suppress_code);
 	rlib_pcode_free(report->detail_columns_code);
 	rlib_pcode_free(report->column_pad_code);
+	rlib_pcode_free(report->uniquerow_code);
 	
 	rlib_free_output(r, report->report_header);
 	rlib_free_output(r, report->page_header);
@@ -268,6 +269,9 @@ void rlib_free_report(rlib *r, struct rlib_report *report) {
 	g_free(report->position_top);
 	g_free(report->position_bottom);
 	g_free(report->bottom_size);
+	
+	rlib_value_free(&report->uniquerow);
+
 	
 	if(report->breaks != NULL) {
 		for(e = report->breaks; e != NULL; e=e->next) {

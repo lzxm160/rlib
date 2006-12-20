@@ -378,6 +378,8 @@ void rlib_resolve_report_fields(rlib *r, struct rlib_part *part, struct rlib_rep
 	report->detail_columns_code = rlib_infix_to_pcode(r, part, report, (gchar *)report->xml_detail_columns.xml, report->xml_detail_columns.line, TRUE);
 	report->column_pad_code = rlib_infix_to_pcode(r, part, report, (gchar *)report->xml_column_pad.xml, report->xml_column_pad.line, TRUE);
 
+	report->uniquerow_code = rlib_infix_to_pcode(r, part, report, (gchar *)report->xml_uniquerow.xml, report->xml_uniquerow.line, TRUE);
+
 	if (rlib_execute_as_float(r, report->pages_across_code, &f))
 		report->pages_across = f;
 	if (rlib_execute_as_float(r, report->iterations_code, &f))

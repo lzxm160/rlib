@@ -1,3 +1,16 @@
+2006-12-20  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/api.c: Add precalculation done signal, "uniquerow" for special variable sums, fix HTML output hopefully
+	* libsrc/free.c: 
+	* libsrc/html.c: 
+	* libsrc/layout.c: 
+	* libsrc/parsexml.c: 
+	* libsrc/reportgen.c: 
+	* libsrc/resolution.c: 
+	* libsrc/rlib.h:
+	* libsrc/variables.c: 
+	* src/examples/php/array.php:
+	* src/examples/php/array.xml:
+
 2006-12-12  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/html.c: Put everything in a 1% table, group span tags
 

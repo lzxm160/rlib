@@ -119,13 +119,14 @@
 
 #define RLIB_GET_LINE(a) ((float)(a/RLIB_PDF_DPI))
 
-#define RLIB_SIGNAL_ROW_CHANGE       0
-#define RLIB_SIGNAL_REPORT_START     1
-#define RLIB_SIGNAL_REPORT_DONE      2
-#define RLIB_SIGNAL_REPORT_ITERATION 3
-#define RLIB_SIGNAL_PART_ITERATION   4
+#define RLIB_SIGNAL_ROW_CHANGE          0
+#define RLIB_SIGNAL_REPORT_START        1
+#define RLIB_SIGNAL_REPORT_DONE         2
+#define RLIB_SIGNAL_REPORT_ITERATION    3
+#define RLIB_SIGNAL_PART_ITERATION      4
+#define RLIB_SIGNAL_PRECALCULATION_DONE 5
 
-#define RLIB_SIGNALS 5
+#define RLIB_SIGNALS 6
 
 #define RLIB_SIDE_LEFT  0
 #define RLIB_SIDE_RIGHT 1
@@ -624,6 +625,7 @@ struct rlib_report {
 	struct rlib_from_xml xml_suppress;
 	struct rlib_from_xml xml_height;
 	struct rlib_from_xml xml_iterations;
+	struct rlib_from_xml xml_uniquerow;
 	
 	gfloat *position_top;
 	gfloat *position_bottom;
@@ -646,6 +648,7 @@ struct rlib_report {
 	gboolean suppress;
 	gboolean is_the_only_report;
 	struct rlib_pcode *iterations_code;
+	struct rlib_value uniquerow;
 	
 	struct rlib_element *report_header;
 	struct rlib_element *page_header;
@@ -653,6 +656,7 @@ struct rlib_report {
 	struct rlib_element *page_footer;
 	struct rlib_element *report_footer;
 	struct rlib_element *variables;
+	
 	struct rlib_element *breaks;
 	struct rlib_report_alternate alternate;
 	struct rlib_graph graph;
@@ -670,6 +674,8 @@ struct rlib_report {
 	struct rlib_pcode *pages_across_code;
 	struct rlib_pcode *suppress_page_header_first_page_code;
 	struct rlib_pcode *suppress_code;
+	struct rlib_pcode *uniquerow_code;
+	
 };
 
 struct rlib_queries {
@@ -960,6 +966,7 @@ gint rlib_make_report(rlib *r);
 gint rlib_finalize(rlib *r);
 gint rlib_format_get_number(const gchar *name);
 const gchar * rlib_format_get_name(gint number);
+gint rlib_emit_signal(rlib *r, gint signal_number);
 
 /***** PROTOTYPES: resolution.c ***********************************************/
 gint rlib_resolve_rlib_variable(rlib *r, gchar *name);
