@@ -104,6 +104,7 @@ struct _private {
 	gboolean did_doctype;
 	struct rlib_gd *rgd;
 	struct _graph graph;
+	char span_contents[MAXSTRLEN];
 };
 
 static void print_text(rlib *r, const gchar *text, gint backwards) {
@@ -147,20 +148,6 @@ static gchar *get_html_color(gchar *str, struct rlib_rgb *color) {
 }
 
 static gint convert_font_point(gint point) {
-/*	if(point <= 8)
-		return 1;
-	else if(point <= 10)
-		return 2;
-	else if(point <= 12)
-		return 3;
-	else if(point <= 14)
-		return 4;
-	else if(point <= 18)
-		return 5;
-	else if(point <= 24)
-		return 6;
-	else 
-		return 7;*/
 	return point;
 }
 
@@ -209,11 +196,14 @@ static void rlib_html_print_text(rlib *r, gfloat left_origin, gfloat bottom_orig
 	
 	if(foreground_color[0] != 0 || background_color[0] != 0 || font_weight[0] != 0 || font_style[0] != 0 || font_size[0] != 0) {
 		sprintf(buf, "<span style=\"%s %s %s %s %s\">", foreground_color, background_color, font_weight, font_style, font_size);
-		print_text(r, buf, backwards);
+		if(strcmp(buf, OUTPUT_PRIVATE(r)->span_contents) != 0) {
+			if(OUTPUT_PRIVATE(r)->span_contents[0] != 0)
+				print_text(r, "</span>", backwards);
+			print_text(r, buf, backwards);
+			strcpy(OUTPUT_PRIVATE(r)->span_contents, buf);
+		}
 	}
 	print_text(r, text, backwards);
-	if(foreground_color[0] != 0 || background_color[0] != 0 || font_weight[0] != 0 || font_style[0] != 0 || font_size[0] != 0)
-		print_text(r, "</span>", backwards);
 }
 
 
@@ -235,6 +225,40 @@ static void rlib_html_set_bg_color(rlib *r, gfloat red, gfloat green, gfloat blu
 	}
 }
 
+static void rlib_html_start_draw_cell_background(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
+struct rlib_rgb *color) {
+	OUTPUT(r)->set_bg_color(r, color->r, color->g, color->b);
+	OUTPUT_PRIVATE(r)->do_bg = TRUE;
+}
+
+static void rlib_html_end_draw_cell_background(rlib *r) {
+	if(OUTPUT_PRIVATE(r)->did_bg) {
+		OUTPUT(r)->set_bg_color(r, 0, 0, 0);
+		//print_text(r, "</span>", OUTPUT_PRIVATE(r)->bg_backwards);
+		OUTPUT_PRIVATE(r)->do_bg = FALSE;
+	}
+	
+}
+
+static void rlib_html_start_boxurl(rlib *r, struct rlib_part *part, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url, gint backwards) {
+	gchar buf[MAXSTRLEN];
+	sprintf(buf, "<a href=\"%s\">", url);
+	print_text(r, buf, backwards);
+}
+
+static void rlib_html_end_boxurl(rlib *r, gint backwards) {
+	print_text(r, "</a>", backwards);
+}
+
+static void rlib_html_end_line(rlib *r, int backwards) {
+	if(OUTPUT_PRIVATE(r)->span_contents[0] != 0)
+		print_text(r, "</span>", OUTPUT_PRIVATE(r)->bg_backwards);
+	print_text(r, "\n", backwards);
+	OUTPUT_PRIVATE(r)->span_contents[0] = 0;
+	OUTPUT(r)->set_bg_color(r, 1, 1, 1);
+}
+
+
 static void rlib_html_hr(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
 struct rlib_rgb *color, gfloat indent, gfloat length) {
 	gchar buf[MAXSTRLEN];
@@ -246,15 +270,6 @@ struct rlib_rgb *color, gfloat indent, gfloat length) {
 	
 	
 	if( how_tall > 0 ) { 
-/*		sprintf(buf, "<span style=\"padding-left:20px; width:100%%; display:block; background-color:%s; height:%dpx; line-height:%dpx; \">", color_str, (int)how_tall, (int)how_tall);
-		print_text(r, buf, backwards);
-
-//		sprintf(buf, "<span style=\"height:%dpx; line-height:%dpx; font-size:xx-small; background-color:white; \">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>", (int)how_tall, (int)how_tall);
-//		print_text(r, buf, backwards);
-
-
-		print_text(r, "&nbsp;</span>", backwards);
-*/
 		nbsp[0] = 0;
 		td[0] = 0;
 		if(indent > 0) {
@@ -263,38 +278,12 @@ struct rlib_rgb *color, gfloat indent, gfloat length) {
 			sprintf(td, "<td style=\"height:%dpx; line-height:%dpx;\"><pre>%s</pre></td>", (int)how_tall, (int)how_tall, nbsp);
 		}
 		
-		print_text(r, "<table cellspacing=\"0\" cellpadding=\"0\" style=\"width:100%%;\"><tr>", backwards);
+		print_text(r, "</pre><table cellspacing=\"0\" cellpadding=\"0\" style=\"width:100%%;\"><tr>", backwards);
 		sprintf(buf,"</pre>%s<td style=\"height:%dpx; background-color:%s; width:100%%\"></td>",  td, (int)how_tall,color_str);
 		print_text(r, buf, backwards);
 		print_text(r, "</tr></table><pre>\n", backwards);
 		
 	}
-}
-
-static void rlib_html_start_draw_cell_background(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
-struct rlib_rgb *color) {
-	OUTPUT(r)->set_bg_color(r, color->r, color->g, color->b);
-	OUTPUT_PRIVATE(r)->do_bg = TRUE;
-}
-
-static void rlib_html_end_draw_cell_background(rlib *r) {
-	if(OUTPUT_PRIVATE(r)->did_bg) {
-		OUTPUT(r)->set_bg_color(r, 0, 0, 0);
-		print_text(r, "</span>", OUTPUT_PRIVATE(r)->bg_backwards);
-		OUTPUT_PRIVATE(r)->do_bg = FALSE;
-	}
-	
-}
-
-
-static void rlib_html_start_boxurl(rlib *r, struct rlib_part *part, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url, gint backwards) {
-	gchar buf[MAXSTRLEN];
-	sprintf(buf, "<a href=\"%s\">", url);
-	print_text(r, buf, backwards);
-}
-
-static void rlib_html_end_boxurl(rlib *r, gint backwards) {
-	print_text(r, "</a>", backwards);
 }
 
 static void rlib_html_background_image(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *nname, gchar *type, gfloat nwidth, 
@@ -485,11 +474,6 @@ static void rlib_html_spool_private(rlib *r) {
 
 static void rlib_html_start_line(rlib *r, int backwards) {
 	OUTPUT_PRIVATE(r)->did_bg = FALSE;
-}
-
-static void rlib_html_end_line(rlib *r, int backwards) {
-	print_text(r, "\n", backwards);
-	OUTPUT(r)->set_bg_color(r, 1, 1, 1);
 }
 
 static void rlib_html_end_page(rlib *r, struct rlib_part *part) {
@@ -1131,7 +1115,7 @@ void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT_PRIVATE(r)->length = 0;
 	OUTPUT(r)->do_align = TRUE;
 	OUTPUT(r)->do_breaks = TRUE;
-	OUTPUT(r)->do_grouptext = TRUE;	
+	OUTPUT(r)->do_grouptext = FALSE;	
 	OUTPUT(r)->paginate = FALSE;
 	OUTPUT(r)->trim_links = FALSE;
 	OUTPUT(r)->table_around_multiple_detail_columns = TRUE;
