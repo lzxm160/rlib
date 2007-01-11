@@ -184,7 +184,6 @@ void rlib_variables_precalculate(rlib *r, struct rlib_part *part, struct rlib_re
 		while (1) {
 
 			rlib_handle_break_headers(r, part, report, TRUE);
-			rlib_handle_break_footers(r, part, report, TRUE);
 
 			r->detail_line_count++;
 
@@ -198,6 +197,8 @@ void rlib_variables_precalculate(rlib *r, struct rlib_part *part, struct rlib_re
 				rlib_handle_break_footers(r, part, report, TRUE);
 				break;
 			} 
+
+			rlib_handle_break_footers(r, part, report, TRUE);
 
 			did_it = FALSE;
 		}

@@ -502,8 +502,13 @@ gboolean default_function(rlib *r, struct rlib_pcode * code, struct rlib_value_s
 			params[spot] = emalloc(sizeof(gpointer));
 			MAKE_STD_ZVAL(*params[spot]);
 			(*params[spot])->type = IS_STRING;
-			(*params[spot])->value.str.len = strlen(RLIB_VALUE_GET_AS_STRING(v));
-			(*params[spot])->value.str.val = estrdup(RLIB_VALUE_GET_AS_STRING(v));
+			if(RLIB_VALUE_GET_AS_STRING(v) == NULL) {
+				(*params[spot])->value.str.len = 0;
+				(*params[spot])->value.str.val = estrdup("");
+			} else {
+				(*params[spot])->value.str.len = strlen(RLIB_VALUE_GET_AS_STRING(v));
+				(*params[spot])->value.str.val = estrdup(RLIB_VALUE_GET_AS_STRING(v));				
+			}
 			rlib_value_free(v);
 		} else if(RLIB_VALUE_IS_NUMBER(v)) {
 			params[spot] = emalloc(sizeof(gpointer));

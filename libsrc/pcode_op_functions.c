@@ -48,7 +48,7 @@ const gchar * rlib_value_get_type_as_str(struct rlib_value *v) {
 
 static void rlib_pcode_operator_fatal_execption(rlib *r, const gchar *operator, struct rlib_pcode *code, gint pcount, struct rlib_value *v1, 
 	struct rlib_value *v2, struct rlib_value *v3) {
-	rlogit(r, "RLIB EXPERIENCED A FATAL MATH ERROR WHILE TRYING TO PREFORM THE FOLLOWING OPERATION: %s\n", operator);
+	rlogit(r, "RLIB EXPERIENCED A FATAL MATH ERROR WHILE TRYING TO PERFORM THE FOLLOWING OPERATION: %s\n", operator);
 	rlogit(r, "\t* Error on Line %d: The Expression Was [%s]\n", code->line_number, code->infix_string);
 	rlogit(r, "\t* DATA TYPES ARE [%s]", rlib_value_get_type_as_str(v1));
 	if(pcount > 1)
@@ -1432,6 +1432,7 @@ gint rlib_pcode_operator_left(rlib *r, struct rlib_pcode *code, struct rlib_valu
 	struct rlib_value *v1, *v2, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	v2 = rlib_value_stack_pop(vs);
+
 	if(RLIB_VALUE_IS_STRING(v2) && RLIB_VALUE_IS_NUMBER(v1) && RLIB_VALUE_GET_AS_STRING(v2) != NULL) {
 		gchar *tmp = g_strdup(RLIB_VALUE_GET_AS_STRING(v2));
 		gint n = RLIB_VALUE_GET_AS_NUMBER(v1)/RLIB_DECIMAL_PRECISION;
