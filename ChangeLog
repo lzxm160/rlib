@@ -1,3 +1,7 @@
+2007-01-24  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/api.c: Add output parameter: csv_file_name
+	* libsrc/rlib.h:
+
 2007-01-11  Bob Doan  <bdoan@sicompos.com>
 	* bindings/php/php.c: Handle NULL correctly
 	* libsrc/pcode_op_functions.c: spelling

@@ -231,7 +231,13 @@ gchar * rlib_get_content_type_as_text(rlib *r) {
 			return buf;
 		}
 		if(r->format == RLIB_CONTENT_TYPE_CSV) {
-			return (gchar *)RLIB_WEB_CONTENT_TYPE_CSV;
+			gchar *filename = g_hash_table_lookup(r->output_parameters, "csv_file_name");
+			if(filename == NULL)
+				return (gchar *)RLIB_WEB_CONTENT_TYPE_CSV;
+			else {
+				sprintf(buf, RLIB_WEB_CONTENT_TYPE_CSV_FORMATTED, filename);
+				return buf;
+			}
 		} else {
 #if DISABLE_UTF8		
 			const char *charset = "ISO-8859-1";

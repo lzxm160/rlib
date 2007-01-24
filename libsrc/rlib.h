@@ -39,6 +39,7 @@
 #define RLIB_WEB_CONTENT_TYPE_TEXT "Content-Type: text/plain; charset=%s\n"
 #define RLIB_WEB_CONTENT_TYPE_PDF "Content-Type: application/pdf\n"
 #define RLIB_WEB_CONTENT_TYPE_CSV "Content-type: application/octet-stream\nContent-Disposition: attachment; filename=report.csv\n"
+#define RLIB_WEB_CONTENT_TYPE_CSV_FORMATTED "Content-type: application/octet-stream\nContent-Disposition: attachment; filename=%s\n"
 
 #define RLIB_NAVIGATE_FIRST 1
 #define RLIB_NAVIGATE_NEXT 2
