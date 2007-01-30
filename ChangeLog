@@ -1,3 +1,15 @@
+2007-01-30  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/api.c: New output paramater: only_quote_strings for csv
+	* libsrc/csv.c: 
+	* libsrc/layout.c: 
+	* libsrc/pcode.h:
+	* libsrc/pdf.c: 
+	* libsrc/rlib.h:
+	* libsrc/txt.c: 
+	* src/examples/php/array.php:
+	* src/examples/php/array.xml:
+	* libsrc/html.c: Fix fg/bg color problem bleeding across line
+
 2007-01-24  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/api.c: Add output parameter: csv_file_name
 	* libsrc/rlib.h:

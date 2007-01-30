@@ -23,19 +23,23 @@
 
 #include "config.h"
 #include "rlib.h"
+#include "pcode.h"
 
 #define MAX_COL	100
 
 struct _private {
 	gchar col[MAX_COL][MAXSTRLEN];
+	gchar rval_type[MAX_COL];
 	gchar *top;
 	gint top_size;
 	gint top_total_size;
 	gint length;
+	gboolean only_quote_string;
 };
 
-static void print_text(rlib *r, const gchar *text, gint backwards, gint col) {
+static void print_text(rlib *r, const gchar *text, gint backwards, gint col, gint rval_type) {
 	if(col < MAX_COL) {
+		OUTPUT_PRIVATE(r)->rval_type[col] = rval_type;
 		if(OUTPUT_PRIVATE(r)->col[col][0] == 0)
 			strcpy(OUTPUT_PRIVATE(r)->col[col], text);
 		else {
@@ -51,9 +55,9 @@ static gfloat rlib_csv_get_string_width(rlib *r, const gchar *text) {
 	return 1;
 }
 
-static void rlib_csv_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, gint col) {
+static void rlib_csv_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, gint col, gint rval_type) {
 	if(col) {
-		print_text(r, text, backwards, col-1);
+		print_text(r, text, backwards, col-1, rval_type);
 	}
 }
 
@@ -70,7 +74,7 @@ static void rlib_csv_spool_private(rlib *r) {
 		ENVIRONMENT(r)->rlib_write_output(OUTPUT_PRIVATE(r)->top, strlen(OUTPUT_PRIVATE(r)->top));
 }
 
-static void really_print_text(rlib *r, const gchar *passed_text) {
+static void really_print_text(rlib *r, const gchar *passed_text, gint rval_type) {
 	gchar buf[MAXSTRLEN], text[MAXSTRLEN];
 	gchar *str_ptr;
 	gint text_size = strlen(passed_text);
@@ -83,7 +87,11 @@ static void really_print_text(rlib *r, const gchar *passed_text) {
 				text[spot++] = '\\';
 			text[spot++] = passed_text[i];			
 		}
-		sprintf(buf, "\"%s\",", text);
+
+		if(OUTPUT_PRIVATE(r)->only_quote_string == FALSE || (OUTPUT_PRIVATE(r)->only_quote_string == TRUE && rval_type == RLIB_VALUE_STRING))
+			sprintf(buf, "\"%s\",", text);
+		else
+			sprintf(buf, "%s,", text);
 		text_size = spot -1;
 		text_size += 3;
 	} else {
@@ -116,11 +124,11 @@ static void rlib_csv_end_output_section(rlib *r) {
 	if(biggest != 0) {
 		for(i=0;i<=biggest;i++)
 			if(OUTPUT_PRIVATE(r)->col[i][0] != 0) 
-				really_print_text(r, OUTPUT_PRIVATE(r)->col[i]);
+				really_print_text(r, OUTPUT_PRIVATE(r)->col[i], OUTPUT_PRIVATE(r)->rval_type[i]);
 			else
-				really_print_text(r, "");
+				really_print_text(r, "", RLIB_VALUE_NONE);
 		
-		really_print_text(r, "\n");
+		really_print_text(r, "\n", RLIB_VALUE_NONE );
 	}
 }
 
@@ -137,7 +145,7 @@ static long rlib_csv_get_output_length(rlib *r) {
 	return OUTPUT_PRIVATE(r)->top_size;
 }
 
-static void rlib_csv_print_text_delayed(rlib *r, struct rlib_delayed_extra_data *delayed_data, int backwards) {
+static void rlib_csv_print_text_delayed(rlib *r, struct rlib_delayed_extra_data *delayed_data, gint backwards, gint rval_type) {
 
 }
 
@@ -213,6 +221,10 @@ void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT_PRIVATE(r)->top = NULL;
 	OUTPUT_PRIVATE(r)->top_size = 0;
 	OUTPUT_PRIVATE(r)->top_total_size = 0;
+	OUTPUT_PRIVATE(r)->only_quote_string = FALSE;
+	
+	if(g_hash_table_lookup(r->output_parameters, "only_quote_strings"))
+		OUTPUT_PRIVATE(r)->only_quote_string = TRUE;
 
 	OUTPUT(r)->do_align = FALSE;	
 	OUTPUT(r)->do_breaks = FALSE;	

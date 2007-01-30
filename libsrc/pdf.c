@@ -129,12 +129,12 @@ static void pdf_rpdf_callback(gchar *data, gint len, void *user_data) {
 	g_free(user_data);
 }
 
-static void pdf_print_text_delayed(rlib *r, struct rlib_delayed_extra_data *delayed_data, int backwards) {
+static void pdf_print_text_delayed(rlib *r, struct rlib_delayed_extra_data *delayed_data, int backwards, int rval_type) {
 	struct rpdf *pdf = OUTPUT_PRIVATE(r)->pdf;
 	rpdf_text_callback(pdf, delayed_data->left_origin, delayed_data->bottom_orgin, 0, delayed_data->extra_data.width, pdf_rpdf_callback, delayed_data);
 }
 
-static void pdf_print_text_API(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, gint col) {
+static void pdf_print_text_API(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, gint col, gint rval_type) {
 	pdf_print_text(r, left_origin, bottom_origin, text, 0); 
 }
 

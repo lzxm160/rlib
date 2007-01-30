@@ -151,7 +151,7 @@ static gint convert_font_point(gint point) {
 	return point;
 }
 
-static void rlib_html_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, gint col) {
+static void rlib_html_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, gint col, gint rval_type) {
 	gchar font_size[MAXSTRLEN];
 	gchar foreground_color[MAXSTRLEN];
 	gchar background_color[MAXSTRLEN];
@@ -194,14 +194,12 @@ static void rlib_html_print_text(rlib *r, gfloat left_origin, gfloat bottom_orig
 	if(OUTPUT_PRIVATE(r)->is_italics == TRUE) 
 		sprintf(font_style, "font-style: italics;");
 	
-	if(foreground_color[0] != 0 || background_color[0] != 0 || font_weight[0] != 0 || font_style[0] != 0 || font_size[0] != 0) {
-		sprintf(buf, "<span style=\"%s %s %s %s %s\">", foreground_color, background_color, font_weight, font_style, font_size);
-		if(strcmp(buf, OUTPUT_PRIVATE(r)->span_contents) != 0) {
-			if(OUTPUT_PRIVATE(r)->span_contents[0] != 0)
-				print_text(r, "</span>", backwards);
-			print_text(r, buf, backwards);
-			strcpy(OUTPUT_PRIVATE(r)->span_contents, buf);
-		}
+	sprintf(buf, "<span style=\"%s %s %s %s %s\">", foreground_color, background_color, font_weight, font_style, font_size);
+	if(strcmp(buf, OUTPUT_PRIVATE(r)->span_contents) != 0) {
+		if(OUTPUT_PRIVATE(r)->span_contents[0] != 0)
+			print_text(r, "</span>", backwards);
+		print_text(r, buf, backwards);
+		strcpy(OUTPUT_PRIVATE(r)->span_contents, buf);
 	}
 	print_text(r, text, backwards);
 }
@@ -329,7 +327,7 @@ static gchar *html_callback(struct rlib_delayed_extra_data *delayed_data) {
 	return buf2;
 }
 
-static void rlib_html_print_text_delayed(rlib *r, struct rlib_delayed_extra_data *delayed_data, int backwards) {
+static void rlib_html_print_text_delayed(rlib *r, struct rlib_delayed_extra_data *delayed_data, int backwards, int rval_type) {
 	gint current_page = OUTPUT_PRIVATE(r)->page_number;
 	struct _packet *packet = g_new0(struct _packet, 1);
 	packet->type = DELAY;

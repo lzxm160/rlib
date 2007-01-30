@@ -299,11 +299,11 @@ gint flag, gint memo_line) {
 			delayed_data->bottom_orgin = bottom_orgin+(extra_data->font_point/300.0);
 			delayed_data->extra_data = *extra_data;
 			delayed_data->r = r;
-			OUTPUT(r)->print_text_delayed(r, delayed_data, backwards);
+			OUTPUT(r)->print_text_delayed(r, delayed_data, backwards, RLIB_VALUE_GET_TYPE(&extra_data->rval_code));
 		} else {
 			gboolean need_free;
 			gchar *real_text = rlib_layout_get_true_text_from_extra_data(r, extra_data, memo_line, spaced_out, &need_free);
-			OUTPUT(r)->print_text(r, left_origin, bottom_orgin+(extra_data->font_point/300.0), real_text, backwards, extra_data->col);
+			OUTPUT(r)->print_text(r, left_origin, bottom_orgin+(extra_data->font_point/300.0), real_text, backwards, extra_data->col, RLIB_VALUE_GET_TYPE(&extra_data->rval_code));
 			if(need_free)
 				g_free(real_text);
 		}
@@ -378,7 +378,7 @@ gchar *text, gint memo_line) {
 		OUTPUT(r)->start_bold(r);
 	if(extra_data->is_italics)
 		OUTPUT(r)->start_italics(r);
-	OUTPUT(r)->print_text(r, left_origin, bottom_orgin+(extra_data->font_point/300.0), rlib_encode_text(r, text, &encoded_text), backwards, extra_data->col);
+	OUTPUT(r)->print_text(r, left_origin, bottom_orgin+(extra_data->font_point/300.0), rlib_encode_text(r, text, &encoded_text), backwards, extra_data->col, RLIB_VALUE_GET_TYPE(&extra_data->rval_code));
 	g_free(encoded_text);
 	rtn_width = extra_data->output_width;
 	if(extra_data->found_color)

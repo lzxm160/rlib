@@ -224,6 +224,7 @@ gint rlib_execute(rlib *r) {
 
 gchar * rlib_get_content_type_as_text(rlib *r) {
 	static char buf[256];
+	gchar *filename = g_hash_table_lookup(r->output_parameters, "csv_file_name");
 	
 	if(r->did_execute == TRUE) {
 		if(r->format == RLIB_CONTENT_TYPE_PDF) {
@@ -231,7 +232,7 @@ gchar * rlib_get_content_type_as_text(rlib *r) {
 			return buf;
 		}
 		if(r->format == RLIB_CONTENT_TYPE_CSV) {
-			gchar *filename = g_hash_table_lookup(r->output_parameters, "csv_file_name");
+			
 			if(filename == NULL)
 				return (gchar *)RLIB_WEB_CONTENT_TYPE_CSV;
 			else {

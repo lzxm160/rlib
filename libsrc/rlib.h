@@ -805,8 +805,8 @@ struct output_filter {
 	gboolean do_graph;
 	gint paginate;
 	gfloat (*get_string_width)(rlib *, const char *);
-	void (*print_text)(rlib *, float, float, const char *, int, int);
-	void (*print_text_delayed)(rlib *, struct rlib_delayed_extra_data *, int);
+	void (*print_text)(rlib *, float, float, const char *, int, int, int);
+	void (*print_text_delayed)(rlib *, struct rlib_delayed_extra_data *, int, int);
 	void (*set_fg_color)(rlib *, float, float, float);
 	void (*set_bg_color)(rlib *, float, float, float);
 	void (*hr)(rlib *, int, float, float, float, float, struct rlib_rgb *, float, float);
