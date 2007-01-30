@@ -34,7 +34,7 @@ struct _private {
 	gint top_size;
 	gint top_total_size;
 	gint length;
-	gboolean only_quote_string;
+	gboolean only_quote_strings;
 };
 
 static void print_text(rlib *r, const gchar *text, gint backwards, gint col, gint rval_type) {
@@ -88,12 +88,14 @@ static void really_print_text(rlib *r, const gchar *passed_text, gint rval_type)
 			text[spot++] = passed_text[i];			
 		}
 
-		if(OUTPUT_PRIVATE(r)->only_quote_string == FALSE || (OUTPUT_PRIVATE(r)->only_quote_string == TRUE && rval_type == RLIB_VALUE_STRING))
+		if(OUTPUT_PRIVATE(r)->only_quote_strings == FALSE || (OUTPUT_PRIVATE(r)->only_quote_strings == TRUE && rval_type == RLIB_VALUE_STRING)) {
 			sprintf(buf, "\"%s\",", text);
-		else
+			text_size = spot -1;
+			text_size += 3;
+		} else {
 			sprintf(buf, "%s,", text);
-		text_size = spot -1;
-		text_size += 3;
+			text_size += 1;
+		}
 	} else {
 		strcpy(buf, passed_text);
 	}
@@ -214,6 +216,10 @@ static int rlib_csv_free(rlib *r) {
 	return 0;
 }
 
+void test(gpointer key, gpointer value, gpointer user_data) {
+	fprintf(stderr, "WHO's HOME %s %s\n", (gchar *)key, (gchar *)value);	
+}
+
 void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT(r) = g_malloc(sizeof(struct output_filter));
 	r->o->private = g_malloc(sizeof(struct _private));
@@ -221,10 +227,12 @@ void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT_PRIVATE(r)->top = NULL;
 	OUTPUT_PRIVATE(r)->top_size = 0;
 	OUTPUT_PRIVATE(r)->top_total_size = 0;
-	OUTPUT_PRIVATE(r)->only_quote_string = FALSE;
+	OUTPUT_PRIVATE(r)->only_quote_strings = FALSE;
 	
-	if(g_hash_table_lookup(r->output_parameters, "only_quote_strings"))
-		OUTPUT_PRIVATE(r)->only_quote_string = TRUE;
+	g_hash_table_foreach(r->output_parameters, test, NULL);
+	if(g_hash_table_lookup(r->output_parameters, "only_quote_strings")) {
+		OUTPUT_PRIVATE(r)->only_quote_strings = TRUE;
+	}
 
 	OUTPUT(r)->do_align = FALSE;	
 	OUTPUT(r)->do_breaks = FALSE;	

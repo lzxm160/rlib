@@ -1,4 +1,7 @@
 2007-01-30  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/csv.c: Fix bug w/ length of string
+
+2007-01-30  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/api.c: New output paramater: only_quote_strings for csv
 	* libsrc/csv.c: 
 	* libsrc/layout.c: 
