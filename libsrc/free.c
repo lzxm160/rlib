@@ -155,6 +155,7 @@ static void rlib_free_fields(rlib *r, struct rlib_report_output_array *roa) {
 	}
 	g_free(roa->data);
 	xmlFree(roa->xml_page.xml);
+	xmlFree(roa->xml_suppress.xml);
 	g_free(roa);
 }
 

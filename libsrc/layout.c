@@ -807,7 +807,7 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 	gint output_count = 0;
 	gfloat my_left_margin;
 	
-	if(roa == NULL)
+	if(roa == NULL || roa->suppress == TRUE)
 		return 0;
 	
 	r->current_line_number++;

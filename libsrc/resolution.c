@@ -241,6 +241,16 @@ static void rlib_resolve_fields2(rlib *r, struct rlib_part *part, struct rlib_re
 		roa->page = atol((char *)roa->xml_page.xml);
 	else
 		roa->page = -1;
+
+	if(roa->xml_suppress.xml != NULL) {
+		struct rlib_pcode *code = rlib_infix_to_pcode(r, part, report, (gchar *)roa->xml_suppress.xml, roa->xml_suppress.line, TRUE);
+		roa->suppress = atol((char *)roa->xml_suppress.xml);
+		if(rlib_execute_as_boolean(r, code, &roa->suppress) == FALSE)
+			roa->suppress = FALSE;
+		rlib_pcode_free(code);
+	} else
+		roa->suppress = FALSE;
+
 	
 	for(j=0;j<roa->count;j++) {
 		struct rlib_report_output *ro = roa->data[j];

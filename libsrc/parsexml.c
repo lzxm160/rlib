@@ -189,6 +189,7 @@ static struct rlib_element * parse_report_output(rlib *r, xmlDocPtr doc, xmlNsPt
 	roa->xml_page.xml = NULL;
 	if(cur != NULL && (!xmlStrcmp(cur->name, (const xmlChar *) "Output"))) {
 		get_both(&roa->xml_page, cur, "page");
+		get_both(&roa->xml_suppress, cur, "suppress");
 		cur = cur->xmlChildrenNode;
 	}	
 	while (cur != NULL) {      

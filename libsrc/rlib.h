@@ -309,6 +309,8 @@ struct rlib_report_output_array {
 	gint count;
 	struct rlib_from_xml xml_page;
 	gint page;
+	struct rlib_from_xml xml_suppress;
+	gboolean suppress;
 	struct rlib_report_output **data;
 };
 

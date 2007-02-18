@@ -116,6 +116,10 @@ void rlib_handle_page_footer(rlib *r, struct rlib_part *part, struct rlib_report
 gfloat get_output_size(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_output_array *roa) {
 	gint j;
 	gfloat total=0;
+	
+	if(roa->suppress == TRUE)
+		return 0;
+	
 	for(j=0;j<roa->count;j++) {
 		struct rlib_report_output *rd = roa->data[j];
 		if(rd->type == RLIB_REPORT_PRESENTATION_DATA_LINE) {
