@@ -273,6 +273,8 @@ static void rlib_evaulate_part_attributes(rlib *r, struct rlib_part *part) {
 		part->pages_across = f;
 	if (rlib_execute_as_int(r, part->suppress_page_header_first_page_code, &t))
 		part->suppress_page_header_first_page = t;
+	if (rlib_execute_as_int(r, part->suppress_code, &t))
+		part->suppress = t;
 
 	if (rlib_execute_as_string(r, part->paper_type_code, buf, MAXSTRLEN)) {
 		struct rlib_paper *paper = rlib_layout_get_paper_by_name(r, buf);
@@ -651,15 +653,18 @@ gint rlib_make_report(rlib *r) {
 		if(part->has_only_one_report) 
 			rlib_evaulate_single_report_variables(r, part);
 		rlib_resolve_part_fields(r, part);
+		
 		for(iterations=0;iterations<part->iterations;iterations++) {
 			rlib_fetch_first_rows(r);
 			rlib_evaulate_part_attributes(r, part);
-			OUTPUT(r)->start_report(r, part);
-			rlib_layout_init_part_page(r, part, TRUE, TRUE);
-			rlib_layout_part_tr(r, part);
-			OUTPUT(r)->end_part(r, part);
-			OUTPUT(r)->end_page(r, part);
-			rlib_emit_signal(r, RLIB_SIGNAL_PART_ITERATION);
+			if(part->suppress == FALSE) {
+				OUTPUT(r)->start_report(r, part);
+				rlib_layout_init_part_page(r, part, TRUE, TRUE);
+				rlib_layout_part_tr(r, part);
+				OUTPUT(r)->end_part(r, part);
+				OUTPUT(r)->end_page(r, part);
+				rlib_emit_signal(r, RLIB_SIGNAL_PART_ITERATION);
+			}
 		}
 		rlib_emit_signal(r, RLIB_SIGNAL_REPORT_DONE);
 	}

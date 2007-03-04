@@ -477,6 +477,7 @@ struct rlib_part {
 	struct rlib_from_xml xml_font_size;
 	struct rlib_from_xml xml_iterations;
 	struct rlib_from_xml xml_suppress_page_header_first_page;
+	struct rlib_from_xml xml_suppress;
 
 	GSList *part_rows;
 	struct rlib_element *report_header;
@@ -493,12 +494,14 @@ struct rlib_part {
 	struct rlib_pcode *font_size_code;
 	struct rlib_pcode *iterations_code;
 	struct rlib_pcode *suppress_page_header_first_page_code;
+	struct rlib_pcode *suppress_code;
 
 	struct rlib_paper *paper;
 	gint orientation;
 	gint font_size;
 	gint pages_across;
 	gint iterations;
+	gboolean suppress;
 	gboolean has_only_one_report;
 	struct rlib_report *only_report;
 	gfloat *position_top;

@@ -789,6 +789,7 @@ struct rlib_part * parse_part_file(rlib *r, gchar *filename, gchar type) {
 		part->xml_font_size.xml = xmlStrdup(report->xml_font_size.xml);
 		part->xml_orientation.xml = xmlStrdup(report->xml_orientation.xml);
 		part->xml_suppress_page_header_first_page.xml = xmlStrdup(report->xml_suppress_page_header_first_page.xml);
+		part->xml_suppress.xml = xmlStrdup(report->xml_suppress.xml);
 		
 		report->is_the_only_report = TRUE;		
 		part->has_only_one_report = TRUE;

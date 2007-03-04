@@ -410,6 +410,7 @@ void rlib_free_part(rlib *r, struct rlib_part *part) {
 	rlib_pcode_free(part->paper_type_code);
 	rlib_pcode_free(part->pages_across_code);
 	rlib_pcode_free(part->suppress_page_header_first_page_code);
+	rlib_pcode_free(part->suppress_code);
 
 	xmlFree(part->xml_name.xml);
 	xmlFree(part->xml_pages_across.xml);
@@ -421,7 +422,7 @@ void rlib_free_part(rlib *r, struct rlib_part *part) {
 	xmlFree(part->xml_paper_type.xml);
 	xmlFree(part->xml_iterations.xml);
 	xmlFree(part->xml_suppress_page_header_first_page.xml);
-
+	xmlFree(part->xml_suppress.xml);
 	
 	g_free(part->position_top);
 	g_free(part->position_bottom);

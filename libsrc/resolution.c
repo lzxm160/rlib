@@ -471,6 +471,8 @@ void rlib_resolve_part_fields(rlib *r, struct rlib_part *part) {
 	part->iterations_code = rlib_infix_to_pcode(r, part, NULL, (gchar *)part->xml_iterations.xml, part->xml_iterations.line, TRUE);
 	part->suppress_page_header_first_page = FALSE;
 	part->suppress_page_header_first_page_code = rlib_infix_to_pcode(r, part, NULL, (gchar *)part->xml_suppress_page_header_first_page.xml, part->xml_suppress_page_header_first_page.line, TRUE);
+	part->suppress = FALSE;
+	part->suppress_code = rlib_infix_to_pcode(r, part, NULL, (gchar *)part->xml_suppress.xml, part->xml_suppress.line, TRUE);
 
 
 	if (rlib_execute_as_float(r, part->pages_across_code, &f))
