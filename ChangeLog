@@ -1,3 +1,6 @@
+2007-03-16  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/reportgen.c: Better FIRST navigate followers
+
 2007-03-04  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/free.c: ability to suppress concatinated reports
 	* libsrc/parsexml.c: 

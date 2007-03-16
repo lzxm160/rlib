@@ -369,6 +369,8 @@ static gboolean rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_
 			} else {
 				rlib_fetch_first_rows(r);
 				
+				/* We go first AGAIN on the real result set because it might have n to 1 followes it needs to align */
+				rlib_navigate_first(r, r->current_result);
 				if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result]->result)) {
 					while (1) {
 						gint output_count = 0;
