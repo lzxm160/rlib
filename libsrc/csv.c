@@ -35,6 +35,7 @@ struct _private {
 	gint top_total_size;
 	gint length;
 	gboolean only_quote_strings;
+	gboolean new_line_on_end_of_line;
 };
 
 static void print_text(rlib *r, const gchar *text, gint backwards, gint col, gint rval_type) {
@@ -116,7 +117,7 @@ static void rlib_csv_start_output_section(rlib *r) {
 	}
 }
 
-static void rlib_csv_end_output_section(rlib *r) {
+static void print_csv_line(rlib *r) {
 	gint i;
 	gint biggest = 0;
 	for(i=0;i<MAX_COL;i++)
@@ -131,8 +132,19 @@ static void rlib_csv_end_output_section(rlib *r) {
 				really_print_text(r, "", RLIB_VALUE_NONE);
 		
 		really_print_text(r, "\n", RLIB_VALUE_NONE );
-	}
+	}	
 }
+
+static void rlib_csv_end_output_section(rlib *r) {
+	if(OUTPUT_PRIVATE(r)->new_line_on_end_of_line == FALSE)
+		print_csv_line(r);
+}
+
+static void rlib_csv_end_line(rlib *r, gint backwards) {
+	if(OUTPUT_PRIVATE(r)->new_line_on_end_of_line == TRUE)
+		print_csv_line(r);
+}
+
 
 static void rlib_csv_end_page(rlib *r, struct rlib_part *part) {
 	r->current_page_number++;
@@ -163,7 +175,6 @@ static void rlib_csv_end_boxurl(rlib *r, gint backwards) {}
 static void rlib_csv_background_image(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *nname, gchar *type, gfloat nwidth, gfloat nheight) {}
 static void rlib_csv_init_end_page(rlib *r) {}
 static void rlib_csv_start_line(rlib *r, gint backwards) {}
-static void rlib_csv_end_line(rlib *r, gint backwards) {}
 static void rlib_csv_start_report(rlib *r, struct rlib_part *part) {}
 static void rlib_csv_end_part(rlib *r, struct rlib_part *part) {}
 static void rlib_csv_end_report(rlib *r, struct rlib_report *report) {}
@@ -216,10 +227,6 @@ static int rlib_csv_free(rlib *r) {
 	return 0;
 }
 
-void test(gpointer key, gpointer value, gpointer user_data) {
-	fprintf(stderr, "WHO's HOME %s %s\n", (gchar *)key, (gchar *)value);	
-}
-
 void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT(r) = g_malloc(sizeof(struct output_filter));
 	r->o->private = g_malloc(sizeof(struct _private));
@@ -228,10 +235,13 @@ void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT_PRIVATE(r)->top_size = 0;
 	OUTPUT_PRIVATE(r)->top_total_size = 0;
 	OUTPUT_PRIVATE(r)->only_quote_strings = FALSE;
+	OUTPUT_PRIVATE(r)->new_line_on_end_of_line = FALSE;
 	
-	g_hash_table_foreach(r->output_parameters, test, NULL);
 	if(g_hash_table_lookup(r->output_parameters, "only_quote_strings")) {
 		OUTPUT_PRIVATE(r)->only_quote_strings = TRUE;
+	}
+	if(g_hash_table_lookup(r->output_parameters, "new_line_on_end_of_line")) {
+		OUTPUT_PRIVATE(r)->new_line_on_end_of_line = TRUE;
 	}
 
 	OUTPUT(r)->do_align = FALSE;	
