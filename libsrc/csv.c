@@ -141,8 +141,10 @@ static void rlib_csv_end_output_section(rlib *r) {
 }
 
 static void rlib_csv_end_line(rlib *r, gint backwards) {
-	if(OUTPUT_PRIVATE(r)->new_line_on_end_of_line == TRUE)
+	if(OUTPUT_PRIVATE(r)->new_line_on_end_of_line == TRUE) {
 		print_csv_line(r);
+		rlib_csv_start_output_section(r);
+	}
 }
 
 
