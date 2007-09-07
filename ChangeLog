@@ -1,3 +1,6 @@
+2007-09-07  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/csv.c: Fix bug with buffer overflow
+
 2007-06-27  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/csv.c: Fix bug in new_line_on_end_of_line
 

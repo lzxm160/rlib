@@ -46,7 +46,9 @@ static void print_text(rlib *r, const gchar *text, gint backwards, gint col, gin
 		else {
 			gchar *tmp;
 			tmp = g_strdup_printf("%s %s", OUTPUT_PRIVATE(r)->col[col], text);
-			strcpy(OUTPUT_PRIVATE(r)->col[col], tmp);
+			if(strlen(tmp) > MAXSTRLEN)
+				tmp[MAXSTRLEN] = 0;
+			strncpy(OUTPUT_PRIVATE(r)->col[col], tmp, MAXSTRLEN);
 			g_free(tmp);
 		}
 	}
