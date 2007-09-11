@@ -1,3 +1,7 @@
+2007-09-11  Zoltan Boszormenyi <zboszor@dunaweb.hu>
+	* libsrc/pdf.c: Fix win32 compile problems
+	* rpdf/rpdf.c: likewise
+
 2007-09-07  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/csv.c: Fix bug with buffer overflow
 

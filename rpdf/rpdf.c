@@ -665,7 +665,11 @@ gboolean rpdf_finalize(struct rpdf *pdf) {
 	time_t now;
 	
 	time(&now);
+#ifndef RLIB_WIN32
 	localtime_r(&now, &my_tm);
+#else
+	memcpy(&my_tm, localtime(&now), sizeof(struct tm));
+#endif
 
 	rpdf_out_string(pdf, pdf->header);
 	g_hash_table_foreach(pdf->fonts, rpdf_number_fonts, pdf);
