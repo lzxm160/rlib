@@ -1,3 +1,6 @@
+2007-10-09  Zoltan Boszormenyi <zboszor@dunaweb.hu>
+	* rpdf/rpdf.c: Win32 Binary Problems
+
 2007-09-11  Zoltan Boszormenyi <zboszor@dunaweb.hu>
 	* libsrc/pdf.c: Fix win32 compile problems
 	* rpdf/rpdf.c: likewise

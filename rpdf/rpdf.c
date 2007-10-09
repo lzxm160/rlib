@@ -45,6 +45,10 @@
 
 #include "rpdf.h"
 
+#ifndef O_BINARY
+#define	O_BINARY	(0)
+#endif
+
 struct _rpdf_paper rpdf_paper [] = {
 	{RPDF_PAPER_LETTER,612, 792, "LETTER"},
 	{RPDF_PAPER_LEGAL, 612, 1008, "LEGAL"},
@@ -1078,7 +1082,7 @@ gboolean rpdf_image(struct rpdf *pdf, gdouble x, gdouble y, gdouble width, gdoub
 	if(file_name == NULL)
 		return FALSE;
 		
-	fd = open(file_name, O_RDONLY, 0);
+	fd = open(file_name, O_RDONLY | O_BINARY, 0);
 	
 	if(fd <= 0)
 		return FALSE;
