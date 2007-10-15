@@ -35,6 +35,7 @@ struct _private {
 	gint top_total_size;
 	gint length;
 	gboolean only_quote_strings;
+	gboolean no_quotes;
 	gboolean new_line_on_end_of_line;
 };
 
@@ -91,7 +92,7 @@ static void really_print_text(rlib *r, const gchar *passed_text, gint rval_type)
 			text[spot++] = passed_text[i];			
 		}
 
-		if(OUTPUT_PRIVATE(r)->only_quote_strings == FALSE || (OUTPUT_PRIVATE(r)->only_quote_strings == TRUE && rval_type == RLIB_VALUE_STRING)) {
+		if((OUTPUT_PRIVATE(r)->only_quote_strings == FALSE && OUTPUT_PRIVATE(r)->no_quotes == FALSE) || (OUTPUT_PRIVATE(r)->only_quote_strings == TRUE && rval_type == RLIB_VALUE_STRING)) {
 			sprintf(buf, "\"%s\",", text);
 			text_size = spot -1;
 			text_size += 3;
@@ -239,10 +240,14 @@ void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT_PRIVATE(r)->top_size = 0;
 	OUTPUT_PRIVATE(r)->top_total_size = 0;
 	OUTPUT_PRIVATE(r)->only_quote_strings = FALSE;
+	OUTPUT_PRIVATE(r)->no_quotes = FALSE;
 	OUTPUT_PRIVATE(r)->new_line_on_end_of_line = FALSE;
 	
 	if(g_hash_table_lookup(r->output_parameters, "only_quote_strings")) {
 		OUTPUT_PRIVATE(r)->only_quote_strings = TRUE;
+	}
+	if(g_hash_table_lookup(r->output_parameters, "no_quotes")) {
+		OUTPUT_PRIVATE(r)->no_quotes = TRUE;
 	}
 	if(g_hash_table_lookup(r->output_parameters, "new_line_on_end_of_line")) {
 		OUTPUT_PRIVATE(r)->new_line_on_end_of_line = TRUE;
