@@ -78,27 +78,43 @@ static void rlib_csv_spool_private(rlib *r) {
 		ENVIRONMENT(r)->rlib_write_output(OUTPUT_PRIVATE(r)->top, strlen(OUTPUT_PRIVATE(r)->top));
 }
 
-static void really_print_text(rlib *r, const gchar *passed_text, gint rval_type) {
+static void really_print_text(rlib *r, const gchar *passed_text, gint rval_type, gint field_count) {
 	gchar buf[MAXSTRLEN], text[MAXSTRLEN];
 	gchar *str_ptr;
 	gint text_size = strlen(passed_text);
 	gint *size;
 	gint i, spot=0;
 
-	if(passed_text != NULL && passed_text[0] != '\n') {
+	if(passed_text != NULL && passed_text[0] != '\r') {
 		for(i=0;i<text_size+1;i++) {
 			if(passed_text[i] == '"')
 				text[spot++] = '\\';
 			text[spot++] = passed_text[i];			
 		}
+		if(OUTPUT_PRIVATE(r)->no_quotes == TRUE) {
+			for(i=spot-2; text[i] == ' ' && i>=0; i--);
+			text[++i] = '\0';
+			text_size = i;
+			spot = text_size + 1;
+		}
 
 		if((OUTPUT_PRIVATE(r)->only_quote_strings == FALSE && OUTPUT_PRIVATE(r)->no_quotes == FALSE) || (OUTPUT_PRIVATE(r)->only_quote_strings == TRUE && rval_type == RLIB_VALUE_STRING)) {
-			sprintf(buf, "\"%s\",", text);
 			text_size = spot -1;
-			text_size += 3;
+			text_size += 2;
+			if(field_count == 0)
+				sprintf(buf, "\"%s\"", text);
+			else {
+				sprintf(buf, ",\"%s\"", text);
+				text_size += 1;
+			}
 		} else {
-			sprintf(buf, "%s,", text);
-			text_size += 1;
+			text_size = spot -1;
+			if(field_count == 0)
+				sprintf(buf, "%s", text);
+			else {
+				sprintf(buf, ",%s", text);
+				text_size += 1;
+			}
 		}
 	} else {
 		strcpy(buf, passed_text);
@@ -130,11 +146,11 @@ static void print_csv_line(rlib *r) {
 	if(biggest != 0) {
 		for(i=0;i<=biggest;i++)
 			if(OUTPUT_PRIVATE(r)->col[i][0] != 0) 
-				really_print_text(r, OUTPUT_PRIVATE(r)->col[i], OUTPUT_PRIVATE(r)->rval_type[i]);
+				really_print_text(r, OUTPUT_PRIVATE(r)->col[i], OUTPUT_PRIVATE(r)->rval_type[i], i);
 			else
-				really_print_text(r, "", RLIB_VALUE_NONE);
+				really_print_text(r, "", RLIB_VALUE_NONE, i);
 		
-		really_print_text(r, "\n", RLIB_VALUE_NONE );
+		really_print_text(r, "\r\n", RLIB_VALUE_NONE, i);
 	}	
 }
 

@@ -1,3 +1,6 @@
+2007-10-16   Robert Nielsen  <rnielsen@sicompos.com>
+	* libsrc/csv.c: Enhance no quotes, rtrim, etc
+
 2007-10-15  Robert Nielsen  <rnielsen@sicompos.com>
 	* libsrc/csv.c: No Quotes output option
 
