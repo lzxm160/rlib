@@ -138,12 +138,12 @@ static void rlib_csv_start_output_section(rlib *r) {
 
 static void print_csv_line(rlib *r) {
 	gint i;
-	gint biggest = 0;
+	gint biggest = -1;
 	for(i=0;i<MAX_COL;i++)
 		if(OUTPUT_PRIVATE(r)->col[i][0] != 0)
 			biggest = i;
 	
-	if(biggest != 0) {
+	if(biggest >= 0) {
 		for(i=0;i<=biggest;i++)
 			if(OUTPUT_PRIVATE(r)->col[i][0] != 0) 
 				really_print_text(r, OUTPUT_PRIVATE(r)->col[i], OUTPUT_PRIVATE(r)->rval_type[i], i);
