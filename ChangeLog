@@ -1,3 +1,7 @@
+2007-12-05  Steve Mokris <smokris@softpixel.com>
+	* libsrc/parsexml.c: Don't crash on missing value
+	* libsrc/util.c: escape html
+
 2007-11-30  Paul Janoski <pjanoski@sicompos.com>
 
 	* libsrc/csv.c: fix bug in print_csv_line() that caused reports with only one col="1" in a line to not produce any output for the field

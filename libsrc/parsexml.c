@@ -98,6 +98,10 @@ static struct rlib_element * parse_line_array(rlib *r, xmlDocPtr doc, xmlNsPtr n
 			struct rlib_report_field *f = g_new0(struct rlib_report_field, 1);
 			current = (void *)g_new0(struct rlib_element, 1);
 			sp = xmlGetProp(cur, (const xmlChar *) "value");
+			if(sp == NULL) {
+				r_error(r, "Line: %d - <field> is missing 'value' attribute. \n", xmlGetLineNo (cur),cur->name);
+				return NULL;
+			}
 #if DISABLE_UTF8
 			utf8_to_8813(r, f->value, (gchar *)sp);
 #else

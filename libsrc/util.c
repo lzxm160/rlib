@@ -172,9 +172,42 @@ gchar *rmwhitespacesexceptquoted(gchar *s) {
 
 static void local_rlogit(rlib *r, const gchar *message) {
 	if(r != NULL && r->html_debugging) {
-		ENVIRONMENT(r)->rlib_write_output("<br><b>RLIB: ", strlen("<br><b>RLIB: "));
-		ENVIRONMENT(r)->rlib_write_output((char *)message, strlen(message));
-		ENVIRONMENT(r)->rlib_write_output("</br></b>", strlen("</br></b>"));
+		ENVIRONMENT(r)->rlib_write_output("<p><b>RLIB Error:</b> ", strlen("<p><b>RLIB Error:</b> "));
+
+		/* escape '&','<','>' as HTML character entities */
+		char *htmlEncoded=(char *)malloc(strlen(message)*5+1); /* 5 times the original length is the worst-case-scenario: replacing '&' with "&amp;" */
+		int i,h=0;
+		for(i=0;i<strlen(message);++i) {
+			switch(message[i]) {
+				case '&':
+					htmlEncoded[h++]='&';
+					htmlEncoded[h++]='a';
+					htmlEncoded[h++]='m';
+					htmlEncoded[h++]='p';
+					htmlEncoded[h++]=';';
+					break;
+				case '<':
+					htmlEncoded[h++]='&';
+					htmlEncoded[h++]='l';
+					htmlEncoded[h++]='t';
+					htmlEncoded[h++]=';';
+					break;
+				case '>':
+					htmlEncoded[h++]='&';
+					htmlEncoded[h++]='g';
+					htmlEncoded[h++]='t';
+					htmlEncoded[h++]=';';
+					break;
+				default:
+					htmlEncoded[h++]=message[i];
+			}
+		}
+		htmlEncoded[h]=0;
+
+		ENVIRONMENT(r)->rlib_write_output((char *)htmlEncoded, strlen(htmlEncoded));
+		free(htmlEncoded);
+
+		ENVIRONMENT(r)->rlib_write_output("</p>", strlen("</p>"));
 	}
 	fputs(message, stderr);
 	return;
