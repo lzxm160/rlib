@@ -289,10 +289,11 @@ static void rpdf_make_page_stream(gpointer data, gpointer user_data) {
 		gdouble angle = M_PI * stream_text->angle / 180.0;
 		gdouble text_sin= sin(angle);
 		gdouble text_cos = cos(angle);
-
-		result = g_strdup_printf("%s%.04f %.04f %.04f %.04f %.04f %.04f Tm\n(%s) Tj\n", extra, text_cos, text_sin, -text_sin, text_cos, stream_text->x*RPDF_DPI, stream_text->y*RPDF_DPI, stream_text->text); 
+		char *text = g_strescape(stream_text->text, NULL);
+		result = g_strdup_printf("%s%.04f %.04f %.04f %.04f %.04f %.04f Tm\n(%s) Tj\n", extra, text_cos, text_sin, -text_sin, text_cos, stream_text->x*RPDF_DPI, stream_text->y*RPDF_DPI, text); 
 		g_free(stream_text->text);
 		g_free(stream_text);
+		g_free(text);
 	} else if(stream->type == RPDF_TYPE_RECT) {
 		struct rpdf_stream_rect *stream_rect = stream->data;
 		result = g_strdup_printf("%s%.03f %.03f %.03f %.03f re\n", extra, stream_rect->x*RPDF_DPI, stream_rect->y*RPDF_DPI, stream_rect->width*RPDF_DPI, stream_rect->height*RPDF_DPI);
@@ -380,9 +381,12 @@ static void rpdf_make_page_stream(gpointer data, gpointer user_data) {
 		gdouble angle = M_PI * stream_text_callback->angle / 180.0;
 		gdouble text_sin= sin(angle);
 		gdouble text_cos = cos(angle);
+		char *text;
 		callback_data = g_malloc(stream_text_callback->len+1);
 	   stream_text_callback->callback(callback_data, stream_text_callback->len+1, stream_text_callback->user_data);
-		result = g_strdup_printf("%s%.04f %.04f %.04f %.04f %.04f %.04f Tm\n(%s) Tj\n", extra, text_cos, text_sin, -text_sin, text_cos, stream_text_callback->x*RPDF_DPI, stream_text_callback->y*RPDF_DPI, callback_data); 
+		text = g_strescape(callback_data, NULL);
+		result = g_strdup_printf("%s%.04f %.04f %.04f %.04f %.04f %.04f Tm\n(%s) Tj\n", extra, text_cos, text_sin, -text_sin, text_cos, stream_text_callback->x*RPDF_DPI, stream_text_callback->y*RPDF_DPI, text); 
+		g_free(text);
 		g_free(callback_data);
 		g_free(stream_text_callback);
 	}

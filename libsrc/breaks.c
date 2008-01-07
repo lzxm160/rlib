@@ -61,15 +61,16 @@ static void rlib_print_break_footer_output(rlib *r, struct rlib_part *part, stru
 	}
 }
 
-void rlib_force_break_headers(rlib *r, struct rlib_part *part, struct rlib_report *report, gboolean precalculate) {
+gboolean rlib_force_break_headers(rlib *r, struct rlib_part *part, struct rlib_report *report, gboolean precalculate) {
 	struct rlib_element *e;
+	gboolean did_print = FALSE;
 
 	if(!OUTPUT(r)->do_breaks)
-		return;
+		return TRUE;
 	
 	if(report->breaks == NULL)
-		return;
-	
+		return TRUE;
+
 	for(e = report->breaks; e != NULL; e=e->next) {
 		gint dobreak=1;
 		struct rlib_report_break *rb = e->data;
@@ -90,9 +91,10 @@ void rlib_force_break_headers(rlib *r, struct rlib_part *part, struct rlib_repor
 		struct rlib_report_break *rb = e->data;
 		if(rb->headernewpage && precalculate == FALSE) {
 			rlib_print_break_header_output(r, part, report, rb, rb->header, FALSE);
-		}
-				
+			did_print = TRUE;
+		}			
 	}
+	return did_print;
 }
 
 void rlib_handle_break_headers(rlib *r, struct rlib_part *part, struct rlib_report *report, gboolean precalculate) {
@@ -142,11 +144,13 @@ void rlib_handle_break_headers(rlib *r, struct rlib_part *part, struct rlib_repo
 		}
 		if(!allfit) {
 			rlib_layout_end_page(r, part, report, TRUE);
-			rlib_force_break_headers(r, part, report, precalculate);
-		} else {
-			for(i=0;i<icache;i++) {
-				rlib_print_break_header_output(r, part, report, cache[i], cache[i]->header, FALSE);	
+			if(rlib_force_break_headers(r, part, report, precalculate) == FALSE) {
+				for(i=0;i<icache;i++)
+					rlib_print_break_header_output(r, part, report, cache[i], cache[i]->header, FALSE);	
 			}
+		} else {
+			for(i=0;i<icache;i++)
+				rlib_print_break_header_output(r, part, report, cache[i], cache[i]->header, FALSE);	
 		}
 	}
 }

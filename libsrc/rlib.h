@@ -882,7 +882,7 @@ struct output_filter {
 };
 
 /***** PROTOTYPES: breaks.c ***************************************************/
-void rlib_force_break_headers(rlib *r, struct rlib_part *part, struct rlib_report *report, gboolean precalculate);
+gboolean rlib_force_break_headers(rlib *r, struct rlib_part *part, struct rlib_report *report, gboolean precalculate);
 void rlib_handle_break_headers(rlib *r, struct rlib_part *part, struct rlib_report *report, gboolean precalculate);
 void rlib_handle_break_footers(rlib *r, struct rlib_part *part, struct rlib_report *report, gboolean precalculate);
 void rlib_break_evaluate_attributes(rlib *r, struct rlib_report *report);

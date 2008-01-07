@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
 	rpdf_set_font(pdf, "Courier", "MacRomanEncoding", 16.0);
 	rpdf_text(pdf, 3.0, 8.0, 0.0, "FARK");
 	rpdf_set_font(pdf, "Courier", "MacRomanEncoding", 20.0);
-	rpdf_text(pdf, 4.0, 7.0, 0.0, "WOOT");
+	rpdf_text(pdf, 4.0, 7.0, 0.0, "WOOT\\");
 	rpdf_text(pdf, 5.0, 6.0, 0.0, "TOOT");
 	rpdf_text(pdf, 5.0, 12.0, 0.0, "GOOD TIMES");
 	rpdf_text(pdf, 5.0, 13.0, 0.0, "GOOD TIMES");

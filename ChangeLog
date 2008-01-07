@@ -1,3 +1,9 @@
+2008-01-07  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/breaks.c: Fix breaking bug
+	* libsrc/rlib.h: ..
+	* rpdf/rpdf.c: Escape \
+	* rpdf/test.c: test 
+
 2007-12-05  Steve Mokris <smokris@softpixel.com>
 	* libsrc/parsexml.c: Don't crash on missing value
 	* libsrc/util.c: escape html
