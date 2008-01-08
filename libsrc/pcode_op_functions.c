@@ -1629,7 +1629,10 @@ gint rlib_pcode_operator_wiyo(rlib *r, struct rlib_pcode *code, struct rlib_valu
 		struct rlib_datetime request = RLIB_VALUE_GET_AS_DATE(v1);
 		gint dim;
 		gint offset;
-		offset = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v2));
+		offset = g_date_get_weekday(&request.date);
+		offset = offset - RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v2));
+		if(offset < 0)
+			offset += 7;
 		g_date_subtract_days(&request.date, offset);
 		dim = g_date_get_sunday_week_of_year(&request.date);
 		rlib_value_free(v1);
