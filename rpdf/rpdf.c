@@ -289,7 +289,7 @@ static void rpdf_make_page_stream(gpointer data, gpointer user_data) {
 		gdouble angle = M_PI * stream_text->angle / 180.0;
 		gdouble text_sin= sin(angle);
 		gdouble text_cos = cos(angle);
-		char *text = g_strescape(stream_text->text, NULL);
+		char *text = g_strdup(stream_text->text);
 		result = g_strdup_printf("%s%.04f %.04f %.04f %.04f %.04f %.04f Tm\n(%s) Tj\n", extra, text_cos, text_sin, -text_sin, text_cos, stream_text->x*RPDF_DPI, stream_text->y*RPDF_DPI, text); 
 		g_free(stream_text->text);
 		g_free(stream_text);
@@ -383,8 +383,8 @@ static void rpdf_make_page_stream(gpointer data, gpointer user_data) {
 		gdouble text_cos = cos(angle);
 		char *text;
 		callback_data = g_malloc(stream_text_callback->len+1);
-	   stream_text_callback->callback(callback_data, stream_text_callback->len+1, stream_text_callback->user_data);
-		text = g_strescape(callback_data, NULL);
+	    stream_text_callback->callback(callback_data, stream_text_callback->len+1, stream_text_callback->user_data);
+		text = g_strdup(callback_data);
 		result = g_strdup_printf("%s%.04f %.04f %.04f %.04f %.04f %.04f Tm\n(%s) Tj\n", extra, text_cos, text_sin, -text_sin, text_cos, stream_text_callback->x*RPDF_DPI, stream_text_callback->y*RPDF_DPI, text); 
 		g_free(text);
 		g_free(callback_data);
@@ -975,7 +975,7 @@ gboolean rpdf_text(struct rpdf *pdf, gdouble x, gdouble y, gdouble angle, const 
 	
 	slen = strlen(text);
 	for(i=0;i<slen;i++) {
-		if(text[i] == '(' || text[i] == ')')
+		if(text[i] == '(' || text[i] == ')' || text[i] == '\\')
 			count++;
 	}
 	if(count == 0)
@@ -983,7 +983,7 @@ gboolean rpdf_text(struct rpdf *pdf, gdouble x, gdouble y, gdouble angle, const 
 	else {
 		stream->text = g_malloc(slen + 1 + count);
 		for(i=0;i<slen;i++) {
-			if(text[i] == '(' || text[i] == ')') {
+			if(text[i] == '(' || text[i] == ')' || text[i] == '\\') {
 				stream->text[spot++] = '\\';
 			}
 			stream->text[spot++] = text[i];

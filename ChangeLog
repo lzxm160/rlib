@@ -1,3 +1,6 @@
+2008-01-08  Robert Nielsen  <rnielsen@sicompos.com>
+	* rpdf/rpdf.c: Escape \
+
 2008-01-07  Robert Nielsen  <rnielsen@sicompos.com>
 	* libsrc/pcode_op_functions.c: (rlib_pcode_operator_wiyo): Fix wiyo function
 
