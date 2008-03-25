@@ -328,7 +328,8 @@ gint adjustPosAndNegLimits(gint mappedMin, gint mappedMax, gint minTMs, gint max
 	if (MAX(abs(mappedMin),abs(mappedMax))>mapMax)
    	 return (localError("adjustPosAndNegLimits: some data is > supplied mapping upper limit"),-1);
 
-	for (inc=1;inc<=mapMax;inc++) {
+//	for (inc=1;inc<=mapMax;inc++) {
+	for (inc=1;inc<=maxTMs;inc++) {
 		gint quo1,quo2;
 		gint newMin,newMax;
 		gint adj,tm;
@@ -517,6 +518,8 @@ if (denyMinEqualsAdjMin
 && azMin-dataMin<*tmi)      /* requested margin is absent */
     {
     *adjMin=azMin-*tmi;     /* shift down by extra tickmark interval */
+    if(azMin>= 0.0 && *adjMin < 0.0) /* do not allow min to go below zero if it was originally positive */
+		*adjMin = 0.0;
     *adjMax=azMax;
     (*numTms)++;
     }
