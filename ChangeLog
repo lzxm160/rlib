@@ -1,3 +1,36 @@
+2008-06-11  Paul Janoski <pjanoski@sicompos.com>
+
+	* libsrc/Makefile.am: add gantt chart capabilities
+	* libsrc/free.c: (rlib_free_chart), (rlib_free_report):
+	* libsrc/gd.c: (rlib_gd_color_text):
+	* libsrc/html.c: (html_graph_get_x_label_width),
+	(html_graph_set_x_label_width), (html_graph_get_y_label_width),
+	(html_graph_set_y_label_width), (html_graph_get_width_offset),
+	(rlib_html_print_text), (rlib_html_hr), (rlib_html_start_report),
+	(html_graph_init), (html_graph_get_chart_layout),
+	(html_graph_start), (html_graph_set_is_chart),
+	(html_graph_label_x_get_variables), (html_graph_set_x_tick_width),
+	(html_graph_do_grid), (html_graph_tick_x), (html_graph_label_x),
+	(html_graph_tick_y), (html_graph_label_y), (html_graph_draw_bar),
+	(rlib_html_new_output_filter):
+	* libsrc/parsexml.c: (parse_chart_row), (parse_chart_header_row),
+	(parse_chart), (parse_report):
+	* libsrc/pdf.c: (pdf_graph_get_x_label_width),
+	(pdf_graph_set_x_label_width), (pdf_graph_get_y_label_width),
+	(pdf_graph_set_y_label_width), (pdf_graph_get_width_offset),
+	(pdf_graph_get_chart_layout), (pdf_graph_init),
+	(pdf_graph_set_is_chart), (pdf_graph_label_x_get_variables),
+	(pdf_graph_set_x_tick_width), (pdf_graph_do_grid),
+	(pdf_graph_tick_x), (pdf_graph_label_x), (pdf_graph_label_y),
+	(pdf_graph_draw_bar), (rlib_pdf_new_output_filter):
+	* libsrc/reportgen.c: (rlib_layout_report):
+	* libsrc/resolution.c: (rlib_resolve_chart),
+	(rlib_resolve_report_fields):
+	* libsrc/rlib.h:
+	* libsrc/rlib_gd.h:
+	* src/examples/php/graph.php:
+	* src/examples/php/multiline.php:
+
 2008-03-25  Robert Nielsen  <rnielsen@sicompos.com>
 	* libsrc/axis.c: (adjustPosAndNegLimits), (adjust_limits): restrict to avoid false negative limits
 

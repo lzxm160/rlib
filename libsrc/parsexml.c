@@ -429,6 +429,56 @@ static void parse_graph(rlib *r, struct rlib_report *report, xmlDocPtr doc, xmlN
 	}
 }
 
+static struct rlib_chart_row * parse_chart_row(struct rlib_report *report, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur, struct rlib_chart_row *cr) {
+	get_both(&cr->xml_row, cur, "row");
+	get_both(&cr->xml_bar_start, cur, "bar_start");
+	get_both(&cr->xml_bar_end, cur, "bar_end");
+	get_both(&cr->xml_label, cur, "label");
+	get_both(&cr->xml_bar_label, cur, "bar_label");
+	get_both(&cr->xml_bar_color, cur, "bar_color");
+	get_both(&cr->xml_bar_label_color, cur, "bar_label_color");
+	return cr;
+}
+
+static struct rlib_chart_header_row * parse_chart_header_row(struct rlib_report *report, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur, struct rlib_chart_header_row *chr) {
+
+	get_both(&chr->xml_query, cur, "query");
+	get_both(&chr->xml_field, cur, "field");
+	get_both(&chr->xml_colspan, cur, "colspan");
+
+	return chr;
+}
+
+static void parse_chart(rlib *r, struct rlib_report *report, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur, struct rlib_chart *chart) {
+	chart->have_chart = FALSE;
+	get_both(&chart->xml_name, cur, "name");
+	get_both(&chart->xml_title, cur, "title");
+	get_both(&chart->xml_cols, cur, "cols");
+	get_both(&chart->xml_rows, cur, "rows");
+	get_both(&chart->xml_cell_width, cur, "cell_width");
+	get_both(&chart->xml_cell_height, cur, "cell_height");
+	get_both(&chart->xml_cell_width_padding, cur, "cell_width_padding");
+	get_both(&chart->xml_cell_height_padding, cur, "cell_height_padding");
+	get_both(&chart->xml_label_width, cur, "label_width");
+	get_both(&chart->xml_header_row, cur, "header_row");
+	
+	cur = cur->xmlChildrenNode;
+	while (cur != NULL) {
+		if ((!xmlStrcmp(cur->name, (const xmlChar *) "HeaderRow")))
+			parse_chart_header_row(report, doc, ns, cur, &chart->header_row);
+		else
+		if ((!xmlStrcmp(cur->name, (const xmlChar *) "Row"))) {
+			parse_chart_row(report, doc, ns, cur, &chart->row);
+			chart->have_chart = TRUE;
+		} else if (ignoreElement((const char *)cur->name)) {
+			/* ignore comments, etc */
+		} else {
+			r_error(r, "Line: %d - Unknown element [%s] in  <Chart>. Expected Row or HeaderRow\n",xmlGetLineNo (cur), cur->name );
+		}
+		cur = cur->next;
+	}
+}
+
 static struct rlib_element * parse_report_variable(rlib *r, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
 	struct rlib_element *e = g_malloc(sizeof(struct rlib_report));
 	struct rlib_report_variable *rv = g_new0(struct rlib_report_variable, 1);
@@ -572,6 +622,8 @@ static void parse_report(rlib *r, struct rlib_part *part, struct rlib_report *re
 			parse_alternate(r, report, doc, ns, cur, &report->alternate);
 		else if ((!xmlStrcmp(cur->name, (const xmlChar *) "Graph"))) 
 			parse_graph(r, report, doc, ns, cur, &report->graph);
+		else if ((!xmlStrcmp(cur->name, (const xmlChar *) "Chart"))) 
+			parse_chart(r, report, doc, ns, cur, &report->chart);
 		else if ((!xmlStrcmp(cur->name, (const xmlChar *) "Breaks"))) 
 			report->breaks = parse_report_breaks(r, report, doc, ns, cur);
 		else if ((!xmlStrcmp(cur->name, (const xmlChar *) "Variables"))) 

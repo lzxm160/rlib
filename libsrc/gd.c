@@ -142,6 +142,22 @@ int rlib_gd_text(struct rlib_gd *rgd, char *text, int x, int y, gboolean rotate,
 	return TRUE;
 }
 
+int rlib_gd_color_text(struct rlib_gd *rgd, char *text, int x, int y, gboolean rotate, gboolean bold, struct rlib_rgb *color) {
+	gint gd_color = get_color_pool(rgd, color);
+	if(bold) {
+		if(rotate)
+			gdImageStringUp(rgd->im, gdFontMediumBold,	x,	y,	(unsigned char *)text, gd_color);
+		else
+			gdImageString(rgd->im, gdFontMediumBold, x,	y,	(unsigned char *)text, gd_color);
+	} else {
+		if(rotate)
+			gdImageStringUp(rgd->im, gdFontMedium,	x,	y,	(unsigned char *)text, gd_color);
+		else
+			gdImageString(rgd->im, gdFontMedium, x,	y,	(unsigned char *)text, gd_color);	
+	}		
+	return TRUE;
+}
+
 int rlib_gd_get_string_width(struct rlib_gd *rgd, const gchar *text, gboolean bold) {
 	if(bold)
 		return gdFontMediumBold->w * strlen(text);

@@ -351,6 +351,39 @@ void rlib_resolve_graph(rlib *r, struct rlib_part *part, struct rlib_report *rep
 	}
 }
 
+void rlib_resolve_chart(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_chart *chart) {
+	struct rlib_chart_header_row *header_row;
+	struct rlib_chart_row *row;
+	
+	chart->name_code = rlib_infix_to_pcode(r, part, report, (gchar *)chart->xml_name.xml, chart->xml_name.line, TRUE);
+	chart->title_code = rlib_infix_to_pcode(r, part, report, (gchar *)chart->xml_title.xml, chart->xml_title.line, TRUE);
+	chart->cols_code = rlib_infix_to_pcode(r, part, report, (gchar *)chart->xml_cols.xml, chart->xml_cols.line, TRUE);
+	chart->rows_code = rlib_infix_to_pcode(r, part, report, (gchar *)chart->xml_rows.xml, chart->xml_rows.line, TRUE);
+	chart->cell_width_code = rlib_infix_to_pcode(r, part, report, (gchar *)chart->xml_cell_width.xml, chart->xml_cell_width.line, TRUE);
+	chart->cell_height_code = rlib_infix_to_pcode(r, part, report, (gchar *)chart->xml_cell_height.xml, chart->xml_cell_height.line, TRUE);
+	chart->cell_width_padding_code = rlib_infix_to_pcode(r, part, report, (gchar *)chart->xml_cell_width_padding.xml, chart->xml_cell_width_padding.line, TRUE);
+	chart->cell_height_padding_code = rlib_infix_to_pcode(r, part, report, (gchar *)chart->xml_cell_height_padding.xml, chart->xml_cell_height_padding.line, TRUE);
+	chart->label_width_code = rlib_infix_to_pcode(r, part, report, (gchar *)chart->xml_label_width.xml, chart->xml_label_width.line, TRUE);
+	chart->header_row_code = rlib_infix_to_pcode(r, part, report, (gchar *)chart->xml_header_row.xml, chart->xml_header_row.line, TRUE);
+
+	header_row = &chart->header_row;
+
+	header_row->query_code = rlib_infix_to_pcode(r, part, report, (gchar *)header_row->xml_query.xml, header_row->xml_query.line, TRUE);
+	header_row->field_code = rlib_infix_to_pcode(r, part, report, (gchar *)header_row->xml_field.xml, header_row->xml_field.line, TRUE);
+	header_row->colspan_code = rlib_infix_to_pcode(r, part, report, (gchar *)header_row->xml_colspan.xml, header_row->xml_colspan.line, TRUE);
+
+	row = &chart->row;
+
+	row->row_code = rlib_infix_to_pcode(r, part, report, (gchar *)row->xml_row.xml, row->xml_row.line, TRUE);
+	row->bar_start_code = rlib_infix_to_pcode(r, part, report, (gchar *)row->xml_bar_start.xml, row->xml_bar_start.line, TRUE);
+	row->bar_end_code = rlib_infix_to_pcode(r, part, report, (gchar *)row->xml_bar_end.xml, row->xml_bar_end.line, TRUE);
+	row->label_code = rlib_infix_to_pcode(r, part, report, (gchar *)row->xml_label.xml, row->xml_label.line, TRUE);
+	row->bar_label_code = rlib_infix_to_pcode(r, part, report, (gchar *)row->xml_bar_label.xml, row->xml_bar_label.line, TRUE);
+
+	row->bar_color_code = rlib_infix_to_pcode(r, part, report, (gchar *)row->xml_bar_color.xml, row->xml_bar_color.line, TRUE);
+	row->bar_label_color_code = rlib_infix_to_pcode(r, part, report, (gchar *)row->xml_bar_label_color.xml, row->xml_bar_label_color.line, TRUE);
+}
+
 void rlib_resolve_report_fields(rlib *r, struct rlib_part *part, struct rlib_report *report) {
 	struct rlib_element *e;
 	gfloat f;
@@ -408,6 +441,7 @@ void rlib_resolve_report_fields(rlib *r, struct rlib_part *part, struct rlib_rep
 	rlib_resolve_outputs(r, part, report, report->alternate.nodata);
 
 	rlib_resolve_graph(r, part, report, &report->graph);
+	rlib_resolve_chart(r, part, report, &report->chart);
 
 	if(report->breaks != NULL) {
 		for(e = report->breaks; e != NULL; e=e->next) {

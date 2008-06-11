@@ -615,6 +615,62 @@ struct rlib_graph {
 	GSList *plots;
 };
 
+struct rlib_chart_row {
+	struct rlib_from_xml xml_row;
+	struct rlib_from_xml xml_bar_start;
+	struct rlib_from_xml xml_bar_end;
+	struct rlib_from_xml xml_label;
+	struct rlib_from_xml xml_bar_label;
+	struct rlib_from_xml xml_bar_color;
+	struct rlib_from_xml xml_bar_label_color;
+
+	struct rlib_pcode *row_code;
+	struct rlib_pcode *bar_start_code;
+	struct rlib_pcode *bar_end_code;
+	struct rlib_pcode *label_code;
+	struct rlib_pcode *bar_label_code;
+	struct rlib_pcode *bar_color_code;
+	struct rlib_pcode *bar_label_color_code;
+};
+
+struct rlib_chart_header_row {
+	struct rlib_from_xml xml_query;
+	struct rlib_from_xml xml_field;
+	struct rlib_from_xml xml_colspan;
+
+	struct rlib_pcode *query_code;
+	struct rlib_pcode *field_code;
+	struct rlib_pcode *colspan_code;
+};
+
+struct rlib_chart {
+	gboolean have_chart;
+	struct rlib_from_xml xml_name;
+	struct rlib_from_xml xml_title;
+	struct rlib_from_xml xml_cols;
+	struct rlib_from_xml xml_rows;
+	struct rlib_from_xml xml_cell_width;
+	struct rlib_from_xml xml_cell_height;
+	struct rlib_from_xml xml_cell_width_padding;
+	struct rlib_from_xml xml_cell_height_padding;
+	struct rlib_from_xml xml_label_width;
+	struct rlib_from_xml xml_header_row;
+
+	struct rlib_pcode *name_code;
+	struct rlib_pcode *title_code;
+	struct rlib_pcode *cols_code;
+	struct rlib_pcode *rows_code;
+	struct rlib_pcode *cell_width_code;
+	struct rlib_pcode *cell_height_code;
+	struct rlib_pcode *cell_width_padding_code;
+	struct rlib_pcode *cell_height_padding_code;
+	struct rlib_pcode *label_width_code;
+	struct rlib_pcode *header_row_code;
+
+	struct rlib_chart_header_row header_row;
+	struct rlib_chart_row row;
+};
+
 struct rlib_report {
 	xmlDocPtr doc;
 	gchar *contents;
@@ -666,6 +722,7 @@ struct rlib_report {
 	struct rlib_element *breaks;
 	struct rlib_report_alternate alternate;
 	struct rlib_graph graph;
+	struct rlib_chart chart;
 	gint mainloop_query;
 
 	struct rlib_pcode *font_size_code;
@@ -848,13 +905,22 @@ struct output_filter {
 	void (*end_tr)(rlib *);
 	void (*start_td)(rlib *, struct rlib_part *part, gfloat left_margin, gfloat bottom_margin, int width, int height, gint border_width, struct rlib_rgb *color);
 	void (*end_td)(rlib *);
+
+	void (*graph_get_x_label_width)(rlib *r, gfloat *width);
+	void (*graph_get_y_label_width)(rlib *r, gfloat *width);
+	void (*graph_set_x_label_width)(rlib *r, gfloat width, gint cell_width);
+	void (*graph_set_y_label_width)(rlib *r, gfloat width);
+	void (*graph_get_width_offset)(rlib *r, gint *width_offset);
 	
+	void (*graph_init)(rlib *r);
+	void (*graph_get_chart_layout)(rlib *r, gfloat top, gfloat bottom, gint cell_height, gint rows, gint *chart_size, gint *chart_height);
 	void (*graph_start)(rlib *r, float, float, float, float, gboolean x_axis_labels_are_under_tick);
 	void (*graph_set_title)(rlib *r, gchar *title);
 	void (*graph_set_name)(rlib *r, gchar *name);
 	void (*graph_set_legend_bg_color)(rlib *r, struct rlib_rgb *);
 	void (*graph_set_legend_orientation)(rlib *r, gint orientation);
 	void (*graph_set_draw_x_y)(rlib *r, gboolean draw_x, gboolean draw_y);
+	void (*graph_set_is_chart)(rlib *r, gboolean is_chart);
 	void (*graph_set_bold_titles)(rlib *r, gboolean bold_titles);
 	void (*graph_set_minor_ticks)(rlib *r, gboolean *ticks);
 	void (*graph_set_grid_color)(rlib *r, struct rlib_rgb *);
@@ -864,12 +930,14 @@ struct output_filter {
 	void (*graph_do_grid)(rlib *r, gboolean just_a_box);
 	void (*graph_draw_line)(rlib *, float, float, float, float, struct rlib_rgb *);
 	void (*graph_set_x_iterations)(rlib *, int iterations);
+	void (*graph_set_x_tick_width)(rlib *);
 	void (*graph_tick_x)(rlib *);
 	void (*graph_tick_y)(rlib *, int iterations);
 	void (*graph_set_data_plot_count)(rlib *r, int count);
 	void (*graph_hint_label_x)(rlib *r, gchar *label);
 	void (*graph_label_x)(rlib *r, int iteration, gchar *label);
 	void (*graph_label_y)(rlib *r, gchar side, int iteration, gchar *label, gboolean false_x);
+	void (*graph_draw_bar)(rlib *r, gint row, gint start_iteration, gint end_iteration, struct rlib_rgb *color, char *label, struct rlib_rgb *label_color, gint width_pad, gint height_pad);
 	void (*graph_plot_bar)(rlib *r, gchar side, gint iteration, int plot, gfloat height, struct rlib_rgb * color,gfloat last_height, gboolean divide_iterations);
 	void (*graph_plot_pie)(rlib *r, gfloat start, gfloat end, gboolean offset, struct rlib_rgb *color);
 	void (*graph_plot_line)(rlib *r, gchar side, gint iteration, gfloat p1_height, gfloat p1_last_height, gfloat p2_height, gfloat p2_last_height, struct rlib_rgb * color);
@@ -1052,6 +1120,7 @@ gint rlib_layout_end_page(rlib *r, struct rlib_part *part, struct rlib_report *r
 
 /***** PROTOTYPES: graphing.c **************************************************/
 gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat left_margin_offset, gfloat *top_margin_offset);
+gfloat rlib_chart(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat left_margin_offset, gfloat *top_margin_offset);
 
 /***** PROTOTYPES: axis.c ******************************************************/
 /* void rlib_graph_find_y_range(rlib *r, gdouble a, gdouble b, gdouble *y_min, gdouble *y_max, gint graph_type); */

@@ -357,7 +357,16 @@ static gboolean rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_
 				OUTPUT(r)->set_font_point(r, r->font_point);
 			}
 
-			if(report->graph.type_code != NULL) {
+			if(report->chart.have_chart) {
+				gfloat top;
+				if(OUTPUT(r)->do_graph == TRUE) {
+					top_margin_offset += report_header_advance;
+					top_margin_offset += rlib_chart(r, part, report, left_margin_offset, &top_margin_offset);
+					top = report->position_top[0];
+					rlib_layout_report_footer(r, part, report);	
+					top_margin_offset += report->position_top[0] - top;
+				}
+			} else if(report->graph.type_code != NULL) {
 				gfloat top;
 				if(OUTPUT(r)->do_graph == TRUE) {
 					top_margin_offset += report_header_advance;

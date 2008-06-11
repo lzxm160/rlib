@@ -236,6 +236,59 @@ static void rlib_free_graph(rlib *r, struct rlib_graph *graph) {
 	}
 }
 
+static void rlib_free_chart(rlib *r, struct rlib_chart *chart) {
+	struct rlib_chart_header_row *header_row;
+	struct rlib_chart_row *row;
+	
+	rlib_pcode_free(chart->name_code);
+	rlib_pcode_free(chart->title_code);
+	rlib_pcode_free(chart->cols_code);
+	rlib_pcode_free(chart->rows_code);
+	rlib_pcode_free(chart->cell_width_code);
+	rlib_pcode_free(chart->cell_height_code);
+	rlib_pcode_free(chart->cell_width_padding_code);
+	rlib_pcode_free(chart->cell_height_padding_code);
+	rlib_pcode_free(chart->label_width_code);
+	rlib_pcode_free(chart->header_row_code);
+
+	xmlFree(chart->xml_name.xml);
+	xmlFree(chart->xml_title.xml);
+	xmlFree(chart->xml_cols.xml);
+	xmlFree(chart->xml_rows.xml);
+	xmlFree(chart->xml_cell_width.xml);
+	xmlFree(chart->xml_cell_height.xml);
+	xmlFree(chart->xml_label_width.xml);
+	xmlFree(chart->xml_header_row.xml);
+
+	header_row = &chart->header_row;
+
+	rlib_pcode_free(header_row->query_code);
+	rlib_pcode_free(header_row->field_code);
+	rlib_pcode_free(header_row->colspan_code);
+
+	xmlFree(header_row->xml_query.xml);
+	xmlFree(header_row->xml_field.xml);
+	xmlFree(header_row->xml_colspan.xml);
+
+	row = &chart->row;
+
+	rlib_pcode_free(row->row_code);
+	rlib_pcode_free(row->bar_start_code);
+	rlib_pcode_free(row->bar_end_code);
+	rlib_pcode_free(row->label_code);
+	rlib_pcode_free(row->bar_label_code);
+	rlib_pcode_free(row->bar_color_code);
+	rlib_pcode_free(row->bar_label_color_code);
+
+	xmlFree(row->xml_row.xml);
+	xmlFree(row->xml_bar_start.xml);
+	xmlFree(row->xml_bar_end.xml);
+	xmlFree(row->xml_label.xml);
+	xmlFree(row->xml_bar_label.xml);
+	xmlFree(row->xml_bar_color.xml);
+	xmlFree(row->xml_bar_label_color.xml);
+}
+
 void rlib_free_report(rlib *r, struct rlib_report *report) {
 	struct rlib_element *e, *prev;
 
@@ -266,6 +319,7 @@ void rlib_free_report(rlib *r, struct rlib_report *report) {
 	rlib_free_output(r, report->alternate.nodata);
 
 	rlib_free_graph(r, &report->graph);
+	rlib_free_chart(r, &report->chart);
 
 	g_free(report->position_top);
 	g_free(report->position_bottom);

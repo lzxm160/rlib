@@ -51,6 +51,7 @@ struct rlib_gd * rlib_gd_new(gint width, gint height, gchar *image_directory);
 int rlib_gd_free(struct rlib_gd *rgd);
 int rlib_gd_spool(rlib *r, struct rlib_gd *rgd);
 int rlib_gd_text(struct rlib_gd *rgd, char *text, int x, int y, gboolean rotate, gboolean bold);
+int rlib_gd_color_text(struct rlib_gd *rgd, char *text, int x, int y, gboolean rotate, gboolean bold, struct rlib_rgb *color);
 int rlib_gd_get_string_width(struct rlib_gd *rgd, const char *text, gboolean bold);
 int rlib_gd_get_string_height(struct rlib_gd *rgd, gboolean bold);
 int rlib_gd_line(struct rlib_gd *rgd, gint x_1, gint y_1, gint x_2, gint y_2, struct rlib_rgb *color);

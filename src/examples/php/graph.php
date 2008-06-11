@@ -157,10 +157,10 @@
 	$pie_data[0][1] = "value";
 
 	$pie_data[1][0] = "Happy";
-	$pie_data[1][1] = "25";
+	$pie_data[1][1] = "35";
 
 	$pie_data[2][0] = "Sad";
-	$pie_data[2][1] = "25";
+	$pie_data[2][1] = "15";
 
 	$pie_data[3][0] = "Grumpy";
 	$pie_data[3][1] = "25";
@@ -242,6 +242,11 @@
 	$sales_data[4][1] = "5000";
 	$sales_data[4][2] = "7.00";
 
+	$sales_data[4][0] = "Paul";
+	$sales_data[4][1] = "3500";
+	$sales_data[4][2] = "4.25";
+
+
 	$rlib =	rlib_init();
 	rlib_add_datasource_array($rlib, "local_array");
 	rlib_add_query_as($rlib, "local_array", "data", "data");
@@ -254,7 +259,7 @@
 	rlib_add_report($rlib, "graph.xml");
 	rlib_set_output_format_from_text($rlib, "pdf");
 	rlib_execute($rlib);
-	header(rlib_get_content_type($rlib));
+	//header(rlib_get_content_type($rlib));
 	rlib_spool($rlib);
 	rlib_free($rlib);
 ?>
