@@ -1,3 +1,8 @@
+2008-06-12  Paul Janoski <pjanoski@sicompos.com>
+
+	* libsrc/gantt.c: (string_copy), (free_chart), (rlib_chart): add new for
+	gantt charts
+
 2008-06-11  Paul Janoski <pjanoski@sicompos.com>
 
 	* libsrc/Makefile.am: add gantt chart capabilities
