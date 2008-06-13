@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<!DOCTYPE report >
+<Part layout="'flow'" fontSize="14" orientation="landscape">
+	<PageHeader>
+		<Output>
+			<Line fontSize="26" bgcolor="'yellow'">
+				<literal link="'http://rlib.sicompos.com'">RLIB IS Gantting      </literal>
+			</Line>
+			<HorizontalLine size="4" bgcolor="'black'"/>
+			<HorizontalLine size="10" bgcolor="'green'"/>
+		</Output>
+	</PageHeader>		
+
+	<pr>
+		<pd width="100">
+			<Report fontSize="12" orientation="landscape" query="'data'" leftMargin="0">
+
+				<ReportHeader>
+					<Output>
+						<HorizontalLine size="10" bgcolor="'red'"/>
+						<Line bgcolor="'0xe5e5e5'">
+							<literal col="1">THIS TEXT SHOULD NOT FLOW INTO THE GANTT CHART</literal>
+						</Line>
+						<Line bgcolor="'0xe5e5e5'">
+							<literal col="1">THIS TEXT SHOULD NOT FLOW INTO THE GANTT CHART</literal>
+						</Line>
+						<Line bgcolor="'0xe5e5e5'">
+							<literal col="1">THIS TEXT SHOULD NOT FLOW INTO THE GANTT CHART</literal>
+						</Line>
+						<Line bgcolor="'0xe5e5e5'">
+							<literal col="1">THIS TEXT SHOULD NOT FLOW INTO THE GANTT CHART</literal>
+						</Line>
+						<Line bgcolor="'0xe5e5e5'">
+							<literal col="1">THIS TEXT SHOULD NOT FLOW INTO THE GANTT CHART</literal>
+						</Line>
+						<Line bgcolor="'0xe5e5e5'">
+							<literal col="1">THIS TEXT SHOULD NOT FLOW INTO THE GANTT CHART</literal>
+						</Line>
+						<HorizontalLine size="10" bgcolor="'red'"/>
+					</Output>
+				</ReportHeader>				
+
+			<Chart cols="13" rows="12" cell_width="45" cell_height="30" header_row="'yes'" title="'Restaurant Schedule'" cell_width_padding="0" cell_height_padding="0"> 
+				<HeaderRow query="'header_data'" field="header_data.name" colspan="2"/>  
+				<Row row="val(row_field)" bar_start="val(bar_start)" bar_end="val(bar_stop)" label="label_field" bar_label="bar_label" bar_color="bar_color" bar_label_color="bar_label_color"/> 
+			</Chart> 
+			</Report>
+		</pd>
+	</pr>
+	<PageFooter>
+		<Output>
+			<Line>
+				<literal>Page: </literal>	
+				<field value="r.pageno" width="3" align="right"/>
+				<literal>/</literal>	
+				<field value="r.totpages" width="3" align="right" delayed="yes"/>
+			</Line>
+		</Output>
+	</PageFooter>
+</Part>

@@ -40,7 +40,7 @@
 
 #define MAX_X_TICKS 2000
 
-#define MAX_COLS 128
+#define MAX_COLS 256
 #define MAX_ROWS 300
 
 struct bar {

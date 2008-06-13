@@ -1,3 +1,13 @@
+2008-06-13  Paul Janoski <pjanoski@sicompos.com>
+
+	* libsrc/gantt.c:
+	* src/examples/php/gantt.php: gantt chart examples
+	* src/examples/php/gantt.xml:
+	* src/examples/php/gantt2.php:
+	* src/examples/php/gantt2.xml:
+	* src/examples/php/gantt_colors.php:
+	* src/examples/php/gantt_colors.xml:
+
 2008-06-12  Paul Janoski <pjanoski@sicompos.com>
 
 	* src/examples/php/graph.php: fix graphing example
