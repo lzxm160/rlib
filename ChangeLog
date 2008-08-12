@@ -1,3 +1,16 @@
+2008-08-12  Zoltan Boszormenyi <zboszor@dunaweb.hu>
+
+	* bindings/perl/Makefile.am: win32 support
+	* bindings/python/Makefile.am:
+	* configure.in:
+	* inputs/mysql/Makefile.am:
+	* inputs/mysql/mysql.c:
+	* inputs/postgres/Makefile.am:
+	* libsrc/rlib.i:
+	* src/examples/java/Makefile.am:
+	* src/examples/java/example.java: 
+	* src/examples/perl/example.pm:
+
 2008-06-13  Paul Janoski <pjanoski@sicompos.com>
 
 	* libsrc/gantt.c:

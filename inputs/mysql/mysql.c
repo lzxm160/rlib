@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <my_global.h>
 #include <mysql.h>
 #include <glib.h>
 

@@ -22,9 +22,9 @@
 
 JAVAROOT=.
 
-javafiles = librlib.java librlibJNI.java SWIGTYPE_p_f_p_rlib_p_void__int.java SWIGTYPE_p_rlib.java SWIGTYPE_p_void.java
+javafiles = rlib.java rlibJNI.java SWIGTYPE_p_f_p_rlib_p_void__int.java SWIGTYPE_p_rlib.java SWIGTYPE_p_void.java
 
-java_JAVA = SWIGTYPE_p_rlib.java librlib.java librlibJNI.java example.java 
+java_JAVA = SWIGTYPE_p_rlib.java rlib.java rlibJNI.java example.java 
 
 noinst_SCRIPTS = products.xml
 

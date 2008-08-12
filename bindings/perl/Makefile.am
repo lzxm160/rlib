@@ -24,9 +24,9 @@ AM_CFLAGS = -I${top_srcdir}/libsrc $(RLIB_CFLAGS) $(PERL_CFLAGS) -D_GNU_SOURCE -
 perldir = $(PERL_EXTENSION_DIR)/auto/rlib
 perl_LTLIBRARIES = rlib.la
 rlib_la_SOURCES = perl.c 
-rlib_la_LIBADD = $(top_builddir)/libsrc/libr.la $(RLIB_LIBS)
-DEF_FILE=rlib.def
+rlib_la_LIBADD = $(top_builddir)/libsrc/libr.la $(RLIB_LIBS) $(PERL_LIBS)
 if WIN32
+DEF_FILE=rlib.def
 def_ldflags=-Wl,--output-def,$(DEF_FILE)
 endif
 rlib_la_LDFLAGS = \
