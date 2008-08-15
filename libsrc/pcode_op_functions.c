@@ -647,6 +647,7 @@ gint rlib_pcode_operator_and(rlib *r, struct rlib_pcode *code, struct rlib_value
 		rlib_value_free(v1);
 		rlib_value_free(v2);
 		rlib_value_stack_push(r,vs, rlib_value_new_number(&rval_rtn, RLIB_DECIMAL_PRECISION));
+		return TRUE;
 	}
 	rlib_value_free(v1);
 	rlib_value_free(v2);
