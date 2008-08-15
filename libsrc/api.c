@@ -108,29 +108,17 @@ gint rlib_add_query_pointer_as(rlib *r, const gchar *input_source, gchar *sql, c
 	for(i=0;i<r->inputs_count;i++) {
 		if(!strcmp(r->inputs[i].name, input_source)) {
 			r->queries[r->queries_count]->input = r->inputs[i].input;
-		}
-	}
-	
-	r->queries_count++;
-	return r->queries_count;
-}
-
-gint rlib_add_query_as(rlib *r, const gchar *input_source, const gchar *sql, const gchar *name) {
-	gint i;
-
-	rlib_alloc_query_space(r);
-	r->queries[r->queries_count]->sql = g_strdup(sql);
-	r->queries[r->queries_count]->name = g_strdup(name);
-	for(i=0;i<r->inputs_count;i++) {
-		if(!strcmp(r->inputs[i].name, input_source)) {
-			r->queries[r->queries_count]->input = r->inputs[i].input;
 			r->queries_count++;
 			return r->queries_count;
 		}
 	}
 
 	r_error(r, "rlib_add_query_as: Could not find input source [%s]!\n", input_source);
-	return -1;	
+	return -1;
+}
+
+gint rlib_add_query_as(rlib *r, const gchar *input_source, const gchar *sql, const gchar *name) {
+	return rlib_add_query_pointer_as(r, input_source, g_strdup(sql), name);
 }
 
 gint rlib_add_report(rlib *r, const gchar *name) {

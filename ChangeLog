@@ -1,4 +1,7 @@
 2008-08-12  Zoltan Boszormenyi <zboszor@dunaweb.hu>
+	* libsrc/api.c: Alert if input source does not exist from a query pointer.
+	
+2008-08-12  Zoltan Boszormenyi <zboszor@dunaweb.hu>
 	* libsrc/pcode_op_functions.c: Fix double free
 
 2008-08-12  Zoltan Boszormenyi <zboszor@dunaweb.hu>
