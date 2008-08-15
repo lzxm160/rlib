@@ -1,3 +1,7 @@
+2008-08-15  Bob Doan  <bdoan@sicompos.com>
+	* libsrc/reportgen.c: Remove XML output as we don't yet support it
+	* libsrc/rlib.h:
+
 2008-08-12  Zoltan Boszormenyi <zboszor@dunaweb.hu>
 	* libsrc/api.c: Alert if input source does not exist from a query pointer.
 	

@@ -44,7 +44,6 @@ struct _rlib_format_table {
 	{ "HTML", RLIB_FORMAT_HTML},
 	{ "TXT", RLIB_FORMAT_TXT},
 	{ "CSV", RLIB_FORMAT_CSV},
-	{ "XML", RLIB_FORMAT_XML},
 	{ "", -1},
 };
 
