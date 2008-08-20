@@ -1,3 +1,12 @@
+2008-08-20  Paul Janoski  <pjanoski@sicompos.com>
+
+	* libsrc/pcode.c: fix rlib OR and AND ops
+	* libsrc/pcode.h:
+	* libsrc/pcode_op_functions.c: (rlib_pcode_operator_logical_and),
+	(rlib_pcode_operator_and), (rlib_pcode_operator_logical_or),
+	(rlib_pcode_operator_or):
+	* src/examples/php/expressions.xml:
+
 2008-08-15  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/reportgen.c: Remove XML output as we don't yet support it
 	* libsrc/rlib.h:
