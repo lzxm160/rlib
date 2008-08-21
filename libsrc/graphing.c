@@ -132,7 +132,7 @@ gint determine_graph_type(gchar *type, gchar *subtype) {
 			return RLIB_GRAPH_TYPE_XY_CUBIC_SPLINE;
 		else if(strcmp(subtype, "cubic spline with symbols") == 0)
 			return RLIB_GRAPH_TYPE_XY_CUBIC_SPLINE_WIHT_SYMBOLS;
-		else if(strcmp(subtype, "bsplibe") == 0)
+		else if(strcmp(subtype, "bspline") == 0)
 			return RLIB_GRAPH_TYPE_XY_BSPLINE;
 		else if(strcmp(subtype, "bspline with symbols") == 0)
 			return RLIB_GRAPH_TYPE_XY_BSPLINE_WITH_SYMBOLS;

@@ -1,5 +1,7 @@
-2008-08-20  Paul Janoski  <pjanoski@sicompos.com>
+2008-08-21  Paul Janoski  <pjanoski@sicompos.com>
+	* libsrc/graphing.c: fix typo
 
+2008-08-20  Paul Janoski  <pjanoski@sicompos.com>
 	* libsrc/pcode.c: fix rlib OR and AND ops
 	* libsrc/pcode.h:
 	* libsrc/pcode_op_functions.c: (rlib_pcode_operator_logical_and),
