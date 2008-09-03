@@ -455,6 +455,7 @@ ZEND_FUNCTION(rlib_query_refresh) {
 gboolean default_callback(rlib *r, gpointer data) {
 	zval *z_function_name = data;
 	zval *retval;
+	TSRMLS_FETCH();
 
 	if(call_user_function_ex(CG(function_table), NULL, z_function_name, &retval, 0, NULL, 0, NULL TSRMLS_CC) == FAILURE) {
 	   return FALSE;
@@ -494,6 +495,7 @@ gboolean default_function(rlib *r, struct rlib_pcode * code, struct rlib_value_s
 	int i;
 	zval *retval;
 	struct rlib_value rval_rtn;
+	TSRMLS_FETCH();
 	
 	for(i=0;i<b->params;i++) {
 		struct rlib_value *v = rlib_value_stack_pop(vs);

@@ -41,7 +41,7 @@ struct rlib_php_array_results {
 };
 
 struct _private {
-
+	int	dummy;
 };
 
 static gint rlib_php_array_input_close(gpointer input_ptr) {
@@ -140,6 +140,7 @@ void * php_array_new_result_from_query(gpointer input_ptr, gchar *query) {
 	zval *zend_value, *lookup_value;
 	int row=0, col=0;
 	int total_size;
+	TSRMLS_FETCH();
 	
 	memset(result, 0, sizeof(struct rlib_php_array_results));
 	result->array_name = query;

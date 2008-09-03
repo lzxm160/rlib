@@ -26,6 +26,7 @@
 static char * rlib_php_resolve_memory_variable(char *name) {
 	void *temp;
 	zval ** data;
+	TSRMLS_FETCH();
 
 	if (zend_hash_find(&EG(symbol_table),name,strlen(name)+1, (void *)&temp)==FAILURE) { 
 		return NULL;
@@ -53,6 +54,7 @@ static char * rlib_php_resolve_memory_variable(char *name) {
 
 static int rlib_php_write_output(char *data, int len) {
 	long wrote = 0;
+	TSRMLS_FETCH();
 /*
 	PHP Has some odd bug on the LO that doesn't allow you to write more then 15785 at a time.
 */

@@ -1,4 +1,10 @@
-2008-08-21  Paul Janoski  <pjanoski@sicompos.com>
+2008-09-03  Zoltan Boszormenyi <zboszor@dunaweb.hu>
+	* bindings/php/array_data_source.c: WIN32 fixes
+	* bindings/php/environment.c: 
+	* bindings/php/php.c: 
+	* libsrc/graphing.c: 
+
+2008-08-21  Zoltan Boszormenyi <zboszor@dunaweb.hu>
 	* libsrc/graphing.c: fix typo
 
 2008-08-20  Paul Janoski  <pjanoski@sicompos.com>
