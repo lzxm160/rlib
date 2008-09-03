@@ -1,4 +1,7 @@
 2008-09-03  Zoltan Boszormenyi <zboszor@dunaweb.hu>
+	* bindings/python/rlibmodule.c: WIN32 fixes
+
+2008-09-03  Zoltan Boszormenyi <zboszor@dunaweb.hu>
 	* bindings/php/array_data_source.c: WIN32 fixes
 	* bindings/php/environment.c: 
 	* bindings/php/php.c: 

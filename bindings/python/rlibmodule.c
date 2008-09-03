@@ -1206,10 +1206,6 @@ initrlib(void) {
 	PyDict_SetItemString(d, "FORMAT_CSV", i);
 	Py_DECREF(i);
 
-	i = PyInt_FromLong(RLIB_FORMAT_XML);
-	PyDict_SetItemString(d, "FORMAT_XML", i);
-	Py_DECREF(i);
-
 	i = PyInt_FromLong(RLIB_CONTENT_TYPE_PDF);
 	PyDict_SetItemString(d, "CONTENT_TYPE_PDF", i);
 	Py_DECREF(i);
