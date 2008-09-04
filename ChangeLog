@@ -1,3 +1,7 @@
+2008-09-04  Zoltan Boszormenyi <zboszor@dunaweb.hu>
+	* python.bat: A windows installer
+	* rlib.nsi:
+
 2008-09-03  Zoltan Boszormenyi <zboszor@dunaweb.hu>
 	* bindings/python/rlibmodule.c: WIN32 fixes
 
