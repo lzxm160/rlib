@@ -152,6 +152,7 @@ static gint rlib_execute_queries(rlib *r) {
 	for(i=0;i<r->queries_count;i++) {
 
 		r->results[i]->input = r->queries[i]->input;
+		r->results[i]->name =  r->queries[i]->name;
 		r->results[i]->result = INPUT(r,i)->new_result_from_query(INPUT(r,i), r->queries[i]->sql);
 		r->results[i]->next_failed = FALSE;
 		r->results[i]->navigation_failed = FALSE;
@@ -161,7 +162,6 @@ static gint rlib_execute_queries(rlib *r) {
 		} else {
 			INPUT(r,i)->first(INPUT(r,i), r->results[i]->result);
 		}
-		r->results[i]->name =  r->queries[i]->name;
 	}
 	return TRUE;
 }
