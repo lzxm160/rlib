@@ -59,6 +59,7 @@ static void rlib_hr_free_pcode(rlib *r, struct rlib_report_horizontal_line * rhl
 }
 
 static void rlib_text_free_pcode(rlib *r, struct rlib_report_literal *rt) {
+	g_free(rt->value);
 	rlib_pcode_free(rt->color_code);
 	rlib_pcode_free(rt->bgcolor_code);
 	rlib_pcode_free(rt->col_code);
@@ -79,6 +80,7 @@ static void rlib_text_free_pcode(rlib *r, struct rlib_report_literal *rt) {
 }
 
 static void rlib_field_free_pcode(rlib *r, struct rlib_report_field *rf) {
+	g_free(rf->value);
 	rlib_pcode_free(rf->code);
 	rlib_pcode_free(rf->format_code);
 	rlib_pcode_free(rf->link_code);
@@ -113,13 +115,13 @@ static void rlib_field_free_pcode(rlib *r, struct rlib_report_field *rf) {
 static void rlib_free_fields(rlib *r, struct rlib_report_output_array *roa) {
 	struct rlib_element *e, *save;
 	gint j;
-	
+
 	if(roa == NULL)
 		return;
 	for(j=0;j<roa->count;j++) {
 		struct rlib_report_output *ro = roa->data[j];
 		if(ro->type == RLIB_REPORT_PRESENTATION_DATA_LINE) {
-			struct rlib_report_lines *rl = ro->data;	
+			struct rlib_report_lines *rl = ro->data;
 			e = rl->e;
 			rlib_pcode_free(rl->bgcolor_code);
 			rlib_pcode_free(rl->color_code);
@@ -174,13 +176,13 @@ static void rlib_free_output(rlib *r, struct rlib_element *e) {
 		rlib_free_fields(r, roa);
 		e=e->next;
 		g_free(save);
-	}	
+	}
 }
 
 static void rlib_free_graph(rlib *r, struct rlib_graph *graph) {
 	struct rlib_graph_plot *plot;
 	GSList *list;
-	
+
 	rlib_pcode_free(graph->name_code);
 	rlib_pcode_free(graph->type_code);
 	rlib_pcode_free(graph->subtype_code);
@@ -225,8 +227,8 @@ static void rlib_free_graph(rlib *r, struct rlib_graph *graph) {
 		rlib_pcode_free(plot->field_code);
 		rlib_pcode_free(plot->label_code);
 		rlib_pcode_free(plot->side_code);
-		rlib_pcode_free(plot->disabled_code);	
-		rlib_pcode_free(plot->color_code);	
+		rlib_pcode_free(plot->disabled_code);
+		rlib_pcode_free(plot->color_code);
 		xmlFree(plot->xml_axis.xml);
 		xmlFree(plot->xml_field.xml);
 		xmlFree(plot->xml_label.xml);
@@ -239,7 +241,7 @@ static void rlib_free_graph(rlib *r, struct rlib_graph *graph) {
 static void rlib_free_chart(rlib *r, struct rlib_chart *chart) {
 	struct rlib_chart_header_row *header_row;
 	struct rlib_chart_row *row;
-	
+
 	rlib_pcode_free(chart->name_code);
 	rlib_pcode_free(chart->title_code);
 	rlib_pcode_free(chart->cols_code);
@@ -297,7 +299,7 @@ void rlib_free_report(rlib *r, struct rlib_report *report) {
 	} else {
 		g_free(report->contents);
 	}
-	
+
 	rlib_pcode_free(report->font_size_code);
 	rlib_pcode_free(report->orientation_code);
 	rlib_pcode_free(report->top_margin_code);
@@ -309,7 +311,7 @@ void rlib_free_report(rlib *r, struct rlib_report *report) {
 	rlib_pcode_free(report->detail_columns_code);
 	rlib_pcode_free(report->column_pad_code);
 	rlib_pcode_free(report->uniquerow_code);
-	
+
 	rlib_free_output(r, report->report_header);
 	rlib_free_output(r, report->page_header);
 	rlib_free_output(r, report->page_footer);
@@ -324,10 +326,10 @@ void rlib_free_report(rlib *r, struct rlib_report *report) {
 	g_free(report->position_top);
 	g_free(report->position_bottom);
 	g_free(report->bottom_size);
-	
+
 	rlib_value_free(&report->uniquerow);
 
-	
+
 	if(report->breaks != NULL) {
 		for(e = report->breaks; e != NULL; e=e->next) {
 			struct rlib_report_break *rb = e->data;
@@ -339,7 +341,7 @@ void rlib_free_report(rlib *r, struct rlib_report *report) {
 				rlib_break_free_pcode(r, bf);
 				g_free(bf);
 			}
-			
+
 			while(rb->fields) {
 				prev = NULL;
 				for(be = rb->fields; be->next != NULL; be=be->next) {
@@ -373,7 +375,7 @@ void rlib_free_report(rlib *r, struct rlib_report *report) {
 				break;
 		}
 
-	}	
+	}
 
 	if(report->variables != NULL) {
 		for(e = report->variables; e != NULL; e=e->next) {
@@ -392,10 +394,10 @@ void rlib_free_report(rlib *r, struct rlib_report *report) {
 				g_free(rv->precalculated_values->data);
 				rv->precalculated_values = g_slist_remove_link (rv->precalculated_values, rv->precalculated_values);
 			}
-			
+
 			g_free(rv);
 		}
-		
+
 	}
 	xmlFree(report->xml_font_size.xml);
 	xmlFree(report->xml_query.xml);
@@ -437,7 +439,7 @@ void rlib_free_part_td(rlib *r, struct rlib_part *part, GSList *part_deviations)
 
 static void rlib_free_part_tr(rlib *r, struct rlib_part *part) {
 	GSList *element;
-	
+
 	for(element = part->part_rows;element != NULL;element = g_slist_next(element)) {
 		struct rlib_part_tr *tr = element->data;
 		rlib_pcode_free(tr->layout_code);
@@ -447,7 +449,7 @@ static void rlib_free_part_tr(rlib *r, struct rlib_part *part) {
 		rlib_free_part_td(r, part, tr->part_deviations);
 		g_slist_free(tr->part_deviations);
 		g_free(tr);
-	}	
+	}
 	g_slist_free(part->part_rows);
 }
 
@@ -477,7 +479,7 @@ void rlib_free_part(rlib *r, struct rlib_part *part) {
 	xmlFree(part->xml_iterations.xml);
 	xmlFree(part->xml_suppress_page_header_first_page.xml);
 	xmlFree(part->xml_suppress.xml);
-	
+
 	g_free(part->position_top);
 	g_free(part->position_bottom);
 	g_free(part->bottom_size);
@@ -540,7 +542,7 @@ gint rlib_free(rlib *r) {
 	rlib_free_results_and_queries(r);
 	for(i=0;i<r->inputs_count;i++) {
 		r->inputs[i].input->input_close(r->inputs[i].input);
-		r->inputs[i].input->free(r->inputs[i].input);	
+		r->inputs[i].input->free(r->inputs[i].input);
 		if(r->inputs[i].handle != NULL)
 			g_module_close(r->inputs[i].handle);
 		g_free(r->inputs[i].name);

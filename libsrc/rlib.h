@@ -16,7 +16,7 @@
  * License along with this program; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
- * 
+ *
  * $Id$s
  *
  * This module defines constants and structures used by most of the C code
@@ -146,7 +146,7 @@ struct rlib_value {
 	gint64 number_value;
 	struct rlib_datetime date_value;
 	gchar *string_value;
-	gpointer iif_value;  
+	gpointer iif_value;
 	gint free;
 };
 
@@ -171,7 +171,7 @@ struct rlib_from_xml {
 };
 
 struct rlib_report_literal {
-	gchar value[MAXSTRLEN];
+	gchar *value;
 	struct rlib_from_xml xml_align;
 	struct rlib_from_xml xml_color;
 	struct rlib_from_xml xml_bgcolor;
@@ -180,10 +180,10 @@ struct rlib_report_literal {
 	struct rlib_from_xml xml_italics;
 	struct rlib_from_xml xml_col;
 	struct rlib_from_xml xml_link;
-	
+
 	gint width;
 	gint align;
-	
+
 	struct rlib_pcode *color_code;
 	struct rlib_pcode *bgcolor_code;
 	struct rlib_pcode *col_code;
@@ -225,9 +225,9 @@ struct rlib_line_extra_data {
 
 	gint font_point;
 	gchar* formatted_string;
-	gint width;	
-	gint col;	
-	gint delayed;	
+	gint width;
+	gint col;
+	gint delayed;
 	struct rlib_rgb bgcolor;
 	gint found_bgcolor;
 	gchar *link;
@@ -244,7 +244,7 @@ struct rlib_line_extra_data {
 	gboolean is_memo;
 	GSList *memo_lines;
 	gint memo_line_count;
-	
+
 	struct rlib_pcode *field_code;
 	struct rlib_report_field *report_field;
 };
@@ -258,7 +258,7 @@ struct rlib_delayed_extra_data {
 };
 
 struct rlib_report_field {
-	gchar value[MAXSTRLEN];
+	gchar *value;
 	gint value_line_number;
 	struct rlib_from_xml xml_align;
 	struct rlib_from_xml xml_bgcolor;
@@ -276,7 +276,7 @@ struct rlib_report_field {
 
 	gint width;
 	gint align;
-	
+
 	struct rlib_pcode *code;
 	struct rlib_pcode *format_code;
 	struct rlib_pcode *link_code;
@@ -291,7 +291,7 @@ struct rlib_report_field {
 	struct rlib_pcode *memo_code;
 	struct rlib_pcode *memo_max_lines_code;
 	struct rlib_pcode *memo_wrap_chars_code;
-		
+
 	struct rlib_value *rval;
 };
 
@@ -364,9 +364,9 @@ struct rlib_report_lines {
 	struct rlib_pcode *font_size_code;
 	struct rlib_pcode *bold_code;
 	struct rlib_pcode *italics_code;
-	
+
 	struct rlib_element *e;
-	
+
 	gfloat max_line_height;
 };
 
@@ -390,7 +390,7 @@ struct rlib_report_break {
 	struct rlib_element *header;
 	struct rlib_element *fields;
 	struct rlib_element *footer;
-	
+
 	struct rlib_pcode *newpage_code;
 	struct rlib_pcode *headernewpage_code;
 	struct rlib_pcode *suppressblank_code;
@@ -410,7 +410,7 @@ struct rlib_count_amount {
 	struct rlib_value amount;
 };
 
-#define RLIB_REPORT_VARIABLE_UNDEFINED	-1 
+#define RLIB_REPORT_VARIABLE_UNDEFINED	-1
 #define RLIB_REPORT_VARIABLE_EXPRESSION	1
 #define RLIB_REPORT_VARIABLE_COUNT 		2
 #define RLIB_REPORT_VARIABLE_SUM	 		3
@@ -433,7 +433,7 @@ struct rlib_report_variable {
 	struct rlib_pcode *code;
 	struct rlib_pcode *ignore_code;
 	struct rlib_count_amount data;
-	
+
 	GSList *precalculated_values;
 };
 
@@ -534,8 +534,8 @@ struct rlib_graph_plot {
 	struct rlib_from_xml xml_axis;
 	struct rlib_from_xml xml_field;
 	struct rlib_from_xml xml_label;
-	struct rlib_from_xml xml_side;	
-	struct rlib_from_xml xml_disabled;	
+	struct rlib_from_xml xml_side;
+	struct rlib_from_xml xml_disabled;
 	struct rlib_from_xml xml_color;
 	struct rlib_value rval_axis;
 	struct rlib_value rval_field;
@@ -544,8 +544,8 @@ struct rlib_graph_plot {
 	struct rlib_value rval_disabled;
 	struct rlib_value rval_color;
 	struct rlib_pcode *axis_code;
-	struct rlib_pcode *field_code;	
-	struct rlib_pcode *label_code;	
+	struct rlib_pcode *field_code;
+	struct rlib_pcode *label_code;
 	struct rlib_pcode *side_code;
 	struct rlib_pcode *disabled_code;
 	struct rlib_pcode *color_code;
@@ -576,7 +576,7 @@ struct rlib_graph_plot {
 
 struct rlib_graph {
 	struct rlib_from_xml xml_name;
-	struct rlib_from_xml xml_type;	
+	struct rlib_from_xml xml_type;
 	struct rlib_from_xml xml_subtype;
 	struct rlib_from_xml xml_width;
 	struct rlib_from_xml xml_height;
@@ -593,9 +593,9 @@ struct rlib_graph {
 	struct rlib_from_xml xml_y_axis_title_right;
 	struct rlib_from_xml xml_y_axis_decimals;
 	struct rlib_from_xml xml_y_axis_decimals_right;
-	struct rlib_pcode *name_code;	
-	struct rlib_pcode *type_code;	
-	struct rlib_pcode *subtype_code;	
+	struct rlib_pcode *name_code;
+	struct rlib_pcode *type_code;
+	struct rlib_pcode *subtype_code;
 	struct rlib_pcode *width_code;
 	struct rlib_pcode *height_code;
 	struct rlib_pcode *title_code;
@@ -687,7 +687,7 @@ struct rlib_report {
 	struct rlib_from_xml xml_height;
 	struct rlib_from_xml xml_iterations;
 	struct rlib_from_xml xml_uniquerow;
-	
+
 	gfloat *position_top;
 	gfloat *position_bottom;
 	gfloat *bottom_size;
@@ -710,14 +710,14 @@ struct rlib_report {
 	gboolean is_the_only_report;
 	struct rlib_pcode *iterations_code;
 	struct rlib_value uniquerow;
-	
+
 	struct rlib_element *report_header;
 	struct rlib_element *page_header;
 	struct rlib_report_detail detail;
 	struct rlib_element *page_footer;
 	struct rlib_element *report_footer;
 	struct rlib_element *variables;
-	
+
 	struct rlib_element *breaks;
 	struct rlib_report_alternate alternate;
 	struct rlib_graph graph;
@@ -737,7 +737,7 @@ struct rlib_report {
 	struct rlib_pcode *suppress_page_header_first_page_code;
 	struct rlib_pcode *suppress_code;
 	struct rlib_pcode *uniquerow_code;
-	
+
 };
 
 struct rlib_queries {
@@ -790,7 +790,7 @@ struct rlib {
 	gint current_line_number;
 	gint detail_line_count;
 	gint start_of_new_report;
-	
+
 	gint font_point;
 
 	gint current_font_point;
@@ -799,23 +799,23 @@ struct rlib {
 	GHashTable *output_parameters;
 	GHashTable *input_metadata;
 	GSList *pcode_functions;
-	
-	GIConv output_encoder;		
+
+	GIConv output_encoder;
 	gchar *output_encoder_name;
-	
+
 	time_t now; /* set when rlib starts now will then be a constant over the time of the report */
-	
+
 	struct rlib_signal_functions signal_functions[RLIB_SIGNALS];
-	
+
 	struct rlib_queries **queries;
 
 	gint queries_count;
 	struct rlib_rip_reports reportstorun[RLIB_MAXIMUM_REPORTS];
 	struct rlib_results **results;
-	
+
 	struct rlib_part *parts[RLIB_MAXIMUM_REPORTS];
 	gint parts_count;
-	
+
 	gint current_result;
 
 	gint resultset_followers_count;
@@ -824,10 +824,10 @@ struct rlib {
 	gint format;
 	gint inputs_count;
 	gboolean did_execute;
-	
+
 	gchar *special_locale;
 	gchar *current_locale;
-	
+
 	gint html_debugging;
 
 	struct output_filter *o;
@@ -835,7 +835,7 @@ struct rlib {
 	struct environment_filter *environment;
 	GSList *graph_regions;
 	GSList *graph_minor_x_ticks;
-	
+
 	gint pcode_alpha_index;
 	gint pcode_alpha_m_index;
 
@@ -910,7 +910,7 @@ struct output_filter {
 	void (*graph_set_x_label_width)(rlib *r, gfloat width, gint cell_width);
 	void (*graph_set_y_label_width)(rlib *r, gfloat width);
 	void (*graph_get_width_offset)(rlib *r, gint *width_offset);
-	
+
 	void (*graph_init)(rlib *r);
 	void (*graph_get_chart_layout)(rlib *r, gfloat top, gfloat bottom, gint cell_height, gint rows, gint *chart_size, gint *chart_height);
 	void (*graph_start)(rlib *r, float, float, float, float, gboolean x_axis_labels_are_under_tick);
@@ -984,7 +984,7 @@ gboolean rlib_signal_connect_string(rlib *r, gchar *signal_name, gboolean (*sign
 gboolean rlib_signal_connect(rlib *r, gint signal_number, gboolean (*signal_function)(rlib *, gpointer), gpointer data);
 gchar *rlib_get_output(rlib *r);
 gint rlib_get_output_length(rlib *r);
-gint rlib_mysql_report(gchar *hostname, gchar *username, gchar *password, gchar *database, gchar *xmlfilename, gchar *sqlquery, 
+gint rlib_mysql_report(gchar *hostname, gchar *username, gchar *password, gchar *database, gchar *xmlfilename, gchar *sqlquery,
 	gchar *outputformat);
 gint rlib_postgres_report(gchar *connstr, gchar *xmlfilename, gchar *sqlquery, gchar *outputformat);
 gint rlib_add_resultset_follower(rlib *r, gchar *leader, gchar *follower);
@@ -1124,7 +1124,7 @@ gfloat rlib_chart(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 /***** PROTOTYPES: axis.c ******************************************************/
 /* void rlib_graph_find_y_range(rlib *r, gdouble a, gdouble b, gdouble *y_min, gdouble *y_max, gint graph_type); */
 /* gint rlib_graph_num_ticks(rlib *r, gdouble a, gdouble b); */
-int adjust_limits(gdouble  dataMin, gdouble dataMax, gint denyMinEqualsAdjMin, gint minTMs, gint maxTMs, 
+int adjust_limits(gdouble  dataMin, gdouble dataMax, gint denyMinEqualsAdjMin, gint minTMs, gint maxTMs,
 	gint* numTms, gdouble* tmi, gdouble* adjMin, gdouble* adjMax, gint *goodIncs, gint numGoodIncs);
 
 /***** PROTOTYPES: xml_data_source.c ******************************************************/

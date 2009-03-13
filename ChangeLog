@@ -1,3 +1,13 @@
+2009-03-13  Bob Nielsen  <rnielsen@sicompos.com>
+	* libsrc/free.c: free dynamically created string value for rlib_report_field and rlib_report_literal
+	* libsrc/html.c: Add rlib_html_escape for characters < > &
+	* libsrc/load.c: allocate memory for *value in rlib_report _field and _literal (eventhough load.c is no longer used)
+	* libsrc/parsexml.c: allocate memory for string *value in rlib_report_field and rlib_report_literal
+	* libsrc/pcode.c: Make rlib_pcode_instruction dynamic - allow variable number of struct rlib_pcode_instruction
+	* libsrc/pcode.h: Use pointer to array of rlib_pcode_instruction in rlib_pcode instructions instead of fixed size array
+	* libsrc/rlib.h: Use pointer to array for value in rlib_report_field and rlib_report_literal instead of fixed size array
+	* src/examples/php/expressions.xml: Make value a really long string
+
 2008-09-29  Zoltan Boszormenyi <zboszor@dunaweb.hu>
 	* libsrc/api.c: fix crash on failed query
 

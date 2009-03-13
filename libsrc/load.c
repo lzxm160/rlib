@@ -17,7 +17,7 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
- 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -47,7 +47,7 @@ gchar * read_xml_str(gchar **ptr) {
 		str = *ptr;
 		*ptr += p->size;
 		return str;
-	} 
+	}
 	return NULL;
 }
 
@@ -79,10 +79,13 @@ struct rlib_report_literal * read_text(gchar **ptr) {
 	rt = g_malloc(sizeof(struct rlib_report_literal));
 	*ptr += sizeof(gint32);
 	tmp = read_xml_str(ptr);
-	if(tmp != NULL)
+	if(tmp != NULL) {
+		rt->value = g_malloc(strlen(tmp) + sizeof(gchar));
 		strcpy(rt->value, tmp);
-	else
+	} else {
+		rt->value = g_malloc(sizeof(gchar));
 		rt->value[0] = 0;
+	}
 	rt->xml_align.xml = (xmlChar *)read_xml_str(ptr);
 	rt->xml_color.xml = (xmlChar *)read_xml_str(ptr);
 	rt->xml_bgcolor.xml = (xmlChar *)read_xml_str(ptr);
@@ -97,10 +100,14 @@ struct rlib_report_field * read_field(gchar **ptr) {
 	rf = g_malloc(sizeof(struct rlib_report_field));
 	*ptr += sizeof(gint32);
 	tmp = read_xml_str(ptr);
-	if(tmp != NULL)
+	if(tmp != NULL) {
+		rf->value = g_malloc(strlen(tmp) + sizeof(gchar));
 		strcpy(rf->value, tmp);
-	else
+	}
+	else {
+		rf->value = g_malloc(sizeof(gchar));
 		rf->value[0] = 0;
+	}
 
 	rf->xml_align.xml = (xmlChar *)read_xml_str(ptr);
 	rf->xml_bgcolor.xml = (xmlChar *)read_xml_str(ptr);
@@ -118,7 +125,7 @@ struct rlib_report_lines * read_line(gchar **ptr) {
 	gint32 *type;
 	gpointer pointer = NULL;
 	struct rlib_element *current;
-	
+
 	rl->xml_bgcolor.xml = (xmlChar *)read_xml_str(ptr);
 	rl->xml_color.xml = (xmlChar *)read_xml_str(ptr);
 	rl->xml_font_size.xml = (xmlChar *)read_xml_str(ptr);
@@ -169,18 +176,18 @@ struct rlib_report_output_array * read_roa(gchar **ptr) {
 		while(1) {
 			type = (gint32 *)*ptr;
 			*ptr += sizeof(gint32);
-			
+
 			if(*type == RLIB_FILE_ROA+1)
 				break;
 			roa->data = g_realloc(roa->data, sizeof(struct rlib_report_output_array *) * (roa->count + 1));
 
 			if(*type == RLIB_REPORT_PRESENTATION_DATA_IMAGE)
-				roa->data[roa->count++] = report_output_new(RLIB_REPORT_PRESENTATION_DATA_IMAGE, read_image(ptr));				
+				roa->data[roa->count++] = report_output_new(RLIB_REPORT_PRESENTATION_DATA_IMAGE, read_image(ptr));
 			else if(*type == RLIB_REPORT_PRESENTATION_DATA_HR)
-				roa->data[roa->count++] = report_output_new(RLIB_REPORT_PRESENTATION_DATA_HR, read_hr(ptr));				
+				roa->data[roa->count++] = report_output_new(RLIB_REPORT_PRESENTATION_DATA_HR, read_hr(ptr));
 			else if(*type == RLIB_REPORT_PRESENTATION_DATA_LINE)
-				roa->data[roa->count++] = report_output_new(RLIB_REPORT_PRESENTATION_DATA_LINE, read_line(ptr));				
-		
+				roa->data[roa->count++] = report_output_new(RLIB_REPORT_PRESENTATION_DATA_LINE, read_line(ptr));
+
 		}
 		return roa;
 	}
@@ -228,7 +235,7 @@ struct rlib_report_variable * read_variable(gchar **ptr) {
 		rv->xml_value.xml = (xmlChar *)read_xml_str(ptr);
 		rv->xml_resetonbreak.xml = (xmlChar *)read_xml_str(ptr);
 		*ptr += sizeof(gint32);
-	}	
+	}
 	return rv;
 }
 
@@ -244,10 +251,10 @@ struct rlib_element * read_variables(gchar **ptr) {
 				break;
 			if(*type == RLIB_FILE_VARIABLE) {
 				if(e == NULL) {
-					current = e = g_malloc(sizeof(struct rlib_element));	
+					current = e = g_malloc(sizeof(struct rlib_element));
 				} else {
 					for(moving=e;moving->next != NULL;moving = moving->next);
-					current = moving->next = g_malloc(sizeof(struct rlib_element));	
+					current = moving->next = g_malloc(sizeof(struct rlib_element));
 				}
 				current->data = read_variable(ptr);
 				current->next = NULL;
@@ -279,10 +286,10 @@ struct rlib_report_break * read_break(gchar **ptr) {
 			if(*type == RLIB_FILE_BREAK_FIELD) {
 				*ptr += sizeof(gint32);
 				if(rb->fields == NULL) {
-					current = rb->fields = g_malloc(sizeof(struct rlib_element));	
+					current = rb->fields = g_malloc(sizeof(struct rlib_element));
 				} else {
 					for(moving=rb->fields;moving->next != NULL;moving = moving->next);
-					current = moving->next = g_malloc(sizeof(struct rlib_element));	
+					current = moving->next = g_malloc(sizeof(struct rlib_element));
 				}
 				bf = g_malloc(sizeof(struct rlib_break_fields));
 				bf->rval = NULL;
@@ -294,7 +301,7 @@ struct rlib_report_break * read_break(gchar **ptr) {
 				break;
 		}
 		*ptr += sizeof(gint32);
-	}	
+	}
 	return rb;
 }
 
@@ -310,14 +317,14 @@ struct rlib_element * read_breaks(gchar **ptr) {
 				break;
 			if(*type == RLIB_FILE_BREAK) {
 				if(e == NULL) {
-					current = e = g_malloc(sizeof(struct rlib_element));	
+					current = e = g_malloc(sizeof(struct rlib_element));
 				} else {
 					for(moving=e;moving->next != NULL;moving = moving->next);
-					current = moving->next = g_malloc(sizeof(struct rlib_element));	
+					current = moving->next = g_malloc(sizeof(struct rlib_element));
 				}
 				current->data = read_break(ptr);
 				current->next = NULL;
-				
+
 			}
 
 		}
@@ -350,7 +357,7 @@ struct rlib_part * load_report(gchar *filename) {
 		g_free(contents);
 		close(fd);
 		return NULL;
-	
+
 	}
 
 	rep = g_malloc(sizeof(struct rlib_report));
@@ -373,7 +380,7 @@ struct rlib_part * load_report(gchar *filename) {
 	rep->report_footer = read_output(&ptr);
 	rep->variables = read_variables(&ptr);
 	rep->breaks = read_breaks(&ptr);
-	
+
 	rep->contents = contents;
 	rep->doc = NULL;
 	/*g_free(contents);*/

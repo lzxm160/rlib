@@ -70,7 +70,7 @@
 #define OP_COS 	23
 #define OP_LN		24
 #define OP_EXP 	25
-#define OP_ATAN	26 	
+#define OP_ATAN	26
 #define OP_SQRT	27
 #define OP_FXPVAL	28
 #define OP_VAL 	29
@@ -119,15 +119,15 @@ struct rlib_pcode_instruction {
 
 struct rlib_pcode {
 	gint count;
-	struct rlib_pcode_instruction instructions[200];
+	struct rlib_pcode_instruction *instructions;
 	gchar *infix_string;
 	gint line_number;
 };
 
 struct rlib_pcode_operator {
 	const gchar *tag;		/* What I expect to find in the infix string */
-	gint taglen;		
-	gint precedence; 
+	gint taglen;
+	gint precedence;
 	gint is_op;
 	gint opnum;
 	gint is_function;
@@ -138,7 +138,7 @@ struct rlib_pcode_operator {
 struct rlib_pcode_if {
 	struct rlib_pcode *evaulation;
 	struct rlib_pcode *true;
-	struct rlib_pcode *false;		
+	struct rlib_pcode *false;
 	char *str_ptr;
 };
 
