@@ -473,6 +473,8 @@ static void rlib_html_start_report(rlib *r, struct rlib_part *part) {
     			print_text(r, buf, FALSE);
     			sprintf(buf, "pre { margin:0; padding:0; margin-top:0; margin-bottom:0; font-size:%dpt;}\n", part->font_size);
     			print_text(r, buf, FALSE);
+    			sprintf(buf, "body { background-color: #ffffff;}\n");
+    			print_text(r, buf, FALSE);
     			print_text(r, "div { position: absolute; left: 0; }\n", FALSE);
     			print_text(r, "TABLE { border: 0; border-spacing: 0; padding: 0; width:100%; }\n", FALSE);
     			print_text(r, "</style>\n", FALSE);

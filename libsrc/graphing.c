@@ -43,19 +43,13 @@ int numGoodIncs_normal = 15;
 int goodIncs_15[6] = {3, 5, 7, 11, 13, 15};
 int numGoodIncs_15 = 6;
 
+#define MAX_COLOR_POOL 20 
 
-
-#define MAX_COLOR_POOL_NORMAL 32
-#define MAX_COLOR_POOL_LINE  24
-
-const gchar *color_pool_normal[MAX_COLOR_POOL_NORMAL] = {"0x9999ff", "0x993366", "0xfcfa44", "0xccffff", "0x660066", "0xff8080", "0x0066cc", "0xccccff", "0x000080", 
-	"0xff00ff", "0xffff00", "0x00ffff", "0x800080", "0x800000", "0x008080", "0x0000ff", "0x00ccff", "0xccffff", "0xccffcc", "0xffff99", "0x99ccff", 
-	"0xff99cc", "0xcc99ff", "0xffcc99", "0x3366ff", "0x33cccc", "0x99cc00", "0xffcc00", "0xff9900", "0xff6600", "0x666699", "0x969696"};
-
-const gchar *color_pool_line[MAX_COLOR_POOL_LINE] = {"0x9999ff", "0x993366", "0xfcfa44", "0x660066", "0xff8080", "0x0066cc", "0x000080", "0xff00ff", 
-	"0xffff00", "0x800080", "0x800000", "0x008080", "0x0000ff", "0x99ccff", "0xff99cc", "0xcc99ff", "0x3366ff", "0x33cccc", "0x99cc00", "0xffcc00", 
-	"0xff9900", "0xff6600", "0x666699", "0x969696"};
-
+const gchar *color_pool[MAX_COLOR_POOL] = { "0x4684ee", "0xdc3912", "0xff9900", "0x008000", 
+                                            "0x666666", "0x4942cc", "0xcb4ac5", "0xd6ae00", 
+                                            "0x336699", "0xdd4477", "0xaaaa11", "0x66aa00", 
+                                            "0x888888", "0x994499", "0xdd5511", "0x22aa99", 
+                                            "0x999999", "0x705770", "0x109618", "0xa32929" };
 
 static gboolean is_row_graph(gint graph_type) {
 	if(graph_type == RLIB_GRAPH_TYPE_ROW_NORMAL || graph_type == RLIB_GRAPH_TYPE_ROW_PERCENT || graph_type == RLIB_GRAPH_TYPE_ROW_STACKED)
@@ -234,7 +228,7 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	gfloat last_height,last_height_neg,last_height_pos;
 	gfloat y_origin[2] = {0,0};
 	gchar data_type[2] = {POSITIVE, POSITIVE}; 
-	struct rlib_rgb color[MAX_COLOR_POOL_NORMAL];
+	struct rlib_rgb color[MAX_COLOR_POOL];
 	struct rlib_rgb plot_color;
 	gchar type[MAXSTRLEN], subtype[MAXSTRLEN], title[MAXSTRLEN], legend_bg_color[MAXSTRLEN], legend_orientation[MAXSTRLEN], x_axis_title[MAXSTRLEN];
 	gchar y_axis_title[MAXSTRLEN], y_axis_title_right[MAXSTRLEN], side_str[MAXSTRLEN], grid_color[MAXSTRLEN], name[MAXSTRLEN], color_str[MAXSTRLEN];
@@ -248,8 +242,6 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	gint left_axis_decimal_hint=-1, right_axis_decimal_hint=-1;
 	gboolean disabled, tmp_disabled;
 	gboolean minor_tick[MAX_X_TICKS];
-	gint max_color_pool = MAX_COLOR_POOL_NORMAL;
-	const gchar **color_pool = color_pool_normal;
 
 	left_margin_offset += part->left_margin;
 
@@ -304,11 +296,8 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	
 	graph_type = determine_graph_type(type, subtype);	
 
-	if(is_line_graph(graph_type)) {
+	if(is_line_graph(graph_type))
 		should_label_under_tick = TRUE;
-		max_color_pool = MAX_COLOR_POOL_LINE;
-		color_pool = color_pool_line;
-	}
 
 	if(graph_type == RLIB_GRAPH_TYPE_ROW_STACKED || graph_type == RLIB_GRAPH_TYPE_ROW_PERCENT) 
 		divide_iterations = FALSE;
@@ -435,7 +424,7 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 								y_value_try_max[side] = y_value;
 								y_value_try_min[side] = y_value;
 							}
-							rlib_parsecolor(&color[data_plot_count%max_color_pool], color_pool[data_plot_count%max_color_pool]);
+							rlib_parsecolor(&color[data_plot_count%MAX_COLOR_POOL], color_pool[data_plot_count%MAX_COLOR_POOL]);
 							data_plot_count++;
 							if(y_value_try_min[side] < y_min[side])
 								y_min[side] = y_value_try_min[side];
@@ -444,7 +433,7 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 						}
 						if(is_pie_graph(graph_type)) {
 							col_sum += fabs(y_value);
-							rlib_parsecolor(&color[row_count%max_color_pool], color_pool[row_count%max_color_pool]);			
+							rlib_parsecolor(&color[row_count%MAX_COLOR_POOL], color_pool[row_count%MAX_COLOR_POOL]);			
 							if(rlib_execute_as_string(r, plot->label_code, legend_label, MAXSTRLEN)) {
 								OUTPUT(r)->graph_hint_legend(r, legend_label);
 							}				
