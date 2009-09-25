@@ -1410,9 +1410,9 @@ gint rlib_pcode_operator_upper(rlib *r, struct rlib_pcode *code, struct rlib_val
 	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_STRING(v1)) {
-		gchar *tmp = g_strdup(RLIB_VALUE_GET_AS_STRING(v1));
+		gchar *tmp = r_strupr(RLIB_VALUE_GET_AS_STRING(v1));
 		rlib_value_free(v1);
-		rlib_value_stack_push(r,vs, rlib_value_new_string(&rval_rtn, r_strupr(tmp)));
+		rlib_value_stack_push(r,vs, rlib_value_new_string(&rval_rtn, tmp));
 		g_free(tmp);
 		return TRUE;
 	}
@@ -1426,9 +1426,9 @@ gint rlib_pcode_operator_lower(rlib *r, struct rlib_pcode *code, struct rlib_val
 	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_STRING(v1)) {
-		gchar *tmp = g_strdup(RLIB_VALUE_GET_AS_STRING(v1));
+		gchar *tmp = r_strlwr(RLIB_VALUE_GET_AS_STRING(v1));
 		rlib_value_free(v1);
-		rlib_value_stack_push(r,vs, rlib_value_new_string(&rval_rtn, r_strlwr(tmp)));
+		rlib_value_stack_push(r,vs, rlib_value_new_string(&rval_rtn, tmp));
 		g_free(tmp);
 		return TRUE;
 	}
@@ -1543,10 +1543,9 @@ gint rlib_pcode_operator_proper(rlib *r, struct rlib_pcode *code, struct rlib_va
 			rlib_value_stack_push(r,vs, rlib_value_new_string(&rval_rtn, ""));	
 			return TRUE;	
 		} else {
-			gchar *tmp = g_strdup(RLIB_VALUE_GET_AS_STRING(v1));
+			gchar *tmp = strproper(RLIB_VALUE_GET_AS_STRING(v1));
 			rlib_value_free(v1);
-/* TODO: find or write a utf8 version  of strproper. */
-			rlib_value_stack_push(r,vs, rlib_value_new_string(&rval_rtn, strproper(tmp)));
+			rlib_value_stack_push(r,vs, rlib_value_new_string(&rval_rtn, tmp));
 			g_free(tmp);
 			return TRUE;
 		}

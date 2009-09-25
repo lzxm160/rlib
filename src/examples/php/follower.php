@@ -45,10 +45,10 @@
 	$rlib =	rlib_init();
 	rlib_add_datasource_array($rlib, "local_array");
 	rlib_add_query_as($rlib, "local_array", "data", "data");
-	rlib_add_query_as($rlib, "local_array", "more_data", "more_data");
-	rlib_add_resultset_follower($rlib, "data", "more_data");
+//	rlib_add_query_as($rlib, "local_array", "more_data", "more_data");
+//	rlib_add_resultset_follower($rlib, "data", "more_data");
 	rlib_add_report($rlib, "follower.xml");
-	rlib_set_output_format_from_text($rlib, "pdf");
+	rlib_set_output_format_from_text($rlib, "txt");
 	rlib_execute($rlib);
 	header(rlib_get_content_type($rlib));
 	rlib_spool($rlib);

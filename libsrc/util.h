@@ -44,8 +44,6 @@ void rlib_parsecolor(struct rlib_rgb *color, const gchar *strx);
 struct rlib_datetime * stod(struct rlib_datetime *tm_date, gchar *str);
 void bumpday(gint *year, gint *month, gint *day);
 void bumpdaybackwords(gint *year, gint *month, gint *day);
-gchar *strupr (gchar *s);
-gchar *strlwr (gchar *s);
 gchar *strproper (gchar *s);
 gint daysinmonth(gint year, gint month);
 void init_signals(void);
@@ -60,8 +58,8 @@ gint64 rlib_safe_atoll(char *str);
 #define r_nextchr(s) (s+1)
 #define r_getchr(s) (*s)
 #define r_strcmp(s1,s2) (strcmp(s1, s2))
-#define r_strupr(s) (strupr(s))
-#define r_strlwr(s) (strlwr(s))
+#define r_strupr(s) (g_ascii_strup(s, -1))
+#define r_strlwr(s) (g_ascii_strdown(s, -1))
 #define r_ptrfromindex(s, idx) (s+idx)
 
 #else

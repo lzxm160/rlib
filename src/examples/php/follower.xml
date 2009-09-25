@@ -51,6 +51,7 @@
 					<HorizontalLine size="2" bgcolor="'black'"/>
 					<HorizontalLine size="4" bgcolor="'white'"/>
 					<Line>
+						<literal>FOOTER</literal>
 						<field value="group" width="20" align="left" col="1"/>					
 					</Line>
 					<HorizontalLine size="4" bgcolor="'white'"/>

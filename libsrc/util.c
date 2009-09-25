@@ -389,30 +389,66 @@ struct rlib_datetime * stod(struct rlib_datetime *dt, gchar *str) {
 	return dt;
 }
 
-gchar *strupr (gchar *s) {
-	gchar c;
-	gchar *ptr = s;
-	while ((c = toupper(*s)) != '\0')
-		*s++ = c;
-	return ptr;
-}
-
-gchar *strlwr (gchar *s) {
-	gchar c;
-	gchar *ptr = s;
-	while ((c = tolower(*s)) != '\0')
-		*s++ = c;
-	return ptr;
-}
-
 gchar *strproper (gchar *s) {
+#if DISABLE_UTF8
 	gchar c;
-	gchar *ptr = s;
+	gchar *ptr;
+
+	if (!s)
+		return NULL;
+
+	ptr = g_strdup(s);
+	if (!ptr)
+		return NULL;
+	s = ptr;
 	*s = toupper(*s);
 	s++;
 	while ((c = tolower(*s)) != '\0')
 		*s++ = c;
 	return ptr;
+#else
+	gchar *ptr, *s1, *ptr1;
+	gint len, first;
+	gunichar c;
+
+	if (!s)
+		return NULL;
+
+	len = 0;
+	ptr = s;
+	first = 1;
+	while (*ptr) {
+		c = g_utf8_get_char(ptr);
+		if (first) {
+			c = g_unichar_toupper(c);
+			first = 0;
+		} else
+			c = g_unichar_tolower(c);
+		len += g_unichar_to_utf8(c, NULL);
+		ptr = g_utf8_next_char(ptr);
+	}
+
+	s1 = g_malloc(len);
+	if (!s1)
+		return NULL;
+
+	ptr = s;
+	ptr1 = s1;
+	first = 1;
+	while (*ptr) {
+		c = g_utf8_get_char(ptr);
+		if (first) {
+			c = g_unichar_toupper(c);
+			first = 0;
+		} else
+			c = g_unichar_tolower(c);
+		len = g_unichar_to_utf8(c, ptr1);
+		ptr1 += len;
+		ptr = g_utf8_next_char(ptr);
+	}
+
+	return s1;
+#endif
 }
 
 
