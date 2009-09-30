@@ -283,6 +283,13 @@ gint flag, gint memo_line) {
 		gchar *type = RLIB_VALUE_GET_AS_STRING(&extra_data->rval_image_type);
 		OUTPUT(r)->line_image(r, left_origin, bottom_orgin, name, type, width, height);
 		rtn_width = extra_data->output_width;
+	} else if(extra_data->type == RLIB_ELEMENT_BARCODE) {
+		gfloat height = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(&extra_data->rval_image_height));
+		gfloat width = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(&extra_data->rval_image_width));
+		gchar *name = RLIB_VALUE_GET_AS_STRING(&extra_data->rval_image_name);
+		gchar *type = RLIB_VALUE_GET_AS_STRING(&extra_data->rval_image_type);
+		OUTPUT(r)->line_image(r, left_origin, bottom_orgin, name, type, width, height);
+		rtn_width = extra_data->output_width;
 	} else {
 		OUTPUT(r)->set_font_point(r, extra_data->font_point);
 		if(extra_data->found_color)
@@ -402,6 +409,7 @@ static gint rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 	struct rlib_report_field *rf;
 	struct rlib_report_literal *rt;
 	struct rlib_report_image *ri;
+	struct rlib_report_barcode *rb;
 	struct rlib_element *e = rl->e;
 	struct rlib_value line_rval_color;
 	struct rlib_value line_rval_bgcolor;
@@ -432,6 +440,7 @@ static gint rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 		RLIB_VALUE_TYPE_NONE(&extra_data[i].rval_bgcolor);
 		RLIB_VALUE_TYPE_NONE(&extra_data[i].rval_bold);
 		RLIB_VALUE_TYPE_NONE(&extra_data[i].rval_italics);
+		
 		extra_data[i].type = e->type;
 		extra_data[i].delayed = FALSE;
 		extra_data[i].is_memo = FALSE;
@@ -588,6 +597,33 @@ static gint rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 			
 			if(rl->max_line_height < RLIB_GET_LINE(height))
 				rl->max_line_height = RLIB_GET_LINE(height);
+		} else if(e->type == RLIB_ELEMENT_BARCODE) {
+			gfloat height;
+			gchar filename[128];
+			gchar *barcode = "";
+			struct rlib_value rval_value;
+			rb = e->data;
+
+			rlib_execute_pcode(r, &rval_value, rb->value_code, NULL);
+			if(RLIB_VALUE_IS_STRING(&rval_value)) {
+				barcode = RLIB_VALUE_GET_AS_STRING(&rval_value);   			
+			} else {
+				r_error(r, "Barcode values must be strings!");
+			}
+
+			rlib_execute_pcode(r, &extra_data[i].rval_image_height, rb->height_code, NULL);			
+			rlib_value_free(&rval_value);
+			sprintf(filename, "%s.png", tempnam(NULL, "RLIB_IMAGE_FILE_XXXXX"));
+
+			height = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(&extra_data[i].rval_image_height));
+
+			if (gd_barcode_png_to_file(filename,barcode,height)) {			
+				rlib_value_new_string(&extra_data[i].rval_image_name, filename);
+				rlib_value_new_string(&extra_data[i].rval_image_type, "png");
+			}
+			
+			if(rl->max_line_height < RLIB_GET_LINE(height))
+				rl->max_line_height = RLIB_GET_LINE(height);
 		} else {
 			r_error(r, "Line has invalid content");
 		}
@@ -703,7 +739,7 @@ static gint rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 				}
 			}
 		}
-		if(extra_data[i].type != RLIB_ELEMENT_IMAGE)
+		if(extra_data[i].type != RLIB_ELEMENT_IMAGE && extra_data[i].type != RLIB_ELEMENT_BARCODE)
 			extra_data[i].output_width = rlib_layout_estimate_string_width_from_extra_data(r, &extra_data[i]);		
 		i++;
 	}
@@ -955,7 +991,8 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 ///////////////////END HERE							
 
 							if(extra_data[count].found_color == FALSE && extra_data[count].is_bold == FALSE && extra_data[count].is_italics == FALSE 
-							&& extra_data[count].is_memo == FALSE && extra_data[count].type != RLIB_ELEMENT_IMAGE && next_field_bg_color_changed == FALSE) {
+							&& extra_data[count].is_memo == FALSE && extra_data[count].type != RLIB_ELEMENT_IMAGE 
+							&& extra_data[count].type != RLIB_ELEMENT_BARCODE && next_field_bg_color_changed == FALSE) {
 								gchar *tmp_string;
 								if(start_count == -1)
 									start_count = count;
@@ -1010,7 +1047,14 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 								gchar *type = RLIB_VALUE_GET_AS_STRING(&extra_data[count].rval_image_type);
 								OUTPUT(r)->line_image(r, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), name, type, width1, height1);
 								width = RLIB_GET_LINE(width1);
-							}											
+							}  else if(e->type == RLIB_ELEMENT_BARCODE) {
+								gfloat height1 = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(&extra_data[count].rval_image_height));
+								gfloat width1 = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(&extra_data[count].rval_image_width));
+								gchar *name = RLIB_VALUE_GET_AS_STRING(&extra_data[count].rval_image_name);
+								gchar *type = RLIB_VALUE_GET_AS_STRING(&extra_data[count].rval_image_type);
+								OUTPUT(r)->line_image(r, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), name, type, width1, height1);
+								width = RLIB_GET_LINE(width1);
+							}										
 							margin += width;
 							count++;
 						}

@@ -87,6 +87,15 @@ static struct rlib_report_image * parse_image(xmlNodePtr cur) {
 	return ri;
 }
 
+static struct rlib_report_barcode * parse_barcode(xmlNodePtr cur) {
+	struct rlib_report_barcode *rb = g_new0(struct rlib_report_barcode, 1);
+	get_both(&rb->xml_value, cur, "value");
+	get_both(&rb->xml_type, cur, "type");
+	get_both(&rb->xml_width, cur, "width");
+	get_both(&rb->xml_height, cur, "height");
+	return rb;
+}
+
 static struct rlib_element * parse_line_array(rlib *r, xmlDocPtr doc, xmlNsPtr ns, xmlNodePtr cur) {
 	struct rlib_element *e, *current;
 	xmlChar *sp;
@@ -103,7 +112,7 @@ static struct rlib_element * parse_line_array(rlib *r, xmlDocPtr doc, xmlNsPtr n
 				r_error(r, "Line: %d - <field> is missing 'value' attribute. \n", xmlGetLineNo (cur),cur->name);
 				return NULL;
 			}
-			f->value = g_malloc0(strlen(sp) + sizeof(gchar));
+			f->value = g_malloc0(strlen((char *)sp) + sizeof(gchar));
 #if DISABLE_UTF8
 			utf8_to_8813(r, f->value, (gchar *)sp);
 #else
@@ -136,7 +145,7 @@ static struct rlib_element * parse_line_array(rlib *r, xmlDocPtr doc, xmlNsPtr n
 			current = g_new0(struct rlib_element, 1);
 			sp = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if(sp != NULL)
-				t->value = g_malloc0(strlen(sp) + sizeof(gchar));
+				t->value = g_malloc0(strlen((char *)sp) + sizeof(gchar));
 			else
 				t->value = g_malloc0(sizeof(gchar));
 #if DISABLE_UTF8
@@ -162,6 +171,11 @@ static struct rlib_element * parse_line_array(rlib *r, xmlDocPtr doc, xmlNsPtr n
 			current = (void *)g_new0(struct rlib_element, 1);
 			current->data = ri;
 			current->type = RLIB_ELEMENT_IMAGE;
+		} else if ((!xmlStrcmp(cur->name, (const xmlChar *) "Barcode"))) {
+			struct rlib_report_barcode *rb = parse_barcode(cur);
+			current = (void *)g_new0(struct rlib_element, 1);
+			current->data = rb;
+			current->type = RLIB_ELEMENT_BARCODE;
 		} else if (ignoreElement((const char *)cur->name)) {
 			/* ignore comments, etc */
 		} else {

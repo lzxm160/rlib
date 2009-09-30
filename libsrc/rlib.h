@@ -78,6 +78,7 @@
 #define RLIB_ELEMENT_TR      6
 #define RLIB_ELEMENT_TD      7
 #define RLIB_ELEMENT_LOAD    8
+#define RLIB_ELEMENT_BARCODE 9
 
 #define RLIB_FORMAT_PDF 	1
 #define RLIB_FORMAT_HTML	2
@@ -346,6 +347,18 @@ struct rlib_report_image {
 	struct rlib_pcode *width_code;
 	struct rlib_pcode *height_code;
 	struct rlib_pcode *textwidth_code;
+};
+
+struct rlib_report_barcode {
+	struct rlib_from_xml xml_value;
+	struct rlib_from_xml xml_type;
+	struct rlib_from_xml xml_width;
+	struct rlib_from_xml xml_height;
+
+	struct rlib_pcode *value_code;
+	struct rlib_pcode *type_code;
+	struct rlib_pcode *width_code;
+	struct rlib_pcode *height_code;
 };
 
 struct rlib_report_lines {
@@ -1153,3 +1166,6 @@ void rlib_variable_clear(rlib *r, struct rlib_report_variable *rv, gboolean do_e
 
 /***** PROTOTYPES: datetime.c ******************************************************/
 void rlib_datetime_format(rlib *r, gchar **dest, struct rlib_datetime *dt, const gchar *fmt);
+
+/***** PROTOTYPES: barcode.c ********************************************************/
+int gd_barcode_png_to_file(char *filename, char *barcode, int height);

@@ -80,7 +80,6 @@ int get_color_pool(struct rlib_gd *rgd, struct rlib_rgb *rgb) {
 	return -1;
 }
 
-
 struct rlib_gd * rlib_gd_new(gint width, gint height, gchar *image_directory) {
 	struct rlib_gd *rgd = g_malloc(sizeof(struct rlib_gd));
 	char file_name[MAXSTRLEN];
@@ -241,6 +240,10 @@ int rlib_gd_text(struct rlib_gd *rgd, char *text, int x, int y, int rotate, gboo
 	return TRUE;
 }
 
+int rlib_gd_color_text(struct rlib_gd *rgd, char *text, int x, int y, gboolean rotate, gboolean bold, struct rlib_rgb *color) {
+	return TRUE;
+}
+
 int rlib_gd_get_string_width(struct rlib_gd *rgd, const char *text, gboolean bold) {
 	return 0;
 }
@@ -264,7 +267,6 @@ int rlib_gd_rectangle(struct rlib_gd *rgd, gint x, gint y, gint width, gint heig
 int rlib_gd_arc(struct rlib_gd *rgd, gint x, gint y, gint radius, gint start_angle, gint end_angle, struct rlib_rgb *color) {
 	return TRUE;
 }
-
 
 int rlib_gd_spool(rlib *r, struct rlib_gd *rgd) {
 	return TRUE;

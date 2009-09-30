@@ -1,3 +1,20 @@
+2009-09-30  Christian Betz  <cbetz@sicom.com>
+
+	Initial release of barcode support (Code39)
+
+	* libsrc/Makefile.am:
+	* libsrc/barcode.c: (gdImageBarcodeCharFromCode39String),
+	(gdImageBarcodeChar), (gd_barcode_png_to_file):
+	* libsrc/free.c: (rlib_barcode_free_pcode), (rlib_free_fields):
+	* libsrc/gd.c: (rlib_gd_color_text): Add missing function when built without GD
+	* libsrc/layout.c: (rlib_layout_text_from_extra_data),
+	(rlib_layout_execute_pcodes_for_line),
+	(rlib_layout_report_output_array):
+	* libsrc/parsexml.c: (parse_barcode), (parse_line_array):
+	* libsrc/resolution.c: (rlib_barcode_resolve_pcode),
+	(rlib_resolve_fields2):
+	* libsrc/rlib.h:
+
 2009-09-25  Bob Doan  <bdoan@sicompos.com>
 	* libsrc/pcode_op_functions.c: Merge some Utf8 sutff..probably from Zoltan???
 	* libsrc/util.c: 

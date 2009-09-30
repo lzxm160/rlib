@@ -42,6 +42,20 @@ static void rlib_image_free_pcode(rlib *r, struct rlib_report_image * ri) {
 	g_free(ri);
 }
 
+static void rlib_barcode_free_pcode(rlib *r, struct rlib_report_barcode * rb) {
+	rlib_pcode_free(rb->value_code);
+	rlib_pcode_free(rb->type_code);
+	rlib_pcode_free(rb->width_code);
+	rlib_pcode_free(rb->height_code);
+	xmlFree(rb->xml_value.xml);
+	xmlFree(rb->xml_type.xml);
+	xmlFree(rb->xml_width.xml);
+	xmlFree(rb->xml_height.xml);
+	g_free(rb);
+}
+
+
+
 static void rlib_hr_free_pcode(rlib *r, struct rlib_report_horizontal_line * rhl) {
 	rlib_pcode_free(rhl->bgcolor_code);
 	rlib_pcode_free(rhl->suppress_code);
@@ -133,7 +147,11 @@ static void rlib_free_fields(rlib *r, struct rlib_report_output_array *roa) {
 				if(e->type == RLIB_ELEMENT_FIELD) {
 					rlib_field_free_pcode(r, ((struct rlib_report_field *)e->data));
 				} else if(e->type == RLIB_ELEMENT_LITERAL) {
-				        rlib_text_free_pcode(r, ((struct rlib_report_literal *)e->data));
+					rlib_text_free_pcode(r, ((struct rlib_report_literal *)e->data));
+				} else if(e->type == RLIB_ELEMENT_IMAGE) {
+					rlib_image_free_pcode(r, ((struct rlib_report_image *)e->data));
+				} else if(e->type == RLIB_ELEMENT_BARCODE) {
+					rlib_barcode_free_pcode(r, ((struct rlib_report_barcode *)e->data));
 				}
 			}
 			for(e=rl->e; e != NULL; ) {

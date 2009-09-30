@@ -230,6 +230,14 @@ static void rlib_image_resolve_pcode(rlib *r, struct rlib_part *part, struct rli
 	ri->textwidth_code = rlib_infix_to_pcode(r, part, report, (gchar *)ri->xml_textwidth.xml, ri->xml_textwidth.line, TRUE);
 }
 
+static void rlib_barcode_resolve_pcode(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_barcode * rb) {
+	rb->value_code = rlib_infix_to_pcode(r, part, report, (gchar *)rb->xml_value.xml, rb->xml_value.line, TRUE);
+	rb->type_code = rlib_infix_to_pcode(r, part, report, (gchar *)rb->xml_type.xml, rb->xml_type.line, TRUE);
+	rb->width_code = rlib_infix_to_pcode(r, part, report, (gchar *)rb->xml_width.xml, rb->xml_width.line, TRUE);
+	rb->height_code = rlib_infix_to_pcode(r, part, report, (gchar *)rb->xml_height.xml, rb->xml_height.line, TRUE);
+}
+
+
 static void rlib_resolve_fields2(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_output_array *roa) {
 	gint j;
 	struct rlib_element *e;
@@ -271,6 +279,8 @@ static void rlib_resolve_fields2(rlib *r, struct rlib_part *part, struct rlib_re
 					rlib_literal_resolve_pcode(r, part, report, ((struct rlib_report_literal *)e->data));
 				} else if(e->type == RLIB_ELEMENT_IMAGE) {
 					rlib_image_resolve_pcode(r, part, report, ((struct rlib_report_image *)e->data));
+				} else if(e->type == RLIB_ELEMENT_BARCODE) {
+					rlib_barcode_resolve_pcode(r, part, report, ((struct rlib_report_barcode *)e->data));
 				}
 			}
 		} else if(ro->type == RLIB_REPORT_PRESENTATION_DATA_HR) {
