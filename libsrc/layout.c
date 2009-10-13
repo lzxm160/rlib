@@ -612,7 +612,6 @@ static gint rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 			}
 
 			rlib_execute_pcode(r, &extra_data[i].rval_image_height, rb->height_code, NULL);			
-			rlib_value_free(&rval_value);
 			sprintf(filename, "%s.png", tempnam(NULL, "RLIB_IMAGE_FILE_XXXXX"));
 
 			height = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(&extra_data[i].rval_image_height));
@@ -624,6 +623,8 @@ static gint rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 			
 			if(rl->max_line_height < RLIB_GET_LINE(height))
 				rl->max_line_height = RLIB_GET_LINE(height);
+
+			rlib_value_free(&rval_value);
 		} else {
 			r_error(r, "Line has invalid content");
 		}

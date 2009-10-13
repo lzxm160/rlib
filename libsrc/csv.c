@@ -37,6 +37,7 @@ struct _private {
 	gboolean only_quote_strings;
 	gboolean no_quotes;
 	gboolean new_line_on_end_of_line;
+	gchar csv_delimeter;
 };
 
 static void print_text(rlib *r, const gchar *text, gint backwards, gint col, gint rval_type) {
@@ -78,12 +79,19 @@ static void rlib_csv_spool_private(rlib *r) {
 		ENVIRONMENT(r)->rlib_write_output(OUTPUT_PRIVATE(r)->top, strlen(OUTPUT_PRIVATE(r)->top));
 }
 
+static char rlib_csv_get_delimiter(rlib *r) {
+	return OUTPUT_PRIVATE(r)->csv_delimeter;
+}
+
 static void really_print_text(rlib *r, const gchar *passed_text, gint rval_type, gint field_count) {
 	gchar buf[MAXSTRLEN], text[MAXSTRLEN];
 	gchar *str_ptr;
+	gchar csv_delimeter;
 	gint text_size = strlen(passed_text);
 	gint *size;
 	gint i, spot=0;
+
+	csv_delimeter = rlib_csv_get_delimiter(r);
 
 	if(passed_text != NULL && passed_text[0] != '\r') {
 		for(i=0;i<text_size+1;i++) {
@@ -104,7 +112,7 @@ static void really_print_text(rlib *r, const gchar *passed_text, gint rval_type,
 			if(field_count == 0)
 				sprintf(buf, "\"%s\"", text);
 			else {
-				sprintf(buf, ",\"%s\"", text);
+				sprintf(buf, "%c\"%s\"", csv_delimeter, text);
 				text_size += 1;
 			}
 		} else {
@@ -112,7 +120,7 @@ static void really_print_text(rlib *r, const gchar *passed_text, gint rval_type,
 			if(field_count == 0)
 				sprintf(buf, "%s", text);
 			else {
-				sprintf(buf, ",%s", text);
+				sprintf(buf, "%c%s", csv_delimeter, text);
 				text_size += 1;
 			}
 		}
@@ -126,7 +134,6 @@ static void really_print_text(rlib *r, const gchar *passed_text, gint rval_type,
 	size = &OUTPUT_PRIVATE(r)->top_size;
 	memcpy(str_ptr + (*size), buf, text_size+1);
 	*size = (*size) + text_size;
-
 }
 
 static void rlib_csv_start_output_section(rlib *r) {
@@ -249,6 +256,7 @@ static int rlib_csv_free(rlib *r) {
 }
 
 void rlib_csv_new_output_filter(rlib *r) {
+	gchar *csv_delimeter = NULL;
 	OUTPUT(r) = g_malloc(sizeof(struct output_filter));
 	r->o->private = g_malloc(sizeof(struct _private));
 	memset(OUTPUT_PRIVATE(r), 0, sizeof(struct _private));
@@ -258,16 +266,18 @@ void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT_PRIVATE(r)->only_quote_strings = FALSE;
 	OUTPUT_PRIVATE(r)->no_quotes = FALSE;
 	OUTPUT_PRIVATE(r)->new_line_on_end_of_line = FALSE;
-	
+	OUTPUT_PRIVATE(r)->csv_delimeter = ',';
+
 	if(g_hash_table_lookup(r->output_parameters, "only_quote_strings")) {
 		OUTPUT_PRIVATE(r)->only_quote_strings = TRUE;
 	}
 	if(g_hash_table_lookup(r->output_parameters, "no_quotes")) {
 		OUTPUT_PRIVATE(r)->no_quotes = TRUE;
 	}
-	if(g_hash_table_lookup(r->output_parameters, "new_line_on_end_of_line")) {
-		OUTPUT_PRIVATE(r)->new_line_on_end_of_line = TRUE;
-	}
+
+	csv_delimeter = g_hash_table_lookup(r->output_parameters, "csv_delimeter");
+	if (csv_delimeter) 
+		OUTPUT_PRIVATE(r)->csv_delimeter = csv_delimeter[0];
 
 	OUTPUT(r)->do_align = FALSE;	
 	OUTPUT(r)->do_breaks = FALSE;	

@@ -1410,10 +1410,18 @@ gint rlib_pcode_operator_upper(rlib *r, struct rlib_pcode *code, struct rlib_val
 	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_STRING(v1)) {
-		gchar *tmp = r_strupr(RLIB_VALUE_GET_AS_STRING(v1));
-		rlib_value_free(v1);
+		gchar *str = RLIB_VALUE_GET_AS_STRING(v1);
+		gchar *tmp = "";
+
+		if (str != NULL) 
+			tmp = r_strupr(str);
+
+		rlib_value_free(v1); 
+
 		rlib_value_stack_push(r,vs, rlib_value_new_string(&rval_rtn, tmp));
-		g_free(tmp);
+		if (str != NULL)
+			g_free(tmp);
+
 		return TRUE;
 	}
 	rlib_pcode_operator_fatal_execption(r,"upper", code, 1, v1, NULL, NULL);
@@ -1426,10 +1434,18 @@ gint rlib_pcode_operator_lower(rlib *r, struct rlib_pcode *code, struct rlib_val
 	struct rlib_value *v1, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_STRING(v1)) {
-		gchar *tmp = r_strlwr(RLIB_VALUE_GET_AS_STRING(v1));
-		rlib_value_free(v1);
+		gchar *str = RLIB_VALUE_GET_AS_STRING(v1);
+		gchar *tmp = "";
+
+		if (str != NULL) 
+			tmp = r_strlwr(str);
+
+		rlib_value_free(v1); 
+
 		rlib_value_stack_push(r,vs, rlib_value_new_string(&rval_rtn, tmp));
-		g_free(tmp);
+		if (str != NULL)
+			g_free(tmp);
+
 		return TRUE;
 	}
 	rlib_pcode_operator_fatal_execption(r,"lower", code, 1, v1, NULL, NULL);

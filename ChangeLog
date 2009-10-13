@@ -1,3 +1,10 @@
+2009-10-10  Christian Betz  <cbetz@sicom.com>
+
+	* libsrc/layout.c: add output parameter: csv_delimeter
+	* libsrc/layout.c: (rlib_layout_execute_pcodes_for_line): rvalue was being freed to early
+	* libsrc/pcode_op_functions.c: (rlib_pcode_operator_upper), prevent crash when using strupper/lower NULL strings
+	(rlib_pcode_operator_lower):
+
 2009-09-30  Christian Betz  <cbetz@sicom.com>
 
 	Initial release of barcode support (Code39)
