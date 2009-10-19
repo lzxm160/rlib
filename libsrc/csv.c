@@ -112,16 +112,26 @@ static void really_print_text(rlib *r, const gchar *passed_text, gint rval_type,
 			if(field_count == 0)
 				sprintf(buf, "\"%s\"", text);
 			else {
-				sprintf(buf, "%c\"%s\"", csv_delimeter, text);
-				text_size += 1;
+				/* Handle null delimeter */
+				if (csv_delimeter) {
+					sprintf(buf, "%c\"%s\"", csv_delimeter, text);
+					text_size += 1;
+				} else {
+					sprintf(buf, "\"%s\"", text);
+				}
 			}
 		} else {
 			text_size = spot -1;
 			if(field_count == 0)
 				sprintf(buf, "%s", text);
 			else {
-				sprintf(buf, "%c%s", csv_delimeter, text);
-				text_size += 1;
+				/* Handle null delimeter */
+				if (csv_delimeter) {
+					sprintf(buf, "%c%s", csv_delimeter, text);
+					text_size += 1;
+				} else {
+					strcat(buf, text);
+				}
 			}
 		}
 	} else {
