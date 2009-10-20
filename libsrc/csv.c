@@ -284,7 +284,9 @@ void rlib_csv_new_output_filter(rlib *r) {
 	if(g_hash_table_lookup(r->output_parameters, "no_quotes")) {
 		OUTPUT_PRIVATE(r)->no_quotes = TRUE;
 	}
-
+	if(g_hash_table_lookup(r->output_parameters, "new_line_on_end_of_line")) {
+		OUTPUT_PRIVATE(r)->new_line_on_end_of_line = TRUE;
+	}
 	csv_delimeter = g_hash_table_lookup(r->output_parameters, "csv_delimeter");
 	if (csv_delimeter) 
 		OUTPUT_PRIVATE(r)->csv_delimeter = csv_delimeter[0];

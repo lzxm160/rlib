@@ -1,3 +1,7 @@
+2009-10-20  Christian Betz  <cbetz@sicom.com>
+
+	* libsrc/csv.c: (rlib_csv_end_line), (rlib_csv_new_output_filter): Fix CSV line endings (I accidentally removed the code reading the output parameter)
+
 2009-10-19  Christian Betz  <cbetz@sicom.com>
 
 	* libsrc/csv.c: (really_print_text): Make delimeter optional
