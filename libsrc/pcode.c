@@ -177,10 +177,14 @@ static struct rlib_pcode_operator * rlib_find_operator(rlib *r, gchar *ptr, stru
 		if(isupper(ptr[0])) {
 			op = NULL;
 		} else {
-			if(ptr[0] >= 'm')
-				op = rlib_pcode_verbs + r->pcode_alpha_m_index;
-			else
-				op = rlib_pcode_verbs + r->pcode_alpha_index;
+			if(r == NULL) {
+				op = rlib_pcode_verbs + 18;
+			} else {
+				if(ptr[0] >= 'm')
+					op = rlib_pcode_verbs + r->pcode_alpha_m_index;
+				else
+					op = rlib_pcode_verbs + r->pcode_alpha_index;
+			}
 		}
 	} else
 		op = rlib_pcode_verbs;
@@ -199,12 +203,14 @@ static struct rlib_pcode_operator * rlib_find_operator(rlib *r, gchar *ptr, stru
 		}
 		op++;
 	}
-	for(list=r->pcode_functions;list != NULL; list=list->next) {
-		op = list->data;
-		if(len >= op->taglen) {
-			if(!strncmp(ptr, op->tag, op->taglen)) {
-				return op;
-			}
+	if(r != NULL) { 
+		for(list=r->pcode_functions;list != NULL; list=list->next) {
+			op = list->data;
+			if(len >= op->taglen) {
+				if(!strncmp(ptr, op->tag, op->taglen)) {
+					return op;
+				}
+			}	
 		}
 	}
 	return NULL;
@@ -372,10 +378,10 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, struct rlib_part *part, st
 	} else if((rvar = rlib_resolve_rlib_variable(r, str))) {
 		o->type = OPERAND_RLIB_VARIABLE;
 		o->value = GINT_TO_POINTER(rvar);
-	} else if((metadata = g_hash_table_lookup(r->input_metadata, str)) != NULL && look_at_metadata == TRUE) {
+	} else if(r != NULL && (metadata = g_hash_table_lookup(r->input_metadata, str)) != NULL && look_at_metadata == TRUE) {
 		o->type = OPERAND_METADATA;
 		o->value = metadata;
-	} else if(rlib_resolve_resultset_field(r, str, &field, &resultset)) {
+	} else if(r != NULL && rlib_resolve_resultset_field(r, str, &field, &resultset)) {
 		struct rlib_resultset_field *rf = g_malloc(sizeof(struct rlib_resultset_field));
 		rf->resultset = resultset;
 		rf->field = field;

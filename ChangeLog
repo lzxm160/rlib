@@ -1,3 +1,10 @@
+2010-03-03  Kranthima Edupuganti  <kedupuganti@sicompos.com>
+
+	reviewed by: <cbetz@sicom.com>
+
+	* bindings/php/php.c: (compile_error_capture), (ZEND_FUNCTION): New php function used for formula validity checking
+	* libsrc/pcode.c: (rlib_find_operator), (rlib_new_operand):
+
 2010-03-03  Christian Betz  <cbetz@sicom.com>
 
 	* libsrc/csv.c: (really_print_text): Fix crash on memo fields in CSV mode

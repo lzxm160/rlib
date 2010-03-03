@@ -64,6 +64,7 @@ ZEND_FUNCTION(rlib_version);
 ZEND_FUNCTION(rlib_set_output_parameter);
 ZEND_FUNCTION(rlib_set_datasource_encoding);
 ZEND_FUNCTION(rlib_set_output_encoding);
+ZEND_FUNCTION(rlib_compile_infix);
 
 ZEND_MODULE_STARTUP_D(rlib);
 
@@ -104,6 +105,7 @@ zend_function_entry rlib_functions[] =
 	ZEND_FE(rlib_set_output_parameter, NULL)
 	ZEND_FE(rlib_set_datasource_encoding, NULL)
 	ZEND_FE(rlib_set_output_encoding, NULL)
+	ZEND_FE(rlib_compile_infix, NULL)
 	{NULL, NULL, NULL}
 };
 
@@ -734,5 +736,34 @@ ZEND_FUNCTION(rlib_set_output_parameter) {
 	}
 	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
 	rlib_set_output_parameter(rip->r, d1, d2);
+}
+
+GString *error_data;
+
+void compile_error_capture(rlib *r, const gchar *msg) {
+	error_data = g_string_append(error_data, msg);
+}
+
+ZEND_FUNCTION(rlib_compile_infix) {
+	gint size_of_string;
+	gchar *infix;
+	struct rlib_pcode *code;
+	struct rlib_value value;
+	error_data = g_string_new("");
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &infix, &size_of_string) == FAILURE) {
+		return;
+	}
+
+	rlogit_setmessagewriter(compile_error_capture);
+	code = rlib_infix_to_pcode(NULL, NULL, NULL, infix, -1, FALSE);
+	if(code != NULL) {
+		rlib_execute_pcode(NULL, &value, code, NULL);
+		rlib_pcode_free(code);
+		rlib_value_free(&value);
+	}
+	
+	RETURN_STRING(estrdup(error_data->str), TRUE);
+	g_string_free(error_data, TRUE);
 }
 
