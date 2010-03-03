@@ -91,6 +91,10 @@ static void really_print_text(rlib *r, const gchar *passed_text, gint rval_type,
 	gint *size;
 	gint i, spot=0;
 
+	if (text_size > MAXSTRLEN - 5) {
+		text_size = MAXSTRLEN - 5;
+	}
+
 	csv_delimeter = rlib_csv_get_delimiter(r);
 
 	if(passed_text != NULL && passed_text[0] != '\r') {
@@ -109,9 +113,10 @@ static void really_print_text(rlib *r, const gchar *passed_text, gint rval_type,
 		if((OUTPUT_PRIVATE(r)->only_quote_strings == FALSE && OUTPUT_PRIVATE(r)->no_quotes == FALSE) || (OUTPUT_PRIVATE(r)->only_quote_strings == TRUE && rval_type == RLIB_VALUE_STRING)) {
 			text_size = spot -1;
 			text_size += 2;
-			if(field_count == 0)
+
+			if(field_count == 0) {
 				sprintf(buf, "\"%s\"", text);
-			else {
+			} else {
 				/* Handle null delimeter */
 				if (csv_delimeter) {
 					sprintf(buf, "%c\"%s\"", csv_delimeter, text);
@@ -137,7 +142,7 @@ static void really_print_text(rlib *r, const gchar *passed_text, gint rval_type,
 	} else {
 		strcpy(buf, passed_text);
 	}
-	
+
 	make_more_space_if_necessary(&OUTPUT_PRIVATE(r)->top, &OUTPUT_PRIVATE(r)->top_size, 
 		&OUTPUT_PRIVATE(r)->top_total_size, text_size);
 	str_ptr = OUTPUT_PRIVATE(r)->top;	
