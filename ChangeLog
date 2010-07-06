@@ -1,3 +1,11 @@
+2010-07-06  Christian Betz  <cbetz@sicompos.com>
+
+	Merge Patches by Zoltan
+
+	* bindings/php/environment.c (rlib_php_resolve_memory_variable): Use correct arguments to memset
+	* inputs/odbc/odbc.c (odbc_read_first), (odbc_read_next),
+	(odbc_read_prior), (odbc_read_last), (odbc_new_result_from_query): 64-bit patch for unixODBC, use SQLLEN/SQLULEN instead of SQLINTEGER/SQLUINTEGER
+
 2010-03-03  Kranthima Edupuganti  <kedupuganti@sicompos.com>
 
 	reviewed by: <cbetz@sicom.com>

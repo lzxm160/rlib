@@ -32,7 +32,7 @@ static char * rlib_php_resolve_memory_variable(char *name) {
 		return NULL;
 	} else {
 		char *data_result, dstr[1024];
-		memset(dstr, 1024, 0);
+		memset(dstr, 0, 1024);
 		data = temp;
 		if( Z_TYPE_PP(data) == IS_STRING )	
 			data_result = Z_STRVAL_PP(data);

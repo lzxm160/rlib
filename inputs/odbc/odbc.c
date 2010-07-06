@@ -170,7 +170,7 @@ static gint odbc_read_first(gpointer result_ptr) {
 	struct rlib_odbc_results *results = result_ptr;
 	gint V_OD_erg;
 	gint i;
-	SQLINTEGER ind;
+	SQLLEN ind;
 	if(SQL_SUCCEEDED(( V_OD_erg = SQLFetchScroll (results->V_OD_hstmt, SQL_FETCH_FIRST, 0)))) {
 		for (i=0;i<results->tot_fields;i++)
 			V_OD_erg = SQLGetData (results->V_OD_hstmt, i+1, SQL_C_CHAR, results->values[i].value, results->values[i].len+1, &ind);
@@ -204,7 +204,7 @@ static gint odbc_read_next(gpointer result_ptr) {
 	struct rlib_odbc_results *results = result_ptr;
 	gint V_OD_erg;
 	gint i;
-	SQLINTEGER ind;
+	SQLLEN ind;
 	if(SQL_SUCCEEDED(( V_OD_erg = SQLFetchScroll (results->V_OD_hstmt, SQL_FETCH_NEXT, 0)))) {
 		for (i=0;i<results->tot_fields;i++)
 			V_OD_erg = SQLGetData (results->V_OD_hstmt, i+1, SQL_C_CHAR, results->values[i].value, results->values[i].len+1, &ind);
@@ -243,7 +243,7 @@ static gint odbc_read_prior(gpointer result_ptr) {
 	struct rlib_odbc_results *results = result_ptr;
 	gint V_OD_erg;
 	gint i;
-	SQLINTEGER ind;
+	SQLLEN ind;
 	if(SQL_SUCCEEDED(( V_OD_erg = SQLFetchScroll (results->V_OD_hstmt, SQL_FETCH_PRIOR, 0)))) {
 		for (i=0;i<results->tot_fields;i++)
 			V_OD_erg = SQLGetData (results->V_OD_hstmt, i+1, SQL_C_CHAR, results->values[i].value, results->values[i].len+1, &ind);
@@ -276,7 +276,7 @@ static gint odbc_read_last(gpointer result_ptr) {
 	struct rlib_odbc_results *results = result_ptr;
 	gint V_OD_erg;
 	gint i;
-	SQLINTEGER ind;
+	SQLLEN ind;
 	if(SQL_SUCCEEDED(( V_OD_erg = SQLFetchScroll (results->V_OD_hstmt, SQL_FETCH_LAST, 0)))) {
 		for (i=0;i<results->tot_fields;i++)
 			V_OD_erg = SQLGetData (results->V_OD_hstmt, i+1, SQL_C_CHAR, results->values[i].value, results->values[i].len+1, &ind);
@@ -334,9 +334,9 @@ gpointer odbc_new_result_from_query(gpointer input_ptr, gchar *query) {
 	guint i;
 	SQLSMALLINT ncols;
 	gint V_OD_erg;
-	SQLUINTEGER col_size;
+	SQLULEN col_size;
 	SQLUINTEGER fFuncs;
-	SQLINTEGER ind;
+	SQLLEN ind;
 
 
 	V_OD_hstmt = rlib_odbc_query(input_ptr, query);
