@@ -28,6 +28,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <locale.h>
+#include <libintl.h>
+
 #include "config.h"
 
 #include "rlib.h"
@@ -385,6 +387,11 @@ gint rlib_set_locale(rlib *r, gchar *locale) {
 #endif
 	return TRUE;
 }
+
+gchar * rlib_bindtextdomain(rlib *r, gchar *domainname, gchar *dirname) {
+	return bindtextdomain(domainname, dirname);
+}
+
 
 void rlib_init_profiler() {
 	g_mem_set_vtable(glib_mem_profiler_table);

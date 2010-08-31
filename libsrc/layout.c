@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <libintl.h>
 
 #include "config.h"
 
@@ -498,6 +499,13 @@ static gint rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 				}
 			}
 			
+			extra_data[i].translate = FALSE;
+			if(rf->translate_code) {
+				gboolean t;
+				if(rlib_execute_as_boolean(r, rf->translate_code, &t)) 
+					extra_data[i].translate = t;
+			}
+			
 			if (rf->memo_code) {
 				gint t;
 				if (rlib_execute_as_boolean(r, rf->memo_code, &t)) { 
@@ -508,14 +516,32 @@ static gint rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 			
 			if(extra_data[i].is_memo == FALSE) {
 				rlib_format_string(r, &buf, rf, &extra_data[i].rval_code);
+				if(extra_data[i].translate && buf != NULL) {
+					gchar *tmp_str = gettext(buf);
+					if(tmp_str != buf) {
+						g_free(buf);
+						buf = g_strdup(tmp_str);				
+					}
+				}
+
 				rlib_align_text(r, &tmp_align_buf, buf, rf->align, rf->width);
 				extra_data[i].formatted_string = tmp_align_buf;
 				g_free(buf);
+
 			} else {
 				rlib_format_string(r, &buf, rf, &extra_data[i].rval_code);
+				if(extra_data[i].translate && buf != NULL) {
+					gchar *tmp_str = gettext(buf);
+					if(tmp_str != buf) {
+						g_free(buf);
+						buf = g_strdup(tmp_str);				
+					}
+				}
+
 				extra_data[i].formatted_string = buf;
 				extra_data[i].memo_lines = rlib_format_split_string(r, extra_data[i].formatted_string, rf->width, -1, '\n', ' ', &extra_data[i].memo_line_count);
 			}
+			
 
 			extra_data[i].width = rf->width;
 			extra_data[i].field_code = rf->code;
@@ -527,6 +553,7 @@ static gint rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 					*delayed = TRUE;
 			}
 		} else if(e->type == RLIB_ELEMENT_LITERAL) {
+			gchar *txt_pointer;
 			rt = e->data;
 			if(rt->color_code != NULL)	
 				rlib_execute_pcode(r, &extra_data[i].rval_color, rt->color_code, NULL);
@@ -574,7 +601,16 @@ static gint rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 					rt->width = t;
 				}
 			}
-			rlib_align_text(r, &extra_data[i].formatted_string, rt->value, rt->align, rt->width);
+			extra_data[i].translate = FALSE;
+			if(rt->translate_code) {
+				gboolean t;
+				if(rlib_execute_as_boolean(r, rt->translate_code, &t)) 
+					extra_data[i].translate = t;
+			}
+			txt_pointer = rt->value;
+			if(extra_data[i].translate)
+				txt_pointer = gettext(rt->value);
+			rlib_align_text(r, &extra_data[i].formatted_string, txt_pointer, rt->align, rt->width);
 				
 			extra_data[i].width = rt->width;
 			rlib_execute_pcode(r, &extra_data[i].rval_col, rt->col_code, NULL);	

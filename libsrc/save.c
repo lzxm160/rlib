@@ -78,6 +78,7 @@ void write_field(gint fd, struct rlib_report_field *rf) {
 	write_xml_str(fd, (gchar *)rf->xml_width.xml);
 	write_xml_str(fd, (gchar *)rf->xml_format.xml);
 	write_xml_str(fd, (gchar *)rf->xml_link.xml);
+	write_xml_str(fd, (gchar *)rf->xml_translate.xml);
 	write_xml_str(fd, (gchar *)rf->xml_col.xml);
 }
 

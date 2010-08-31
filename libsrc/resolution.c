@@ -142,6 +142,7 @@ static void rlib_field_resolve_pcode(rlib *r, struct rlib_part *part, struct rli
 	rf->code = rlib_infix_to_pcode(r, part, report, rf->value, rf->value_line_number, TRUE);
 	rf->format_code = rlib_infix_to_pcode(r, part, report, (gchar *)rf->xml_format.xml, rf->xml_format.line, TRUE);
 	rf->link_code = rlib_infix_to_pcode(r, part, report, (gchar *)rf->xml_link.xml, rf->xml_link.line, TRUE);
+	rf->translate_code = rlib_infix_to_pcode(r, part, report, (gchar *)rf->xml_translate.xml, rf->xml_translate.line, TRUE);
 	rf->color_code = rlib_infix_to_pcode(r, part, report, (gchar *)rf->xml_color.xml, rf->xml_color.line, TRUE);
 	rf->bgcolor_code = rlib_infix_to_pcode(r, part, report, (gchar *)rf->xml_bgcolor.xml, rf->xml_bgcolor.line, TRUE);
 	rf->col_code = rlib_infix_to_pcode(r, part, report, (gchar *)rf->xml_col.xml, rf->xml_col.line, TRUE);
@@ -163,6 +164,7 @@ static void rlib_literal_resolve_pcode(rlib *r, struct rlib_part *part, struct r
 	rt->color_code = rlib_infix_to_pcode(r, part, report, (gchar *)rt->xml_color.xml, rt->xml_color.line, TRUE);
 	rt->bgcolor_code = rlib_infix_to_pcode(r, part, report, (gchar *)rt->xml_bgcolor.xml, rt->xml_bgcolor.line, TRUE);
 	rt->link_code = rlib_infix_to_pcode(r, part, report, (gchar *)rt->xml_link.xml, rt->xml_link.line, TRUE);
+	rt->translate_code = rlib_infix_to_pcode(r, part, report, (gchar *)rt->xml_translate.xml, rt->xml_translate.line, TRUE);
 	rt->col_code = rlib_infix_to_pcode(r, part, report, (gchar *)rt->xml_col.xml, rt->xml_col.line, TRUE);
 	rt->width_code = rlib_infix_to_pcode(r, part, report, (gchar *)rt->xml_width.xml, rt->xml_width.line, TRUE);
 	rt->bold_code = rlib_infix_to_pcode(r, part, report, (gchar *)rt->xml_bold.xml, rt->xml_bold.line, TRUE);

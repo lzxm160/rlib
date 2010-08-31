@@ -181,6 +181,7 @@ struct rlib_report_literal {
 	struct rlib_from_xml xml_italics;
 	struct rlib_from_xml xml_col;
 	struct rlib_from_xml xml_link;
+	struct rlib_from_xml xml_translate;
 
 	gint width;
 	gint align;
@@ -193,6 +194,7 @@ struct rlib_report_literal {
 	struct rlib_pcode *italics_code;
 	struct rlib_pcode *align_code;
 	struct rlib_pcode *link_code;
+	struct rlib_pcode *translate_code;
 };
 
 struct rlib_resultset_field {
@@ -212,6 +214,7 @@ struct rlib_line_extra_data {
 	gint type;
 	struct rlib_value rval_code;
 	struct rlib_value rval_link;
+	struct rlib_value rval_translate;
 	struct rlib_value rval_bgcolor;
 	struct rlib_value rval_color;
 	struct rlib_value rval_bold;
@@ -232,6 +235,7 @@ struct rlib_line_extra_data {
 	struct rlib_rgb bgcolor;
 	gint found_bgcolor;
 	gchar *link;
+	gboolean translate;
 	gint found_link;
 	struct rlib_rgb color;
 	gint found_color;
@@ -269,6 +273,7 @@ struct rlib_report_field {
 	struct rlib_from_xml xml_italics;
 	struct rlib_from_xml xml_format;
 	struct rlib_from_xml xml_link;
+	struct rlib_from_xml xml_translate;
 	struct rlib_from_xml xml_col;
 	struct rlib_from_xml xml_delayed;
 	struct rlib_from_xml xml_memo;
@@ -281,6 +286,7 @@ struct rlib_report_field {
 	struct rlib_pcode *code;
 	struct rlib_pcode *format_code;
 	struct rlib_pcode *link_code;
+	struct rlib_pcode *translate_code;
 	struct rlib_pcode *color_code;
 	struct rlib_pcode *bgcolor_code;
 	struct rlib_pcode *col_code;
@@ -1004,6 +1010,7 @@ gint rlib_add_resultset_follower(rlib *r, gchar *leader, gchar *follower);
 gint rlib_add_resultset_follower_n_to_1(rlib *r, gchar *leader, gchar *leader_field, gchar *follower,gchar *follower_field );
 gint rlib_add_parameter(rlib *r, const gchar *name, const gchar *value);
 gint rlib_set_locale(rlib *r, gchar *locale);
+gchar * rlib_bindtextdomain(rlib *r, gchar *domainname, gchar *dirname);
 void rlib_init_profiler(void);
 void rlib_dump_profile(gint profilenum, const gchar *filename);
 void rlib_trap(void); /* For internals debugging only */

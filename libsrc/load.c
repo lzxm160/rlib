@@ -115,6 +115,7 @@ struct rlib_report_field * read_field(gchar **ptr) {
 	rf->xml_width.xml = (xmlChar *)read_xml_str(ptr);
 	rf->xml_format.xml = (xmlChar *)read_xml_str(ptr);
 	rf->xml_link.xml = (xmlChar *)read_xml_str(ptr);
+	rf->xml_translate.xml = (xmlChar *)read_xml_str(ptr);
 	rf->xml_col.xml = (xmlChar *)read_xml_str(ptr);
 	return rf;
 }

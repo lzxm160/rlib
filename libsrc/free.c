@@ -82,6 +82,7 @@ static void rlib_text_free_pcode(rlib *r, struct rlib_report_literal *rt) {
 	rlib_pcode_free(rt->italics_code);
 	rlib_pcode_free(rt->align_code);
 	rlib_pcode_free(rt->link_code);
+	rlib_pcode_free(rt->translate_code);
 	xmlFree(rt->xml_align.xml);
 	xmlFree(rt->xml_bgcolor.xml);
 	xmlFree(rt->xml_color.xml);
@@ -89,6 +90,7 @@ static void rlib_text_free_pcode(rlib *r, struct rlib_report_literal *rt) {
 	xmlFree(rt->xml_bold.xml);
 	xmlFree(rt->xml_italics.xml);
 	xmlFree(rt->xml_link.xml);
+	xmlFree(rt->xml_translate.xml);
 	xmlFree(rt->xml_col.xml);
 	g_free(rt);
 }
@@ -98,6 +100,7 @@ static void rlib_field_free_pcode(rlib *r, struct rlib_report_field *rf) {
 	rlib_pcode_free(rf->code);
 	rlib_pcode_free(rf->format_code);
 	rlib_pcode_free(rf->link_code);
+	rlib_pcode_free(rf->translate_code);
 	rlib_pcode_free(rf->color_code);
 	rlib_pcode_free(rf->bgcolor_code);
 	rlib_pcode_free(rf->col_code);
@@ -117,6 +120,7 @@ static void rlib_field_free_pcode(rlib *r, struct rlib_report_field *rf) {
 	xmlFree(rf->xml_italics.xml);
 	xmlFree(rf->xml_format.xml);
 	xmlFree(rf->xml_link.xml);
+	xmlFree(rf->xml_translate.xml);
 	xmlFree(rf->xml_col.xml);
 	xmlFree(rf->xml_delayed.xml);
 	xmlFree(rf->xml_memo.xml);

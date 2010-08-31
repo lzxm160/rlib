@@ -1,3 +1,31 @@
+2010-08-30  Bob Doan  <bdoan@sicompos.com>
+	* bindings/csharp/csharp.c: Support translate="yes" on litteral and field, api to bindtextdomain
+	* bindings/interfaces/SWIGTYPE_p_f_p_rlib_p_void__int.cs:
+	* bindings/interfaces/SWIGTYPE_p_f_p_rlib_p_void__int.java:
+	* bindings/interfaces/SWIGTYPE_p_rlib.cs:
+	* bindings/interfaces/SWIGTYPE_p_rlib.java:
+	* bindings/interfaces/SWIGTYPE_p_void.cs:
+	* bindings/interfaces/SWIGTYPE_p_void.java:
+	* bindings/interfaces/rlib.cs:
+	* bindings/interfaces/rlib.java: 
+	* bindings/interfaces/rlib.pm:
+	* bindings/interfaces/rlib.py:
+	* bindings/interfaces/rlibJNI.java: 
+	* bindings/interfaces/rlibPINVOKE.cs:
+	* bindings/java/java.c: 
+	* bindings/perl/perl.c: 
+	* bindings/php/php.c: 
+	* bindings/python/python.c: 
+	* libsrc/api.c: 
+	* libsrc/free.c: 
+	* libsrc/layout.c: 
+	* libsrc/load.c: 
+	* libsrc/parsexml.c: 
+	* libsrc/resolution.c: 
+	* libsrc/rlib.h:
+	* libsrc/rlib.i:
+	* libsrc/save.c: 
+
 2010-07-06  Christian Betz  <cbetz@sicompos.com>
 
 	Merge Patches by Zoltan
