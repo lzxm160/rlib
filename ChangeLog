@@ -1,3 +1,6 @@
+2010-10-08  Bob Nielsen  <rnielsen@sicompos.com>
+	* libsrc/csv.c: prevent long text from crashing csv output
+
 2010-08-30  Bob Doan  <bdoan@sicompos.com>
 	* bindings/csharp/csharp.c: Support translate="yes" on litteral and field, api to bindtextdomain
 	* bindings/interfaces/SWIGTYPE_p_f_p_rlib_p_void__int.cs:

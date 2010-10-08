@@ -110,6 +110,9 @@ static void really_print_text(rlib *r, const gchar *passed_text, gint rval_type,
 			spot = text_size + 1;
 		}
 
+		if(strlen(text) > MAXSTRLEN-4)
+			text[MAXSTRLEN-4] = 0;
+
 		if((OUTPUT_PRIVATE(r)->only_quote_strings == FALSE && OUTPUT_PRIVATE(r)->no_quotes == FALSE) || (OUTPUT_PRIVATE(r)->only_quote_strings == TRUE && rval_type == RLIB_VALUE_STRING)) {
 			text_size = spot -1;
 			text_size += 2;
@@ -122,14 +125,14 @@ static void really_print_text(rlib *r, const gchar *passed_text, gint rval_type,
 					sprintf(buf, "%c\"%s\"", csv_delimeter, text);
 					text_size += 1;
 				} else {
-					sprintf(buf, "\"%s\"", text);
+					sprintf(buf, "\"%s\"", text);					
 				}
 			}
 		} else {
 			text_size = spot -1;
-			if(field_count == 0)
+			if(field_count == 0) {
 				sprintf(buf, "%s", text);
-			else {
+			} else {
 				/* Handle null delimeter */
 				if (csv_delimeter) {
 					sprintf(buf, "%c%s", csv_delimeter, text);
