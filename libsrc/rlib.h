@@ -846,6 +846,7 @@ struct rlib {
 
 	gchar *special_locale;
 	gchar *current_locale;
+	gchar radix_character;
 
 	gint html_debugging;
 

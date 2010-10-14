@@ -73,6 +73,8 @@ rlib * rlib_init_with_environment(struct environment_filter *environment) {
 	r->output_parameters = g_hash_table_new_full (g_str_hash, g_str_equal, string_destroyer, string_destroyer);
 	r->input_metadata = g_hash_table_new_full (g_str_hash, g_str_equal, string_destroyer, metadata_destroyer);
 	r->parameters = g_hash_table_new_full (g_str_hash, g_str_equal, string_destroyer, string_destroyer);
+
+	r->radix_character = '.';
 	
 #if !DISABLE_UTF8
 	make_all_locales_utf8();
@@ -392,6 +394,9 @@ gchar * rlib_bindtextdomain(rlib *r, gchar *domainname, gchar *dirname) {
 	return bindtextdomain(domainname, dirname);
 }
 
+void rlib_set_radix_character(rlib *r, gchar radix_character) {
+	r->radix_character = radix_character;
+}
 
 void rlib_init_profiler() {
 	g_mem_set_vtable(glib_mem_profiler_table);

@@ -1,3 +1,17 @@
+2010-10-14  Christian Betz  <cbetz@sicompos.com>
+
+	reviewed by: <bdoan@sicompos.com>
+
+	add rlib_set_radix_character (can be used instead of rlib_set_locale)
+
+	* bindings/php/php.c (ZEND_FUNCTION):
+	* libsrc/api.c (rlib_init_with_environment),
+	(rlib_set_radix_character):
+	* libsrc/formatstring.c (change_radix_character),
+	(rlib_format_money), (rlib_format_number), (rlib_number_sprintf):
+	* libsrc/rlib.h:
+	* libsrc/rlib.i:
+
 2010-10-08  Bob Nielsen  <rnielsen@sicompos.com>
 	* libsrc/csv.c: prevent long text from crashing csv output
 

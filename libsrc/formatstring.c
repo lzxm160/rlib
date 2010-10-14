@@ -40,6 +40,17 @@
 
 #define MAX_FORMAT_STRING 20
 
+void change_radix_character(rlib *r, char *s) {
+	if (r->radix_character == '.')
+		return;
+	while (*s != '\0') {
+		if (*s == '.') {
+			*s = r->radix_character;
+		}
+		s++;
+	}	
+}
+
 /*
 * Formats numbers in money format using locale parameters and moneyformat codes
 */
@@ -56,13 +67,15 @@ gint rlib_format_money(rlib *r, gchar **dest,const gchar *moneyformat, gint64 x)
 #else
 	d = ((gdouble) x) / RLIB_DECIMAL_PRECISION;
 	result = strfmon(*dest, MAXSTRLEN - 1, moneyformat, d);
-#endif	
+#endif
+	change_radix_character(r, *dest);
 	return (result >= 0)? strlen(*dest) : 0;
 }
 
 gint rlib_format_number(rlib *r, gchar **dest, const gchar *fmt, gint64 x) {
 	double d = (((double) x) / (double)RLIB_DECIMAL_PRECISION);
 	*dest = g_strdup_printf(fmt, d);
+	change_radix_character(r, *dest);
 	return TRUE;
 }
 
@@ -181,6 +194,7 @@ gint rlib_number_sprintf(rlib *r, gchar **woot_dest, gchar *fmtstr, const struct
 		}
 	}
 	*woot_dest = dest->str;
+	change_radix_character(r, *woot_dest);
 	slen = dest->len;
 	g_string_free(dest, FALSE);
 	return slen;

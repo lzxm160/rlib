@@ -61,6 +61,7 @@ ZEND_FUNCTION(rlib_get_content_type);
 ZEND_FUNCTION(rlib_add_parameter);
 ZEND_FUNCTION(rlib_set_locale);
 ZEND_FUNCTION(rlib_bindtextdomain);
+ZEND_FUNCTION(rlib_set_radix_character);
 ZEND_FUNCTION(rlib_version);
 ZEND_FUNCTION(rlib_set_output_parameter);
 ZEND_FUNCTION(rlib_set_datasource_encoding);
@@ -103,6 +104,7 @@ zend_function_entry rlib_functions[] =
 	ZEND_FE(rlib_add_parameter, NULL)
 	ZEND_FE(rlib_set_locale, NULL)
 	ZEND_FE(rlib_bindtextdomain, NULL)
+	ZEND_FE(rlib_set_radix_character, NULL)
 	ZEND_FE(rlib_version, NULL)
 	ZEND_FE(rlib_set_output_parameter, NULL)
 	ZEND_FE(rlib_set_datasource_encoding, NULL)
@@ -703,6 +705,23 @@ ZEND_FUNCTION(rlib_bindtextdomain) {
 	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
 
 	rlib_bindtextdomain(rip->r, domainname, dirname);
+}
+
+ZEND_FUNCTION(rlib_set_radix_character) {
+	zval *z_rip = NULL;
+	gint whatever;
+	gchar *radix;
+	rlib_inout_pass *rip;
+	gint id = -1;
+	
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &z_rip, &radix, &whatever) == FAILURE) {
+		return;
+	}
+	
+	ZEND_FETCH_RESOURCE(rip, rlib_inout_pass *, &z_rip, id, LE_RLIB_NAME, le_link);	
+
+	if (whatever > 0)	
+		rlib_set_radix_character(rip->r, radix[0]);
 }
 
 
