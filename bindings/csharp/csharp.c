@@ -623,6 +623,22 @@ SWIGEXPORT int SWIGSTDCALL CSharp_rlib_bindtextdomain(void * jarg1, char * jarg2
 }
 
 
+SWIGEXPORT void SWIGSTDCALL CSharp_rlib_set_radix_character(void * jarg1, void * jarg2) {
+  rlib *arg1 = (rlib *) 0 ;
+  gchar arg2 ;
+  gchar *argp2 ;
+  
+  arg1 = (rlib *)jarg1; 
+  argp2 = (gchar *)jarg2; 
+  if (!argp2) {
+    SWIG_CSharpSetPendingExceptionArgument(SWIG_CSharpArgumentNullException, "Attempt to dereference null gchar", 0);
+    return ;
+  }
+  arg2 = *argp2; 
+  rlib_set_radix_character(arg1,arg2);
+}
+
+
 SWIGEXPORT void SWIGSTDCALL CSharp_rlib_set_output_parameter(void * jarg1, char * jarg2, char * jarg3) {
   rlib *arg1 = (rlib *) 0 ;
   char *arg2 = (char *) 0 ;

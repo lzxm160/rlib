@@ -163,6 +163,10 @@ def rlib_bindtextdomain(*args):
   return _rlib.rlib_bindtextdomain(*args)
 rlib_bindtextdomain = _rlib.rlib_bindtextdomain
 
+def rlib_set_radix_character(*args):
+  return _rlib.rlib_set_radix_character(*args)
+rlib_set_radix_character = _rlib.rlib_set_radix_character
+
 def rlib_set_output_parameter(*args):
   return _rlib.rlib_set_output_parameter(*args)
 rlib_set_output_parameter = _rlib.rlib_set_output_parameter

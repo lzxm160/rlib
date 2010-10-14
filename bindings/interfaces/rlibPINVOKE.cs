@@ -256,6 +256,9 @@ class rlibPINVOKE {
   [DllImport("rlibcsharp", EntryPoint="CSharp_rlib_bindtextdomain")]
   public static extern int rlib_bindtextdomain(HandleRef jarg1, string jarg2, string jarg3);
 
+  [DllImport("rlibcsharp", EntryPoint="CSharp_rlib_set_radix_character")]
+  public static extern void rlib_set_radix_character(HandleRef jarg1, HandleRef jarg2);
+
   [DllImport("rlibcsharp", EntryPoint="CSharp_rlib_set_output_parameter")]
   public static extern void rlib_set_output_parameter(HandleRef jarg1, string jarg2, string jarg3);
 

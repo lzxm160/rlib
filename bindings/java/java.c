@@ -757,6 +757,24 @@ SWIGEXPORT jint JNICALL Java_rlibJNI_rlib_1bindtextdomain(JNIEnv *jenv, jclass j
 }
 
 
+SWIGEXPORT void JNICALL Java_rlibJNI_rlib_1set_1radix_1character(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
+  rlib *arg1 = (rlib *) 0 ;
+  gchar arg2 ;
+  gchar *argp2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(rlib **)&jarg1; 
+  argp2 = *(gchar **)&jarg2; 
+  if (!argp2) {
+    SWIG_JavaThrowException(jenv, SWIG_JavaNullPointerException, "Attempt to dereference null gchar");
+    return ;
+  }
+  arg2 = *argp2; 
+  rlib_set_radix_character(arg1,arg2);
+}
+
+
 SWIGEXPORT void JNICALL Java_rlibJNI_rlib_1set_1output_1parameter(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3) {
   rlib *arg1 = (rlib *) 0 ;
   char *arg2 = (char *) 0 ;

@@ -105,6 +105,10 @@ public class rlib {
     return rlibJNI.rlib_bindtextdomain(SWIGTYPE_p_rlib.getCPtr(r), domainname, dirname);
   }
 
+  public static void rlib_set_radix_character(SWIGTYPE_p_rlib r, SWIGTYPE_p_gchar radix_character) {
+    rlibJNI.rlib_set_radix_character(SWIGTYPE_p_rlib.getCPtr(r), SWIGTYPE_p_gchar.getCPtr(radix_character));
+  }
+
   public static void rlib_set_output_parameter(SWIGTYPE_p_rlib r, String parameter, String value) {
     rlibJNI.rlib_set_output_parameter(SWIGTYPE_p_rlib.getCPtr(r), parameter, value);
   }

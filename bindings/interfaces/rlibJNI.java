@@ -32,6 +32,7 @@ class rlibJNI {
   public final static native int rlib_add_parameter(long jarg1, String jarg2, String jarg3);
   public final static native int rlib_set_locale(long jarg1, String jarg2);
   public final static native int rlib_bindtextdomain(long jarg1, String jarg2, String jarg3);
+  public final static native void rlib_set_radix_character(long jarg1, long jarg2);
   public final static native void rlib_set_output_parameter(long jarg1, String jarg2, String jarg3);
   public final static native void rlib_set_output_encoding(long jarg1, String jarg2);
   public final static native int rlib_set_datasource_encoding(long jarg1, String jarg2, String jarg3);

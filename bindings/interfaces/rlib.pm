@@ -73,6 +73,7 @@ package rlib;
 *rlib_add_parameter = *rlibc::rlib_add_parameter;
 *rlib_set_locale = *rlibc::rlib_set_locale;
 *rlib_bindtextdomain = *rlibc::rlib_bindtextdomain;
+*rlib_set_radix_character = *rlibc::rlib_set_radix_character;
 *rlib_set_output_parameter = *rlibc::rlib_set_output_parameter;
 *rlib_set_output_encoding = *rlibc::rlib_set_output_encoding;
 *rlib_set_datasource_encoding = *rlibc::rlib_set_datasource_encoding;

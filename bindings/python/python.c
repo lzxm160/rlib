@@ -2661,11 +2661,12 @@ SWIG_Python_MustGetPtr(PyObject *obj, swig_type_info *ty, int argnum, int flags)
 #define SWIGTYPE_p_char swig_types[0]
 #define SWIGTYPE_p_f_p_rlib_p_void__int swig_types[1]
 #define SWIGTYPE_p_float swig_types[2]
-#define SWIGTYPE_p_rlib swig_types[3]
-#define SWIGTYPE_p_rlib_part swig_types[4]
-#define SWIGTYPE_p_rlib_report swig_types[5]
-static swig_type_info *swig_types[7];
-static swig_module_info swig_module = {swig_types, 6, 0, 0, 0, 0};
+#define SWIGTYPE_p_gchar swig_types[3]
+#define SWIGTYPE_p_rlib swig_types[4]
+#define SWIGTYPE_p_rlib_part swig_types[5]
+#define SWIGTYPE_p_rlib_report swig_types[6]
+static swig_type_info *swig_types[8];
+static swig_module_info swig_module = {swig_types, 7, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3942,6 +3943,42 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_rlib_set_radix_character(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  rlib *arg1 = (rlib *) 0 ;
+  gchar arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:rlib_set_radix_character",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_rlib, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "rlib_set_radix_character" "', argument " "1"" of type '" "rlib *""'"); 
+  }
+  arg1 = (rlib *)(argp1);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_gchar,  0 );
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "rlib_set_radix_character" "', argument " "2"" of type '" "gchar""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "rlib_set_radix_character" "', argument " "2"" of type '" "gchar""'");
+    } else {
+      arg2 = *((gchar *)(argp2));
+    }
+  }
+  rlib_set_radix_character(arg1,arg2);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_rlib_set_output_parameter(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   rlib *arg1 = (rlib *) 0 ;
@@ -4384,6 +4421,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"rlib_add_parameter", _wrap_rlib_add_parameter, METH_VARARGS, NULL},
 	 { (char *)"rlib_set_locale", _wrap_rlib_set_locale, METH_VARARGS, NULL},
 	 { (char *)"rlib_bindtextdomain", _wrap_rlib_bindtextdomain, METH_VARARGS, NULL},
+	 { (char *)"rlib_set_radix_character", _wrap_rlib_set_radix_character, METH_VARARGS, NULL},
 	 { (char *)"rlib_set_output_parameter", _wrap_rlib_set_output_parameter, METH_VARARGS, NULL},
 	 { (char *)"rlib_set_output_encoding", _wrap_rlib_set_output_encoding, METH_VARARGS, NULL},
 	 { (char *)"rlib_set_datasource_encoding", _wrap_rlib_set_datasource_encoding, METH_VARARGS, NULL},
@@ -4403,6 +4441,7 @@ static PyMethodDef SwigMethods[] = {
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_f_p_rlib_p_void__int = {"_p_f_p_rlib_p_void__int", "int (*)(rlib *,void *)", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_float = {"_p_float", "float *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_gchar = {"_p_gchar", "gchar *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_rlib = {"_p_rlib", "rlib *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_rlib_part = {"_p_rlib_part", "struct rlib_part *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_rlib_report = {"_p_rlib_report", "struct rlib_report *", 0, 0, (void*)0, 0};
@@ -4411,6 +4450,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_char,
   &_swigt__p_f_p_rlib_p_void__int,
   &_swigt__p_float,
+  &_swigt__p_gchar,
   &_swigt__p_rlib,
   &_swigt__p_rlib_part,
   &_swigt__p_rlib_report,
@@ -4419,6 +4459,7 @@ static swig_type_info *swig_type_initial[] = {
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_f_p_rlib_p_void__int[] = {  {&_swigt__p_f_p_rlib_p_void__int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_float[] = {  {&_swigt__p_float, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_gchar[] = {  {&_swigt__p_gchar, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_rlib[] = {  {&_swigt__p_rlib, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_rlib_part[] = {  {&_swigt__p_rlib_part, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_rlib_report[] = {  {&_swigt__p_rlib_report, 0, 0, 0},{0, 0, 0, 0}};
@@ -4427,6 +4468,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_char,
   _swigc__p_f_p_rlib_p_void__int,
   _swigc__p_float,
+  _swigc__p_gchar,
   _swigc__p_rlib,
   _swigc__p_rlib_part,
   _swigc__p_rlib_report,

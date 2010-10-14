@@ -1,5 +1,22 @@
 2010-10-14  Christian Betz  <cbetz@sicompos.com>
 
+	Generate bindings for previous API change
+
+	* bindings/csharp/csharp.c:
+	* bindings/interfaces/rlib.cs (rlib.rlib_set_radix_character),
+	(rlib):
+	* bindings/interfaces/rlib.java (rlib.rlib_set_radix_character),
+	(rlib):
+	* bindings/interfaces/rlib.pm:
+	* bindings/interfaces/rlib.py:
+	* bindings/interfaces/rlibJNI.java (rlibJNI):
+	* bindings/interfaces/rlibPINVOKE.cs:
+	* bindings/java/java.c:
+	* bindings/perl/perl.c:
+	* bindings/python/python.c:
+
+2010-10-14  Christian Betz  <cbetz@sicompos.com>
+
 	reviewed by: <bdoan@sicompos.com>
 
 	add rlib_set_radix_character (can be used instead of rlib_set_locale)

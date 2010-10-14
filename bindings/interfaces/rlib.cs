@@ -132,6 +132,11 @@ public class rlib {
     return ret;
   }
 
+  public static void rlib_set_radix_character(SWIGTYPE_p_rlib r, SWIGTYPE_p_gchar radix_character) {
+    rlibPINVOKE.rlib_set_radix_character(SWIGTYPE_p_rlib.getCPtr(r), SWIGTYPE_p_gchar.getCPtr(radix_character));
+    if (rlibPINVOKE.SWIGPendingException.Pending) throw rlibPINVOKE.SWIGPendingException.Retrieve();
+  }
+
   public static void rlib_set_output_parameter(SWIGTYPE_p_rlib r, string parameter, string value) {
     rlibPINVOKE.rlib_set_output_parameter(SWIGTYPE_p_rlib.getCPtr(r), parameter, value);
   }
