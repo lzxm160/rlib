@@ -1023,7 +1023,8 @@ gint rlib_execute_as_string(rlib *r, struct rlib_pcode *pcode, gchar *buf, gint 
 	if (pcode) {
 		rlib_execute_pcode(r, &val, pcode, NULL);
 		if (RLIB_VALUE_IS_STRING((&val))) {
-			strncpy(buf, RLIB_VALUE_GET_AS_STRING((&val)), buf_len);
+			if (RLIB_VALUE_GET_AS_STRING((&val)) != NULL) 
+				strncpy(buf, RLIB_VALUE_GET_AS_STRING((&val)), buf_len);
 			isok = TRUE;
 		} else {
 			r_error(r, "Expecting string value from pcode");

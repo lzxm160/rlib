@@ -1,3 +1,9 @@
+2010-10-15  Christian Betz  <cbetz@sicompos.com>
+
+	reviewed by: <bdoan@sicompos.com>
+
+	* libsrc/pcode.c (rlib_execute_as_string): Fix NULL string crashing bug
+
 2010-10-14  Christian Betz  <cbetz@sicompos.com>
 
 	Generate bindings for previous API change
