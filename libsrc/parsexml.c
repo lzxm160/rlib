@@ -116,13 +116,10 @@ static struct rlib_element * parse_line_array(rlib *r, xmlDocPtr doc, xmlNsPtr n
 #if DISABLE_UTF8
 			utf8_to_8813(r, f->value, (gchar *)sp);
 #else
-			safestrncpy(f->value, (gchar *)sp, strlen(sp));
+			safestrncpy(f->value, (gchar *)sp, strlen((char *)sp)+1);
 #endif
 			xmlFree(sp);
-/*Nevermind*/			/* TODO: we need to utf to 8813 all string values in single quotes */
-			sp = xmlGetProp(cur, (const xmlChar *) "value");
-			strcpy(f->value, (const char *)sp);
-			xmlFree(sp);
+			/* TODO: we need to utf to 8813 all string values in single quotes */
 			f->value_line_number = xmlGetLineNo (cur);
 			get_both(&f->xml_align, cur, "align");
 			get_both(&f->xml_bgcolor, cur, "bgcolor");
@@ -153,7 +150,7 @@ static struct rlib_element * parse_line_array(rlib *r, xmlDocPtr doc, xmlNsPtr n
 			utf8_to_8813(r, t->value, (char *)sp);
 #else
 			if(sp != NULL)
-				safestrncpy(t->value, (gchar *)sp, strlen(sp));
+				safestrncpy(t->value, (gchar *)sp, strlen((char *)sp)+1);
 #endif
 			xmlFree(sp);
 			get_both(&t->xml_align, cur, "align");
