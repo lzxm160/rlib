@@ -20,7 +20,7 @@
 ##
 ## Process this file with automake to produce Makefile.in
 
-AM_CFLAGS = -I${top_srcdir}/libsrc $(RLIB_CFLAGS) $(PERL_CFLAGS) -D_GNU_SOURCE -fno-strict-aliasing
+AM_CFLAGS = -I${top_srcdir}/libsrc $(RLIB_CFLAGS) $(PERL_CFLAGS) -D_GNU_SOURCE -fno-strict-aliasing -Wno-unused-variable -Wno-unused-value
 perldir = $(PERL_EXTENSION_DIR)/auto/rlib
 perl_LTLIBRARIES = rlib.la
 rlib_la_SOURCES = perl.c 
