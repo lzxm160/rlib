@@ -1012,6 +1012,7 @@ gint rlib_add_resultset_follower_n_to_1(rlib *r, gchar *leader, gchar *leader_fi
 gint rlib_add_parameter(rlib *r, const gchar *name, const gchar *value);
 gint rlib_set_locale(rlib *r, gchar *locale);
 gchar * rlib_bindtextdomain(rlib *r, gchar *domainname, gchar *dirname);
+void rlib_set_radix_character(rlib *r, gchar radix_character);
 void rlib_init_profiler(void);
 void rlib_dump_profile(gint profilenum, const gchar *filename);
 void rlib_trap(void); /* For internals debugging only */
