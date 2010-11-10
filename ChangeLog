@@ -1,3 +1,8 @@
+2010-11-10  Bob Nielsen  <rnielsen@sicompos.com>
+	reviewed by: <bdoan@sicom.com>
+	* libsrc/pcode_op_functions.c: fix round for negative numbers
+	* libsrc/util.c: proper function terminate utf8 string
+
 2010-10-21  Christian Betz  <cbetz@sicompos.com>
 
 	reviewed by: <bdoan@sicom.com>

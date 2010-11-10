@@ -64,7 +64,7 @@
 
 #ifndef SIGIOT
 #define SIGIOT SIGABRT
-#endif		
+#endif
 
 int locale_codes[] = {
 	LC_ALL,
@@ -126,7 +126,7 @@ gint rutil_enableSignalHandler(gint trueorfalse) {
 }
 
 gchar *strlwrexceptquoted (char *s) {
-	gchar c; 
+	gchar c;
 	gchar *ptr = s;
 	gint quote=0;
 	while ((c = tolower(*s)) != '\0') {
@@ -159,8 +159,8 @@ gchar *rmwhitespacesexceptquoted(gchar *s) {
 
 		if(*s != ' ' || quote==1)
 			backptr++;
-		else 
-			spacecount++;		
+		else
+			spacecount++;
 		s++;
 		*backptr = *s;
 	}
@@ -446,6 +446,7 @@ gchar *strproper (gchar *s) {
 		ptr1 += len;
 		ptr = g_utf8_next_char(ptr);
 	}
+	*ptr1 = '\0';
 
 	return s1;
 #endif
@@ -461,7 +462,7 @@ void make_more_space_if_necessary(gchar **str, gint *size, gint *total_size, gin
 	} else if((*size) + len > (*total_size)) {
 		*str = g_realloc(*str, (*total_size)*2);
 		*total_size = (*total_size) * 2;
-	}		
+	}
 }
 
 
@@ -519,7 +520,7 @@ void make_all_locales_utf8(void) {
 }
 
 /* For debug purposes so I can see a hex dump of certain utf8 strings. */
-inline guint itox(guint i) { return (i < 10)?'0'+i:'A'+i-10; } 
+inline guint itox(guint i) { return (i < 10)?'0'+i:'A'+i-10; }
 gchar *str2hex(const gchar *str) {
 	guint ch;
 	gchar *result = g_malloc(2 * strlen(str) + 1);

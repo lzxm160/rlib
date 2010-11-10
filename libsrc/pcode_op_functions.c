@@ -46,7 +46,7 @@ const gchar * rlib_value_get_type_as_str(struct rlib_value *v) {
 	return "UNKNOWN";
 }
 
-static void rlib_pcode_operator_fatal_execption(rlib *r, const gchar *operator, struct rlib_pcode *code, gint pcount, struct rlib_value *v1, 
+static void rlib_pcode_operator_fatal_execption(rlib *r, const gchar *operator, struct rlib_pcode *code, gint pcount, struct rlib_value *v1,
 	struct rlib_value *v2, struct rlib_value *v3) {
 	rlogit(r, "RLIB EXPERIENCED A FATAL MATH ERROR WHILE TRYING TO PERFORM THE FOLLOWING OPERATION: %s\n", operator);
 	rlogit(r, "\t* Error on Line %d: The Expression Was [%s]\n", code->line_number, code->infix_string);
@@ -70,7 +70,7 @@ gint rlib_pcode_add(rlib_var_stack *rvs) {
 	case RLIB_VAR_NUMERIC:
 		if (tv1 != RLIB_VAR_NUMERIC) r_error("Wrong type");
 		else {
-			rlib_var_add_number(v2, rlib_var_get_number(v1)); 
+			rlib_var_add_number(v2, rlib_var_get_number(v1));
 		}
 		break;
 	}
@@ -129,8 +129,8 @@ gint rlib_pcode_operator_add(rlib *r, struct rlib_pcode *code, struct rlib_var_s
 
 
 #endif
-		
-		
+
+
 gint rlib_pcode_operator_add(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value *v1, *v2, rval_rtn;
 	v1 = rlib_value_stack_pop(vs);
@@ -210,7 +210,7 @@ gint rlib_pcode_operator_subtract(rlib *r, struct rlib_pcode *code, struct rlib_
 				usedays = TRUE;
 			}
 			if (usedays) result = daysdiff;
-			if (usesecs) result	= (daysdiff * RLIB_DATETIME_SECSPERDAY) + secsdiff;		
+			if (usesecs) result	= (daysdiff * RLIB_DATETIME_SECSPERDAY) + secsdiff;
 			if (usedays || usesecs) {
 				rlib_value_free(v1);
 				rlib_value_free(v2);
@@ -233,7 +233,7 @@ gint rlib_pcode_operator_subtract(rlib *r, struct rlib_pcode *code, struct rlib_
 	rlib_pcode_operator_fatal_execption(r,"SUBTRACT", code, 2, v1, v2, NULL);
 	rlib_value_free(v1);
 	rlib_value_free(v2);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	return FALSE;
 }
 
@@ -253,7 +253,7 @@ gint rlib_pcode_operator_multiply(rlib *r, struct rlib_pcode *code, struct rlib_
 	rlib_pcode_operator_fatal_execption(r,"MULTIPLY", code, 2, v1, v2, NULL);
 	rlib_value_free(v1);
 	rlib_value_free(v2);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	return FALSE;
 }
 
@@ -273,8 +273,8 @@ gint rlib_pcode_operator_divide(rlib *r, struct rlib_pcode *code, struct rlib_va
 	rlib_pcode_operator_fatal_execption(r,"DIVIDE", code, 2, v1, v2, NULL);
 	rlib_value_free(v1);
 	rlib_value_free(v2);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
-	return FALSE;	
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
+	return FALSE;
 }
 
 gint rlib_pcode_operator_mod(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
@@ -293,8 +293,8 @@ gint rlib_pcode_operator_mod(rlib *r, struct rlib_pcode *code, struct rlib_value
 	rlib_pcode_operator_fatal_execption(r,"MOD", code, 2, v1, v2, NULL);
 	rlib_value_free(v1);
 	rlib_value_free(v2);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
-	return FALSE;		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
+	return FALSE;
 }
 
 gint rlib_pcode_operator_pow(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
@@ -313,8 +313,8 @@ gint rlib_pcode_operator_pow(rlib *r, struct rlib_pcode *code, struct rlib_value
 	rlib_pcode_operator_fatal_execption(r,"POW", code, 2, v1, v2, NULL);
 	rlib_value_free(v1);
 	rlib_value_free(v2);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
-	return FALSE;		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
+	return FALSE;
 }
 
 
@@ -361,9 +361,9 @@ gint rlib_pcode_operator_lte(rlib *r, struct rlib_pcode *code, struct rlib_value
 	}
 	rlib_value_free(v1);
 	rlib_value_free(v2);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	rlib_pcode_operator_fatal_execption(r,"<=", code, 2, v1, v2, NULL);
-	return FALSE;		
+	return FALSE;
 }
 
 
@@ -395,7 +395,7 @@ gint rlib_pcode_operator_lt(rlib *r, struct rlib_pcode *code, struct rlib_value_
 				rlib_value_stack_push(r,vs, rlib_value_new_number(&rval_rtn, 0));
 			}
 			return TRUE;
-		}	
+		}
 	}
 	if(RLIB_VALUE_IS_DATE(v1) && RLIB_VALUE_IS_DATE(v2)) {
 		struct rlib_datetime *t1, *t2;
@@ -410,9 +410,9 @@ gint rlib_pcode_operator_lt(rlib *r, struct rlib_pcode *code, struct rlib_value_
 	}
 	rlib_value_free(v1);
 	rlib_value_free(v2);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	rlib_pcode_operator_fatal_execption(r,"<", code, 2, v1, v2, NULL);
-	return FALSE;		
+	return FALSE;
 }
 
 gint rlib_pcode_operator_gte(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
@@ -456,9 +456,9 @@ gint rlib_pcode_operator_gte(rlib *r, struct rlib_pcode *code, struct rlib_value
 	}
 	rlib_value_free(v1);
 	rlib_value_free(v2);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	rlib_pcode_operator_fatal_execption(r,">=", code, 2, v1, v2, NULL);
-	return FALSE;		
+	return FALSE;
 }
 
 gint rlib_pcode_operator_gt(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
@@ -502,9 +502,9 @@ gint rlib_pcode_operator_gt(rlib *r, struct rlib_pcode *code, struct rlib_value_
 	}
 	rlib_value_free(v1);
 	rlib_value_free(v2);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	rlib_pcode_operator_fatal_execption(r,">", code, 2, v1, v2, NULL);
-	return FALSE;		
+	return FALSE;
 }
 
 gint rlib_pcode_operator_eql(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
@@ -555,9 +555,9 @@ gint rlib_pcode_operator_eql(rlib *r, struct rlib_pcode *code, struct rlib_value
 	}
 	rlib_value_free(v1);
 	rlib_value_free(v2);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	rlib_pcode_operator_fatal_execption(r,"==", code, 2, v1, v2, NULL);
-	return FALSE;		
+	return FALSE;
 }
 
 gint rlib_pcode_operator_noteql(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
@@ -608,9 +608,9 @@ gint rlib_pcode_operator_noteql(rlib *r, struct rlib_pcode *code, struct rlib_va
 	}
 	rlib_value_free(v1);
 	rlib_value_free(v2);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	rlib_pcode_operator_fatal_execption(r,"!=", code, 2, v1, v2, NULL);
-	return FALSE;		
+	return FALSE;
 }
 
 gint rlib_pcode_operator_logical_and(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
@@ -651,9 +651,9 @@ gint rlib_pcode_operator_logical_and(rlib *r, struct rlib_pcode *code, struct rl
 	}
 	rlib_value_free(v1);
 	rlib_value_free(v2);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	rlib_pcode_operator_fatal_execption(r,"LOGICAL AND", code, 2, v1, v2, NULL);
-	return FALSE;		
+	return FALSE;
 }
 
 gint rlib_pcode_operator_and(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
@@ -664,7 +664,7 @@ gint rlib_pcode_operator_and(rlib *r, struct rlib_pcode *code, struct rlib_value
 	if(RLIB_VALUE_IS_NUMBER(v1) && RLIB_VALUE_IS_NUMBER(v2)) {
 		long v1_num = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v1));
 		long v2_num = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v2));
-		
+
 		if(v2_num & v1_num)	{
 			rlib_value_free(v1);
 			rlib_value_free(v2);
@@ -678,9 +678,9 @@ gint rlib_pcode_operator_and(rlib *r, struct rlib_pcode *code, struct rlib_value
 	}
 	rlib_value_free(v1);
 	rlib_value_free(v2);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	rlib_pcode_operator_fatal_execption(r,"AND", code, 2, v1, v2, NULL);
-	return FALSE;		
+	return FALSE;
 }
 
 gint rlib_pcode_operator_logical_or(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
@@ -718,9 +718,9 @@ gint rlib_pcode_operator_logical_or(rlib *r, struct rlib_pcode *code, struct rli
 	}
 	rlib_value_free(v1);
 	rlib_value_free(v2);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	rlib_pcode_operator_fatal_execption(r,"LOGICAL OR", code, 2, v1, v2, NULL);
-	return FALSE;		
+	return FALSE;
 }
 
 gint rlib_pcode_operator_or(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
@@ -731,7 +731,7 @@ gint rlib_pcode_operator_or(rlib *r, struct rlib_pcode *code, struct rlib_value_
 	if(RLIB_VALUE_IS_NUMBER(v1) && RLIB_VALUE_IS_NUMBER(v2)) {
 		long v1_num = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v1));
 		long v2_num = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v2));
-		
+
 		if(v2_num | v1_num)	{
 			rlib_value_free(v1);
 			rlib_value_free(v2);
@@ -745,9 +745,9 @@ gint rlib_pcode_operator_or(rlib *r, struct rlib_pcode *code, struct rlib_value_
 	}
 	rlib_value_free(v1);
 	rlib_value_free(v2);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	rlib_pcode_operator_fatal_execption(r,"OR", code, 2, v1, v2, NULL);
-	return FALSE;		
+	return FALSE;
 }
 
 gint rlib_pcode_operator_abs(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
@@ -760,7 +760,7 @@ gint rlib_pcode_operator_abs(rlib *r, struct rlib_pcode *code, struct rlib_value
 		return TRUE;
 	}
 	rlib_value_free(v1);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	rlib_pcode_operator_fatal_execption(r,"ABS", code, 1, v1, NULL, NULL);
 	return FALSE;
 }
@@ -778,7 +778,7 @@ gint rlib_pcode_operator_ceil(rlib *r, struct rlib_pcode *code, struct rlib_valu
 		return TRUE;
 	}
 	rlib_value_free(v1);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	rlib_pcode_operator_fatal_execption(r,"CEIL", code, 1, v1, NULL, NULL);
 	return FALSE;
 }
@@ -794,7 +794,7 @@ gint rlib_pcode_operator_floor(rlib *r, struct rlib_pcode *code, struct rlib_val
 		return TRUE;
 	}
 	rlib_value_free(v1);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	rlib_pcode_operator_fatal_execption(r,"FLOOR", code, 1, v1, NULL, NULL);
 	return FALSE;
 }
@@ -809,14 +809,18 @@ gint rlib_pcode_operator_round(rlib *r, struct rlib_pcode *code, struct rlib_val
 			result -= dec;
 			if(dec >= (5 * RLIB_DECIMAL_PRECISION / 10))
 				result += RLIB_DECIMAL_PRECISION;
+		} else if(dec < 0) {
+			result -= dec;
+			if(dec <= (-5 * RLIB_DECIMAL_PRECISION / 10))
+				result -= RLIB_DECIMAL_PRECISION;
 		}
-		
+
 		rlib_value_free(v1);
 		rlib_value_stack_push(r,vs, rlib_value_new_number(&rval_rtn, result));
 		return TRUE;
 	}
 	rlib_value_free(v1);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	rlib_pcode_operator_fatal_execption(r,"ROUND", code, 1, v1, NULL, NULL);
 	return FALSE;
 }
@@ -832,7 +836,7 @@ gint rlib_pcode_operator_sin(rlib *r, struct rlib_pcode *code, struct rlib_value
 		return TRUE;
 	}
 	rlib_value_free(v1);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	rlib_pcode_operator_fatal_execption(r,"sin", code, 1, v1, NULL, NULL);
 	return FALSE;
 }
@@ -848,7 +852,7 @@ gint rlib_pcode_operator_cos(rlib *r, struct rlib_pcode *code, struct rlib_value
 		return TRUE;
 	}
 	rlib_value_free(v1);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	rlib_pcode_operator_fatal_execption(r,"cos", code, 1, v1, NULL, NULL);
 	return FALSE;
 }
@@ -864,7 +868,7 @@ gint rlib_pcode_operator_ln(rlib *r, struct rlib_pcode *code, struct rlib_value_
 		return TRUE;
 	}
 	rlib_value_free(v1);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	rlib_pcode_operator_fatal_execption(r,"ln", code, 1, v1, NULL, NULL);
 	return FALSE;
 }
@@ -880,7 +884,7 @@ gint rlib_pcode_operator_exp(rlib *r, struct rlib_pcode *code, struct rlib_value
 		return TRUE;
 	}
 	rlib_value_free(v1);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	rlib_pcode_operator_fatal_execption(r,"exp", code, 1, v1, NULL, NULL);
 	return FALSE;
 }
@@ -896,7 +900,7 @@ gint rlib_pcode_operator_atan(rlib *r, struct rlib_pcode *code, struct rlib_valu
 		return TRUE;
 	}
 	rlib_value_free(v1);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	rlib_pcode_operator_fatal_execption(r,"atan", code, 1, v1, NULL, NULL);
 	return FALSE;
 }
@@ -912,7 +916,7 @@ gint rlib_pcode_operator_sqrt(rlib *r, struct rlib_pcode *code, struct rlib_valu
 		return TRUE;
 	}
 	rlib_value_free(v1);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	rlib_pcode_operator_fatal_execption(r,"sqrt", code, 1, v1, NULL, NULL);
 	return FALSE;
 }
@@ -933,7 +937,7 @@ gint rlib_pcode_operator_fxpval(rlib *r, struct rlib_pcode *code, struct rlib_va
 	}
 	rlib_value_free(v1);
 	rlib_value_free(v2);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	rlib_pcode_operator_fatal_execption(r,"fxpval", code, 2, v1, v2, NULL);
 	return FALSE;
 }
@@ -949,7 +953,7 @@ gint rlib_pcode_operator_val(rlib *r, struct rlib_pcode *code, struct rlib_value
 	}
 	rlib_pcode_operator_fatal_execption(r,"val", code, 1, v1, NULL, NULL);
 	rlib_value_free(v1);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	return FALSE;
 }
 
@@ -989,7 +993,7 @@ gint rlib_pcode_operator_str(rlib *r, struct rlib_pcode *code, struct rlib_value
 	rlib_value_free(v1);
 	rlib_value_free(v2);
 	rlib_value_free(v3);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	return FALSE;
 }
 
@@ -1031,7 +1035,7 @@ static gint rlib_pcode_operator_stod_common(rlib *r, struct rlib_pcode *code, st
 				}
 			} else {
 				r_error(r, "Invalid Date format: stod(%s)", tstr);
-				err = TRUE;	
+				err = TRUE;
 			}
 		} else { /* convert date */
 			gint year, month, day;
@@ -1048,7 +1052,7 @@ static gint rlib_pcode_operator_stod_common(rlib *r, struct rlib_pcode *code, st
 			} else {
 				r_error(r, "Invalid Date format: stod(%s)", tstr);
 				err = TRUE;
-			}			
+			}
 		}
 		if (!err) {
 			rlib_value_free(v1);
@@ -1058,7 +1062,7 @@ static gint rlib_pcode_operator_stod_common(rlib *r, struct rlib_pcode *code, st
 	}
 	rlib_pcode_operator_fatal_execption(r,"stod", code, 1, v1, NULL, NULL);
 	rlib_value_free(v1);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	return FALSE;
 }
 
@@ -1112,7 +1116,7 @@ gboolean rlib_pcode_operator_iif(rlib *r, struct rlib_pcode *code, struct rlib_v
 			}
 		}
 	}
-	if (!thisresult) 
+	if (!thisresult)
 		rlib_pcode_operator_fatal_execption(r,"iif", code, 1, v1, NULL, NULL);
 	return thisresult;
 }
@@ -1141,7 +1145,7 @@ static gboolean rlib_pcode_operator_dtos_common(rlib *r, struct rlib_pcode *code
 
 gboolean rlib_pcode_operator_dateof(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value rval_rtn, *v1;
-	
+
 	v1 = rlib_value_stack_pop(vs);
 	if (RLIB_VALUE_IS_DATE(v1)) {
 		struct rlib_datetime dt = RLIB_VALUE_GET_AS_DATE(v1);
@@ -1152,14 +1156,14 @@ gboolean rlib_pcode_operator_dateof(rlib *r, struct rlib_pcode *code, struct rli
 	}
 	rlib_pcode_operator_fatal_execption(r,"dateof", code, 1, v1, NULL, NULL);
 	rlib_value_free(v1);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	return FALSE;
 }
 
 
 gboolean rlib_pcode_operator_timeof(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value rval_rtn, *v1;
-	
+
 	v1 = rlib_value_stack_pop(vs);
 	if (RLIB_VALUE_IS_DATE(v1)) {
 		struct rlib_datetime tm_date = RLIB_VALUE_GET_AS_DATE(v1);
@@ -1170,7 +1174,7 @@ gboolean rlib_pcode_operator_timeof(rlib *r, struct rlib_pcode *code, struct rli
 	}
 	rlib_pcode_operator_fatal_execption(r,"dateof", code, 1, v1, NULL, NULL);
 	rlib_value_free(v1);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	return FALSE;
 }
 
@@ -1195,7 +1199,7 @@ gint rlib_pcode_operator_chgdateof(rlib *r, struct rlib_pcode *code, struct rlib
 	rlib_pcode_operator_fatal_execption(r,"chgdateof", code, 2, v1, v2, NULL);
 	rlib_value_free(v1);
 	rlib_value_free(v2);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	return FALSE;
 }
 
@@ -1216,14 +1220,14 @@ gint rlib_pcode_operator_chgtimeof(rlib *r, struct rlib_pcode *code, struct rlib
 	rlib_pcode_operator_fatal_execption(r,"chgtimeof", code, 2, v1, v2, NULL);
 	rlib_value_free(v1);
 	rlib_value_free(v2);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	return FALSE;
 }
 
 
 gboolean rlib_pcode_operator_gettimeinsecs(rlib *r, struct rlib_pcode *code, struct rlib_value_stack *vs, struct rlib_value *this_field_value, gpointer user_data) {
 	struct rlib_value rval_rtn, *v1;
-	
+
 	v1 = rlib_value_stack_pop(vs);
 	if (RLIB_VALUE_IS_DATE(v1)) {
 		struct rlib_datetime dt = RLIB_VALUE_GET_AS_DATE(v1);
@@ -1234,7 +1238,7 @@ gboolean rlib_pcode_operator_gettimeinsecs(rlib *r, struct rlib_pcode *code, str
 	}
 	rlib_pcode_operator_fatal_execption(r,"gettimeinsecs", code, 1, v1, NULL, NULL);
 	rlib_value_free(v1);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	return FALSE;
 }
 
@@ -1255,7 +1259,7 @@ gint rlib_pcode_operator_settimeinsecs(rlib *r, struct rlib_pcode *code, struct 
 	rlib_pcode_operator_fatal_execption(r,"settimefromsecs", code, 2, v1, v2, NULL);
 	rlib_value_free(v1);
 	rlib_value_free(v2);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	return FALSE;
 }
 
@@ -1278,7 +1282,7 @@ gboolean rlib_pcode_operator_dtosf(rlib *r, struct rlib_pcode *code, struct rlib
 		rlib_value_free(v1);
 		v1 = rlib_value_stack_pop(vs); /* clear the stack */
 		rlib_value_free(v1);
-		rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+		rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	}
 	return result;
 }
@@ -1293,7 +1297,7 @@ gboolean rlib_pcode_operator_format(rlib *r, struct rlib_pcode *code, struct rli
 
 	v2 = rlib_value_stack_pop(vs);
 	v1 = rlib_value_stack_pop(vs);
-	
+
 	if(r->special_locale != NULL) {
 		gchar *tmp;
 		tmp = setlocale(LC_ALL, NULL);
@@ -1354,7 +1358,7 @@ gboolean rlib_pcode_operator_format(rlib *r, struct rlib_pcode *code, struct rli
 	rlib_pcode_operator_fatal_execption(r,"format not string in format", code, 2, v1, v2, NULL);
 	rlib_value_free(v1);
 	rlib_value_free(v2);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	setlocale(LC_ALL, current_locale);
 	return FALSE;
 }
@@ -1371,7 +1375,7 @@ gint rlib_pcode_operator_year(rlib *r, struct rlib_pcode *code, struct rlib_valu
 	}
 	rlib_pcode_operator_fatal_execption(r,"year", code, 1, v1, NULL, NULL);
 	rlib_value_free(v1);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	return FALSE;
 }
 
@@ -1387,7 +1391,7 @@ gint rlib_pcode_operator_month(rlib *r, struct rlib_pcode *code, struct rlib_val
 	}
 	rlib_pcode_operator_fatal_execption(r,"month", code, 1, v1, NULL, NULL);
 	rlib_value_free(v1);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	return FALSE;
 }
 
@@ -1402,7 +1406,7 @@ gint rlib_pcode_operator_day(rlib *r, struct rlib_pcode *code, struct rlib_value
 	}
 	rlib_pcode_operator_fatal_execption(r,"day", code, 1, v1, NULL, NULL);
 	rlib_value_free(v1);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	return FALSE;
 }
 
@@ -1413,10 +1417,10 @@ gint rlib_pcode_operator_upper(rlib *r, struct rlib_pcode *code, struct rlib_val
 		gchar *str = RLIB_VALUE_GET_AS_STRING(v1);
 		gchar *tmp = "";
 
-		if (str != NULL) 
+		if (str != NULL)
 			tmp = r_strupr(str);
 
-		rlib_value_free(v1); 
+		rlib_value_free(v1);
 
 		rlib_value_stack_push(r,vs, rlib_value_new_string(&rval_rtn, tmp));
 		if (str != NULL)
@@ -1426,7 +1430,7 @@ gint rlib_pcode_operator_upper(rlib *r, struct rlib_pcode *code, struct rlib_val
 	}
 	rlib_pcode_operator_fatal_execption(r,"upper", code, 1, v1, NULL, NULL);
 	rlib_value_free(v1);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	return FALSE;
 }
 
@@ -1437,10 +1441,10 @@ gint rlib_pcode_operator_lower(rlib *r, struct rlib_pcode *code, struct rlib_val
 		gchar *str = RLIB_VALUE_GET_AS_STRING(v1);
 		gchar *tmp = "";
 
-		if (str != NULL) 
+		if (str != NULL)
 			tmp = r_strlwr(str);
 
-		rlib_value_free(v1); 
+		rlib_value_free(v1);
 
 		rlib_value_stack_push(r,vs, rlib_value_new_string(&rval_rtn, tmp));
 		if (str != NULL)
@@ -1450,7 +1454,7 @@ gint rlib_pcode_operator_lower(rlib *r, struct rlib_pcode *code, struct rlib_val
 	}
 	rlib_pcode_operator_fatal_execption(r,"lower", code, 1, v1, NULL, NULL);
 	rlib_value_free(v1);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	return FALSE;
 }
 
@@ -1491,7 +1495,7 @@ gint rlib_pcode_operator_left(rlib *r, struct rlib_pcode *code, struct rlib_valu
 	rlib_pcode_operator_fatal_execption(r,"left", code, 2, v1, v2, NULL);
 	rlib_value_free(v1);
 	rlib_value_free(v2);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	return FALSE;
 }
 
@@ -1515,7 +1519,7 @@ gint rlib_pcode_operator_right(rlib *r, struct rlib_pcode *code, struct rlib_val
 	rlib_pcode_operator_fatal_execption(r,"right", code, 2, v1, v2, NULL);
 	rlib_value_free(v1);
 	rlib_value_free(v2);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	return FALSE;
 }
 
@@ -1547,7 +1551,7 @@ gint rlib_pcode_operator_substring(rlib *r, struct rlib_pcode *code, struct rlib
 	rlib_value_free(v1);
 	rlib_value_free(v2);
 	rlib_value_free(v3);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	return FALSE;
 }
 
@@ -1556,8 +1560,8 @@ gint rlib_pcode_operator_proper(rlib *r, struct rlib_pcode *code, struct rlib_va
 	v1 = rlib_value_stack_pop(vs);
 	if(RLIB_VALUE_IS_STRING(v1)) {
 		if(RLIB_VALUE_GET_AS_STRING(v1) == NULL || RLIB_VALUE_GET_AS_STRING(v1)[0] == '\0') {
-			rlib_value_stack_push(r,vs, rlib_value_new_string(&rval_rtn, ""));	
-			return TRUE;	
+			rlib_value_stack_push(r,vs, rlib_value_new_string(&rval_rtn, ""));
+			return TRUE;
 		} else {
 			gchar *tmp = strproper(RLIB_VALUE_GET_AS_STRING(v1));
 			rlib_value_free(v1);
@@ -1568,7 +1572,7 @@ gint rlib_pcode_operator_proper(rlib *r, struct rlib_pcode *code, struct rlib_va
 	}
 	rlib_pcode_operator_fatal_execption(r,"proper", code, 1, v1, NULL, NULL);
 	rlib_value_free(v1);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	return FALSE;
 }
 
@@ -1590,7 +1594,7 @@ gint rlib_pcode_operator_stodt(rlib *r, struct rlib_pcode *code, struct rlib_val
 	}
 	rlib_pcode_operator_fatal_execption(r,"stodt", code, 1, v1, NULL, NULL);
 	rlib_value_free(v1);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	return FALSE;
 }
 
@@ -1612,7 +1616,7 @@ gint rlib_pcode_operator_stodtsql(rlib *r, struct rlib_pcode *code, struct rlib_
 	}
 	rlib_pcode_operator_fatal_execption(r,"stodt", code, 1, v1, NULL, NULL);
 	rlib_value_free(v1);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	return FALSE;
 }
 
@@ -1627,7 +1631,7 @@ gint rlib_pcode_operator_isnull(rlib *r, struct rlib_pcode *code, struct rlib_va
 	}
 	rlib_pcode_operator_fatal_execption(r,"isnull", code, 1, v1, NULL, NULL);
 	rlib_value_free(v1);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	return FALSE;
 }
 
@@ -1643,7 +1647,7 @@ gint rlib_pcode_operator_dim(rlib *r, struct rlib_pcode *code, struct rlib_value
 	}
 	rlib_pcode_operator_fatal_execption(r,"dim", code, 1, v1, NULL, NULL);
 	rlib_value_free(v1);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	return FALSE;
 }
 
@@ -1659,7 +1663,7 @@ gint rlib_pcode_operator_wiy(rlib *r, struct rlib_pcode *code, struct rlib_value
 	}
 	rlib_pcode_operator_fatal_execption(r,"wiy", code, 1, v1, NULL, NULL);
 	rlib_value_free(v1);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	return FALSE;
 }
 
@@ -1685,7 +1689,7 @@ gint rlib_pcode_operator_wiyo(rlib *r, struct rlib_pcode *code, struct rlib_valu
 	rlib_pcode_operator_fatal_execption(r,"wiyo", code, 2, v1, v2, NULL);
 	rlib_value_free(v1);
 	rlib_value_free(v2);
-	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));		
+	rlib_value_stack_push(r,vs, rlib_value_new_error(&rval_rtn));
 	return FALSE;
 }
 
@@ -1707,7 +1711,7 @@ gint rlib_pcode_operator_eval(rlib *r, struct rlib_pcode *code, struct rlib_valu
 		if(RLIB_VALUE_IS_STRING(v1)) {
 			struct rlib_pcode *code = NULL;
 			code = rlib_infix_to_pcode(r, NULL, NULL, RLIB_VALUE_GET_AS_STRING(v1), -1, TRUE);
-			rlib_execute_pcode(r, &rval_rtn, code, this_field_value);		
+			rlib_execute_pcode(r, &rval_rtn, code, this_field_value);
 			rlib_pcode_free(code);
 			rlib_value_free(v1);
 			rlib_value_stack_push(r,vs,&rval_rtn);
