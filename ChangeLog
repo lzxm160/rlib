@@ -1,3 +1,9 @@
+2010-11-26  Christian Betz  <cbetz@sicompos.com>
+
+	reviewed by: <bdoan@sicompos.com>
+
+	* libsrc/formatstring.c (change_radix_character): fix bug changing radix on string with thousands separators.
+
 2010-11-10  Bob Nielsen  <rnielsen@sicompos.com>
 	reviewed by: <bdoan@sicom.com>
 	* libsrc/pcode_op_functions.c: fix round for negative numbers

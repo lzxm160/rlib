@@ -46,6 +46,8 @@ void change_radix_character(rlib *r, char *s) {
 	while (*s != '\0') {
 		if (*s == '.') {
 			*s = r->radix_character;
+		} else if (*s == r->radix_character) {
+			*s = '.';
 		}
 		s++;
 	}	
