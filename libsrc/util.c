@@ -428,7 +428,7 @@ gchar *strproper (gchar *s) {
 		ptr = g_utf8_next_char(ptr);
 	}
 
-	s1 = g_malloc(len);
+	s1 = g_malloc(len + 1);
 	if (!s1)
 		return NULL;
 

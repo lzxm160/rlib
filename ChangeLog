@@ -1,3 +1,7 @@
+2011-02-11  Bob Nielsen  <rnielsen@sicompos.com>
+	reviewed by: <bdoan@sicompos.com>
+	* libsrc/util.c: (strproper): increase length of string buffer
+
 2010-11-26  Christian Betz  <cbetz@sicompos.com>
 
 	reviewed by: <bdoan@sicompos.com>
