@@ -23,6 +23,7 @@
 #include <math.h>
 #include <time.h>
 #include <ctype.h>
+#include <inttypes.h>
 #include <locale.h>
 
 #include "config.h"
@@ -970,17 +971,9 @@ gint rlib_pcode_operator_str(rlib *r, struct rlib_pcode *code, struct rlib_value
 		n1 = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v1));
 		n2 = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(v2));
 		if(RLIB_VALUE_GET_AS_NUMBER(v1) > 0)
-#ifdef _64BIT_
-			sprintf(fmtstring, "%%%ld.%ldd", n2, n1);
-#else
-			sprintf(fmtstring, "%%%lld.%lldd", n2, n1);
-#endif
+			sprintf(fmtstring, "%%%" PRId64 ".%" PRId64, n2, n1);
 		else
-#ifdef _64BIT_
-			sprintf(fmtstring, "%%%ld", n2);
-#else
-			sprintf(fmtstring, "%%%lld", n2);
-#endif
+			sprintf(fmtstring, "%%%" PRId64, n2);
 		rlib_number_sprintf(r, &dest, fmtstring, v3, 0, "((NONE))", -1);
 		rlib_value_free(v1);
 		rlib_value_free(v2);

@@ -145,13 +145,6 @@ dnl Enable WIN32 on MingW or Cygwin in mno-cygwin mode
 	;;
   *)
 	enable_win32=no
-	case $target_cpu in
-		x86_64|sparc64)
-			AC_DEFINE(_64BIT_, 1, [We compile for a 64-bit CPU])
-			;;
-		*)
-			;;
-	esac
 	;;
 esac
 AM_CONDITIONAL(WIN32, test x$enable_win32 = "xyes")

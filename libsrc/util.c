@@ -537,9 +537,5 @@ gchar *str2hex(const gchar *str) {
 gint64 rlib_safe_atoll(char *str) {
 	if(str == NULL)
 		return 0;
-#if _64BIT_
-	return atol(str);
-#else
-	return atoll(str);
-#endif
+	return (gint64)atoll(str);
 }

@@ -74,11 +74,7 @@ gint rlib_var_concat_string(rlib_var *v, const char *str) {
 gint64 rlib_var_get_number(rlib_var *v) {
 	if (v->type != RLIB_VAR_NUMBER) {
 		r_error(NULL, "rlib_var not a number");
-#if _64BIT_
-		return 0L;
-#else
-		return 0LL;
-#endif
+		return (gint64)0LL;
 	}
 	return v->value.num;
 }

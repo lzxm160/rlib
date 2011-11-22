@@ -26,6 +26,7 @@
 #include <math.h>
 #include <time.h>
 #include <ctype.h>
+#include <inttypes.h>
 #include "config.h"
 
 #include "rlib.h"
@@ -410,11 +411,7 @@ void rlib_pcode_dump(rlib *r, struct rlib_pcode *p, gint offset) {
 			struct rlib_pcode_operand *o = p->instructions[i].value;
 			rlogit(r, "PUSH: ");
 			if(o->type == OPERAND_NUMBER)
-#if _64BIT_
-				rlogit(r, "%ld", *((gint64 *)o->value));
-#else
-				rlogit(r, "%lld", *((gint64 *)o->value));
-#endif
+				rlogit(r, "%" PRId64, *((gint64 *)o->value));
 			else if(o->type == OPERAND_STRING)
 				rlogit(r, "'%s'", (char *)o->value);
 			else if(o->type == OPERAND_FIELD) {

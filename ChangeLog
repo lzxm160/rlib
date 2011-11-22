@@ -1,3 +1,18 @@
+2011-11-22  Christian Betz  <cbetz@sicompos.com>
+
+	merge fix for long-long on windows (by Zoltán Böszörményi)
+	requires misinttypes for Visual Studio (http://code.google.com/p/msinttypes/)
+
+	* configure.in:
+	* libsrc/formatstring.c (rlib_number_sprintf),
+	(rlib_format_string_default):
+	* libsrc/fxp.c (rlib_fxp_div):
+	* libsrc/pcode.c (rlib_pcode_dump):
+	* libsrc/pcode.h:
+	* libsrc/pcode_op_functions.c (rlib_pcode_operator_str):
+	* libsrc/util.c (rlib_safe_atoll):
+	* libsrc/value.c (rlib_var_get_number):
+
 2011-02-11  Bob Nielsen  <rnielsen@sicompos.com>
 	reviewed by: <bdoan@sicompos.com>
 	* libsrc/util.c: (strproper): increase length of string buffer

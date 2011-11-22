@@ -42,7 +42,7 @@
 #define RLIB_FXP_MUL(a, b) rlib_fxp_mul(a, b, RLIB_DECIMAL_PRECISION)
 #define RLIB_FXP_DIV(num, denom) rlib_fxp_div(num, denom, RLIB_FXP_PRECISION)
 
-#define RLIB_FXP_TO_NORMAL_LONG_LONG(a) (a/RLIB_DECIMAL_PRECISION)
+#define RLIB_FXP_TO_NORMAL_LONG_LONG(a) ((gint64)(a/RLIB_DECIMAL_PRECISION))
 #define LONG_TO_FXP_NUMBER(a) ((a)*RLIB_DECIMAL_PRECISION)
 
 #define OP_ADD		1

@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <inttypes.h>
 #include <math.h>
 #include <time.h>
 #include <locale.h>
@@ -154,15 +155,17 @@ gint rlib_number_sprintf(rlib *r, gchar **woot_dest, gchar *fmtstr, const struct
 			fleft[ptr++]='0';
 		if(left_pad)
 			if(commatize) {
-				sprintf(fleft +ptr, "%d'lld", left_pad);
+				sprintf(fleft +ptr, "%d'" PRId64, left_pad);
 			} else
-				sprintf(fleft +ptr, "%dlld", left_pad);
+				sprintf(fleft +ptr, "%d" PRId64, left_pad);
 		else {
+			char	*int64fmt = PRId64;
+			int	i;
+
 			if(commatize)
 				fleft[ptr++] = '\'';
-			fleft[ptr++] = 'l';
-			fleft[ptr++] = 'l';
-			fleft[ptr++] = 'd';
+			for (i = 0; int64fmt[i]; i++)
+				fleft[ptr++] = int64fmt[i];
 			fleft[ptr++] = '\0';
 		}
 		if(left_pad == 0 && left == 0) {
@@ -182,11 +185,13 @@ gint rlib_number_sprintf(rlib *r, gchar **woot_dest, gchar *fmtstr, const struct
 			if(right_padzero)
 				fright[ptr++]='0';
 			if(right_pad)
-				sprintf(&fright[ptr], "%dlld", right_pad);
+				sprintf(&fright[ptr], "%d" PRId64, right_pad);
 			else {
-				fright[ptr++] = 'l';
-				fright[ptr++] = 'l';
-				fright[ptr++] = 'd';
+				char	*int64fmt = PRId64;
+				int	i;
+
+				for (i = 0; int64fmt[i]; i++)
+					fright[ptr++] = int64fmt[i];
 				fright[ptr++] = '\0';
 			}
 			right /= tentothe(RLIB_FXP_PRECISION-right_pad);
@@ -204,11 +209,7 @@ gint rlib_number_sprintf(rlib *r, gchar **woot_dest, gchar *fmtstr, const struct
 
 static gint rlib_format_string_default(rlib *r, struct rlib_report_field *rf, struct rlib_value *rval, gchar **dest) {
 	if(RLIB_VALUE_IS_NUMBER(rval)) {
-#ifdef _64BIT_
-		*dest = g_strdup_printf("%ld", RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(rval)));
-#else
-		*dest = g_strdup_printf("%lld", RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(rval)));
-#endif
+		*dest = g_strdup_printf("%" PRId64, RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(rval)));
 	} else if(RLIB_VALUE_IS_STRING(rval)) {
 		if(RLIB_VALUE_GET_AS_STRING(rval) == NULL)
 			*dest = NULL;
