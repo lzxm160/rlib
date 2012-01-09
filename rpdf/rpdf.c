@@ -673,7 +673,7 @@ gboolean rpdf_finalize(struct rpdf *pdf) {
 	time_t now;
 	
 	time(&now);
-#ifndef RLIB_WIN32
+#ifdef HAVE_LOCALTIME_R
 	localtime_r(&now, &my_tm);
 #else
 	memcpy(&my_tm, localtime(&now), sizeof(struct tm));
@@ -806,7 +806,8 @@ gboolean rpdf_finalize(struct rpdf *pdf) {
 	rpdf_out_string(pdf, buf);
 	rpdf_out_string(pdf, "0000000000 65535 f \n");
 	g_slist_foreach(pdf->xref, rpdf_finalize_xref, pdf);
-	
+	g_slist_free(pdf->xref);
+
 	rpdf_out_string(pdf, "trailer\n");
 	rpdf_out_string(pdf, "<<\n");
 	sprintf(buf, "/Size %d\n", pdf->object_count+1);
@@ -1123,12 +1124,14 @@ gboolean rpdf_image(struct rpdf *pdf, gdouble x, gdouble y, gdouble width, gdoub
 
 		sprintf(header, "%cPNG%c%c%c%c", 137,13,10,26,10);			
 		if(memcmp(stream_read_bytes(image->data,&read_spot,8,size), header, 8) != 0) {
+			g_free(png_info);
 			g_free(image->data);
 			g_free(image);
 			return FALSE;
 		}
 		stream_read_bytes(image->data,&read_spot,4,size);
 		if(memcmp(stream_read_bytes(image->data,&read_spot,4,size), "IHDR", 4) != 0) {
+			g_free(png_info);
 			g_free(image->data);
 			g_free(image);
 			return FALSE;

@@ -73,6 +73,7 @@ static int ignoreElement(const char *elname) {
 	return result;
 }
 static void get_both(struct rlib_from_xml *data, xmlNodePtr cur, gchar *name) {
+	xmlFree(data->xml);
 	data->xml = xmlGetProp(cur, (const xmlChar *) name);
 	data->line = xmlGetLineNo (cur);
 }

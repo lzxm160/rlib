@@ -144,14 +144,31 @@ void rlib_pcode_free(struct rlib_pcode *code) {
 	for(i=0;i<code->count;i++) {
 		if(code->instructions[i].instruction == PCODE_PUSH) {
 			struct rlib_pcode_operand *o = code->instructions[i].value;
-			if(o->type == OPERAND_STRING || o->type == OPERAND_NUMBER || o->type == OPERAND_FIELD)
-				g_free(o->value);
-			if(o->type == OPERAND_IIF) {
-				struct rlib_pcode_if *rpif = o->value;
-				rlib_pcode_free(rpif->evaulation);
-				rlib_pcode_free(rpif->true);
-				rlib_pcode_free(rpif->false);
-				g_free(rpif);
+			switch (o->type)
+			{
+				case OPERAND_STRING:
+				case OPERAND_NUMBER:
+				case OPERAND_DATE:
+				case OPERAND_FIELD:
+				case OPERAND_MEMORY_VARIABLE:
+					g_free(o->value);
+					break;
+
+				case OPERAND_IIF:
+				{
+					struct rlib_pcode_if *rpif = o->value;
+					rlib_pcode_free(rpif->evaulation);
+					rlib_pcode_free(rpif->true);
+					rlib_pcode_free(rpif->false);
+					g_free(rpif);
+					break;
+				}
+
+				case OPERAND_VARIABLE:
+				case OPERAND_RLIB_VARIABLE:
+				case OPERAND_METADATA:
+				default:
+					break;
 			}
 			g_free(o);
 		}
@@ -245,11 +262,7 @@ gint64 rlib_str_to_long_long(rlib *r, gchar *str) {
 
 	if(str == NULL)
 		return 0;
-#ifdef RLIB_WIN32
-	temp = ".";
-#else
 	temp = nl_langinfo(RADIXCHAR);
-#endif
 	if (!temp || r_strlen(temp) != 1) {
 		r_warning(r, "nl_langinfo returned %s as DECIMAL_POINT", temp);
 	} else {
@@ -310,7 +323,6 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, struct rlib_part *part, st
 	o = g_new0(struct rlib_pcode_operand, 1);
 	if(str[0] == '\'') {
 		gint slen;
-		gint rslen = r_strlen(str);
 		gchar *newstr;
 		slen = strlen(str);
 		if(slen < 2) {
@@ -319,8 +331,8 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, struct rlib_part *part, st
 			newstr[1] = 0;
 			r_error(r, "Line: %d Invalid String! <rlib_new_operand>:: Bad PCODE [%s]\n", line_number, infix);
 		} else {
-			newstr = g_malloc(rslen-1);
-			memcpy(newstr, str+1, rslen-1);
+			newstr = g_malloc(slen-1);
+			memcpy(newstr, str+1, slen-1);
 			newstr[slen-2] = '\0';
 		}
 		o->type = OPERAND_STRING;

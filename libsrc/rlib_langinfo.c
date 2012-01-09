@@ -24,8 +24,19 @@
  */
 #ifndef HAVE_LANGINFO_H
 
+#ifdef WIN32
+#define WIN32_LEAN_AND_MEAN 1
 #ifdef NEED_WINDOWS_H
 #include <windows.h>
+#endif
+#include <windef.h>
+#if (defined __STDC__ && __STDC__) || defined __cplusplus || defined _MSC_VER
+# include <stdarg.h>
+#else
+# include <varargs.h>
+#endif
+#include <winbase.h>
+#include <winnls.h>
 #endif
 
 #include <stdio.h>

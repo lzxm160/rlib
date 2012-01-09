@@ -12,12 +12,12 @@ FILE=libsrc/reportgen.c
 
 DIE=0
 
-AUTOMAKE=automake-1.6
-ACLOCAL=aclocal-1.6
+AUTOMAKE=automake
+ACLOCAL=aclocal
 
 ($AUTOMAKE --version) < /dev/null > /dev/null 2>&1 || {
-        AUTOMAKE=automake
-        ACLOCAL=aclocal
+        AUTOMAKE=automake-1.6
+        ACLOCAL=aclocal-1.6
 }
 
 (autoconf --version) < /dev/null > /dev/null 2>&1 || {

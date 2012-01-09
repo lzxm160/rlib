@@ -1,3 +1,29 @@
+2012-01-09 Boszormenyi Zoltan <zb@cybertec.at>
+
+	Lots of patches to fix windows cross-compiling and compatibility issues
+	Fix some memory leaks
+
+	* autogen.sh:
+	* bindings/csharp/Makefile.am:
+	* bindings/java/Makefile.am:
+	* bindings/perl/Makefile.am:
+	* bindings/php/Makefile.am:
+	* bindings/python/Makefile.am:
+	* configure.in:
+	* inputs/mysql/Makefile.am:
+	* inputs/odbc/Makefile.am:
+	* inputs/postgres/Makefile.am:
+	* libsrc/Makefile.am:
+	* libsrc/api.c (rlib_init_with_environment), (rlib_set_output_encoding), (rlib_set_datasource_encoding):
+	* libsrc/charencoder.c (rlib_charencoder_convert):
+	* libsrc/formatstring.c (rlib_format_money):
+	* libsrc/free.c (rlib_free_report), (rlib_free_part_td), (rlib_free):
+	* libsrc/parsexml.c (get_both):
+	* libsrc/pcode.c (rlib_pcode_free), (rlib_str_to_long_long), (rlib_new_operand):
+	* libsrc/rlib_langinfo.c:
+	* rpdf/Makefile.am:
+	* rpdf/rpdf.c (rpdf_finalize), (rpdf_image):
+
 2011-11-22  Christian Betz  <cbetz@sicompos.com>
 
 	merge fix for long-long on windows (by Zoltán Böszörményi)

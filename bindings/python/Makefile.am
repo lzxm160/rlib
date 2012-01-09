@@ -30,7 +30,7 @@ ndef_ldflags=-Wl,--output-def,$(NDEF_FILE)
 endif
 rlibmodule_la_LDFLAGS = \
 	-version-info $(RLIB_LT_CURRENT):$(RLIB_LT_REVISION):$(RLIB_LT_AGE) \
-	$(ndef_ldflags) -module -avoid-version
+	$(ndef_ldflags) $(EXTRA_LDFLAGS) -module -avoid-version
 _rlib_la_SOURCES = python.c 
 _rlib_la_LIBADD = $(top_builddir)/libsrc/libr.la $(PYTHON_LIBRARIES) $(RLIB_LIBS)
 if WIN32
@@ -39,4 +39,4 @@ def_ldflags=-Wl,--output-def,$(DEF_FILE)
 endif
 _rlib_la_LDFLAGS = \
 	-version-info $(RLIB_LT_CURRENT):$(RLIB_LT_REVISION):$(RLIB_LT_AGE) \
-	$(def_ldflags) -module -avoid-version
+	$(def_ldflags) $(EXTRA_LDFLAGS) -module -avoid-version

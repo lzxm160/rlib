@@ -37,7 +37,7 @@ endif
 
 librpdf_la_LDFLAGS = \
 	-version-info $(RLIB_LT_CURRENT):$(RLIB_LT_REVISION):$(RLIB_LT_AGE) \
-	$(def_ldflags)
+	$(def_ldflags) $(EXTRA_LDFLAGS)
 
 noinst_PROGRAMS = test
 

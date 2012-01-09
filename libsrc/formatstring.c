@@ -59,12 +59,12 @@ void change_radix_character(rlib *r, char *s) {
 */
 gint rlib_format_money(rlib *r, gchar **dest,const gchar *moneyformat, gint64 x) { 
 	gint result;
-#ifndef RLIB_WIN32
+#ifdef HAVE_STRFMON
 	gdouble d;
 #endif	
 	
 	*dest = g_malloc(MAXSTRLEN);
-#ifdef RLIB_WIN32
+#ifndef HAVE_STRFMON
 	result = 0;
 	(*dest)[0] = 0;
 #else

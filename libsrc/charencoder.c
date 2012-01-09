@@ -59,7 +59,7 @@ gint rlib_charencoder_convert(GIConv converter, gchar **inbuf, gsize *inbytes_le
 	*outbuf = g_strdup(*inbuf);
 	return 0;
 #else
-	if(converter <= 0) {
+	if((converter == (GIConv) -1) || (converter == (GIConv) 0)) {
 		*outbuf = g_strdup(*inbuf);
 		return 1;
 	} else {

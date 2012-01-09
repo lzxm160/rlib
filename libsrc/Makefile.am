@@ -42,12 +42,12 @@ endif
 
 libr_la_LDFLAGS = \
 	-version-info $(RLIB_LT_CURRENT):$(RLIB_LT_REVISION):$(RLIB_LT_AGE) \
-	$(def_ldflags)
+	$(def_ldflags) $(EXTRA_LDFLAGS)
 
 rlibincludedir=$(includedir)/rlib
 rlibinclude_HEADERS = rlib.h rlib_input.h charencoder.h datetime.h\
 	util.h value.h pcode.h
 
-AM_CFLAGS = $(RLIB_CFLAGS) $(RLIB_WERROR) -I../rpdf
+AM_CFLAGS = $(RLIB_CFLAGS) $(RLIB_WERROR) -I$(top_srcdir)/rpdf
 
 EXTRA_DIST = rlib.i generate_bindings.sh

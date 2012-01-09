@@ -323,6 +323,7 @@ void rlib_free_report(rlib *r, struct rlib_report *report) {
 	}
 
 	rlib_pcode_free(report->font_size_code);
+	rlib_pcode_free(report->query_code);
 	rlib_pcode_free(report->orientation_code);
 	rlib_pcode_free(report->top_margin_code);
 	rlib_pcode_free(report->left_margin_code);
@@ -454,7 +455,9 @@ void rlib_free_part_td(rlib *r, struct rlib_part *part, GSList *part_deviations)
 			if(report != NULL)
 				rlib_free_report(r, report);
 		}
-		g_slist_free(reports);
+
+		g_slist_foreach(td->reports, (GFunc) g_free, NULL);
+		g_slist_free(td->reports);
 		g_free(td);
 	}
 }
@@ -563,6 +566,7 @@ gint rlib_free(rlib *r) {
 	xmlCleanupParser();
 	rlib_free_results_and_queries(r);
 	for(i=0;i<r->inputs_count;i++) {
+		rlib_charencoder_free(r->inputs[i].input->info.encoder);
 		r->inputs[i].input->input_close(r->inputs[i].input);
 		r->inputs[i].input->free(r->inputs[i].input);
 		if(r->inputs[i].handle != NULL)
@@ -586,5 +590,6 @@ gint rlib_free(rlib *r) {
 	}
 	g_free(r->queries);
 	g_free(r->results);
+	g_free(r);
 	return 0;
 }

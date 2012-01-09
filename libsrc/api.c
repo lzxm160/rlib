@@ -53,7 +53,6 @@ static void metadata_destroyer (gpointer data) {
 }
 
 rlib * rlib_init_with_environment(struct environment_filter *environment) {
-	gchar *lc_encoding;
 	rlib *r;
 	
 	init_signals();
@@ -64,11 +63,6 @@ rlib * rlib_init_with_environment(struct environment_filter *environment) {
 		rlib_new_c_environment(r);
 	else
 		ENVIRONMENT(r) = environment;
-#ifdef RLIB_WIN32
-	lc_encoding = NULL;
-#else
-	lc_encoding = nl_langinfo(CODESET);
-#endif
 	
 	r->output_parameters = g_hash_table_new_full (g_str_hash, g_str_equal, string_destroyer, string_destroyer);
 	r->input_metadata = g_hash_table_new_full (g_str_hash, g_str_equal, string_destroyer, metadata_destroyer);
@@ -445,8 +439,14 @@ void rlib_set_output_parameter(rlib *r, gchar *parameter, gchar *value) {
 }
 
 void rlib_set_output_encoding(rlib *r, const char *encoding) {
-	r->output_encoder = rlib_charencoder_new(encoding, "UTF-8");
-	r->output_encoder_name  = g_strdup(encoding);
+	const char *new_encoding = (encoding ? encoding : "UTF-8");
+
+	if (strcasecmp(new_encoding, "UTF-8") == 0 ||
+			strcasecmp(new_encoding, "UTF8") == 0)
+		r->output_encoder = (GIConv) -1;
+	else
+		r->output_encoder = rlib_charencoder_new(new_encoding, "UTF-8");
+	r->output_encoder_name  = g_strdup(new_encoding);
 }
 
 gint rlib_set_datasource_encoding(rlib *r, gchar *input_name, gchar *encoding) {
@@ -456,6 +456,7 @@ gint rlib_set_datasource_encoding(rlib *r, gchar *input_name, gchar *encoding) {
 	for (i=0;i<r->inputs_count;i++) {
 		tif = r->inputs[i].input;
 		if (strcmp(r->inputs[i].name, input_name) == 0) {
+			rlib_charencoder_free(tif->info.encoder);
 			tif->info.encoder = rlib_charencoder_new("UTF-8", encoding);
 			return 0;
 		}

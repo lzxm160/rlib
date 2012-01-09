@@ -29,4 +29,4 @@ def_ldflags=-Wl,--output-def,$(DEF_FILE) -module -avoid-version
 endif
 librlibjava_la_LDFLAGS = \
 	-version-info $(RLIB_LT_CURRENT):$(RLIB_LT_REVISION):$(RLIB_LT_AGE) \
-	$(def_ldflags)
+	$(def_ldflags) $(EXTRA_LDFLAGS)
