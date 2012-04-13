@@ -1325,11 +1325,17 @@ static void rlib_html_init_end_page(rlib *r) {}
 static void rlib_html_init_output(rlib *r) {}
 
 static void rlib_html_finalize_private(rlib *r) {
-	char *old;
-	old = OUTPUT_PRIVATE(r)->both;
-	OUTPUT_PRIVATE(r)->both = g_strconcat(OUTPUT_PRIVATE(r)->both, "</td></tr></tbody></table></body></html>", NULL);
-	g_free(old);
-	OUTPUT_PRIVATE(r)->length = strlen(OUTPUT_PRIVATE(r)->both);
+	char *old = OUTPUT_PRIVATE(r)->both;
+
+	if (old) {
+		char *new = g_strconcat(old, "</td></tr></tbody></table></body></html>", NULL);
+
+		OUTPUT_PRIVATE(r)->both = new;
+		OUTPUT_PRIVATE(r)->length = strlen(new);
+		g_free(old);
+	} else {
+		OUTPUT_PRIVATE(r)->length = 0;
+	}
 }
 
 static void rlib_html_start_output_section(rlib *r) {}

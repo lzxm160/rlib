@@ -1,3 +1,11 @@
+2012-04-13 Boszormenyi Zoltan <zb@cybertec.at>
+
+	reviewed by: <cbetz>
+
+	fix crashing bug #5603
+
+	* libsrc/html.c (rlib_html_finalize_private): 
+
 2012-01-09 Boszormenyi Zoltan <zb@cybertec.at>
 
 	Lots of patches to fix windows cross-compiling and compatibility issues
