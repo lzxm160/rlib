@@ -387,7 +387,7 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, struct rlib_part *part, st
 		o->value = rv;
 	} else if((memresult = rlib_resolve_memory_variable(r, str))) {
 		o->type = OPERAND_MEMORY_VARIABLE;
-		o->value = memresult;
+		o->value = g_strdup(memresult);
 	} else if((rvar = rlib_resolve_rlib_variable(r, str))) {
 		o->type = OPERAND_RLIB_VARIABLE;
 		o->value = GINT_TO_POINTER(rvar);

@@ -1,3 +1,9 @@
+2012-04-13  Bob Doan  <bdoan@sicompos.com>
+
+	reviewed by: <cbetz> 
+
+	* libsrc/pcode.c (rlib_new_operand):
+
 2012-04-13 Boszormenyi Zoltan <zb@cybertec.at>
 
 	reviewed by: <cbetz>
