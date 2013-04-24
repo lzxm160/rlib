@@ -6,7 +6,7 @@
 Summary: RLIB is a reporting engine/library.
 Name: rlib
 Version: @VERSION@
-Release: 1
+Release: 2
 License: GPL
 Group: System/Libraries
 Source: %name-%{version}.tar.gz
@@ -57,6 +57,7 @@ To find out about all it can do visit: http://rlib.sicompos.com
 Summary: RLIB PHP extension
 Group: System/Libraries
 Requires: %{name} = %{version}
+Requires: php-common
 
 %description php
 PHP extension for RLIB, a reporting engine/library.
@@ -127,6 +128,8 @@ make
 %{perlextdir}/*
 
 %files php
+%{_sysconfdir}/php-zts.d/rlib.ini
+%{_sysconfdir}/php.d/rlib.ini
 %{phpextdir}/*
 
 %files python

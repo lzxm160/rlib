@@ -32,3 +32,9 @@ SUBDIRS = rpdf libsrc inputs bindings src tests \
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = rlib.pc
+
+phpini1dir = $(sysconfdir)/php.d
+phpini1_DATA = rlib.ini
+
+phpini2dir = $(sysconfdir)/php-zts.d
+phpini2_DATA = rlib.ini

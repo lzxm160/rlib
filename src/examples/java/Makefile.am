@@ -21,6 +21,7 @@
 ## Process this file with automake to produce Makefile.in
 
 JAVAROOT=.
+javadir = .
 
 javafiles = rlib.java rlibJNI.java SWIGTYPE_p_f_p_rlib_p_void__int.java SWIGTYPE_p_rlib.java SWIGTYPE_p_void.java
 

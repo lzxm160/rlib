@@ -1,3 +1,20 @@
+2013-04-24 Zoltan Boszormenyi <zboszormenyi@sicom.com> 
+
+	reviewed by: <cbetz>
+
+	Here is a new set of patches, marked by release number "2", so upgrade is possible from the previous set.
+	The difference is that an "rlib.ini" is added to the /etc/php.d and /etc/php-zts.d directory by the rlib-php subpackage.
+	You only need to restart the webserver after installing these packages.
+
+	I have also attached two patches. The java patch fixes "autoreconf" on Fedora 17 and 18
+	which fails in the src/examples/java directory. The second one adds the rlib.ini and the rlib.spec changes
+	for the rlib-php subpackage.
+
+	* Makefile.am:
+	* rlib.ini:
+	* rlib.spec.in:
+	* src/examples/java/Makefile.am:
+
 2012-04-13  Bob Doan  <bdoan@sicompos.com>
 
 	reviewed by: <cbetz> 
