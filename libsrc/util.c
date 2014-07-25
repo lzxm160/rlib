@@ -478,7 +478,8 @@ gchar *make_utf8_locale(const gchar *encoding) {
 	gint len = r_strlen(encoding);
 
 	if ((encoding == NULL) || (r_strlen(encoding) < 2)) {
-		r_warning(NULL, "encoding is NULL or invalid [%s]... using en_US\n", encoding);
+		// shows in apache error_log
+		//r_warning(NULL, "encoding is NULL or invalid [%s]... using en_US\n", encoding);
 		return (char *)"en_US.utf8";
 	}
 	g_strlcpy(buf, encoding, sizeof(buf));
@@ -512,7 +513,8 @@ void make_all_locales_utf8(void) {
 		char *t = setlocale(i, NULL);
 		if (t) {
 			if (!setlocale(i, make_utf8_locale(t))) {
-				r_error(NULL, "Setting locale to [%s] FAILED\n", t);
+				// shows in apache error log
+				//r_error(NULL, "Setting locale to [%s] FAILED\n", t);
 			}
 		}
 		++lc;
