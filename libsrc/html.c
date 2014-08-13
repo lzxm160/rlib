@@ -175,7 +175,7 @@ static void print_text(rlib *r, const gchar *text, gint backwards) {
 	}
 }
 
-static gfloat rlib_html_get_string_width(rlib *r, const gchar *text) {
+static gfloat html_get_string_width(rlib *r, const gchar *text) {
 	return 1;
 }
 
@@ -190,7 +190,7 @@ static gint convert_font_point(gint point) {
 }
 
 
-static void rlib_html_escape(rlib *r, const gchar *text, gint backwards) {
+static void html_escape(rlib *r, const gchar *text, gint backwards) {
 	gchar htmltext[MAXSTRLEN];
 	gint i, len, htmllen;
 	gchar *escape, *otext;
@@ -254,7 +254,7 @@ static void rlib_html_escape(rlib *r, const gchar *text, gint backwards) {
 }
 
 
-static void rlib_html_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, gint col, gint rval_type) {
+static void html_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, gint col, gint rval_type) {
 	gchar font_size[MAXSTRLEN];
 	gchar foreground_color[MAXSTRLEN];
 	gchar background_color[MAXSTRLEN];
@@ -304,11 +304,11 @@ static void rlib_html_print_text(rlib *r, gfloat left_origin, gfloat bottom_orig
 		print_text(r, buf, backwards);
 		strcpy(OUTPUT_PRIVATE(r)->span_contents, buf);
 	}
-	rlib_html_escape(r, text, backwards);
+	html_escape(r, text, backwards);
 }
 
 
-static void rlib_html_set_fg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {
+static void html_set_fg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {
 	if(OUTPUT_PRIVATE(r)->current_fg_color.r != red || OUTPUT_PRIVATE(r)->current_fg_color.g != green
 	|| OUTPUT_PRIVATE(r)->current_fg_color.b != blue) {
 		OUTPUT_PRIVATE(r)->current_fg_color.r = red;
@@ -317,7 +317,7 @@ static void rlib_html_set_fg_color(rlib *r, gfloat red, gfloat green, gfloat blu
 	}
 }
 
-static void rlib_html_set_bg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {
+static void html_set_bg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {
 	if(OUTPUT_PRIVATE(r)->current_bg_color.r != red || OUTPUT_PRIVATE(r)->current_bg_color.g != green
 	|| OUTPUT_PRIVATE(r)->current_bg_color.b != blue) {
 		OUTPUT_PRIVATE(r)->current_bg_color.r = red;
@@ -326,13 +326,13 @@ static void rlib_html_set_bg_color(rlib *r, gfloat red, gfloat green, gfloat blu
 	}
 }
 
-static void rlib_html_start_draw_cell_background(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall,
+static void html_start_draw_cell_background(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall,
 struct rlib_rgb *color) {
 	OUTPUT(r)->set_bg_color(r, color->r, color->g, color->b);
 	OUTPUT_PRIVATE(r)->do_bg = TRUE;
 }
 
-static void rlib_html_end_draw_cell_background(rlib *r) {
+static void html_end_draw_cell_background(rlib *r) {
 	if(OUTPUT_PRIVATE(r)->did_bg) {
 		OUTPUT(r)->set_bg_color(r, 0, 0, 0);
 		//print_text(r, "</span>", OUTPUT_PRIVATE(r)->bg_backwards);
@@ -341,17 +341,17 @@ static void rlib_html_end_draw_cell_background(rlib *r) {
 
 }
 
-static void rlib_html_start_boxurl(rlib *r, struct rlib_part *part, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url, gint backwards) {
+static void html_start_boxurl(rlib *r, struct rlib_part *part, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url, gint backwards) {
 	gchar buf[MAXSTRLEN];
 	sprintf(buf, "<a href=\"%s\">", url);
 	print_text(r, buf, backwards);
 }
 
-static void rlib_html_end_boxurl(rlib *r, gint backwards) {
+static void html_end_boxurl(rlib *r, gint backwards) {
 	print_text(r, "</a>", backwards);
 }
 
-static void rlib_html_end_line(rlib *r, int backwards) {
+static void html_end_line(rlib *r, int backwards) {
 	if(OUTPUT_PRIVATE(r)->span_contents[0] != 0)
 		print_text(r, "</span>", OUTPUT_PRIVATE(r)->bg_backwards);
 	print_text(r, "\n", backwards);
@@ -360,7 +360,7 @@ static void rlib_html_end_line(rlib *r, int backwards) {
 }
 
 
-static void rlib_html_hr(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall,
+static void html_hr(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall,
 struct rlib_rgb *color, gfloat indent, gfloat length) {
 	gchar buf[MAXSTRLEN];
 	gchar nbsp[MAXSTRLEN];
@@ -387,7 +387,7 @@ struct rlib_rgb *color, gfloat indent, gfloat length) {
 	}
 }
 
-static void rlib_html_background_image(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *nname, gchar *type, gfloat nwidth,
+static void html_background_image(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *nname, gchar *type, gfloat nwidth,
 gfloat nheight) {
 	gchar buf[MAXSTRLEN];
 
@@ -397,7 +397,7 @@ gfloat nheight) {
 	print_text(r, "</span>", FALSE);
 }
 
-static void rlib_html_line_image(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *nname, gchar *type, gfloat nwidth,
+static void html_line_image(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *nname, gchar *type, gfloat nwidth,
 gfloat nheight) {
 	gchar buf[MAXSTRLEN];
 
@@ -405,13 +405,13 @@ gfloat nheight) {
 	print_text(r, buf, FALSE);
 }
 
-static void rlib_html_set_font_point(rlib *r, gint point) {
+static void html_set_font_point(rlib *r, gint point) {
 	if(r->current_font_point != point) {
 		r->current_font_point = point;
 	}
 }
 
-static void rlib_html_start_new_page(rlib *r, struct rlib_part *part) {
+static void html_start_new_page(rlib *r, struct rlib_part *part) {
 	if(r->current_page_number <= 0)
 		r->current_page_number++;
 	part->position_bottom[0] = 11-part->bottom_margin;
@@ -430,7 +430,7 @@ static gchar *html_callback(struct rlib_delayed_extra_data *delayed_data) {
 	return buf2;
 }
 
-static void rlib_html_print_text_delayed(rlib *r, struct rlib_delayed_extra_data *delayed_data, int backwards, int rval_type) {
+static void html_print_text_delayed(rlib *r, struct rlib_delayed_extra_data *delayed_data, int backwards, int rval_type) {
 	gint current_page = OUTPUT_PRIVATE(r)->page_number;
 	struct _packet *packet = g_new0(struct _packet, 1);
 	packet->type = DELAY;
@@ -443,7 +443,14 @@ static void rlib_html_print_text_delayed(rlib *r, struct rlib_delayed_extra_data
 }
 
 
-static void rlib_html_start_report(rlib *r, struct rlib_part *part) {
+static void html_start_report(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void html_start_report_header(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void html_end_report_header(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void html_start_report_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void html_end_report_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+
+
+static void html_start_part(rlib *r, struct rlib_part *part) {
 	gchar buf[MAXSTRLEN];
 	gchar *meta;
 	gchar *link;
@@ -480,11 +487,11 @@ static void rlib_html_start_report(rlib *r, struct rlib_part *part) {
     			print_text(r, "</style>\n", FALSE);
 
     			meta = g_hash_table_lookup(r->output_parameters, "meta");
-    			if(meta != NULL)
-    				print_text(r, meta, FALSE);
+				if(meta != NULL)
+					print_text(r, meta, FALSE);
 
-    			print_text(r, "<title>RLIB Report</title></head>\n", FALSE);
-    			print_text(r, "<body><table style=\"width: 1%;\"><tbody><tr><td>\n", FALSE);
+				print_text(r, "<title>RLIB Report</title></head>\n", FALSE);
+				print_text(r, "<body><table style=\"width: 1%;\"><tbody><tr><td>\n", FALSE);
 				OUTPUT_PRIVATE(r)->did_doctype = TRUE;
 			}
 
@@ -492,7 +499,7 @@ static void rlib_html_start_report(rlib *r, struct rlib_part *part) {
     	print_text(r, "<table><tr><td valign=\"top\"><pre>", FALSE);
 }
 
-static void rlib_html_end_part(rlib *r, struct rlib_part *part) {
+static void html_end_part(rlib *r, struct rlib_part *part) {
 	gint i;
 	gchar *old;
 	print_text(r, "\n", TRUE);
@@ -571,39 +578,39 @@ static void rlib_html_end_part(rlib *r, struct rlib_part *part) {
 	OUTPUT_PRIVATE(r)->length = strlen(OUTPUT_PRIVATE(r)->both);
 }
 
-static void rlib_html_spool_private(rlib *r) {
+static void html_spool_private(rlib *r) {
 	ENVIRONMENT(r)->rlib_write_output(OUTPUT_PRIVATE(r)->both, OUTPUT_PRIVATE(r)->length);
 }
 
-static void rlib_html_start_line(rlib *r, int backwards) {
+static void html_start_line(rlib *r, int backwards) {
 	OUTPUT_PRIVATE(r)->did_bg = FALSE;
 }
 
-static void rlib_html_end_page(rlib *r, struct rlib_part *part) {
+static void html_end_page(rlib *r, struct rlib_part *part) {
 	r->current_line_number = 1;
 }
 
-static char *rlib_html_get_output(rlib *r) {
+static char *html_get_output(rlib *r) {
 	return OUTPUT_PRIVATE(r)->both;
 }
 
-static long rlib_html_get_output_length(rlib *r) {
+static long html_get_output_length(rlib *r) {
 	return OUTPUT_PRIVATE(r)->length;
 }
 
-static void rlib_html_set_working_page(rlib *r, struct rlib_part *part, gint page) {
+static void html_set_working_page(rlib *r, struct rlib_part *part, gint page) {
 	OUTPUT_PRIVATE(r)->page_number = page;
 }
 
-static void rlib_html_start_tr(rlib *r) {
+static void html_start_tr(rlib *r) {
 	print_text(r, "</pre><table><tr>", FALSE);
 }
 
-static void rlib_html_end_tr(rlib *r) {
+static void html_end_tr(rlib *r) {
 	print_text(r, "</tr></table><pre>", FALSE);
 }
 
-static void rlib_html_start_td(rlib *r, struct rlib_part *part, gfloat left_margin, gfloat top_margin, int width, int height, int border_width, struct rlib_rgb *color) {
+static void html_start_td(rlib *r, struct rlib_part *part, gfloat left_margin, gfloat top_margin, int width, int height, int border_width, struct rlib_rgb *color) {
 	char buf[150];
 	char border_color[150];
 
@@ -620,24 +627,24 @@ static void rlib_html_start_td(rlib *r, struct rlib_part *part, gfloat left_marg
 	print_text(r, buf, FALSE);
 }
 
-static void rlib_html_end_td(rlib *r) {
+static void html_end_td(rlib *r) {
 	print_text(r, "</pre></td>", FALSE);
 }
 
 
-static void rlib_html_start_bold(rlib *r) {
+static void html_start_bold(rlib *r) {
 	OUTPUT_PRIVATE(r)->is_bold = TRUE;
 }
 
-static void rlib_html_end_bold(rlib *r) {
+static void html_end_bold(rlib *r) {
 	OUTPUT_PRIVATE(r)->is_bold = FALSE;
 }
 
-static void rlib_html_start_italics(rlib *r) {
+static void html_start_italics(rlib *r) {
 	OUTPUT_PRIVATE(r)->is_italics = TRUE;
 }
 
-static void rlib_html_end_italics(rlib *r) {
+static void html_end_italics(rlib *r) {
 	OUTPUT_PRIVATE(r)->is_italics = FALSE;
 }
 
@@ -1321,10 +1328,10 @@ static void html_graph_finalize(rlib *r) {
 	rlib_gd_free(OUTPUT_PRIVATE(r)->rgd);
 }
 
-static void rlib_html_init_end_page(rlib *r) {}
-static void rlib_html_init_output(rlib *r) {}
+static void html_init_end_page(rlib *r) {}
+static void html_init_output(rlib *r) {}
 
-static void rlib_html_finalize_private(rlib *r) {
+static void html_finalize_private(rlib *r) {
 	char *old = OUTPUT_PRIVATE(r)->both;
 
 	if (old) {
@@ -1338,13 +1345,16 @@ static void rlib_html_finalize_private(rlib *r) {
 	}
 }
 
-static void rlib_html_start_output_section(rlib *r) {}
-static void rlib_html_end_output_section(rlib *r) {}
-static void rlib_html_set_raw_page(rlib *r, struct rlib_part *part, gint page) {}
-static void rlib_html_end_report(rlib *r, struct rlib_report *report) {}
+static void html_start_output_section(rlib *r) {}
+static void html_end_output_section(rlib *r) {}
+static void html_set_raw_page(rlib *r, struct rlib_part *part, gint page) {}
+static void html_end_report(rlib *r, struct rlib_report *report) {}
+static void html_start_part_header(rlib *r, struct rlib_part *part) {}
+static void html_end_part_header(rlib *r, struct rlib_part *part) {}
+static void html_start_part_footer(rlib *r, struct rlib_part *part) {}
+static void html_end_part_footer(rlib *r, struct rlib_part *part) {}
 
-
-static gint rlib_html_free(rlib *r) {
+static gint html_free(rlib *r) {
 	g_free(OUTPUT_PRIVATE(r)->both);
 	g_free(OUTPUT_PRIVATE(r));
 	g_free(OUTPUT(r));
@@ -1368,44 +1378,53 @@ void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT(r)->table_around_multiple_detail_columns = TRUE;
 	OUTPUT(r)->do_graph = TRUE;
 
-	OUTPUT(r)->get_string_width = rlib_html_get_string_width;
-	OUTPUT(r)->print_text = rlib_html_print_text;
-	OUTPUT(r)->print_text_delayed = rlib_html_print_text_delayed;
-	OUTPUT(r)->set_fg_color = rlib_html_set_fg_color;
-	OUTPUT(r)->set_bg_color = rlib_html_set_bg_color;
-	OUTPUT(r)->hr = rlib_html_hr;
-	OUTPUT(r)->start_draw_cell_background = rlib_html_start_draw_cell_background;
-	OUTPUT(r)->end_draw_cell_background = rlib_html_end_draw_cell_background;
-	OUTPUT(r)->start_boxurl = rlib_html_start_boxurl;
-	OUTPUT(r)->end_boxurl = rlib_html_end_boxurl;
-	OUTPUT(r)->line_image = rlib_html_line_image;
-	OUTPUT(r)->background_image = rlib_html_background_image;
-	OUTPUT(r)->set_font_point = rlib_html_set_font_point;
-	OUTPUT(r)->start_new_page = rlib_html_start_new_page;
-	OUTPUT(r)->end_page = rlib_html_end_page;
-	OUTPUT(r)->init_end_page = rlib_html_init_end_page;
-	OUTPUT(r)->init_output = rlib_html_init_output;
-	OUTPUT(r)->start_report = rlib_html_start_report;
-	OUTPUT(r)->end_report = rlib_html_end_report;
-	OUTPUT(r)->end_part = rlib_html_end_part;
-	OUTPUT(r)->finalize_private = rlib_html_finalize_private;
-	OUTPUT(r)->spool_private = rlib_html_spool_private;
-	OUTPUT(r)->start_line = rlib_html_start_line;
-	OUTPUT(r)->end_line = rlib_html_end_line;
-	OUTPUT(r)->start_output_section = rlib_html_start_output_section;
-	OUTPUT(r)->end_output_section = rlib_html_end_output_section;
-	OUTPUT(r)->get_output = rlib_html_get_output;
-	OUTPUT(r)->get_output_length = rlib_html_get_output_length;
-	OUTPUT(r)->set_working_page = rlib_html_set_working_page;
-	OUTPUT(r)->set_raw_page = rlib_html_set_raw_page;
-	OUTPUT(r)->start_tr = rlib_html_start_tr;
-	OUTPUT(r)->end_tr = rlib_html_end_tr;
-	OUTPUT(r)->start_td = rlib_html_start_td;
-	OUTPUT(r)->end_td = rlib_html_end_td;
-	OUTPUT(r)->start_bold = rlib_html_start_bold;
-	OUTPUT(r)->end_bold = rlib_html_end_bold;
-	OUTPUT(r)->start_italics = rlib_html_start_italics;
-	OUTPUT(r)->end_italics = rlib_html_end_italics;
+	OUTPUT(r)->get_string_width = html_get_string_width;
+	OUTPUT(r)->print_text = html_print_text;
+	OUTPUT(r)->print_text_delayed = html_print_text_delayed;
+	OUTPUT(r)->set_fg_color = html_set_fg_color;
+	OUTPUT(r)->set_bg_color = html_set_bg_color;
+	OUTPUT(r)->hr = html_hr;
+	OUTPUT(r)->start_draw_cell_background = html_start_draw_cell_background;
+	OUTPUT(r)->end_draw_cell_background = html_end_draw_cell_background;
+	OUTPUT(r)->start_boxurl = html_start_boxurl;
+	OUTPUT(r)->end_boxurl = html_end_boxurl;
+	OUTPUT(r)->line_image = html_line_image;
+	OUTPUT(r)->background_image = html_background_image;
+	OUTPUT(r)->set_font_point = html_set_font_point;
+	OUTPUT(r)->start_new_page = html_start_new_page;
+	OUTPUT(r)->end_page = html_end_page;
+	OUTPUT(r)->init_end_page = html_init_end_page;
+	OUTPUT(r)->init_output = html_init_output;
+	OUTPUT(r)->start_report = html_start_report;
+	OUTPUT(r)->start_part = html_start_part;
+	OUTPUT(r)->end_report = html_end_report;
+	OUTPUT(r)->end_part = html_end_part;
+	OUTPUT(r)->start_report_header = html_start_report_header;
+	OUTPUT(r)->end_report_header = html_end_report_header;
+	OUTPUT(r)->start_report_footer = html_start_report_footer;
+	OUTPUT(r)->end_report_footer = html_end_report_footer;
+	OUTPUT(r)->start_part_header = html_start_part_header;
+	OUTPUT(r)->end_part_header = html_end_part_header;
+	OUTPUT(r)->start_part_footer = html_start_part_footer;
+	OUTPUT(r)->end_part_footer = html_end_part_footer;
+	OUTPUT(r)->finalize_private = html_finalize_private;
+	OUTPUT(r)->spool_private = html_spool_private;
+	OUTPUT(r)->start_line = html_start_line;
+	OUTPUT(r)->end_line = html_end_line;
+	OUTPUT(r)->start_output_section = html_start_output_section;
+	OUTPUT(r)->end_output_section = html_end_output_section;
+	OUTPUT(r)->get_output = html_get_output;
+	OUTPUT(r)->get_output_length = html_get_output_length;
+	OUTPUT(r)->set_working_page = html_set_working_page;
+	OUTPUT(r)->set_raw_page = html_set_raw_page;
+	OUTPUT(r)->start_tr = html_start_tr;
+	OUTPUT(r)->end_tr = html_end_tr;
+	OUTPUT(r)->start_td = html_start_td;
+	OUTPUT(r)->end_td = html_end_td;
+	OUTPUT(r)->start_bold = html_start_bold;
+	OUTPUT(r)->end_bold = html_end_bold;
+	OUTPUT(r)->start_italics = html_start_italics;
+	OUTPUT(r)->end_italics = html_end_italics;
 
 	OUTPUT(r)->graph_init = html_graph_init;
 	OUTPUT(r)->graph_get_chart_layout = html_graph_get_chart_layout;
@@ -1448,5 +1467,5 @@ void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT(r)->graph_get_y_label_width = html_graph_get_y_label_width;
 	OUTPUT(r)->graph_get_width_offset = html_graph_get_width_offset;
 
-	OUTPUT(r)->free = rlib_html_free;
+	OUTPUT(r)->free = html_free;
 }

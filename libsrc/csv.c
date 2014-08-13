@@ -56,30 +56,30 @@ static void print_text(rlib *r, const gchar *text, gint backwards, gint col, gin
 	}
 }
 
-static gfloat rlib_csv_get_string_width(rlib *r, const gchar *text) {
+static gfloat csv_get_string_width(rlib *r, const gchar *text) {
 	return 1;
 }
 
-static void rlib_csv_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, gint col, gint rval_type) {
+static void csv_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, gint col, gint rval_type) {
 	if(col) {
 		print_text(r, text, backwards, col-1, rval_type);
 	}
 }
 
-static void rlib_csv_start_new_page(rlib *r, struct rlib_part *part) {
+static void csv_start_new_page(rlib *r, struct rlib_part *part) {
 	part->position_bottom[0] = 11-part->bottom_margin;
 }
 
-static void rlib_csv_finalize_private(rlib *r) {
+static void csv_finalize_private(rlib *r) {
 	OUTPUT_PRIVATE(r)->length = OUTPUT_PRIVATE(r)->top_size;
 }
 
-static void rlib_csv_spool_private(rlib *r) {
+static void csv_spool_private(rlib *r) {
 	if(OUTPUT_PRIVATE(r)->top != NULL)
 		ENVIRONMENT(r)->rlib_write_output(OUTPUT_PRIVATE(r)->top, strlen(OUTPUT_PRIVATE(r)->top));
 }
 
-static char rlib_csv_get_delimiter(rlib *r) {
+static char csv_get_delimiter(rlib *r) {
 	return OUTPUT_PRIVATE(r)->csv_delimeter;
 }
 
@@ -95,7 +95,7 @@ static void really_print_text(rlib *r, const gchar *passed_text, gint rval_type,
 		text_size = MAXSTRLEN - 5;
 	}
 
-	csv_delimeter = rlib_csv_get_delimiter(r);
+	csv_delimeter = csv_get_delimiter(r);
 
 	if (passed_text != NULL && passed_text[0] != '\r') {
 		for (i = 0; i < text_size + 1; i++) {
@@ -155,7 +155,7 @@ static void really_print_text(rlib *r, const gchar *passed_text, gint rval_type,
 	*size = (*size) + text_size;
 }
 
-static void rlib_csv_start_output_section(rlib *r) {
+static void csv_start_output_section(rlib *r) {
 	gint i;
 	for(i=0;i<MAX_COL;i++) {
 		OUTPUT_PRIVATE(r)->col[i][0] = 0;
@@ -180,62 +180,67 @@ static void print_csv_line(rlib *r) {
 	}	
 }
 
-static void rlib_csv_end_output_section(rlib *r) {
+static void csv_end_output_section(rlib *r) {
 	if(OUTPUT_PRIVATE(r)->new_line_on_end_of_line == FALSE)
 		print_csv_line(r);
 }
 
-static void rlib_csv_end_line(rlib *r, gint backwards) {
+static void csv_end_line(rlib *r, gint backwards) {
 	if(OUTPUT_PRIVATE(r)->new_line_on_end_of_line == TRUE) {
 		print_csv_line(r);
-		rlib_csv_start_output_section(r);
+		csv_start_output_section(r);
 	}
 }
 
 
-static void rlib_csv_end_page(rlib *r, struct rlib_part *part) {
+static void csv_end_page(rlib *r, struct rlib_part *part) {
 	r->current_page_number++;
 	r->current_line_number = 1;
 }
 
-static char *rlib_csv_get_output(rlib *r) {
+static char *csv_get_output(rlib *r) {
 	return OUTPUT_PRIVATE(r)->top;
 }
 
-static long rlib_csv_get_output_length(rlib *r) {
+static long csv_get_output_length(rlib *r) {
 	return OUTPUT_PRIVATE(r)->top_size;
 }
 
-static void rlib_csv_print_text_delayed(rlib *r, struct rlib_delayed_extra_data *delayed_data, gint backwards, gint rval_type) {
+static void csv_print_text_delayed(rlib *r, struct rlib_delayed_extra_data *delayed_data, gint backwards, gint rval_type) {
 
 }
 
-static void rlib_csv_set_working_page(rlib *r, struct rlib_part *part, gint page) {}
-static void rlib_csv_set_fg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {}
-static void rlib_csv_set_bg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {}
-static void rlib_csv_hr(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
+static void csv_set_working_page(rlib *r, struct rlib_part *part, gint page) {}
+static void csv_set_fg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {}
+static void csv_set_bg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {}
+static void csv_hr(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, 
 struct rlib_rgb *color, gfloat indent, gfloat length) {}
-static void rlib_csv_start_draw_cell_background(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, struct rlib_rgb *color) {}
-static void rlib_csv_end_draw_cell_background(rlib *r) {}
-static void rlib_csv_start_boxurl(rlib *r, struct rlib_part *part, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url, gint backwards) {}
-static void rlib_csv_end_boxurl(rlib *r, gint backwards) {}
-static void rlib_csv_background_image(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *nname, gchar *type, gfloat nwidth, gfloat nheight) {}
-static void rlib_csv_init_end_page(rlib *r) {}
-static void rlib_csv_start_line(rlib *r, gint backwards) {}
-static void rlib_csv_start_report(rlib *r, struct rlib_part *part) {}
-static void rlib_csv_end_part(rlib *r, struct rlib_part *part) {}
-static void rlib_csv_end_report(rlib *r, struct rlib_report *report) {}
-static void rlib_csv_init_output(rlib *r) {}
-static void rlib_csv_set_font_point(rlib *r, gint point) {}
-static void rlib_csv_start_tr(rlib *r) {}
-static void rlib_csv_end_tr(rlib *r) {}
-static void rlib_csv_start_td(rlib *r, struct rlib_part *part, gfloat left_margin, gfloat top_margin, int width, int height, int border_width, struct rlib_rgb *color) {}
-static void rlib_csv_end_td(rlib *r) {}
-static void rlib_csv_set_raw_page(rlib *r, struct rlib_part *part, int page)  {}
-static void rlib_csv_start_bold(rlib *r) {}
-static void rlib_csv_end_bold(rlib *r) {}
-static void rlib_csv_start_italics(rlib *r) {}
-static void rlib_csv_end_italics(rlib *r) {}
+static void csv_start_draw_cell_background(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, struct rlib_rgb *color) {}
+static void csv_end_draw_cell_background(rlib *r) {}
+static void csv_start_boxurl(rlib *r, struct rlib_part *part, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url, gint backwards) {}
+static void csv_end_boxurl(rlib *r, gint backwards) {}
+static void csv_background_image(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *nname, gchar *type, gfloat nwidth, gfloat nheight) {}
+static void csv_init_end_page(rlib *r) {}
+static void csv_start_line(rlib *r, gint backwards) {}
+static void csv_start_part(rlib *r, struct rlib_part *part) {}
+static void csv_start_report(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void csv_start_report_header(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void csv_end_report_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void csv_start_report_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void csv_end_report_header(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void csv_end_part(rlib *r, struct rlib_part *part) {}
+static void csv_end_report(rlib *r, struct rlib_report *report) {}
+static void csv_init_output(rlib *r) {}
+static void csv_set_font_point(rlib *r, gint point) {}
+static void csv_start_tr(rlib *r) {}
+static void csv_end_tr(rlib *r) {}
+static void csv_start_td(rlib *r, struct rlib_part *part, gfloat left_margin, gfloat top_margin, int width, int height, int border_width, struct rlib_rgb *color) {}
+static void csv_end_td(rlib *r) {}
+static void csv_set_raw_page(rlib *r, struct rlib_part *part, int page)  {}
+static void csv_start_bold(rlib *r) {}
+static void csv_end_bold(rlib *r) {}
+static void csv_start_italics(rlib *r) {}
+static void csv_end_italics(rlib *r) {}
 
 static void csv_graph_start(rlib *r, gfloat left, gfloat top, gfloat width, gfloat height, gboolean x_axis_labels_are_under_tick) {}
 static void csv_graph_set_limits(rlib *r, gchar side, gdouble min, gdouble max, gdouble origin) {}
@@ -266,8 +271,12 @@ static void csv_graph_set_legend_orientation(rlib *r, gint orientation) {}
 static void csv_graph_set_draw_x_y(rlib *r, gboolean draw_x, gboolean draw_y) {}
 static void csv_graph_set_bold_titles(rlib *r, gboolean bold_titles) {}
 static void csv_graph_set_grid_color(rlib *r, struct rlib_rgb *rgb) {}
+static void csv_start_part_header(rlib *r, struct rlib_part *part) {}
+static void csv_end_part_header(rlib *r, struct rlib_part *part) {}
+static void csv_start_part_footer(rlib *r, struct rlib_part *part) {}
+static void csv_end_part_footer(rlib *r, struct rlib_part *part) {}
 
-static int rlib_csv_free(rlib *r) {
+static int csv_free(rlib *r) {
 	g_free(OUTPUT_PRIVATE(r)->top);
 	g_free(OUTPUT_PRIVATE(r));
 	g_free(OUTPUT(r));
@@ -307,44 +316,53 @@ void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT(r)->trim_links = FALSE;
 	OUTPUT(r)->do_graph = FALSE;
 
-	OUTPUT(r)->get_string_width = rlib_csv_get_string_width;
-	OUTPUT(r)->print_text = rlib_csv_print_text;
-	OUTPUT(r)->print_text_delayed = rlib_csv_print_text_delayed;
-	OUTPUT(r)->set_fg_color = rlib_csv_set_fg_color;
-	OUTPUT(r)->set_bg_color = rlib_csv_set_bg_color;
-	OUTPUT(r)->hr = rlib_csv_hr;
-	OUTPUT(r)->start_draw_cell_background = rlib_csv_start_draw_cell_background;
-	OUTPUT(r)->end_draw_cell_background = rlib_csv_end_draw_cell_background;
-	OUTPUT(r)->start_boxurl = rlib_csv_start_boxurl;
-	OUTPUT(r)->end_boxurl = rlib_csv_end_boxurl;
-	OUTPUT(r)->background_image = rlib_csv_background_image;
-	OUTPUT(r)->line_image = rlib_csv_background_image;
-	OUTPUT(r)->set_font_point = rlib_csv_set_font_point;
-	OUTPUT(r)->start_new_page = rlib_csv_start_new_page;
-	OUTPUT(r)->end_page = rlib_csv_end_page;   
-	OUTPUT(r)->init_end_page = rlib_csv_init_end_page;
-	OUTPUT(r)->init_output = rlib_csv_init_output;
-	OUTPUT(r)->start_report = rlib_csv_start_report;
-	OUTPUT(r)->end_report = rlib_csv_end_report;
-	OUTPUT(r)->end_part = rlib_csv_end_part;
-	OUTPUT(r)->finalize_private = rlib_csv_finalize_private;
-	OUTPUT(r)->spool_private = rlib_csv_spool_private;
-	OUTPUT(r)->start_line = rlib_csv_start_line;
-	OUTPUT(r)->end_line = rlib_csv_end_line;
-	OUTPUT(r)->start_output_section = rlib_csv_start_output_section;   
-	OUTPUT(r)->end_output_section = rlib_csv_end_output_section; 
-	OUTPUT(r)->get_output = rlib_csv_get_output;
-	OUTPUT(r)->get_output_length = rlib_csv_get_output_length;
-	OUTPUT(r)->set_working_page = rlib_csv_set_working_page;  
-	OUTPUT(r)->set_raw_page = rlib_csv_set_raw_page; 
-	OUTPUT(r)->start_tr = rlib_csv_start_tr; 
-	OUTPUT(r)->end_tr = rlib_csv_end_tr; 
-	OUTPUT(r)->start_td = rlib_csv_start_td; 
-	OUTPUT(r)->end_td = rlib_csv_end_td; 
-	OUTPUT(r)->start_bold = rlib_csv_start_bold;
-	OUTPUT(r)->end_bold = rlib_csv_end_bold;
-	OUTPUT(r)->start_italics = rlib_csv_start_italics;
-	OUTPUT(r)->end_italics = rlib_csv_end_italics;
+	OUTPUT(r)->get_string_width = csv_get_string_width;
+	OUTPUT(r)->print_text = csv_print_text;
+	OUTPUT(r)->print_text_delayed = csv_print_text_delayed;
+	OUTPUT(r)->set_fg_color = csv_set_fg_color;
+	OUTPUT(r)->set_bg_color = csv_set_bg_color;
+	OUTPUT(r)->hr = csv_hr;
+	OUTPUT(r)->start_draw_cell_background = csv_start_draw_cell_background;
+	OUTPUT(r)->end_draw_cell_background = csv_end_draw_cell_background;
+	OUTPUT(r)->start_boxurl = csv_start_boxurl;
+	OUTPUT(r)->end_boxurl = csv_end_boxurl;
+	OUTPUT(r)->background_image = csv_background_image;
+	OUTPUT(r)->line_image = csv_background_image;
+	OUTPUT(r)->set_font_point = csv_set_font_point;
+	OUTPUT(r)->start_new_page = csv_start_new_page;
+	OUTPUT(r)->end_page = csv_end_page;   
+	OUTPUT(r)->init_end_page = csv_init_end_page;
+	OUTPUT(r)->init_output = csv_init_output;
+	OUTPUT(r)->start_part = csv_start_part;
+	OUTPUT(r)->start_report = csv_start_report;
+	OUTPUT(r)->end_report = csv_end_report;
+	OUTPUT(r)->end_part = csv_end_part;
+	OUTPUT(r)->start_report_header = csv_start_report_header;
+	OUTPUT(r)->end_report_header = csv_end_report_header;
+	OUTPUT(r)->start_report_footer = csv_start_report_footer;
+	OUTPUT(r)->end_report_footer = csv_end_report_footer;
+	OUTPUT(r)->start_part_header = csv_start_part_header;
+	OUTPUT(r)->end_part_header = csv_end_part_header;
+	OUTPUT(r)->start_part_footer = csv_start_part_footer;
+	OUTPUT(r)->end_part_footer = csv_end_part_footer;	
+	OUTPUT(r)->finalize_private = csv_finalize_private;
+	OUTPUT(r)->spool_private = csv_spool_private;
+	OUTPUT(r)->start_line = csv_start_line;
+	OUTPUT(r)->end_line = csv_end_line;
+	OUTPUT(r)->start_output_section = csv_start_output_section;   
+	OUTPUT(r)->end_output_section = csv_end_output_section; 
+	OUTPUT(r)->get_output = csv_get_output;
+	OUTPUT(r)->get_output_length = csv_get_output_length;
+	OUTPUT(r)->set_working_page = csv_set_working_page;  
+	OUTPUT(r)->set_raw_page = csv_set_raw_page; 
+	OUTPUT(r)->start_tr = csv_start_tr; 
+	OUTPUT(r)->end_tr = csv_end_tr; 
+	OUTPUT(r)->start_td = csv_start_td; 
+	OUTPUT(r)->end_td = csv_end_td; 
+	OUTPUT(r)->start_bold = csv_start_bold;
+	OUTPUT(r)->end_bold = csv_end_bold;
+	OUTPUT(r)->start_italics = csv_start_italics;
+	OUTPUT(r)->end_italics = csv_end_italics;
 
 	OUTPUT(r)->graph_start = csv_graph_start;
 	OUTPUT(r)->graph_set_limits = csv_graph_set_limits;
@@ -375,5 +393,5 @@ void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT(r)->graph_draw_legend_label = csv_graph_draw_legend_label;
 	OUTPUT(r)->graph_finalize = csv_graph_finalize;
 
-	OUTPUT(r)->free = rlib_csv_free;
+	OUTPUT(r)->free = csv_free;
 }

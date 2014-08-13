@@ -243,6 +243,7 @@ struct rlib_line_extra_data *extra_data, gboolean ignore_links) {
 	return extra_data->output_width;
 }
 
+//BOBD: Extra_data seems to have all the stuff which needs to get passed in JSON
 static gfloat rlib_layout_text_from_extra_data(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_orgin, struct rlib_line_extra_data *extra_data, 
 gint flag, gint memo_line) {
 	gfloat rtn_width;
@@ -1279,7 +1280,9 @@ void rlib_layout_report_footer(rlib *r, struct rlib_part *part, struct rlib_repo
 	if(report->report_footer != NULL) {
 		for(i=0;i<report->pages_across;i++)
 			rlib_end_page_if_line_wont_fit(r, part, report, report->report_footer);
+		OUTPUT(r)->start_report_footer(r, part, report);
 		rlib_layout_report_output(r, part, report, report->report_footer, FALSE, FALSE);
+		OUTPUT(r)->end_report_footer(r, part, report);
 	}
 }
 
@@ -1334,7 +1337,9 @@ void rlib_layout_init_part_page(rlib *r, struct rlib_part *part, gboolean first,
 	for(i=0; i<part->pages_across; i++)
 		part->position_bottom[i] -= part->bottom_size[i];
 
+	OUTPUT(r)->start_part_footer(r, part);
 	rlib_layout_report_output(r, part, NULL, part->page_footer, TRUE, FALSE);
+	OUTPUT(r)->end_part_footer(r, part);
 
 	for(i=0; i<part->pages_across; i++) {
 		part->position_bottom[i] -= part->bottom_size[i];
@@ -1343,12 +1348,16 @@ void rlib_layout_init_part_page(rlib *r, struct rlib_part *part, gboolean first,
 
 	if(normal) {
 		if(first) {
+			OUTPUT(r)->start_part_header(r, part);
 			rlib_layout_report_output(r, part, NULL, part->report_header, FALSE, TRUE);
+			OUTPUT(r)->end_part_header(r, part);
 		}
 		if(r->current_page_number == 1 && part->suppress_page_header_first_page == TRUE) {
 			// We don't print the page header in this case
 		} else {
+			OUTPUT(r)->start_part_header(r, part);
 			rlib_layout_report_output(r, part, NULL, part->page_header, FALSE, TRUE);
+			OUTPUT(r)->end_part_header(r, part);
 		}
 	}
 

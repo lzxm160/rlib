@@ -231,15 +231,12 @@ gfloat nheight) {
 }
 
 static void pdf_set_font_point_actual(rlib *r, gint point) {
-	char *encoding;
 	const char *fontname;
 	int which_font = 0;
-	int result;
-	gchar *pdfdir1, *pdfdir2, *pdfencoding, *pdffontname;
+	gchar *pdfdir1, *pdfdir2, *pdffontname;
 	
 	pdfdir1 = g_hash_table_lookup(r->output_parameters, "pdf_fontdir1");
 	pdfdir2 = g_hash_table_lookup(r->output_parameters, "pdf_fontdir2");
-	pdfencoding = g_hash_table_lookup(r->output_parameters, "pdf_encoding");
 	pdffontname = g_hash_table_lookup(r->output_parameters, "pdf_fontname");
 
 	if(pdfdir2 == NULL)
@@ -251,11 +248,9 @@ static void pdf_set_font_point_actual(rlib *r, gint point) {
 	if(OUTPUT_PRIVATE(r)->is_italics)
 		which_font += ITALICS;
 
-	encoding = pdfencoding;
 	fontname = pdffontname ? pdffontname : font_names[which_font];
 	
-	result = rpdf_set_font(OUTPUT_PRIVATE(r)->pdf, fontname, "WinAnsiEncoding", point);
-
+	rpdf_set_font(OUTPUT_PRIVATE(r)->pdf, fontname, "WinAnsiEncoding", point);
 }
 
 static void pdf_set_font_point(rlib *r, gint point) {
@@ -607,7 +602,6 @@ static void pdf_graph_label_x_get_variables(rlib *r, gint iteration, gchar *labe
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
 	gfloat white_space = graph->x_tick_width;
 	gfloat w_width = pdf_get_string_width(r, "W");
-	gfloat height = RLIB_GET_LINE(r->current_font_point);
 
 	if(*string_width == 0)
 		*string_width = pdf_get_string_width(r, label);
@@ -619,7 +613,6 @@ static void pdf_graph_label_x_get_variables(rlib *r, gint iteration, gchar *labe
 		*y_offset = 0;
 		*rotation = -90;
 		*left += (white_space - w_width) / 2;
-		height = w_width;
 		if(graph->x_axis_labels_are_under_tick)
 			*y_offset = *y_offset + graph->intersection / 2;
 	} else {
@@ -1161,7 +1154,18 @@ static void pdf_end_output_section(rlib *r) {}
 static void pdf_start_output_section(rlib *r) {}
 static void pdf_end_boxurl(rlib *r, gint backwards) {}
 static void pdf_end_draw_cell_background(rlib *r) {}
-static void pdf_start_report(rlib *r, struct rlib_part *part) {}
+static void pdf_start_report(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void pdf_start_report_header(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void pdf_end_report_header(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void pdf_start_report_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void pdf_end_report_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void pdf_start_part_header(rlib *r, struct rlib_part *part) {}
+static void pdf_end_part_header(rlib *r, struct rlib_part *part) {}
+static void pdf_start_part_footer(rlib *r, struct rlib_part *part) {}
+static void pdf_end_part_footer(rlib *r, struct rlib_part *part) {}
+
+
+static void pdf_start_part(rlib *r, struct rlib_part *part) {}
 static void pdf_end_part(rlib *r, struct rlib_part *part) {}
 static void pdf_start_tr(rlib *r) {}
 static void pdf_end_tr(rlib *r) {}
@@ -1195,9 +1199,19 @@ void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r)->end_page_again = pdf_end_page_again;
 	OUTPUT(r)->init_end_page = pdf_init_end_page;
 	OUTPUT(r)->init_output = pdf_init_output;
+	OUTPUT(r)->start_part = pdf_start_part;
 	OUTPUT(r)->start_report = pdf_start_report;
 	OUTPUT(r)->end_report = pdf_end_report;
-	OUTPUT(r)->end_part = pdf_end_part;
+	OUTPUT(r)->end_part = pdf_end_part;	
+	OUTPUT(r)->start_report_header = pdf_start_report_header;
+	OUTPUT(r)->end_report_header = pdf_end_report_header;
+	OUTPUT(r)->start_report_footer = pdf_start_report_footer;
+	OUTPUT(r)->end_report_footer = pdf_end_report_footer;
+	OUTPUT(r)->start_part_header = pdf_start_part_header;
+	OUTPUT(r)->end_part_header = pdf_end_part_header;
+	OUTPUT(r)->start_part_footer = pdf_start_part_footer;
+	OUTPUT(r)->end_part_footer = pdf_end_part_footer;
+	
 	OUTPUT(r)->finalize_private = pdf_finalize_private;
 	OUTPUT(r)->spool_private = pdf_spool_private;
 	OUTPUT(r)->start_line = pdf_stub_line;

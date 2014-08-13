@@ -84,6 +84,7 @@
 #define RLIB_FORMAT_HTML	2
 #define RLIB_FORMAT_TXT 	3
 #define RLIB_FORMAT_CSV 	4
+#define RLIB_FORMAT_JSON 	5
 
 #define RLIB_ORIENTATION_PORTRAIT	0
 #define RLIB_ORIENTATION_LANDSCAPE	1
@@ -909,9 +910,20 @@ struct output_filter {
 	void (*init_output)(rlib *);
 	void (*set_working_page)(rlib *, struct rlib_part *, int);
 	void (*set_raw_page)(rlib *, struct rlib_part *, int);
-	void (*start_report)(rlib *, struct rlib_part *);
+	void (*start_part)(rlib *, struct rlib_part *);
+	void (*start_report)(rlib *, struct rlib_part *, struct rlib_report *);
 	void (*end_part)(rlib *, struct rlib_part *);
 	void (*end_report)(rlib *, struct rlib_report *);
+	void (*start_report_header)(rlib *, struct rlib_part *, struct rlib_report *);
+	void (*end_report_header)(rlib *, struct rlib_part *, struct rlib_report *);
+	void (*start_report_footer)(rlib *, struct rlib_part *, struct rlib_report *);
+	void (*end_report_footer)(rlib *, struct rlib_part *, struct rlib_report *);
+	void (*start_part_header)(rlib *, struct rlib_part *);
+	void (*end_part_header)(rlib *, struct rlib_part *);
+	void (*start_part_footer)(rlib *, struct rlib_part *);
+	void (*end_part_footer)(rlib *, struct rlib_part *);
+
+
 	void (*finalize_private)(rlib *);
 	void (*spool_private)(rlib *);
 	void (*start_line)(rlib *, int);
@@ -1098,6 +1110,9 @@ void rlib_html_new_output_filter(rlib *r);
 /***** PROTOTYPES: txt.c ******************************************************/
 void rlib_txt_new_output_filter(rlib *r);
 
+/***** PROTOTYPES: json.c ******************************************************/
+void rlib_json_new_output_filter(rlib *r);
+
 /***** PROTOTYPES: csv.c ******************************************************/
 void rlib_csv_new_output_filter(rlib *r);
 
@@ -1120,11 +1135,6 @@ gint rlib_add_datasource_csv(rlib *r, const gchar *input_name);
 gpointer rlib_postgres_new_input_filter(void);
 gpointer rlib_postgres_connect(gpointer input_ptr, gchar *conn);
 
-/***** PROTOTYPES: save.c *****************************************************/
-gint save_report(struct rlib_report *rep, char *filename);
-
-/***** PROTOTYPES: load.c *****************************************************/
-struct rlib_part * load_report(gchar *filename);
 
 /***** PROTOTYPES: layout.c ***************************************************/
 gfloat rlib_layout_get_page_width(rlib *r, struct rlib_part *part);

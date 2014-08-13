@@ -663,7 +663,7 @@ static struct rlib_report * parse_part_load(rlib *r, struct rlib_part *part, xml
 	gchar *name, *query;
 	struct rlib_pcode *name_code, *query_code;
 	gchar real_name[MAXSTRLEN], real_query[MAXSTRLEN];
-	gboolean result_name, result_query;
+	gboolean result_name;
 
 	name =  (gchar *)xmlGetProp(cur, (const xmlChar *) "name");
 	query =  (gchar *)xmlGetProp(cur, (const xmlChar *) "query");
@@ -672,7 +672,7 @@ static struct rlib_report * parse_part_load(rlib *r, struct rlib_part *part, xml
 	query_code = rlib_infix_to_pcode(r, part, NULL, query,xmlGetLineNo (cur), TRUE);
 
 	result_name = rlib_execute_as_string(r, name_code,real_name, MAXSTRLEN-1);
-	result_query = rlib_execute_as_string(r, query_code,real_query, MAXSTRLEN-1);
+	rlib_execute_as_string(r, query_code,real_query, MAXSTRLEN-1);
 
 	if(result_name && result_name) {
 		report = parse_report_file(r, real_name, query);

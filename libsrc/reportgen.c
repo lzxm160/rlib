@@ -44,6 +44,7 @@ struct _rlib_format_table {
 	{ "HTML", RLIB_FORMAT_HTML},
 	{ "TXT", RLIB_FORMAT_TXT},
 	{ "CSV", RLIB_FORMAT_CSV},
+	{ "JSON", RLIB_FORMAT_JSON},
 	{ "", -1},
 };
 
@@ -282,6 +283,7 @@ static void rlib_evaulate_part_attributes(rlib *r, struct rlib_part *part) {
 	}
 }
 
+//bobd.. layout report
 static gboolean rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat left_margin_offset, gfloat top_margin_offset) {
 	gint processed_variables;
 	gint i;
@@ -289,6 +291,10 @@ static gboolean rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_
 	gint report_percent;
 	gfloat at_least = 0.0, origional_position_top = 0.0, report_header_advance = 0.0;
 	gint iterations;
+
+
+	OUTPUT(r)->start_report(r, part, report);
+
 
 	report->query_code = rlib_infix_to_pcode(r, part, report, (gchar *)report->xml_query.xml, report->xml_query.line, TRUE);
 	r->current_result = 0;
@@ -347,7 +353,12 @@ static gboolean rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_
 			if(rlib_execute_as_int(r, report->height_code, &report_percent)) 
 				at_least = (part->position_bottom[0] - part->position_top[0]) * ((gfloat)report_percent/100);					
 			origional_position_top = report->position_top[0];
+			
+			OUTPUT(r)->start_report_header(r, part, report);
 			rlib_layout_report_output(r, part, report, report->report_header, FALSE, TRUE);
+			OUTPUT(r)->end_report_header(r, part, report);
+			
+
 			report_header_advance = (report->position_top[0] - origional_position_top );
 			rlib_layout_init_report_page(r, part, report);
 			r->detail_line_count = 0;
@@ -636,9 +647,11 @@ gint rlib_make_report(rlib *r) {
 
 	if(r->format == RLIB_FORMAT_HTML) {
 		rlib_html_new_output_filter(r);
-	} else if(r->format == RLIB_FORMAT_TXT)
+	} else if(r->format == RLIB_FORMAT_TXT) {
 		rlib_txt_new_output_filter(r);
-	else if(r->format == RLIB_FORMAT_CSV) {
+	} else if(r->format == RLIB_FORMAT_JSON) {
+		rlib_json_new_output_filter(r);
+	} else if(r->format == RLIB_FORMAT_CSV) {
 		gchar *param;
 		rlib_csv_new_output_filter(r);
 		param = g_hash_table_lookup(r->output_parameters, "do_breaks");
@@ -668,7 +681,7 @@ gint rlib_make_report(rlib *r) {
 			rlib_fetch_first_rows(r);
 			rlib_evaulate_part_attributes(r, part);
 			if(part->suppress == FALSE) {
-				OUTPUT(r)->start_report(r, part);
+				OUTPUT(r)->start_part(r, part);
 				rlib_layout_init_part_page(r, part, TRUE, TRUE);
 				rlib_layout_part_tr(r, part);
 				OUTPUT(r)->end_part(r, part);
