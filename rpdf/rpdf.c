@@ -964,34 +964,57 @@ gboolean rpdf_text_callback(struct rpdf *pdf, gdouble x, gdouble y, gdouble angl
 	return TRUE;
 }
 
+
+
 gboolean rpdf_text(struct rpdf *pdf, gdouble x, gdouble y, gdouble angle, const gchar *text) {
 	struct rpdf_stream_text *stream;
 	gint slen;
 	gint count = 0, spot=0, i;
+	static GIConv conv = NULL;
+	gboolean converted = FALSE;
+	gchar *new_text;
+	
+	if(conv == NULL) {
+		conv = g_iconv_open("ISO-8859-1", "UTF-8");	
+	}
 
+	if(conv != NULL && text != NULL) {
+		gsize foo1, foo2;
+		new_text = g_convert_with_iconv(text, strlen(text), conv, &foo1, &foo1, NULL);
+		if(new_text != NULL) {
+			converted = TRUE;
+		} else {
+			new_text = (char *)text;	
+		}
+	}
+	
 	stream = g_new0(struct rpdf_stream_text, 1);
 	stream->x = x;
 	stream->y = y;
 	stream->angle = angle;
 	
-	slen = strlen(text);
+	slen = strlen(new_text);
 	for(i=0;i<slen;i++) {
-		if(text[i] == '(' || text[i] == ')' || text[i] == '\\')
+		if(new_text[i] == '(' || new_text[i] == ')' || new_text[i] == '\\')
 			count++;
 	}
 	if(count == 0)
-		stream->text = g_strdup(text); 
+		stream->text = g_strdup(new_text); 
 	else {
 		stream->text = g_malloc(slen + 1 + count);
 		for(i=0;i<slen;i++) {
-			if(text[i] == '(' || text[i] == ')' || text[i] == '\\') {
+			if(new_text[i] == '(' || new_text[i] == ')' || new_text[i] == '\\') {
 				stream->text[spot++] = '\\';
 			}
-			stream->text[spot++] = text[i];
+			stream->text[spot++] = new_text[i];
 		}
 		stream->text[spot++] = 0;
 	
 	}
+	
+	if(converted)
+		g_free(new_text);
+	
 	rpdf_stream_append(pdf, rpdf_stream_new(RPDF_TYPE_TEXT, stream));
 
 	return TRUE;

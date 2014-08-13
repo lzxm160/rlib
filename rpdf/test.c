@@ -26,6 +26,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <string.h>
 #include "rpdf.h"
 
 static void callback_test(gchar *data, gint len, gpointer user_data) {
@@ -74,10 +75,19 @@ int main(int argc, char **argv) {
 
 	rpdf_new_page(pdf, RPDF_PAPER_LETTER, RPDF_PORTRAIT);
 	rpdf_set_font(pdf, "Times-Italic", "MacRomanEncoding", 30.0);
-	rpdf_text(pdf, 1.0, 10.0, 0.0, "FARK - BOB KRATZ LOVES BACON ))");
+//	rpdf_text(pdf, 1.0, 10.0, 0.0, "FARK - BOB KRATZ LOVES BACON ))");
 	rpdf_set_page(pdf, 1);
-	rpdf_set_font(pdf, "Times-Italic", "MacRomanEncoding", 30.0);
-	rpdf_text(pdf, 1.0, 10.0, 0.0, "FARK - BOB KRATZ LOVES BACON ))");
+	rpdf_set_font(pdf, "Times-Italic", "WinAnsiEncoding", 15.0);
+	
+	//é = egrave = std = ___ mac=217 win=350 pdf=350
+	//supposed to be 233
+	char nielsen[250] = {};
+	sprintf(nielsen, "BOBb N SEZ [Bouchées de poulet] [%c]", 236);
+//	sprintf(nielsen, "[Croûtons] [Bouchées] [UNITÉ] [DÉPÔTS] [égère] [fouettŽs]");
+	sprintf(nielsen, "[Croûtons] [Bouchées] [UNITÉ] [DÉPÔTS] [égère] [fouettZs]");
+//	fprintf(stderr, "1=%d, 2=%d add=%d [%s]\n", foo1, foo2, nielsen8859, error->message);
+	
+	rpdf_text(pdf, 1.0, 10.0, 0.0, nielsen);
 	
 /*	rpdf_image(pdf, 1, 1, 100, 100, RPDF_IMAGE_JPEG, "logo.jpg"); */
 	rpdf_finalize(pdf);

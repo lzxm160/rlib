@@ -92,7 +92,7 @@ gint rlib_pcode_operator_add(rlib *r, struct rlib_pcode *code, struct rlib_var_s
 		}
 		if(RLIB_VALUE_IS_STRING(v1) && RLIB_VALUE_IS_STRING(v2)) {
 			gchar *newstr = g_malloc(r_strlen(RLIB_VALUE_GET_AS_STRING(v1))+r_strlen(RLIB_VALUE_GET_AS_STRING(v2))+1);
-			memcpy(newstr, RLIB_VALUE_GET_AS_STRING(v2), r_strlen(RLIB_VALUE_GET_AS_STRING(v2))+1);
+			strcpy(newstr, RLIB_VALUE_GET_AS_STRING(v2));
 			strcat(newstr, RLIB_VALUE_GET_AS_STRING(v1));
 			rlib_value_free(v1);
 			rlib_value_free(v2);
@@ -147,8 +147,8 @@ gint rlib_pcode_operator_add(rlib *r, struct rlib_pcode *code, struct rlib_value
 		if(RLIB_VALUE_IS_STRING(v1) && RLIB_VALUE_IS_STRING(v2)) {
 			const gchar *safe1 =  RLIB_VALUE_GET_AS_STRING(v1) == NULL ? "" : RLIB_VALUE_GET_AS_STRING(v1);
 			const gchar *safe2 =  RLIB_VALUE_GET_AS_STRING(v2) == NULL ? "" : RLIB_VALUE_GET_AS_STRING(v2);
-			gchar *newstr = g_malloc(r_strlen(safe1)+r_strlen(safe2)+1);
-			memcpy(newstr, safe2, r_strlen(safe2)+1);
+			gchar *newstr = g_malloc(strlen(safe1)+strlen(safe2)+1);
+			strcpy(newstr, safe2);
 			strcat(newstr, safe1);
 			rlib_value_free(v1);
 			rlib_value_free(v2);
