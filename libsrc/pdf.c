@@ -411,9 +411,6 @@ static void pdf_end_italics(rlib *r) {
 	pdf_set_font_point_actual(r, r->current_font_point);
 }
 
-static void pdf_end_report(rlib *r, struct rlib_report *report) {
-}
-
 static void pdf_graph_draw_line(rlib *r, gfloat x, gfloat y, gfloat new_x, gfloat new_y, struct rlib_rgb *color) {
 	if(isnan(x) || isnan(y) || isnan(new_x) || isnan(new_y)) {
 	
@@ -1155,14 +1152,21 @@ static void pdf_start_output_section(rlib *r) {}
 static void pdf_end_boxurl(rlib *r, gint backwards) {}
 static void pdf_end_draw_cell_background(rlib *r) {}
 static void pdf_start_report(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void pdf_end_report(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void pdf_start_report_field_headers(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void pdf_end_report_field_headers(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void pdf_start_report_field_details(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void pdf_end_report_field_details(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void pdf_start_report_header(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void pdf_end_report_header(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void pdf_start_report_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void pdf_end_report_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void pdf_start_part_header(rlib *r, struct rlib_part *part) {}
 static void pdf_end_part_header(rlib *r, struct rlib_part *part) {}
-static void pdf_start_part_footer(rlib *r, struct rlib_part *part) {}
-static void pdf_end_part_footer(rlib *r, struct rlib_part *part) {}
+static void pdf_start_part_page_header(rlib *r, struct rlib_part *part) {}
+static void pdf_end_part_page_header(rlib *r, struct rlib_part *part) {}
+static void pdf_start_part_page_footer(rlib *r, struct rlib_part *part) {}
+static void pdf_end_part_page_footer(rlib *r, struct rlib_part *part) {}
 
 
 static void pdf_start_part(rlib *r, struct rlib_part *part) {}
@@ -1202,6 +1206,10 @@ void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r)->start_part = pdf_start_part;
 	OUTPUT(r)->start_report = pdf_start_report;
 	OUTPUT(r)->end_report = pdf_end_report;
+	OUTPUT(r)->start_report_field_headers = pdf_start_report_field_headers;
+	OUTPUT(r)->end_report_field_headers = pdf_end_report_field_headers;
+	OUTPUT(r)->start_report_field_details = pdf_start_report_field_details;
+	OUTPUT(r)->end_report_field_details = pdf_end_report_field_details;
 	OUTPUT(r)->end_part = pdf_end_part;	
 	OUTPUT(r)->start_report_header = pdf_start_report_header;
 	OUTPUT(r)->end_report_header = pdf_end_report_header;
@@ -1209,8 +1217,10 @@ void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r)->end_report_footer = pdf_end_report_footer;
 	OUTPUT(r)->start_part_header = pdf_start_part_header;
 	OUTPUT(r)->end_part_header = pdf_end_part_header;
-	OUTPUT(r)->start_part_footer = pdf_start_part_footer;
-	OUTPUT(r)->end_part_footer = pdf_end_part_footer;
+	OUTPUT(r)->start_part_page_header = pdf_start_part_page_header;
+	OUTPUT(r)->end_part_page_header = pdf_end_part_page_header;
+	OUTPUT(r)->start_part_page_footer = pdf_start_part_page_footer;
+	OUTPUT(r)->end_part_page_footer = pdf_end_part_page_footer;
 	
 	OUTPUT(r)->finalize_private = pdf_finalize_private;
 	OUTPUT(r)->spool_private = pdf_spool_private;

@@ -418,11 +418,13 @@ static gboolean rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_
 							}
 						}
 						
-						if(OUTPUT(r)->do_breaks)
+						if(OUTPUT(r)->do_breaks) {
+							OUTPUT(r)->start_report_field_details(r, part, report);	
 							output_count = rlib_layout_report_output(r, part, report, report->detail.fields, FALSE, FALSE);
-						else
+							OUTPUT(r)->end_report_field_details(r, part, report);	
+						} else {
 							output_count = rlib_layout_report_output_with_break_headers(r, part, report, TRUE);
-
+						}
 
 						if(output_count > 0)
 							r->detail_line_count++;
@@ -473,7 +475,7 @@ static gboolean rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_
 			}
 		}
 		rlib_emit_signal(r, RLIB_SIGNAL_REPORT_ITERATION);	
-		OUTPUT(r)->end_report(r, report);		
+		OUTPUT(r)->end_report(r, part, report);		
 	}
 	return TRUE;
 }

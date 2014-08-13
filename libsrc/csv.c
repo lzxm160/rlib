@@ -224,12 +224,16 @@ static void csv_init_end_page(rlib *r) {}
 static void csv_start_line(rlib *r, gint backwards) {}
 static void csv_start_part(rlib *r, struct rlib_part *part) {}
 static void csv_start_report(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void csv_end_report(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void csv_start_report_field_headers(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void csv_end_report_field_headers(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void csv_start_report_field_details(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void csv_end_report_field_details(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void csv_start_report_header(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void csv_end_report_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void csv_start_report_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void csv_end_report_header(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void csv_end_part(rlib *r, struct rlib_part *part) {}
-static void csv_end_report(rlib *r, struct rlib_report *report) {}
 static void csv_init_output(rlib *r) {}
 static void csv_set_font_point(rlib *r, gint point) {}
 static void csv_start_tr(rlib *r) {}
@@ -273,8 +277,10 @@ static void csv_graph_set_bold_titles(rlib *r, gboolean bold_titles) {}
 static void csv_graph_set_grid_color(rlib *r, struct rlib_rgb *rgb) {}
 static void csv_start_part_header(rlib *r, struct rlib_part *part) {}
 static void csv_end_part_header(rlib *r, struct rlib_part *part) {}
-static void csv_start_part_footer(rlib *r, struct rlib_part *part) {}
-static void csv_end_part_footer(rlib *r, struct rlib_part *part) {}
+static void csv_start_part_page_header(rlib *r, struct rlib_part *part) {}
+static void csv_end_part_page_header(rlib *r, struct rlib_part *part) {}
+static void csv_start_part_page_footer(rlib *r, struct rlib_part *part) {}
+static void csv_end_part_page_footer(rlib *r, struct rlib_part *part) {}
 
 static int csv_free(rlib *r) {
 	g_free(OUTPUT_PRIVATE(r)->top);
@@ -334,17 +340,23 @@ void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT(r)->init_end_page = csv_init_end_page;
 	OUTPUT(r)->init_output = csv_init_output;
 	OUTPUT(r)->start_part = csv_start_part;
+	OUTPUT(r)->end_part = csv_end_part;
 	OUTPUT(r)->start_report = csv_start_report;
 	OUTPUT(r)->end_report = csv_end_report;
-	OUTPUT(r)->end_part = csv_end_part;
+	OUTPUT(r)->start_report_field_headers = csv_start_report_field_headers;
+	OUTPUT(r)->end_report_field_headers = csv_end_report_field_headers;	
+	OUTPUT(r)->start_report_field_details = csv_start_report_field_details;
+	OUTPUT(r)->end_report_field_details = csv_end_report_field_details;	
 	OUTPUT(r)->start_report_header = csv_start_report_header;
 	OUTPUT(r)->end_report_header = csv_end_report_header;
 	OUTPUT(r)->start_report_footer = csv_start_report_footer;
 	OUTPUT(r)->end_report_footer = csv_end_report_footer;
 	OUTPUT(r)->start_part_header = csv_start_part_header;
 	OUTPUT(r)->end_part_header = csv_end_part_header;
-	OUTPUT(r)->start_part_footer = csv_start_part_footer;
-	OUTPUT(r)->end_part_footer = csv_end_part_footer;	
+	OUTPUT(r)->start_part_page_header = csv_start_part_page_header;
+	OUTPUT(r)->end_part_page_header = csv_end_part_page_header;
+	OUTPUT(r)->start_part_page_footer = csv_start_part_page_footer;
+	OUTPUT(r)->end_part_page_footer = csv_end_part_page_footer;	
 	OUTPUT(r)->finalize_private = csv_finalize_private;
 	OUTPUT(r)->spool_private = csv_spool_private;
 	OUTPUT(r)->start_line = csv_start_line;

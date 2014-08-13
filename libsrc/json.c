@@ -65,10 +65,25 @@ static void json_start_report(rlib *r, struct rlib_part *part, struct rlib_repor
 	printf("<report>\n");
 }
 
-static void json_end_report(rlib *r, struct rlib_report *report) {
+static void json_end_report(rlib *r, struct rlib_part *part, struct rlib_report *report) {
 	printf("</report>\n");
 }
 
+static void json_start_report_field_headers(rlib *r, struct rlib_part *part, struct rlib_report *report) {
+	printf("<field_headers>\n");
+}
+
+static void json_end_report_field_headers(rlib *r, struct rlib_part *part, struct rlib_report *report) {
+	printf("</field_headers>\n");
+}
+
+static void json_start_report_field_details(rlib *r, struct rlib_part *part, struct rlib_report *report) {
+	printf("<field_details>\n");
+}
+
+static void json_end_report_field_details(rlib *r, struct rlib_part *part, struct rlib_report *report) {
+	printf("</field_details>\n");
+}
 
 static void json_start_report_header(rlib *r, struct rlib_part *part, struct rlib_report *report) {
 	printf("<report_header>\n");
@@ -123,11 +138,20 @@ static void json_end_part_header(rlib *r, struct rlib_part *part) {
 	printf("</part_header>\n");
 }
 
-static void json_start_part_footer(rlib *r, struct rlib_part *part) {
+static void json_start_part_page_header(rlib *r, struct rlib_part *part) {
+	printf("<part_page_header>\n");
+}
+
+static void json_end_part_page_header(rlib *r, struct rlib_part *part) {
+	printf("</part_page_header>\n");
+}
+
+
+static void json_start_part_page_footer(rlib *r, struct rlib_part *part) {
 	printf("<part_footer>\n");
 }
 
-static void json_end_part_footer(rlib *r, struct rlib_part *part) {
+static void json_end_part_page_footer(rlib *r, struct rlib_part *part) {
 	printf("</part_footer>\n");
 }
 
@@ -239,8 +263,12 @@ void rlib_json_new_output_filter(rlib *r) {
 	OUTPUT(r)->init_end_page = json_init_end_page;
 	OUTPUT(r)->init_output = json_init_output;
 	OUTPUT(r)->start_report = json_start_report;
-	OUTPUT(r)->start_part = json_start_part;
 	OUTPUT(r)->end_report = json_end_report;
+	OUTPUT(r)->start_report_field_headers = json_start_report_field_headers;
+	OUTPUT(r)->end_report_field_headers = json_end_report_field_headers;
+	OUTPUT(r)->start_report_field_details = json_start_report_field_details;
+	OUTPUT(r)->end_report_field_details = json_end_report_field_details;
+	OUTPUT(r)->start_part = json_start_part;
 	OUTPUT(r)->end_part = json_end_part;
 	OUTPUT(r)->start_report_header = json_start_report_header;
 	OUTPUT(r)->end_report_header = json_end_report_header;
@@ -248,8 +276,10 @@ void rlib_json_new_output_filter(rlib *r) {
 	OUTPUT(r)->end_report_footer = json_end_report_footer;
 	OUTPUT(r)->start_part_header = json_start_part_header;
 	OUTPUT(r)->end_part_header = json_end_part_header;
-	OUTPUT(r)->start_part_footer = json_start_part_footer;
-	OUTPUT(r)->end_part_footer = json_end_part_footer;
+	OUTPUT(r)->start_part_page_header = json_start_part_page_header;
+	OUTPUT(r)->end_part_page_header = json_end_part_page_header;
+	OUTPUT(r)->start_part_page_footer = json_start_part_page_footer;
+	OUTPUT(r)->end_part_page_footer = json_end_part_page_footer;
 
 
 	OUTPUT(r)->finalize_private = json_finalize_private;

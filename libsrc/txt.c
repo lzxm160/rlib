@@ -96,6 +96,11 @@ static void txt_end_line(rlib *r, int backwards) {
 }
 
 static void txt_start_report(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void txt_end_report(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void txt_start_report_field_headers(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void txt_end_report_field_headers(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void txt_start_report_field_details(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void txt_end_report_field_details(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void txt_start_report_header(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void txt_end_report_header(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void txt_start_report_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
@@ -244,7 +249,6 @@ static void txt_start_line(rlib *r, gint backwards) {}
 static void txt_start_output_section(rlib *r) {}
 static void txt_end_output_section(rlib *r) {}
 static void txt_start_tr(rlib *r) {}
-static void txt_end_report(rlib *r, struct rlib_report *report) {}
 static void txt_end_tr(rlib *r) {}
 static void txt_start_td(rlib *r, struct rlib_part *part, gfloat left_margin, gfloat top_margin, int width, int height, int border_width, struct rlib_rgb *color) {}
 static void txt_end_td(rlib *r) {}
@@ -284,6 +288,8 @@ static void txt_graph_set_bold_titles(rlib *r, gboolean bold_titles) {}
 static void txt_graph_set_grid_color(rlib *r, struct rlib_rgb *rgb) {}
 static void txt_start_part_header(rlib *r, struct rlib_part *part) {}
 static void txt_end_part_header(rlib *r, struct rlib_part *part) {}
+static void txt_start_part_page_header(rlib *r, struct rlib_part *part) {}
+static void txt_end_part_page_header(rlib *r, struct rlib_part *part) {}
 static void txt_start_part_footer(rlib *r, struct rlib_part *part) {}
 static void txt_end_part_footer(rlib *r, struct rlib_part *part) {}
 
@@ -318,8 +324,12 @@ void rlib_txt_new_output_filter(rlib *r) {
 	OUTPUT(r)->init_end_page = txt_init_end_page;
 	OUTPUT(r)->init_output = txt_init_output;
 	OUTPUT(r)->start_report = txt_start_report;
-	OUTPUT(r)->start_part = txt_start_part;
 	OUTPUT(r)->end_report = txt_end_report;
+	OUTPUT(r)->start_report_field_headers = txt_start_report_field_headers;
+	OUTPUT(r)->end_report_field_headers = txt_end_report_field_headers;
+	OUTPUT(r)->start_report_field_details = txt_start_report_field_details;
+	OUTPUT(r)->end_report_field_details = txt_end_report_field_details;
+	OUTPUT(r)->start_part = txt_start_part;
 	OUTPUT(r)->end_part = txt_end_part;
 	OUTPUT(r)->start_report_header = txt_start_report_header;
 	OUTPUT(r)->end_report_header = txt_end_report_header;
@@ -327,8 +337,10 @@ void rlib_txt_new_output_filter(rlib *r) {
 	OUTPUT(r)->end_report_footer = txt_end_report_footer;
 	OUTPUT(r)->start_part_header = txt_start_part_header;
 	OUTPUT(r)->end_part_header = txt_end_part_header;
-	OUTPUT(r)->start_part_footer = txt_start_part_footer;
-	OUTPUT(r)->end_part_footer = txt_end_part_footer;	
+	OUTPUT(r)->start_part_page_header = txt_start_part_page_header;
+	OUTPUT(r)->end_part_page_header = txt_end_part_page_header;
+	OUTPUT(r)->start_part_page_footer = txt_start_part_footer;
+	OUTPUT(r)->end_part_page_footer = txt_end_part_footer;	
 	OUTPUT(r)->finalize_private = txt_finalize_private;
 	OUTPUT(r)->spool_private = txt_spool_private;
 	OUTPUT(r)->start_line = txt_start_line;

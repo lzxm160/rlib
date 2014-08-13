@@ -913,15 +913,21 @@ struct output_filter {
 	void (*start_part)(rlib *, struct rlib_part *);
 	void (*start_report)(rlib *, struct rlib_part *, struct rlib_report *);
 	void (*end_part)(rlib *, struct rlib_part *);
-	void (*end_report)(rlib *, struct rlib_report *);
+	void (*end_report)(rlib *, struct rlib_part *part, struct rlib_report *);
 	void (*start_report_header)(rlib *, struct rlib_part *, struct rlib_report *);
 	void (*end_report_header)(rlib *, struct rlib_part *, struct rlib_report *);
 	void (*start_report_footer)(rlib *, struct rlib_part *, struct rlib_report *);
 	void (*end_report_footer)(rlib *, struct rlib_part *, struct rlib_report *);
+	void (*start_report_field_headers)(rlib *, struct rlib_part *, struct rlib_report *);
+	void (*end_report_field_headers)(rlib *, struct rlib_part *, struct rlib_report *);
+	void (*start_report_field_details)(rlib *, struct rlib_part *, struct rlib_report *);
+	void (*end_report_field_details)(rlib *, struct rlib_part *, struct rlib_report *);
 	void (*start_part_header)(rlib *, struct rlib_part *);
 	void (*end_part_header)(rlib *, struct rlib_part *);
-	void (*start_part_footer)(rlib *, struct rlib_part *);
-	void (*end_part_footer)(rlib *, struct rlib_part *);
+	void (*start_part_page_header)(rlib *, struct rlib_part *);
+	void (*end_part_page_header)(rlib *, struct rlib_part *);
+	void (*start_part_page_footer)(rlib *, struct rlib_part *);
+	void (*end_part_page_footer)(rlib *, struct rlib_part *);
 
 
 	void (*finalize_private)(rlib *);

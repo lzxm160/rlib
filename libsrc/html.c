@@ -444,6 +444,11 @@ static void html_print_text_delayed(rlib *r, struct rlib_delayed_extra_data *del
 
 
 static void html_start_report(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void html_end_report(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void html_start_report_field_headers(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void html_end_report_field_headers(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void html_start_report_field_details(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void html_end_report_field_details(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void html_start_report_header(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void html_end_report_header(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void html_start_report_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
@@ -1348,11 +1353,12 @@ static void html_finalize_private(rlib *r) {
 static void html_start_output_section(rlib *r) {}
 static void html_end_output_section(rlib *r) {}
 static void html_set_raw_page(rlib *r, struct rlib_part *part, gint page) {}
-static void html_end_report(rlib *r, struct rlib_report *report) {}
 static void html_start_part_header(rlib *r, struct rlib_part *part) {}
 static void html_end_part_header(rlib *r, struct rlib_part *part) {}
-static void html_start_part_footer(rlib *r, struct rlib_part *part) {}
-static void html_end_part_footer(rlib *r, struct rlib_part *part) {}
+static void html_start_part_page_header(rlib *r, struct rlib_part *part) {}
+static void html_end_part_page_header(rlib *r, struct rlib_part *part) {}
+static void html_start_part_page_footer(rlib *r, struct rlib_part *part) {}
+static void html_end_part_page_footer(rlib *r, struct rlib_part *part) {}
 
 static gint html_free(rlib *r) {
 	g_free(OUTPUT_PRIVATE(r)->both);
@@ -1396,8 +1402,12 @@ void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT(r)->init_end_page = html_init_end_page;
 	OUTPUT(r)->init_output = html_init_output;
 	OUTPUT(r)->start_report = html_start_report;
-	OUTPUT(r)->start_part = html_start_part;
 	OUTPUT(r)->end_report = html_end_report;
+	OUTPUT(r)->start_report_field_headers = html_start_report_field_headers;
+	OUTPUT(r)->end_report_field_headers = html_end_report_field_headers;
+	OUTPUT(r)->start_report_field_details = html_start_report_field_details;
+	OUTPUT(r)->end_report_field_details = html_end_report_field_details;
+	OUTPUT(r)->start_part = html_start_part;
 	OUTPUT(r)->end_part = html_end_part;
 	OUTPUT(r)->start_report_header = html_start_report_header;
 	OUTPUT(r)->end_report_header = html_end_report_header;
@@ -1405,8 +1415,10 @@ void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT(r)->end_report_footer = html_end_report_footer;
 	OUTPUT(r)->start_part_header = html_start_part_header;
 	OUTPUT(r)->end_part_header = html_end_part_header;
-	OUTPUT(r)->start_part_footer = html_start_part_footer;
-	OUTPUT(r)->end_part_footer = html_end_part_footer;
+	OUTPUT(r)->start_part_page_header = html_start_part_page_header;
+	OUTPUT(r)->end_part_page_header = html_end_part_page_header;
+	OUTPUT(r)->start_part_page_footer = html_start_part_page_footer;
+	OUTPUT(r)->end_part_page_footer = html_end_part_page_footer;
 	OUTPUT(r)->finalize_private = html_finalize_private;
 	OUTPUT(r)->spool_private = html_spool_private;
 	OUTPUT(r)->start_line = html_start_line;
