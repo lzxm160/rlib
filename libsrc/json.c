@@ -27,11 +27,6 @@
 #define TEXT 1
 #define DELAY 2
 
-struct _packet {
-	char type;
-	gpointer data;
-};
-
 struct _private {
 };
 
@@ -40,8 +35,17 @@ static gfloat json_get_string_width(rlib *r, const gchar *text) {
 	return 1;
 }
 
+ 
 static void json_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, struct rlib_line_extra_data *extra_data) {
-	printf("<data col=\"%d\">%s</data>\n", extra_data->col, text);
+	printf("<data col=\"%d\" width=\"%d\" font_point=\"%d\" bold=\"%d\" italics=\"%d\" ", extra_data->col, extra_data->width, extra_data->font_point, extra_data->is_bold, extra_data->is_italics);
+	if(extra_data->found_bgcolor) 
+		printf("bgcolor=\"#%02x%02x%02x\" ", (gint)(extra_data->bgcolor.r*0xFF), (gint)(extra_data->bgcolor.g*0xFF), (gint)(extra_data->bgcolor.b*0xFF));
+	if(extra_data->found_color) 
+		printf("color=\"#%02x%02x%02x\" ", (gint)(extra_data->color.r*0xFF), (gint)(extra_data->color.g*0xFF), (gint)(extra_data->color.b*0xFF));
+		
+	printf(">%s</data>\n", text);
+
+
 }
 
 
