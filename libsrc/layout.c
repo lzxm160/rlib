@@ -312,7 +312,7 @@ gint flag, gint memo_line) {
 		} else {
 			gboolean need_free;
 			gchar *real_text = rlib_layout_get_true_text_from_extra_data(r, extra_data, memo_line, spaced_out, &need_free);
-			OUTPUT(r)->print_text(r, left_origin, bottom_orgin+(extra_data->font_point/300.0), real_text, backwards, extra_data, RLIB_VALUE_GET_TYPE(&extra_data->rval_code));
+			OUTPUT(r)->print_text(r, left_origin, bottom_orgin+(extra_data->font_point/300.0), real_text, backwards, extra_data);
 			if(need_free)
 				g_free(real_text);
 		}
@@ -387,7 +387,7 @@ gchar *text, gint memo_line) {
 		OUTPUT(r)->start_bold(r);
 	if(extra_data->is_italics)
 		OUTPUT(r)->start_italics(r);
-	OUTPUT(r)->print_text(r, left_origin, bottom_orgin+(extra_data->font_point/300.0), rlib_encode_text(r, text, &encoded_text), backwards, extra_data, RLIB_VALUE_GET_TYPE(&extra_data->rval_code));
+	OUTPUT(r)->print_text(r, left_origin, bottom_orgin+(extra_data->font_point/300.0), rlib_encode_text(r, text, &encoded_text), backwards, extra_data);
 	g_free(encoded_text);
 	rtn_width = extra_data->output_width;
 	if(extra_data->found_color)
@@ -1246,8 +1246,11 @@ gint rlib_layout_report_output_with_break_headers(rlib *r, struct rlib_part *par
 						blank = FALSE;
 				}		
 			}
-			if(!suppress || (suppress && !blank))
+			if(!suppress || (suppress && !blank)) {
+				OUTPUT(r)->start_report_break_header(r, part, report, rb);	
 				output_count += rlib_layout_report_outputs_across_pages(r, part, report, rb->header, FALSE, page_header_layout);
+				OUTPUT(r)->end_report_break_header(r, part, report, rb);	
+			}
 		}		
 	}
 	OUTPUT(r)->start_report_field_details(r, part, report);	

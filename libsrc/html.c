@@ -254,7 +254,7 @@ static void html_escape(rlib *r, const gchar *text, gint backwards) {
 }
 
 
-static void html_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, struct rlib_line_extra_data *exta_data, gint rval_type) {
+static void html_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, struct rlib_line_extra_data *exta_data) {
 	gchar font_size[MAXSTRLEN];
 	gchar foreground_color[MAXSTRLEN];
 	gchar background_color[MAXSTRLEN];
@@ -1362,6 +1362,14 @@ static void html_start_part_page_header(rlib *r, struct rlib_part *part) {}
 static void html_end_part_page_header(rlib *r, struct rlib_part *part) {}
 static void html_start_part_page_footer(rlib *r, struct rlib_part *part) {}
 static void html_end_part_page_footer(rlib *r, struct rlib_part *part) {}
+static void html_start_report_page_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void html_end_report_page_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void html_start_report_break_header(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb) {}
+static void html_end_report_break_header(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb) {}
+static void html_start_report_break_footer(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb) {}
+static void html_end_report_break_footer(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb) {}
+static void html_start_report_no_data(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void html_end_report_no_data(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 
 static gint html_free(rlib *r) {
 	g_free(OUTPUT_PRIVATE(r)->both);
@@ -1425,6 +1433,15 @@ void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT(r)->end_part_page_header = html_end_part_page_header;
 	OUTPUT(r)->start_part_page_footer = html_start_part_page_footer;
 	OUTPUT(r)->end_part_page_footer = html_end_part_page_footer;
+	OUTPUT(r)->start_report_page_footer = html_start_report_page_footer;
+	OUTPUT(r)->end_report_page_footer = html_end_report_page_footer;
+	OUTPUT(r)->start_report_break_header = html_start_report_break_header;
+	OUTPUT(r)->end_report_break_header = html_end_report_break_header;
+	OUTPUT(r)->start_report_break_footer = html_start_report_break_footer;
+	OUTPUT(r)->end_report_break_footer = html_end_report_break_footer;
+	OUTPUT(r)->start_report_no_data = html_start_report_no_data;
+	OUTPUT(r)->end_report_no_data = html_end_report_no_data;
+	
 	OUTPUT(r)->finalize_private = html_finalize_private;
 	OUTPUT(r)->spool_private = html_spool_private;
 	OUTPUT(r)->start_line = html_start_line;

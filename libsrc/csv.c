@@ -60,7 +60,8 @@ static gfloat csv_get_string_width(rlib *r, const gchar *text) {
 	return 1;
 }
 
-static void csv_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, struct rlib_line_extra_data *extra_data, gint rval_type) {
+static void csv_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, struct rlib_line_extra_data *extra_data) {
+	gint rval_type = RLIB_VALUE_GET_TYPE(&extra_data->rval_code);
 	if(extra_data->col) {
 		print_text(r, text, backwards, extra_data->col-1, rval_type);
 	}
@@ -284,6 +285,14 @@ static void csv_start_part_page_header(rlib *r, struct rlib_part *part) {}
 static void csv_end_part_page_header(rlib *r, struct rlib_part *part) {}
 static void csv_start_part_page_footer(rlib *r, struct rlib_part *part) {}
 static void csv_end_part_page_footer(rlib *r, struct rlib_part *part) {}
+static void csv_start_report_page_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void csv_end_report_page_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void csv_start_report_break_header(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb) {}
+static void csv_end_report_break_header(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb) {}
+static void csv_start_report_break_footer(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb) {}
+static void csv_end_report_break_footer(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb) {}
+static void csv_start_report_no_data(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void csv_end_report_no_data(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 
 static int csv_free(rlib *r) {
 	g_free(OUTPUT_PRIVATE(r)->top);
@@ -362,7 +371,16 @@ void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT(r)->start_part_page_header = csv_start_part_page_header;
 	OUTPUT(r)->end_part_page_header = csv_end_part_page_header;
 	OUTPUT(r)->start_part_page_footer = csv_start_part_page_footer;
-	OUTPUT(r)->end_part_page_footer = csv_end_part_page_footer;	
+	OUTPUT(r)->end_part_page_footer = csv_end_part_page_footer;
+	OUTPUT(r)->start_report_page_footer = csv_start_report_page_footer;
+	OUTPUT(r)->end_report_page_footer = csv_end_report_page_footer;
+	OUTPUT(r)->start_report_break_header = csv_start_report_break_header;
+	OUTPUT(r)->end_report_break_header = csv_end_report_break_header;
+	OUTPUT(r)->start_report_break_footer = csv_start_report_break_footer;
+	OUTPUT(r)->end_report_break_footer = csv_end_report_break_footer;
+	OUTPUT(r)->start_report_no_data = csv_start_report_no_data;
+	OUTPUT(r)->end_report_no_data = csv_end_report_no_data;
+		
 	OUTPUT(r)->finalize_private = csv_finalize_private;
 	OUTPUT(r)->spool_private = csv_spool_private;
 	OUTPUT(r)->start_line = csv_start_line;

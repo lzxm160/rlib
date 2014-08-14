@@ -107,7 +107,9 @@ void rlib_handle_page_footer(rlib *r, struct rlib_part *part, struct rlib_report
 		report->position_bottom[i] -= report->bottom_size[i];
 	}
 
+	OUTPUT(r)->start_report_page_footer(r, part, report);
 	rlib_layout_report_output(r, part, report, report->page_footer, TRUE, FALSE);
+	OUTPUT(r)->end_report_page_footer(r, part, report);
 	
 	for(i=0; i<report->pages_across; i++)
 		report->position_bottom[i] -= report->bottom_size[i];
@@ -332,8 +334,12 @@ static gboolean rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_
 			}
 			rlib_set_report_from_part(r, part, report, top_margin_offset);
 			report->left_margin += left_margin_offset + part->left_margin;
+			OUTPUT(r)->start_report_header(r, part, report);
 			rlib_layout_report_output(r, part, report, report->report_header, FALSE, TRUE);
+			OUTPUT(r)->end_report_header(r, part, report);
+			OUTPUT(r)->start_report_no_data(r, part, report);
 			rlib_layout_report_output(r, part, report, report->alternate.nodata, FALSE, TRUE);
+			OUTPUT(r)->end_report_no_data(r, part, report);
 		} else {
 			rlib_navigate_first(r, r->current_result);
 			if (!part->has_only_one_report) {

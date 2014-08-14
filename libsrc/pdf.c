@@ -170,7 +170,7 @@ static void pdf_print_text_delayed(rlib *r, struct rlib_delayed_extra_data *dela
 	rpdf_text_callback(pdf, delayed_data->left_origin, delayed_data->bottom_orgin, 0, delayed_data->extra_data.width, pdf_rpdf_callback, delayed_data);
 }
 
-static void pdf_print_text_API(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, struct rlib_line_extra_data *extra_data, gint rval_type) {
+static void pdf_print_text_API(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, struct rlib_line_extra_data *extra_data) {
 	pdf_print_text(r, left_origin, bottom_origin, text, 0); 
 }
 
@@ -1171,6 +1171,14 @@ static void pdf_start_part_page_header(rlib *r, struct rlib_part *part) {}
 static void pdf_end_part_page_header(rlib *r, struct rlib_part *part) {}
 static void pdf_start_part_page_footer(rlib *r, struct rlib_part *part) {}
 static void pdf_end_part_page_footer(rlib *r, struct rlib_part *part) {}
+static void pdf_start_report_page_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void pdf_end_report_page_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void pdf_start_report_break_header(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb) {}
+static void pdf_end_report_break_header(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb) {}
+static void pdf_start_report_break_footer(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb) {}
+static void pdf_end_report_break_footer(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb) {}
+static void pdf_start_report_no_data(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void pdf_end_report_no_data(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 
 
 static void pdf_start_part(rlib *r, struct rlib_part *part) {}
@@ -1228,6 +1236,14 @@ void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r)->end_part_page_header = pdf_end_part_page_header;
 	OUTPUT(r)->start_part_page_footer = pdf_start_part_page_footer;
 	OUTPUT(r)->end_part_page_footer = pdf_end_part_page_footer;
+	OUTPUT(r)->start_report_page_footer = pdf_start_report_page_footer;
+	OUTPUT(r)->end_report_page_footer = pdf_end_report_page_footer;
+	OUTPUT(r)->start_report_break_header = pdf_start_report_break_header;
+	OUTPUT(r)->end_report_break_header = pdf_end_report_break_header;
+	OUTPUT(r)->start_report_break_footer = pdf_start_report_break_footer;
+	OUTPUT(r)->end_report_break_footer = pdf_end_report_break_footer;
+	OUTPUT(r)->start_report_no_data = pdf_start_report_no_data;
+	OUTPUT(r)->end_report_no_data = pdf_end_report_no_data;
 	
 	OUTPUT(r)->finalize_private = pdf_finalize_private;
 	OUTPUT(r)->spool_private = pdf_spool_private;

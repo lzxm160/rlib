@@ -40,7 +40,7 @@ static gfloat json_get_string_width(rlib *r, const gchar *text) {
 	return 1;
 }
 
-static void json_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, struct rlib_line_extra_data *extra_data, gint rval_type) {
+static void json_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, struct rlib_line_extra_data *extra_data) {
 	printf("<data col=\"%d\">%s</data>\n", extra_data->col, text);
 }
 
@@ -173,6 +173,39 @@ static void json_end_part_page_footer(rlib *r, struct rlib_part *part) {
 	printf("</part_footer>\n");
 }
 
+static void json_start_report_page_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {
+	printf("<report_footer>\n");
+}
+
+static void json_end_report_page_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {
+	printf("</report_footer>\n");
+}
+
+static void json_start_report_break_header(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb) {
+	printf("<break_header>\n");
+}
+
+static void json_end_report_break_header(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb) {
+	printf("</rbreak_header>\n");
+}
+
+static void json_start_report_break_footer(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb) {
+	printf("<break_footer>\n");
+}
+
+static void json_end_report_break_footer(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb) {
+	printf("</rbreak_footer>\n");
+}
+
+static void json_start_report_no_data(rlib *r, struct rlib_part *part, struct rlib_report *report) {
+	printf("<no_data>\n");
+}
+
+static void json_end_report_no_data(rlib *r, struct rlib_part *part, struct rlib_report *report) {
+	printf("</rno_data>\n");
+}
+
+
 
 static void json_print_text_delayed(rlib *r, struct rlib_delayed_extra_data *delayed_data, int backwards, int rval_type) {
 }
@@ -301,6 +334,14 @@ void rlib_json_new_output_filter(rlib *r) {
 	OUTPUT(r)->end_part_page_header = json_end_part_page_header;
 	OUTPUT(r)->start_part_page_footer = json_start_part_page_footer;
 	OUTPUT(r)->end_part_page_footer = json_end_part_page_footer;
+	OUTPUT(r)->start_report_page_footer = json_start_report_page_footer;
+	OUTPUT(r)->end_report_page_footer = json_end_report_page_footer;
+	OUTPUT(r)->start_report_break_header = json_start_report_break_header;
+	OUTPUT(r)->end_report_break_header = json_end_report_break_header;
+	OUTPUT(r)->start_report_break_footer = json_start_report_break_footer;
+	OUTPUT(r)->end_report_break_footer = json_end_report_break_footer;
+	OUTPUT(r)->start_report_no_data = json_start_report_no_data;
+	OUTPUT(r)->end_report_no_data = json_end_report_no_data;
 
 
 	OUTPUT(r)->finalize_private = json_finalize_private;

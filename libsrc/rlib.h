@@ -887,7 +887,7 @@ struct output_filter {
 	gboolean do_graph;
 	gint paginate;
 	gfloat (*get_string_width)(rlib *, const char *);
-	void (*print_text)(rlib *, float, float, const char *, int, struct rlib_line_extra_data *, int);
+	void (*print_text)(rlib *, float, float, const char *, int, struct rlib_line_extra_data *);
 	void (*print_text_delayed)(rlib *, struct rlib_delayed_extra_data *, int, int);
 	void (*set_fg_color)(rlib *, float, float, float);
 	void (*set_bg_color)(rlib *, float, float, float);
@@ -931,6 +931,14 @@ struct output_filter {
 	void (*end_part_page_header)(rlib *, struct rlib_part *);
 	void (*start_part_page_footer)(rlib *, struct rlib_part *);
 	void (*end_part_page_footer)(rlib *, struct rlib_part *);
+	void (*start_report_page_footer)(rlib *, struct rlib_part *, struct rlib_report *report);
+	void (*end_report_page_footer)(rlib *, struct rlib_part *, struct rlib_report *report);
+	void (*start_report_break_header)(rlib *, struct rlib_part *, struct rlib_report *, struct rlib_report_break *);
+	void (*end_report_break_header)(rlib *, struct rlib_part *, struct rlib_report *, struct rlib_report_break *);
+	void (*start_report_break_footer)(rlib *, struct rlib_part *, struct rlib_report *, struct rlib_report_break *);
+	void (*end_report_break_footer)(rlib *, struct rlib_part *, struct rlib_report *, struct rlib_report_break *);
+	void (*start_report_no_data)(rlib *, struct rlib_part *, struct rlib_report *);
+	void (*end_report_no_data)(rlib *, struct rlib_part *, struct rlib_report *);
 
 
 	void (*finalize_private)(rlib *);
