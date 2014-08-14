@@ -73,7 +73,7 @@ static gfloat txt_get_string_width(rlib *r, const gchar *text) {
 	return 1;
 }
 
-static void txt_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, gint col, gint rval_type) {
+static void txt_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, struct rlib_line_extra_data *extra_data, gint rval_type) {
 	print_text(r, text, backwards);
 }
 
@@ -84,7 +84,8 @@ static void txt_start_new_page(rlib *r, struct rlib_part *part) {
 }
 
 static void txt_init_end_page(rlib *r) {}
-static void txt_init_output(rlib *r) {}
+static void txt_start_rlib_report(rlib *r) {}
+static void txt_end_rlib_report(rlib *r) {}
 static void txt_finalize_private(rlib *r) {}
 
 static void txt_spool_private(rlib *r) {
@@ -101,6 +102,8 @@ static void txt_start_report_field_headers(rlib *r, struct rlib_part *part, stru
 static void txt_end_report_field_headers(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void txt_start_report_field_details(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void txt_end_report_field_details(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void txt_start_report_line(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void txt_end_report_line(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void txt_start_report_header(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void txt_end_report_header(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void txt_start_report_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
@@ -322,13 +325,16 @@ void rlib_txt_new_output_filter(rlib *r) {
 	OUTPUT(r)->start_new_page = txt_start_new_page;
 	OUTPUT(r)->end_page = txt_end_page;   
 	OUTPUT(r)->init_end_page = txt_init_end_page;
-	OUTPUT(r)->init_output = txt_init_output;
+	OUTPUT(r)->start_rlib_report = txt_start_rlib_report;
+	OUTPUT(r)->end_rlib_report = txt_end_rlib_report;
 	OUTPUT(r)->start_report = txt_start_report;
 	OUTPUT(r)->end_report = txt_end_report;
 	OUTPUT(r)->start_report_field_headers = txt_start_report_field_headers;
 	OUTPUT(r)->end_report_field_headers = txt_end_report_field_headers;
 	OUTPUT(r)->start_report_field_details = txt_start_report_field_details;
 	OUTPUT(r)->end_report_field_details = txt_end_report_field_details;
+	OUTPUT(r)->start_report_line = txt_start_report_line;
+	OUTPUT(r)->end_report_line = txt_end_report_line;
 	OUTPUT(r)->start_part = txt_start_part;
 	OUTPUT(r)->end_part = txt_end_part;
 	OUTPUT(r)->start_report_header = txt_start_report_header;

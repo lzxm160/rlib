@@ -312,7 +312,7 @@ gint flag, gint memo_line) {
 		} else {
 			gboolean need_free;
 			gchar *real_text = rlib_layout_get_true_text_from_extra_data(r, extra_data, memo_line, spaced_out, &need_free);
-			OUTPUT(r)->print_text(r, left_origin, bottom_orgin+(extra_data->font_point/300.0), real_text, backwards, extra_data->col, RLIB_VALUE_GET_TYPE(&extra_data->rval_code));
+			OUTPUT(r)->print_text(r, left_origin, bottom_orgin+(extra_data->font_point/300.0), real_text, backwards, extra_data, RLIB_VALUE_GET_TYPE(&extra_data->rval_code));
 			if(need_free)
 				g_free(real_text);
 		}
@@ -387,7 +387,7 @@ gchar *text, gint memo_line) {
 		OUTPUT(r)->start_bold(r);
 	if(extra_data->is_italics)
 		OUTPUT(r)->start_italics(r);
-	OUTPUT(r)->print_text(r, left_origin, bottom_orgin+(extra_data->font_point/300.0), rlib_encode_text(r, text, &encoded_text), backwards, extra_data->col, RLIB_VALUE_GET_TYPE(&extra_data->rval_code));
+	OUTPUT(r)->print_text(r, left_origin, bottom_orgin+(extra_data->font_point/300.0), rlib_encode_text(r, text, &encoded_text), backwards, extra_data, RLIB_VALUE_GET_TYPE(&extra_data->rval_code));
 	g_free(encoded_text);
 	rtn_width = extra_data->output_width;
 	if(extra_data->found_color)
@@ -886,6 +886,8 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 	
 	r->current_line_number++;
 	
+	OUTPUT(r)->start_report_line(r, part, report);	
+	
 	if(report != NULL) {
 		if(backwards)
 			rlib_position = &report->position_bottom[page-1];
@@ -978,22 +980,6 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 						gfloat bg_margin = margin;
 						gint start_count=-1;
 						for(e = rl->e; e != NULL; e=e->next) {
-/*
-							if(e->type == RLIB_ELEMENT_FIELD) {
-								struct rlib_report_field *rf = ((struct rlib_report_field *)e->data);
-								rf->rval = &extra_data[count].rval_code;
-								width = rlib_layout_output_extras(r, part, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), 
-										&extra_data[count]);
-							} else if(e->type == RLIB_ELEMENT_LITERAL) {
-								width = rlib_layout_output_extras(r, part, backwards, margin, rlib_layout_get_next_line(r, part, *rlib_position, rl), 
-									&extra_data[count]);
-							} else if(e->type == RLIB_ELEMENT_IMAGE) {
-								width = extra_data[count].output_width;
-							} else {
-								width = 0;
-							}
-							margin += width;
-*/
 							count++;
 						}
 						total_count = count;
@@ -1195,6 +1181,9 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 			}
 		}
 	}
+
+	OUTPUT(r)->end_report_line(r, part, report);	
+
 	return output_count;
 }	
 

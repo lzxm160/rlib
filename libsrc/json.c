@@ -40,14 +40,15 @@ static gfloat json_get_string_width(rlib *r, const gchar *text) {
 	return 1;
 }
 
-static void json_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, gint col, gint rval_type) {
+static void json_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, struct rlib_line_extra_data *extra_data, gint rval_type) {
+	printf("<data col=\"%d\">%s</data>\n", extra_data->col, text);
 }
+
 
 static void json_start_new_page(rlib *r, struct rlib_part *part) {
 }
 
 static void json_init_end_page(rlib *r) {}
-static void json_init_output(rlib *r) {}
 static void json_finalize_private(rlib *r) {}
 
 static void json_spool_private(rlib *r) {
@@ -55,6 +56,14 @@ static void json_spool_private(rlib *r) {
 }
 
 static void json_end_line(rlib *r, int backwards) {
+}
+
+static void json_start_rlib_report(rlib *r) {
+	printf("<rlib>\n");
+}
+
+static void json_end_rlib_report(rlib *r) {
+	printf("</rlib>\n");
 }
 
 static void json_start_part(rlib *r, struct rlib_part *part) {
@@ -84,6 +93,15 @@ static void json_start_report_field_details(rlib *r, struct rlib_part *part, str
 static void json_end_report_field_details(rlib *r, struct rlib_part *part, struct rlib_report *report) {
 	printf("</field_details>\n");
 }
+
+static void json_start_report_line(rlib *r, struct rlib_part *part, struct rlib_report *report) {
+	printf("<line>\n");
+}
+
+static void json_end_report_line(rlib *r, struct rlib_part *part, struct rlib_report *report) {
+	printf("</line>\n");
+}
+
 
 static void json_start_report_header(rlib *r, struct rlib_part *part, struct rlib_report *report) {
 	printf("<report_header>\n");
@@ -261,13 +279,16 @@ void rlib_json_new_output_filter(rlib *r) {
 	OUTPUT(r)->start_new_page = json_start_new_page;
 	OUTPUT(r)->end_page = json_end_page;   
 	OUTPUT(r)->init_end_page = json_init_end_page;
-	OUTPUT(r)->init_output = json_init_output;
+	OUTPUT(r)->start_rlib_report = json_start_rlib_report;
+	OUTPUT(r)->end_rlib_report = json_end_rlib_report;
 	OUTPUT(r)->start_report = json_start_report;
 	OUTPUT(r)->end_report = json_end_report;
 	OUTPUT(r)->start_report_field_headers = json_start_report_field_headers;
 	OUTPUT(r)->end_report_field_headers = json_end_report_field_headers;
 	OUTPUT(r)->start_report_field_details = json_start_report_field_details;
 	OUTPUT(r)->end_report_field_details = json_end_report_field_details;
+	OUTPUT(r)->start_report_line = json_start_report_line;
+	OUTPUT(r)->end_report_line = json_end_report_line;
 	OUTPUT(r)->start_part = json_start_part;
 	OUTPUT(r)->end_part = json_end_part;
 	OUTPUT(r)->start_report_header = json_start_report_header;

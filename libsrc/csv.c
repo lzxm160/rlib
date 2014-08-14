@@ -60,9 +60,9 @@ static gfloat csv_get_string_width(rlib *r, const gchar *text) {
 	return 1;
 }
 
-static void csv_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, gint col, gint rval_type) {
-	if(col) {
-		print_text(r, text, backwards, col-1, rval_type);
+static void csv_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, struct rlib_line_extra_data *extra_data, gint rval_type) {
+	if(extra_data->col) {
+		print_text(r, text, backwards, extra_data->col-1, rval_type);
 	}
 }
 
@@ -229,12 +229,15 @@ static void csv_start_report_field_headers(rlib *r, struct rlib_part *part, stru
 static void csv_end_report_field_headers(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void csv_start_report_field_details(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void csv_end_report_field_details(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void csv_start_report_line(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void csv_end_report_line(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void csv_start_report_header(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void csv_end_report_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void csv_start_report_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void csv_end_report_header(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void csv_end_part(rlib *r, struct rlib_part *part) {}
-static void csv_init_output(rlib *r) {}
+static void csv_start_rlib_report(rlib *r) {}
+static void csv_end_rlib_report(rlib *r) {}
 static void csv_set_font_point(rlib *r, gint point) {}
 static void csv_start_tr(rlib *r) {}
 static void csv_end_tr(rlib *r) {}
@@ -338,7 +341,8 @@ void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT(r)->start_new_page = csv_start_new_page;
 	OUTPUT(r)->end_page = csv_end_page;   
 	OUTPUT(r)->init_end_page = csv_init_end_page;
-	OUTPUT(r)->init_output = csv_init_output;
+	OUTPUT(r)->start_rlib_report = csv_start_rlib_report;
+	OUTPUT(r)->end_rlib_report = csv_end_rlib_report;
 	OUTPUT(r)->start_part = csv_start_part;
 	OUTPUT(r)->end_part = csv_end_part;
 	OUTPUT(r)->start_report = csv_start_report;
@@ -347,6 +351,8 @@ void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT(r)->end_report_field_headers = csv_end_report_field_headers;	
 	OUTPUT(r)->start_report_field_details = csv_start_report_field_details;
 	OUTPUT(r)->end_report_field_details = csv_end_report_field_details;	
+	OUTPUT(r)->start_report_line = csv_start_report_line;
+	OUTPUT(r)->end_report_line = csv_end_report_line;	
 	OUTPUT(r)->start_report_header = csv_start_report_header;
 	OUTPUT(r)->end_report_header = csv_end_report_header;
 	OUTPUT(r)->start_report_footer = csv_start_report_footer;

@@ -326,8 +326,10 @@ static gboolean rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_
 	for(iterations=0;iterations<report->iterations;iterations++) {
 		if(r->queries_count <= 0 || INPUT(r,r->current_result)->first(INPUT(r,r->current_result), r->results[r->current_result]->result) == FALSE) {
 			rlib_evaluate_report_attributes(r, report);
-			if(report->suppress == TRUE)
+			if(report->suppress == TRUE) {
+				OUTPUT(r)->end_report(r, part, report);
 				return FALSE;
+			}
 			rlib_set_report_from_part(r, part, report, top_margin_offset);
 			report->left_margin += left_margin_offset + part->left_margin;
 			rlib_layout_report_output(r, part, report, report->report_header, FALSE, TRUE);
@@ -341,8 +343,10 @@ static gboolean rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_
 			
 			processed_variables = TRUE;
 			rlib_evaluate_report_attributes(r, report);
-			if(report->suppress == TRUE)
+			if(report->suppress == TRUE) {
+				OUTPUT(r)->end_report(r, part, report);
 				return FALSE;
+			}
 			
 			rlib_set_report_from_part(r, part, report, top_margin_offset);
 			report->left_margin += left_margin_offset + part->left_margin;
@@ -647,6 +651,8 @@ gint rlib_make_report(rlib *r) {
 	gint i = 0;
 	gint iterations;
 
+	
+
 	if(r->format == RLIB_FORMAT_HTML) {
 		rlib_html_new_output_filter(r);
 	} else if(r->format == RLIB_FORMAT_TXT) {
@@ -669,8 +675,7 @@ gint rlib_make_report(rlib *r) {
 	r->current_page_number = 0;
 	r->current_result = 0;
 	r->start_of_new_report = TRUE;
-
-	OUTPUT(r)->init_output(r);
+	OUTPUT(r)->start_rlib_report(r);
 
 	for(i=0;i<r->parts_count;i++) {
 		struct rlib_part *part = r->parts[i];
@@ -693,6 +698,7 @@ gint rlib_make_report(rlib *r) {
 		}
 		rlib_emit_signal(r, RLIB_SIGNAL_REPORT_DONE);
 	}
+	OUTPUT(r)->end_rlib_report(r);
 	
 	return 0;
 }

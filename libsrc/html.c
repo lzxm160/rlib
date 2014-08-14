@@ -254,7 +254,7 @@ static void html_escape(rlib *r, const gchar *text, gint backwards) {
 }
 
 
-static void html_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, gint col, gint rval_type) {
+static void html_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, struct rlib_line_extra_data *exta_data, gint rval_type) {
 	gchar font_size[MAXSTRLEN];
 	gchar foreground_color[MAXSTRLEN];
 	gchar background_color[MAXSTRLEN];
@@ -449,6 +449,8 @@ static void html_start_report_field_headers(rlib *r, struct rlib_part *part, str
 static void html_end_report_field_headers(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void html_start_report_field_details(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void html_end_report_field_details(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void html_start_report_line(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void html_end_report_line(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void html_start_report_header(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void html_end_report_header(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void html_start_report_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
@@ -1334,7 +1336,8 @@ static void html_graph_finalize(rlib *r) {
 }
 
 static void html_init_end_page(rlib *r) {}
-static void html_init_output(rlib *r) {}
+static void html_start_rlib_report(rlib *r) {}
+static void html_end_rlib_report(rlib *r) {}
 
 static void html_finalize_private(rlib *r) {
 	char *old = OUTPUT_PRIVATE(r)->both;
@@ -1400,13 +1403,16 @@ void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT(r)->start_new_page = html_start_new_page;
 	OUTPUT(r)->end_page = html_end_page;
 	OUTPUT(r)->init_end_page = html_init_end_page;
-	OUTPUT(r)->init_output = html_init_output;
+	OUTPUT(r)->start_rlib_report = html_start_rlib_report;
+	OUTPUT(r)->end_rlib_report = html_end_rlib_report;
 	OUTPUT(r)->start_report = html_start_report;
 	OUTPUT(r)->end_report = html_end_report;
 	OUTPUT(r)->start_report_field_headers = html_start_report_field_headers;
 	OUTPUT(r)->end_report_field_headers = html_end_report_field_headers;
 	OUTPUT(r)->start_report_field_details = html_start_report_field_details;
 	OUTPUT(r)->end_report_field_details = html_end_report_field_details;
+	OUTPUT(r)->start_report_line = html_start_report_line;
+	OUTPUT(r)->end_report_line = html_end_report_line;
 	OUTPUT(r)->start_part = html_start_part;
 	OUTPUT(r)->end_part = html_end_part;
 	OUTPUT(r)->start_report_header = html_start_report_header;

@@ -170,7 +170,7 @@ static void pdf_print_text_delayed(rlib *r, struct rlib_delayed_extra_data *dela
 	rpdf_text_callback(pdf, delayed_data->left_origin, delayed_data->bottom_orgin, 0, delayed_data->extra_data.width, pdf_rpdf_callback, delayed_data);
 }
 
-static void pdf_print_text_API(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, gint col, gint rval_type) {
+static void pdf_print_text_API(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, struct rlib_line_extra_data *extra_data, gint rval_type) {
 	pdf_print_text(r, left_origin, bottom_origin, text, 0); 
 }
 
@@ -305,7 +305,7 @@ static void pdf_init_end_page(rlib *r) {
 	}
 }
 
-static void pdf_init_output(rlib *r) {
+static void pdf_start_rlib_report(rlib *r) {
 	struct rpdf *pdf;
 	gchar *compress;
 
@@ -319,6 +319,8 @@ static void pdf_init_output(rlib *r) {
 	
 	OUTPUT_PRIVATE(r)->pdf = pdf;
 }
+
+static void pdf_end_rlib_report(rlib *r) {}
 
 static void pdf_finalize_private(rlib *r) {
 	int length;
@@ -1157,6 +1159,8 @@ static void pdf_start_report_field_headers(rlib *r, struct rlib_part *part, stru
 static void pdf_end_report_field_headers(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void pdf_start_report_field_details(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void pdf_end_report_field_details(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void pdf_start_report_line(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
+static void pdf_end_report_line(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void pdf_start_report_header(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void pdf_end_report_header(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void pdf_start_report_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
@@ -1202,14 +1206,17 @@ void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r)->end_page = pdf_end_page;
 	OUTPUT(r)->end_page_again = pdf_end_page_again;
 	OUTPUT(r)->init_end_page = pdf_init_end_page;
-	OUTPUT(r)->init_output = pdf_init_output;
-	OUTPUT(r)->start_part = pdf_start_part;
+	OUTPUT(r)->start_rlib_report = pdf_start_rlib_report;
+	OUTPUT(r)->end_rlib_report = pdf_end_rlib_report;
 	OUTPUT(r)->start_report = pdf_start_report;
 	OUTPUT(r)->end_report = pdf_end_report;
 	OUTPUT(r)->start_report_field_headers = pdf_start_report_field_headers;
 	OUTPUT(r)->end_report_field_headers = pdf_end_report_field_headers;
 	OUTPUT(r)->start_report_field_details = pdf_start_report_field_details;
 	OUTPUT(r)->end_report_field_details = pdf_end_report_field_details;
+	OUTPUT(r)->start_report_line = pdf_start_report_line;
+	OUTPUT(r)->end_report_line = pdf_end_report_line;
+	OUTPUT(r)->start_part = pdf_start_part;
 	OUTPUT(r)->end_part = pdf_end_part;	
 	OUTPUT(r)->start_report_header = pdf_start_report_header;
 	OUTPUT(r)->end_report_header = pdf_end_report_header;
