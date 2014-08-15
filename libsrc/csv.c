@@ -156,13 +156,6 @@ static void really_print_text(rlib *r, const gchar *passed_text, gint rval_type,
 	*size = (*size) + text_size;
 }
 
-static void csv_start_output_section(rlib *r) {
-	gint i;
-	for(i=0;i<MAX_COL;i++) {
-		OUTPUT_PRIVATE(r)->col[i][0] = 0;
-	}
-}
-
 static void print_csv_line(rlib *r) {
 	gint i;
 	gint biggest = -1;
@@ -181,7 +174,16 @@ static void print_csv_line(rlib *r) {
 	}	
 }
 
-static void csv_end_output_section(rlib *r) {
+static void csv_start_output_section(rlib *r, struct rlib_report_output_array *roa) {
+	gint i;
+	if(roa == NULL || roa->page <= 1) { //TODO: Not sure if this will work for pages across reports
+		for(i=0;i<MAX_COL;i++) {
+			OUTPUT_PRIVATE(r)->col[i][0] = 0;
+		}
+	}
+}
+
+static void csv_end_output_section(rlib *r,  struct rlib_report_output_array *roa) {
 	if(OUTPUT_PRIVATE(r)->new_line_on_end_of_line == FALSE)
 		print_csv_line(r);
 }
@@ -189,7 +191,7 @@ static void csv_end_output_section(rlib *r) {
 static void csv_end_line(rlib *r, gint backwards) {
 	if(OUTPUT_PRIVATE(r)->new_line_on_end_of_line == TRUE) {
 		print_csv_line(r);
-		csv_start_output_section(r);
+		csv_start_output_section(r, NULL);
 	}
 }
 
@@ -242,8 +244,8 @@ static void csv_end_rlib_report(rlib *r) {}
 static void csv_set_font_point(rlib *r, gint point) {}
 static void csv_start_tr(rlib *r) {}
 static void csv_end_tr(rlib *r) {}
-static void csv_start_td(rlib *r, struct rlib_part *part, gfloat left_margin, gfloat top_margin, int width, int height, int border_width, struct rlib_rgb *color) {}
-static void csv_end_td(rlib *r) {}
+static void csv_start_part_pages_across(rlib *r, struct rlib_part *part, gfloat left_margin, gfloat top_margin, int width, int height, int border_width, struct rlib_rgb *color) {}
+static void csv_end_part_pages_across(rlib *r, struct rlib *part) {}
 static void csv_set_raw_page(rlib *r, struct rlib_part *part, int page)  {}
 static void csv_start_bold(rlib *r) {}
 static void csv_end_bold(rlib *r) {}
@@ -393,8 +395,8 @@ void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT(r)->set_raw_page = csv_set_raw_page; 
 	OUTPUT(r)->start_tr = csv_start_tr; 
 	OUTPUT(r)->end_tr = csv_end_tr; 
-	OUTPUT(r)->start_td = csv_start_td; 
-	OUTPUT(r)->end_td = csv_end_td; 
+	OUTPUT(r)->start_part_pages_across = csv_start_part_pages_across; 
+	OUTPUT(r)->end_part_pages_across = csv_end_part_pages_across; 
 	OUTPUT(r)->start_bold = csv_start_bold;
 	OUTPUT(r)->end_bold = csv_end_bold;
 	OUTPUT(r)->start_italics = csv_start_italics;

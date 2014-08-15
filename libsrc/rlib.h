@@ -945,14 +945,14 @@ struct output_filter {
 	void (*spool_private)(rlib *);
 	void (*start_line)(rlib *, int);
 	void (*end_line)(rlib *, int);
-	void (*start_output_section)(rlib *);
-	void (*end_output_section)(rlib *);
+	void (*start_output_section)(rlib *, struct rlib_report_output_array *);
+	void (*end_output_section)(rlib *, struct rlib_report_output_array *);
 	char *(*get_output)(rlib *);
 	long (*get_output_length)(rlib *);
 	void (*start_tr)(rlib *);
 	void (*end_tr)(rlib *);
-	void (*start_td)(rlib *, struct rlib_part *part, gfloat left_margin, gfloat bottom_margin, int width, int height, gint border_width, struct rlib_rgb *color);
-	void (*end_td)(rlib *);
+	void (*start_part_pages_across)(rlib *, struct rlib_part *part, gfloat left_margin, gfloat bottom_margin, int width, int height, gint border_width, struct rlib_rgb *color);
+	void (*end_part_pages_across)(rlib *, struct rlib_part *part);
 
 	void (*graph_get_x_label_width)(rlib *r, gfloat *width);
 	void (*graph_get_y_label_width)(rlib *r, gfloat *width);

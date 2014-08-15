@@ -132,11 +132,11 @@ static void json_end_tr(rlib *r) {
 	printf("</tr>\n");
 }
 
-static void json_start_td(rlib *r, struct rlib_part *part, gfloat left_margin, gfloat top_margin, int width, int height, int border_width, struct rlib_rgb *color) {
+static void json_start_part_pages_across(rlib *r, struct rlib_part *part, gfloat left_margin, gfloat top_margin, int width, int height, int border_width, struct rlib_rgb *color) {
 	printf("<td>\n");
 }
 
-static void json_end_td(rlib *r) {
+static void json_end_part_pages_across(rlib *r, struct rlib_part *part) {
 	printf("</td>\n");
 }
 
@@ -144,11 +144,11 @@ static void json_end_part(rlib *r, struct rlib_part *part) {
 	printf("</part>\n");
 }
 
-static void json_start_output_section(rlib *r) {
-	printf("<output>\n");
+static void json_start_output_section(rlib *r, struct rlib_report_output_array *roa) {
+	printf("<output page=\"%d\">\n", roa->page);
 }
 
-static void json_end_output_section(rlib *r) {
+static void json_end_output_section(rlib *r, struct rlib_report_output_array *roa) {
 	printf("</output>\n");	
 }
 
@@ -186,19 +186,19 @@ static void json_end_report_page_footer(rlib *r, struct rlib_part *part, struct 
 }
 
 static void json_start_report_break_header(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb) {
-	printf("<break_header>\n");
+	printf("<break_header name=\"%s\">\n", rb->xml_name.xml);
 }
 
 static void json_end_report_break_header(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb) {
-	printf("</rbreak_header>\n");
+	printf("</break_header>\n");
 }
 
 static void json_start_report_break_footer(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb) {
-	printf("<break_footer>\n");
+	printf("<break_footer name=\"%s\">\n", rb->xml_name.xml);
 }
 
 static void json_end_report_break_footer(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb) {
-	printf("</rbreak_footer>\n");
+	printf("</break_footer>\n");
 }
 
 static void json_start_report_no_data(rlib *r, struct rlib_part *part, struct rlib_report *report) {
@@ -206,7 +206,7 @@ static void json_start_report_no_data(rlib *r, struct rlib_part *part, struct rl
 }
 
 static void json_end_report_no_data(rlib *r, struct rlib_part *part, struct rlib_report *report) {
-	printf("</rno_data>\n");
+	printf("</no_data>\n");
 }
 
 
@@ -360,8 +360,8 @@ void rlib_json_new_output_filter(rlib *r) {
 	OUTPUT(r)->set_raw_page = json_set_raw_page; 
 	OUTPUT(r)->start_tr = json_start_tr; 
 	OUTPUT(r)->end_tr = json_end_tr; 
-	OUTPUT(r)->start_td = json_start_td; 
-	OUTPUT(r)->end_td = json_end_td; 
+	OUTPUT(r)->start_part_pages_across = json_start_part_pages_across; 
+	OUTPUT(r)->end_part_pages_across = json_end_part_pages_across; 
 	OUTPUT(r)->start_bold = json_start_bold;
 	OUTPUT(r)->end_bold = json_end_bold;
 	OUTPUT(r)->start_italics = json_start_italics;

@@ -1,4 +1,4 @@
-<? dl ("rlib.so");
+<?php 
 	$data[0][0] = "first_name";
 	$data[0][1] = "last_name";
 	$data[0][2] = "color";
@@ -54,8 +54,8 @@
 	$data[10][2] = "purple";
 	$data[10][3] = "2";
 
-	$data[11][0] = "Jessie";
-	$data[11][1] = "Jessie";
+	$data[11][0] = "Jennifer";
+	$data[11][1] = "Jennifer";
 	$data[11][2] = "purple";
 	$data[11][3] = "2";
 

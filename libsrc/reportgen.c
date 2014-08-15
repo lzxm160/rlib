@@ -405,9 +405,9 @@ static gboolean rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_
 						gint output_count = 0;
 						gfloat position_top = report->position_top[0];
 						if(report->detail_columns > 1 && r->detail_line_count == 0) {
-							if(OUTPUT(r)->table_around_multiple_detail_columns) {
+							/*if(OUTPUT(r)->table_around_multiple_detail_columns) {
 								OUTPUT(r)->start_tr(r);
-							}
+							}*/
 						}
 						
 						if(!processed_variables) {
@@ -423,9 +423,9 @@ static gboolean rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_
 						}
 
 						if(report->detail_columns > 1) {
-							if(OUTPUT(r)->table_around_multiple_detail_columns) {
+							/*if(OUTPUT(r)->table_around_multiple_detail_columns) {
 								OUTPUT(r)->start_td(r, part, 0, 0, 0, 0, 0, NULL);
-							}
+							}*/
 						}
 						
 						if(OUTPUT(r)->do_breaks) {
@@ -452,9 +452,9 @@ static gboolean rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_
 						processed_variables = FALSE;
 
 						if(report->detail_columns > 1) {
-							if(OUTPUT(r)->table_around_multiple_detail_columns) {
+							/*if(OUTPUT(r)->table_around_multiple_detail_columns) {
 								OUTPUT(r)->end_td(r);
-							}
+							}*/
 						}
 						
 						if(report->detail_columns > 1) {
@@ -464,10 +464,10 @@ static gboolean rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_
 								else
 									report->position_top[0] = position_top = part->position_top[0];
 							} else {
-								if(OUTPUT(r)->table_around_multiple_detail_columns) {
+								/*if(OUTPUT(r)->table_around_multiple_detail_columns) {
 									OUTPUT(r)->end_tr(r);
 									OUTPUT(r)->start_tr(r);
-								}
+								}*/
 							}
 						}						
 					}
@@ -525,7 +525,7 @@ void rlib_layout_part_td(rlib *r, struct rlib_part *part, GSList *part_deviation
 		
 		for(i=0;i<part->pages_across;i++) {
 			OUTPUT(r)->set_working_page(r, part, i);
-			OUTPUT(r)->start_td(r, part, running_left_margin+part->left_margin, rlib_layout_get_next_line_by_font_point(r, part, running_top_margin+position_top+part->position_top[0], 0), width,  height, border_width, border_color[0] == 0 ? NULL : &bgcolor);
+			OUTPUT(r)->start_part_pages_across(r, part, running_left_margin+part->left_margin, rlib_layout_get_next_line_by_font_point(r, part, running_top_margin+position_top+part->position_top[0], 0), width,  height, border_width, border_color[0] == 0 ? NULL : &bgcolor);
 		}
 		
 		for(report_element=td->reports;report_element != NULL;report_element = g_slist_next(report_element)) {
@@ -551,7 +551,7 @@ void rlib_layout_part_td(rlib *r, struct rlib_part *part, GSList *part_deviation
 		running_left_margin += (((gfloat)width/100) * paper_width);
 		for(i=0;i<part->pages_across;i++) {
 			OUTPUT(r)->set_working_page(r, part, i);
-			OUTPUT(r)->end_td(r);
+			OUTPUT(r)->end_part_pages_across(r, part);
 		}
 	}	
 }
@@ -578,8 +578,8 @@ static void rlib_layout_part_tr(rlib *r, struct rlib_part *part) {
 		}
 		
 		for(i=0;i<part->pages_across;i++) {
-			OUTPUT(r)->set_working_page(r, part, i);
 			OUTPUT(r)->start_tr(r);
+			OUTPUT(r)->set_working_page(r, part, i);
 		}
 		
 		save_page_number = r->current_page_number;

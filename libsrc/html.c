@@ -617,7 +617,7 @@ static void html_end_tr(rlib *r) {
 	print_text(r, "</tr></table><pre>", FALSE);
 }
 
-static void html_start_td(rlib *r, struct rlib_part *part, gfloat left_margin, gfloat top_margin, int width, int height, int border_width, struct rlib_rgb *color) {
+static void html_start_part_pages_across(rlib *r, struct rlib_part *part, gfloat left_margin, gfloat top_margin, int width, int height, int border_width, struct rlib_rgb *color) {
 	char buf[150];
 	char border_color[150];
 
@@ -634,7 +634,7 @@ static void html_start_td(rlib *r, struct rlib_part *part, gfloat left_margin, g
 	print_text(r, buf, FALSE);
 }
 
-static void html_end_td(rlib *r) {
+static void html_end_part_pages_across(rlib *r, struct rlib_part *part) {
 	print_text(r, "</pre></td>", FALSE);
 }
 
@@ -1353,8 +1353,8 @@ static void html_finalize_private(rlib *r) {
 	}
 }
 
-static void html_start_output_section(rlib *r) {}
-static void html_end_output_section(rlib *r) {}
+static void html_start_output_section(rlib *r, struct rlib_report_output_array *roa) {}
+static void html_end_output_section(rlib *r, struct rlib_report_output_array *roa) {}
 static void html_set_raw_page(rlib *r, struct rlib_part *part, gint page) {}
 static void html_start_part_header(rlib *r, struct rlib_part *part) {}
 static void html_end_part_header(rlib *r, struct rlib_part *part) {}
@@ -1454,8 +1454,8 @@ void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT(r)->set_raw_page = html_set_raw_page;
 	OUTPUT(r)->start_tr = html_start_tr;
 	OUTPUT(r)->end_tr = html_end_tr;
-	OUTPUT(r)->start_td = html_start_td;
-	OUTPUT(r)->end_td = html_end_td;
+	OUTPUT(r)->start_part_pages_across = html_start_part_pages_across;
+	OUTPUT(r)->end_part_pages_across = html_end_part_pages_across;
 	OUTPUT(r)->start_bold = html_start_bold;
 	OUTPUT(r)->end_bold = html_end_bold;
 	OUTPUT(r)->start_italics = html_start_italics;

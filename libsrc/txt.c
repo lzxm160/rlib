@@ -249,12 +249,12 @@ static void txt_end_boxurl(rlib *r, gint backwards) {}
 static void txt_background_image(rlib *r, gfloat left_origin, gfloat bottom_origin, gchar *nname, gchar *type, gfloat nwidth, gfloat nheight) {}
 static void txt_set_font_point(rlib *r, gint point) {}
 static void txt_start_line(rlib *r, gint backwards) {}
-static void txt_start_output_section(rlib *r) {}
-static void txt_end_output_section(rlib *r) {}
+static void txt_start_output_section(rlib *r, struct rlib_report_output_array *roa) {}
+static void txt_end_output_section(rlib *r, struct rlib_report_output_array *roa) {}
 static void txt_start_tr(rlib *r) {}
 static void txt_end_tr(rlib *r) {}
-static void txt_start_td(rlib *r, struct rlib_part *part, gfloat left_margin, gfloat top_margin, int width, int height, int border_width, struct rlib_rgb *color) {}
-static void txt_end_td(rlib *r) {}
+static void txt_start_part_pages_across(rlib *r, struct rlib_part *part, gfloat left_margin, gfloat top_margin, int width, int height, int border_width, struct rlib_rgb *color) {}
+static void txt_end_part_pages_across(rlib *r, struct rlib_part *part) {}
 static void txt_set_raw_page(rlib *r, struct rlib_part *part, gint page) {}
 static void txt_start_bold(rlib *r) {}
 static void txt_end_bold(rlib *r) {}
@@ -376,8 +376,8 @@ void rlib_txt_new_output_filter(rlib *r) {
 	OUTPUT(r)->set_raw_page = txt_set_raw_page; 
 	OUTPUT(r)->start_tr = txt_start_tr; 
 	OUTPUT(r)->end_tr = txt_end_tr; 
-	OUTPUT(r)->start_td = txt_start_td; 
-	OUTPUT(r)->end_td = txt_end_td; 
+	OUTPUT(r)->start_part_pages_across = txt_start_part_pages_across; 
+	OUTPUT(r)->end_part_pages_across = txt_end_part_pages_across; 
 	OUTPUT(r)->start_bold = txt_start_bold;
 	OUTPUT(r)->end_bold = txt_end_bold;
 	OUTPUT(r)->start_italics = txt_start_italics;
