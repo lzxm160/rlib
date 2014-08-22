@@ -110,7 +110,7 @@
 	<PageFooter>
 		<Output>
 			<Line>
-				<literal>Page: </literal>	
+				<literal>XXPage: </literal>	
 				<field value="r.pageno" width="3" align="right"/>
 			</Line>
 		</Output>

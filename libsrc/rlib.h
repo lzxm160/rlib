@@ -913,6 +913,14 @@ struct output_filter {
 	void (*end_rlib_report)(rlib *);
 	void (*start_part)(rlib *, struct rlib_part *);
 	void (*end_part)(rlib *, struct rlib_part *);
+	void (*start_part_table)(rlib *, struct rlib_part *);
+	void (*end_part_table)(rlib *, struct rlib_part *);
+	void (*start_part_tr)(rlib *, struct rlib_part *);
+	void (*end_part_tr)(rlib *, struct rlib_part *);
+	void (*start_part_td)(rlib *, struct rlib_part *);
+	void (*end_part_td)(rlib *, struct rlib_part *);
+
+
 	void (*start_report)(rlib *, struct rlib_part *, struct rlib_report *);
 	void (*end_report)(rlib *, struct rlib_part *part, struct rlib_report *);
 	void (*start_report_header)(rlib *, struct rlib_part *, struct rlib_report *);
@@ -949,8 +957,7 @@ struct output_filter {
 	void (*end_output_section)(rlib *, struct rlib_report_output_array *);
 	char *(*get_output)(rlib *);
 	long (*get_output_length)(rlib *);
-	void (*start_tr)(rlib *);
-	void (*end_tr)(rlib *);
+
 	void (*start_part_pages_across)(rlib *, struct rlib_part *part, gfloat left_margin, gfloat bottom_margin, int width, int height, gint border_width, struct rlib_rgb *color);
 	void (*end_part_pages_across)(rlib *, struct rlib_part *part);
 

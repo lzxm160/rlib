@@ -242,10 +242,14 @@ static void csv_end_part(rlib *r, struct rlib_part *part) {}
 static void csv_start_rlib_report(rlib *r) {}
 static void csv_end_rlib_report(rlib *r) {}
 static void csv_set_font_point(rlib *r, gint point) {}
-static void csv_start_tr(rlib *r) {}
-static void csv_end_tr(rlib *r) {}
+static void csv_start_part_table(rlib *r, struct rlib_part *part) {}
+static void csv_end_part_table(rlib *r, struct rlib_part *part) {}
+static void csv_start_part_tr(rlib *r, struct rlib_part *part) {}
+static void csv_end_part_tr(rlib *r, struct rlib_part *part) {}
+static void csv_start_part_td(rlib *r, struct rlib_part *part) {}
+static void csv_end_part_td(rlib *r, struct rlib_part *part) {}
 static void csv_start_part_pages_across(rlib *r, struct rlib_part *part, gfloat left_margin, gfloat top_margin, int width, int height, int border_width, struct rlib_rgb *color) {}
-static void csv_end_part_pages_across(rlib *r, struct rlib *part) {}
+static void csv_end_part_pages_across(rlib *r, struct rlib_part *part) {}
 static void csv_set_raw_page(rlib *r, struct rlib_part *part, int page)  {}
 static void csv_start_bold(rlib *r) {}
 static void csv_end_bold(rlib *r) {}
@@ -393,8 +397,12 @@ void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT(r)->get_output_length = csv_get_output_length;
 	OUTPUT(r)->set_working_page = csv_set_working_page;  
 	OUTPUT(r)->set_raw_page = csv_set_raw_page; 
-	OUTPUT(r)->start_tr = csv_start_tr; 
-	OUTPUT(r)->end_tr = csv_end_tr; 
+	OUTPUT(r)->start_part_table = csv_start_part_table; 
+	OUTPUT(r)->end_part_table = csv_end_part_table; 
+	OUTPUT(r)->start_part_tr = csv_start_part_tr; 
+	OUTPUT(r)->end_part_tr = csv_end_part_tr; 
+	OUTPUT(r)->start_part_td = csv_start_part_td; 
+	OUTPUT(r)->end_part_td = csv_end_part_td; 
 	OUTPUT(r)->start_part_pages_across = csv_start_part_pages_across; 
 	OUTPUT(r)->end_part_pages_across = csv_end_part_pages_across; 
 	OUTPUT(r)->start_bold = csv_start_bold;

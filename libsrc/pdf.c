@@ -1183,8 +1183,12 @@ static void pdf_end_report_no_data(rlib *r, struct rlib_part *part, struct rlib_
 
 static void pdf_start_part(rlib *r, struct rlib_part *part) {}
 static void pdf_end_part(rlib *r, struct rlib_part *part) {}
-static void pdf_start_tr(rlib *r) {}
-static void pdf_end_tr(rlib *r) {}
+static void pdf_start_part_table(rlib *r, struct rlib_part *part) {}
+static void pdf_end_part_table(rlib *r, struct rlib_part *part) {}
+static void pdf_start_part_tr(rlib *r, struct rlib_part *part) {}
+static void pdf_end_part_tr(rlib *r, struct rlib_part *part) {}
+static void pdf_start_part_td(rlib *r, struct rlib_part *part) {}
+static void pdf_end_part_td(rlib *r, struct rlib_part *part) {}
 
 void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r) = g_malloc(sizeof(struct output_filter));
@@ -1255,8 +1259,12 @@ void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r)->end_output_section = pdf_end_output_section;
 	OUTPUT(r)->get_output = pdf_get_output;
 	OUTPUT(r)->get_output_length = pdf_get_output_length;
-	OUTPUT(r)->start_tr = pdf_start_tr;
-	OUTPUT(r)->end_tr = pdf_end_tr;
+	OUTPUT(r)->start_part_table = pdf_start_part_table;
+	OUTPUT(r)->end_part_table = pdf_end_part_table;
+	OUTPUT(r)->start_part_tr = pdf_start_part_tr;
+	OUTPUT(r)->end_part_tr = pdf_end_part_tr;
+	OUTPUT(r)->start_part_td = pdf_start_part_td;
+	OUTPUT(r)->end_part_td = pdf_end_part_td;
 	OUTPUT(r)->start_part_pages_across = pdf_start_part_pages_across;
 	OUTPUT(r)->end_part_pages_across = pdf_end_part_pages_across;
 	OUTPUT(r)->start_bold = pdf_start_bold;

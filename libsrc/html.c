@@ -91,18 +91,15 @@ struct _graph {
 struct _private {
 	struct rlib_rgb current_fg_color;
 	struct rlib_rgb current_bg_color;
+	GString *whole_report;
 	GSList **top;
 	GSList **bottom;
 
-	gchar *both;
-	gint did_bg;
 	gint bg_backwards;
 	gint do_bg;
-	gint length;
 	gint page_number;
 	gboolean is_bold;
 	gboolean is_italics;
-	gboolean did_doctype;
 	struct rlib_gd *rgd;
 	struct _graph graph;
 	char span_contents[MAXSTRLEN];
@@ -297,10 +294,10 @@ static void html_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, c
 	if(OUTPUT_PRIVATE(r)->is_italics == TRUE)
 		sprintf(font_style, "font-style: italic;");
 
-	sprintf(buf, "<span style=\"%s %s %s %s %s\">", foreground_color, background_color, font_weight, font_style, font_size);
+	sprintf(buf, "<pre><span style=\"%s %s %s %s %s\">", foreground_color, background_color, font_weight, font_style, font_size);
 	if(strcmp(buf, OUTPUT_PRIVATE(r)->span_contents) != 0) {
 		if(OUTPUT_PRIVATE(r)->span_contents[0] != 0)
-			print_text(r, "</span>", backwards);
+			print_text(r, "</span></pre>", backwards);
 		print_text(r, buf, backwards);
 		strcpy(OUTPUT_PRIVATE(r)->span_contents, buf);
 	}
@@ -333,12 +330,6 @@ struct rlib_rgb *color) {
 }
 
 static void html_end_draw_cell_background(rlib *r) {
-	if(OUTPUT_PRIVATE(r)->did_bg) {
-		OUTPUT(r)->set_bg_color(r, 0, 0, 0);
-		//print_text(r, "</span>", OUTPUT_PRIVATE(r)->bg_backwards);
-		OUTPUT_PRIVATE(r)->do_bg = FALSE;
-	}
-
 }
 
 static void html_start_boxurl(rlib *r, struct rlib_part *part, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall, gchar *url, gint backwards) {
@@ -353,8 +344,7 @@ static void html_end_boxurl(rlib *r, gint backwards) {
 
 static void html_end_line(rlib *r, int backwards) {
 	if(OUTPUT_PRIVATE(r)->span_contents[0] != 0)
-		print_text(r, "</span>", OUTPUT_PRIVATE(r)->bg_backwards);
-	print_text(r, "\n", backwards);
+		print_text(r, "</span></pre>\n", OUTPUT_PRIVATE(r)->bg_backwards);
 	OUTPUT_PRIVATE(r)->span_contents[0] = 0;
 	OUTPUT(r)->set_bg_color(r, 1, 1, 1);
 }
@@ -376,13 +366,13 @@ struct rlib_rgb *color, gfloat indent, gfloat length) {
 		if(indent > 0) {
 			for(i=0;i<(int)indent;i++)
 				strcpy(nbsp + (i*6), "&nbsp;");
-			sprintf(td, "<td style=\"height:%dpx; line-height:%dpx;\"><pre>%s</pre></td>", (int)how_tall, (int)how_tall, nbsp);
+			sprintf(td, "<td style=\"height:%dpx; line-height:%dpx;\">%s<</td>", (int)how_tall, (int)how_tall, nbsp);
 		}
 
-		print_text(r, "</pre><table cellspacing=\"0\" cellpadding=\"0\" style=\"width:100%;\"><tr>", backwards);
-		sprintf(buf,"</pre>%s<td style=\"height:%dpx; background-color:%s; width:100%%\"></td>",  td, (int)how_tall,color_str);
+		print_text(r, "<table cellspacing=\"0\" cellpadding=\"0\" style=\"width:100%;\"><tr>", backwards);
+		sprintf(buf,"%s<td style=\"height:%dpx; background-color:%s; width:100%%\"></td>",  td, (int)how_tall,color_str);
 		print_text(r, buf, backwards);
-		print_text(r, "</tr></table><pre>\n", backwards);
+		print_text(r, "</tr></table>\n", backwards);
 
 	}
 }
@@ -449,70 +439,67 @@ static void html_start_report_field_headers(rlib *r, struct rlib_part *part, str
 static void html_end_report_field_headers(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void html_start_report_field_details(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void html_end_report_field_details(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
-static void html_start_report_line(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
-static void html_end_report_line(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void html_start_report_header(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void html_end_report_header(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void html_start_report_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void html_end_report_footer(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 
 
-static void html_start_part(rlib *r, struct rlib_part *part) {
-	gchar buf[MAXSTRLEN];
+static void html_start_rlib_report(rlib *r) {
 	gchar *meta;
 	gchar *link;
 	gchar *suppress_head;
-	gint pages_across = part->pages_across;
 
-	OUTPUT_PRIVATE(r)->top = g_new0(GSList *, pages_across);
-	OUTPUT_PRIVATE(r)->bottom = g_new0(GSList *, pages_across);
+	OUTPUT_PRIVATE(r)->whole_report = g_string_new("");
 
 	link = g_hash_table_lookup(r->output_parameters, "trim_links");
 	if(link != NULL)
 		OUTPUT(r)->trim_links = TRUE;
 
-    	suppress_head = g_hash_table_lookup(r->output_parameters, "suppress_head");
-    	if(suppress_head == NULL) {
-			char *doctype = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n <html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">\n";
+   	suppress_head = g_hash_table_lookup(r->output_parameters, "suppress_head");
+   	if(suppress_head == NULL) {
+		char *doctype = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n <html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">\n";
+		int font_size = r->font_point;
+		if(font_size <= 0)
+			font_size = RLIB_DEFUALT_FONTPOINT;
+		
+		g_string_append(OUTPUT_PRIVATE(r)->whole_report, doctype);
+		g_string_append_printf(OUTPUT_PRIVATE(r)->whole_report, "<head>\n<style type=\"text/css\">\n");
 
-			if(OUTPUT_PRIVATE(r)->did_doctype == FALSE) {
-				int font_size = part->font_size;
-				if(font_size <= 0)
-					font_size = r->font_point;
-				if(font_size <= 0)
-					font_size = RLIB_DEFUALT_FONTPOINT;
 
-				print_text(r, doctype, FALSE);
-    			sprintf(buf, "<head>\n<style type=\"text/css\">\n");
-    			print_text(r, buf, FALSE);
-    			sprintf(buf, "pre { margin:0; padding:0; margin-top:0; margin-bottom:0; font-size:%dpt;}\n", part->font_size);
-    			print_text(r, buf, FALSE);
-    			sprintf(buf, "body { background-color: #ffffff;}\n");
-    			print_text(r, buf, FALSE);
-    			print_text(r, "div { position: absolute; left: 0; }\n", FALSE);
-    			print_text(r, "TABLE { border: 0; border-spacing: 0; padding: 0; width:100%; }\n", FALSE);
-    			print_text(r, "</style>\n", FALSE);
+		g_string_append_printf(OUTPUT_PRIVATE(r)->whole_report, "pre { margin:0; padding:0; margin-top:0; margin-bottom:0; font-size:%dpt;}\n", font_size);
+		g_string_append_printf(OUTPUT_PRIVATE(r)->whole_report, "body { background-color: #ffffff;}\n");
+		g_string_append(OUTPUT_PRIVATE(r)->whole_report, "div { position: absolute; left: 0; }\n");
+		g_string_append(OUTPUT_PRIVATE(r)->whole_report, "TABLE { border: 0; border-spacing: 0; padding: 0; width:100%; }\n");
+		g_string_append(OUTPUT_PRIVATE(r)->whole_report, "</style>\n");
+		meta = g_hash_table_lookup(r->output_parameters, "meta");
+		if(meta != NULL)
+			g_string_append(OUTPUT_PRIVATE(r)->whole_report, meta);
+		g_string_append(OUTPUT_PRIVATE(r)->whole_report, "<title>RLIB Report</title></head>\n");
+		g_string_append(OUTPUT_PRIVATE(r)->whole_report, "<body>\n");
 
-    			meta = g_hash_table_lookup(r->output_parameters, "meta");
-				if(meta != NULL)
-					print_text(r, meta, FALSE);
+   	}
+}
 
-				print_text(r, "<title>RLIB Report</title></head>\n", FALSE);
-				print_text(r, "<body><table style=\"width: 1%;\"><tbody><tr><td>\n", FALSE);
-				OUTPUT_PRIVATE(r)->did_doctype = TRUE;
-			}
 
-    	}
-    	print_text(r, "<table><tr><td valign=\"top\"><pre>", FALSE);
+static void html_start_part(rlib *r, struct rlib_part *part) {
+	if(OUTPUT_PRIVATE(r)->top == NULL) {
+		OUTPUT_PRIVATE(r)->top = g_new0(GSList *, part->pages_across);
+		OUTPUT_PRIVATE(r)->bottom = g_new0(GSList *, part->pages_across);
+	}
 }
 
 static void html_end_part(rlib *r, struct rlib_part *part) {
 	gint i;
-	gchar *old;
-	print_text(r, "\n", TRUE);
+
+	//g_string_append(OUTPUT_PRIVATE(r)->whole_report, "<table><!-- START PART-->\n");
+
 	for(i=0;i<part->pages_across;i++) {
 		GSList *tmp = OUTPUT_PRIVATE(r)->top[i];
 		GSList *list = NULL;
+
+//		g_string_append(OUTPUT_PRIVATE(r)->whole_report, "<!--START PAGE ACROSS--><td valign=\"top\">\n");
+
 		while(tmp != NULL) {
 			list = g_slist_prepend(list, tmp->data);
 			tmp = tmp->next;
@@ -526,15 +513,11 @@ static void html_end_part(rlib *r, struct rlib_part *part) {
 			} else {
 				str = ((GString *)packet->data)->str;
 			}
-			if(OUTPUT_PRIVATE(r)->both  == NULL) {
-				OUTPUT_PRIVATE(r)->both  = str;
-			} else {
-				old = OUTPUT_PRIVATE(r)->both ;
-				OUTPUT_PRIVATE(r)->both  = g_strconcat(OUTPUT_PRIVATE(r)->both , str, NULL);
-				g_free(old);
-				if(packet->type == TEXT)
-					g_string_free(packet->data, TRUE);
-			}
+			
+			g_string_append(OUTPUT_PRIVATE(r)->whole_report, str);
+			
+			if(packet->type == TEXT)
+				g_string_free(packet->data, TRUE);
 			g_free(packet);
 			list = list->next;
 		}
@@ -555,16 +538,12 @@ static void html_end_part(rlib *r, struct rlib_part *part) {
 			} else {
 				str = ((GString *)packet->data)->str;
 			}
-			if(OUTPUT_PRIVATE(r)->both  == NULL) {
-				OUTPUT_PRIVATE(r)->both  = str;
-			} else {
-				old = OUTPUT_PRIVATE(r)->both;
-				OUTPUT_PRIVATE(r)->both  = g_strconcat(OUTPUT_PRIVATE(r)->both , str, NULL);
-				g_free(old);
-				if(packet->type == TEXT)
-					g_string_free(packet->data, TRUE);
+			
+			g_string_append(OUTPUT_PRIVATE(r)->whole_report, str);
+			
+			if(packet->type == TEXT)
+				g_string_free(packet->data, TRUE);
 
-			}
 			g_free(packet);
 			list = list->next;
 		}
@@ -572,25 +551,21 @@ static void html_end_part(rlib *r, struct rlib_part *part) {
 		g_slist_free(list);
 		list = NULL;
 
-		old = OUTPUT_PRIVATE(r)->both ;
-		OUTPUT_PRIVATE(r)->both  = g_strconcat(OUTPUT_PRIVATE(r)->both , "</pre></td>\n\n\n\n", NULL);
-		if(i<part->pages_across-1)
-			OUTPUT_PRIVATE(r)->both  = g_strconcat(OUTPUT_PRIVATE(r)->both , "<td valign=\"top\"><pre>", NULL);
-		g_free(old);
+//		g_string_append(OUTPUT_PRIVATE(r)->whole_report, "</td><!--END PAGE ACROSS-->\n\n");
+
 
 	}
-	old = OUTPUT_PRIVATE(r)->both;
-	OUTPUT_PRIVATE(r)->both = g_strconcat(OUTPUT_PRIVATE(r)->both, "</tr></table>", NULL);
-	g_free(old);
-	OUTPUT_PRIVATE(r)->length = strlen(OUTPUT_PRIVATE(r)->both);
+
+	//g_string_append(OUTPUT_PRIVATE(r)->whole_report, "</table><!-- END PART-->");
+
 }
 
 static void html_spool_private(rlib *r) {
-	ENVIRONMENT(r)->rlib_write_output(OUTPUT_PRIVATE(r)->both, OUTPUT_PRIVATE(r)->length);
+	ENVIRONMENT(r)->rlib_write_output(OUTPUT_PRIVATE(r)->whole_report->str, OUTPUT_PRIVATE(r)->whole_report->len);
 }
 
 static void html_start_line(rlib *r, int backwards) {
-	OUTPUT_PRIVATE(r)->did_bg = FALSE;
+
 }
 
 static void html_end_page(rlib *r, struct rlib_part *part) {
@@ -598,27 +573,55 @@ static void html_end_page(rlib *r, struct rlib_part *part) {
 }
 
 static char *html_get_output(rlib *r) {
-	return OUTPUT_PRIVATE(r)->both;
+	return OUTPUT_PRIVATE(r)->whole_report->str;
 }
 
 static long html_get_output_length(rlib *r) {
-	return OUTPUT_PRIVATE(r)->length;
+	return OUTPUT_PRIVATE(r)->whole_report->len;
 }
 
 static void html_set_working_page(rlib *r, struct rlib_part *part, gint page) {
 	OUTPUT_PRIVATE(r)->page_number = page;
 }
 
-static void html_start_tr(rlib *r) {
-	print_text(r, "</pre><table><tr>", FALSE);
+static void html_start_part_table(rlib *r, struct rlib_part *part) {
+	print_text(r, "<table><!--start from part tr-->", FALSE);
 }
 
-static void html_end_tr(rlib *r) {
-	print_text(r, "</tr></table><pre>", FALSE);
+static void html_end_part_table(rlib *r, struct rlib_part *part) {
+	print_text(r, "</table><!--ended from part table-->", FALSE);
 }
+
+
+static void html_start_part_tr(rlib *r, struct rlib_part *part) {
+	print_text(r, "<tr><!--start from part tr-->", FALSE);
+}
+
+static void html_end_part_tr(rlib *r, struct rlib_part *part) {
+	print_text(r, "</tr><!--ended from part tr-->", FALSE);
+}
+
+static void html_start_part_td(rlib *r, struct rlib_part *part) {
+	print_text(r, "<td><!--started from part td-->", FALSE);
+}
+
+static void html_end_part_td(rlib *r, struct rlib_part *part) {
+	print_text(r, "</td><!--ended from part td-->", FALSE);
+}
+
+static void html_start_report_line(rlib *r, struct rlib_part *part, struct rlib_report *report) {
+//	print_text(r, "<div style=\"display: block;\">", FALSE);
+	
+}
+
+static void html_end_report_line(rlib *r, struct rlib_part *part, struct rlib_report *report) {
+//	print_text(r, "</div>", FALSE);	
+}
+
+
 
 static void html_start_part_pages_across(rlib *r, struct rlib_part *part, gfloat left_margin, gfloat top_margin, int width, int height, int border_width, struct rlib_rgb *color) {
-	char buf[150];
+/*	char buf[150];
 	char border_color[150];
 
 	if(color != NULL)
@@ -627,15 +630,19 @@ static void html_start_part_pages_across(rlib *r, struct rlib_part *part, gfloat
 		border_color[0] = 0;
 
 	if(border_width > 0) {
-		sprintf(buf, "<td valign=\"top\" style=\"border:solid %dpx %s; width:%d%%; \"><pre>", border_width, border_color, width);
+		sprintf(buf, "<td valign=\"top\" style=\"border:solid %dpx %s; width:%d%%; \">", border_width, border_color, width);
 	}
 	else
-		sprintf(buf, "<td style=\"width:%d%%;\" valign=\"top\"><pre>", width);
-	print_text(r, buf, FALSE);
+		sprintf(buf, "<td style=\"width:%d%%;\" valign=\"top\">", width);
+	print_text(r, buf, FALSE);*/
+	print_text(r, "<!--start pages across-->", FALSE);
+
 }
 
+
+//SOMETHING NEEDS TO HAPPEN HERE.. probably
 static void html_end_part_pages_across(rlib *r, struct rlib_part *part) {
-	print_text(r, "</pre></td>", FALSE);
+	print_text(r, "<!--end pages across-->", FALSE);
 }
 
 
@@ -690,7 +697,7 @@ static void html_graph_start(rlib *r, gfloat left, gfloat top, gfloat width, gfl
 
 	OUTPUT_PRIVATE(r)->rgd = rlib_gd_new(width, height,  g_hash_table_lookup(r->output_parameters, "html_image_directory"));
 
-	sprintf(buf, "</pre><img src=\"%s\" width=\"%f\" height=\"%f\" alt=\"graph\"/><pre>", OUTPUT_PRIVATE(r)->rgd->file_name, width, height);
+	sprintf(buf, "<img src=\"%s\" width=\"%f\" height=\"%f\" alt=\"graph\"/>", OUTPUT_PRIVATE(r)->rgd->file_name, width, height);
 	print_text(r, buf, FALSE);
 	graph->width = (gint)width - 1;
 	graph->height = (gint)height - 1;
@@ -1336,21 +1343,10 @@ static void html_graph_finalize(rlib *r) {
 }
 
 static void html_init_end_page(rlib *r) {}
-static void html_start_rlib_report(rlib *r) {}
 static void html_end_rlib_report(rlib *r) {}
 
 static void html_finalize_private(rlib *r) {
-	char *old = OUTPUT_PRIVATE(r)->both;
-
-	if (old) {
-		char *new = g_strconcat(old, "</td></tr></tbody></table></body></html>", NULL);
-
-		OUTPUT_PRIVATE(r)->both = new;
-		OUTPUT_PRIVATE(r)->length = strlen(new);
-		g_free(old);
-	} else {
-		OUTPUT_PRIVATE(r)->length = 0;
-	}
+	g_string_append(OUTPUT_PRIVATE(r)->whole_report, "</body></html>");
 }
 
 static void html_start_output_section(rlib *r, struct rlib_report_output_array *roa) {}
@@ -1372,7 +1368,7 @@ static void html_start_report_no_data(rlib *r, struct rlib_part *part, struct rl
 static void html_end_report_no_data(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 
 static gint html_free(rlib *r) {
-	g_free(OUTPUT_PRIVATE(r)->both);
+	g_string_free(OUTPUT_PRIVATE(r)->whole_report, TRUE);
 	g_free(OUTPUT_PRIVATE(r));
 	g_free(OUTPUT(r));
 	return 0;
@@ -1385,8 +1381,7 @@ void rlib_html_new_output_filter(rlib *r) {
 
 	OUTPUT_PRIVATE(r)->do_bg = FALSE;
 	OUTPUT_PRIVATE(r)->page_number = 0;
-	OUTPUT_PRIVATE(r)->both = NULL;
-	OUTPUT_PRIVATE(r)->length = 0;
+	OUTPUT_PRIVATE(r)->whole_report = NULL;
 	OUTPUT(r)->do_align = TRUE;
 	OUTPUT(r)->do_breaks = TRUE;
 	OUTPUT(r)->do_grouptext = FALSE;
@@ -1452,8 +1447,12 @@ void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT(r)->get_output_length = html_get_output_length;
 	OUTPUT(r)->set_working_page = html_set_working_page;
 	OUTPUT(r)->set_raw_page = html_set_raw_page;
-	OUTPUT(r)->start_tr = html_start_tr;
-	OUTPUT(r)->end_tr = html_end_tr;
+	OUTPUT(r)->start_part_table = html_start_part_table;
+	OUTPUT(r)->end_part_table = html_end_part_table;
+	OUTPUT(r)->start_part_tr = html_start_part_tr;
+	OUTPUT(r)->end_part_tr = html_end_part_tr;
+	OUTPUT(r)->start_part_td = html_start_part_td;
+	OUTPUT(r)->end_part_td = html_end_part_td;
 	OUTPUT(r)->start_part_pages_across = html_start_part_pages_across;
 	OUTPUT(r)->end_part_pages_across = html_end_part_pages_across;
 	OUTPUT(r)->start_bold = html_start_bold;

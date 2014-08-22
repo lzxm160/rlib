@@ -522,9 +522,11 @@ void rlib_layout_part_td(rlib *r, struct rlib_part *part, GSList *part_deviation
 			border_color[0] = 0;
 
 		rlib_parsecolor(&bgcolor, border_color);
+
 		
 		for(i=0;i<part->pages_across;i++) {
 			OUTPUT(r)->set_working_page(r, part, i);
+			OUTPUT(r)->start_part_td(r, part);
 			OUTPUT(r)->start_part_pages_across(r, part, running_left_margin+part->left_margin, rlib_layout_get_next_line_by_font_point(r, part, running_top_margin+position_top+part->position_top[0], 0), width,  height, border_width, border_color[0] == 0 ? NULL : &bgcolor);
 		}
 		
@@ -551,8 +553,11 @@ void rlib_layout_part_td(rlib *r, struct rlib_part *part, GSList *part_deviation
 		running_left_margin += (((gfloat)width/100) * paper_width);
 		for(i=0;i<part->pages_across;i++) {
 			OUTPUT(r)->set_working_page(r, part, i);
+			OUTPUT(r)->end_part_td(r, part);
 			OUTPUT(r)->end_part_pages_across(r, part);
 		}
+
+
 	}	
 }
 
@@ -563,12 +568,23 @@ static void rlib_layout_part_tr(rlib *r, struct rlib_part *part) {
 	GSList *element;
 	memset(&rrp, 0, sizeof(rrp));
 
+
+	for(i=0;i<part->pages_across;i++) {
+		OUTPUT(r)->set_working_page(r, part, i);
+		OUTPUT(r)->start_part_table(r, part);
+	}
+	
 	for(element = part->part_rows;element != NULL;element = g_slist_next(element)) {
 		struct rlib_part_tr *tr = element->data;
 		gfloat save_position_top = 0;
 		long save_page_number;
 		gint newpage; 
-
+		
+		for(i=0;i<part->pages_across;i++) {
+			OUTPUT(r)->set_working_page(r, part, i);
+			OUTPUT(r)->start_part_tr(r, part);
+		}
+		
 		if(rlib_execute_as_boolean(r, tr->newpage_code, &newpage)) {
 			if(newpage && OUTPUT(r)->paginate) {
 				OUTPUT(r)->end_page(r, part);
@@ -577,10 +593,6 @@ static void rlib_layout_part_tr(rlib *r, struct rlib_part *part) {
 			}
 		}
 		
-		for(i=0;i<part->pages_across;i++) {
-			OUTPUT(r)->start_tr(r);
-			OUTPUT(r)->set_working_page(r, part, i);
-		}
 		
 		save_page_number = r->current_page_number;
 		
@@ -597,10 +609,15 @@ static void rlib_layout_part_tr(rlib *r, struct rlib_part *part) {
 
 		for(i=0;i<part->pages_across;i++) {
 			OUTPUT(r)->set_working_page(r, part, i);
-			OUTPUT(r)->end_tr(r);
+			OUTPUT(r)->end_part_tr(r, part);
 		}
 		
 	}	
+
+	for(i=0;i<part->pages_across;i++) {
+		OUTPUT(r)->set_working_page(r, part, i);
+		OUTPUT(r)->end_part_table(r, part);
+	}
 }
 
 /*

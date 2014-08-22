@@ -124,21 +124,35 @@ static void json_end_report_footer(rlib *r, struct rlib_part *part, struct rlib_
 }
 
 
-static void json_start_tr(rlib *r) {
+static void json_start_part_tr(rlib *r, struct rlib_part *part) {
 	printf("<tr>\n");
 }
 
-static void json_end_tr(rlib *r) {
+static void json_end_part_tr(rlib *r, struct rlib_part *part) {
 	printf("</tr>\n");
 }
 
-static void json_start_part_pages_across(rlib *r, struct rlib_part *part, gfloat left_margin, gfloat top_margin, int width, int height, int border_width, struct rlib_rgb *color) {
-	printf("<td>\n");
+static void json_start_part_table(rlib *r, struct rlib_part *part) {
+	printf("<table>\n");
 }
 
-static void json_end_part_pages_across(rlib *r, struct rlib_part *part) {
-	printf("</td>\n");
+static void json_end_part_table(rlib *r, struct rlib_part *part) {
+	printf("</table>\n");
 }
+
+
+static void json_start_part_td(rlib *r, struct rlib_part *part) {
+	printf("<tr>\n");
+}
+
+static void json_end_part_td(rlib *r, struct rlib_part *part) {
+	printf("</tr>\n");
+}
+
+
+static void json_start_part_pages_across(rlib *r, struct rlib_part *part, gfloat left_margin, gfloat top_margin, int width, int height, int border_width, struct rlib_rgb *color) {}
+
+static void json_end_part_pages_across(rlib *r, struct rlib_part *part) {}
 
 static void json_end_part(rlib *r, struct rlib_part *part) {
 	printf("</part>\n");
@@ -358,8 +372,12 @@ void rlib_json_new_output_filter(rlib *r) {
 	OUTPUT(r)->get_output_length = json_get_output_length;
 	OUTPUT(r)->set_working_page = json_set_working_page;  
 	OUTPUT(r)->set_raw_page = json_set_raw_page; 
-	OUTPUT(r)->start_tr = json_start_tr; 
-	OUTPUT(r)->end_tr = json_end_tr; 
+	OUTPUT(r)->start_part_tr = json_start_part_tr; 
+	OUTPUT(r)->end_part_tr = json_end_part_tr; 
+	OUTPUT(r)->start_part_table = json_start_part_table; 
+	OUTPUT(r)->end_part_table = json_end_part_table; 
+	OUTPUT(r)->start_part_td = json_start_part_td; 
+	OUTPUT(r)->end_part_td = json_end_part_td; 
 	OUTPUT(r)->start_part_pages_across = json_start_part_pages_across; 
 	OUTPUT(r)->end_part_pages_across = json_end_part_pages_across; 
 	OUTPUT(r)->start_bold = json_start_bold;
