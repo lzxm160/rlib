@@ -14,7 +14,7 @@
 		<Output>
 			<Line/>
 			<Line fontSize="12">
-				<literal>Test Report</literal>
+				<literal>Test Report FROM THE PART REPORT HEADER</literal>
 			</Line>
 			<Line fontsize="4"/>
 			<HorizontalLine size="4" bgcolor="'white'"/>

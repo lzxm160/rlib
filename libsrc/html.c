@@ -102,7 +102,6 @@ struct _private {
 	gboolean is_italics;
 	struct rlib_gd *rgd;
 	struct _graph graph;
-	char span_contents[MAXSTRLEN];
 };
 
 static void html_graph_get_x_label_width(rlib *r, gfloat *width) {
@@ -187,121 +186,31 @@ static gint convert_font_point(gint point) {
 }
 
 
-static void html_escape(rlib *r, const gchar *text, gint backwards) {
-	gchar htmltext[MAXSTRLEN];
-	gint i, len, htmllen;
-	gchar *escape, *otext;
 
-	len = strlen(text);
-	escape = htmltext;
-	*escape = '\0';
-	otext = (gchar *)text;
-	htmllen = 0;
-	for(i = 0; i < len;) {
-		switch(*otext) {
-			case '<':
-				if(htmllen < MAXSTRLEN - 6) {
-					*(escape++) = '&';
-					*(escape++) = 'l';
-					*(escape++) = 't';
-					*(escape++) = ';';
-					*escape = '\0';
-					htmllen += 4;
-				}
-				otext++;
-				i++;
-				break;
-			case '>':
-				if(htmllen < MAXSTRLEN - 6) {
-					*(escape++) = '&';
-					*(escape++) = 'g';
-					*(escape++) = 't';
-					*(escape++) = ';';
-					*escape = '\0';
-					htmllen += 4;
-				}
-				otext++;
-				i++;
-				break;
-			case '&':
-				if(htmllen < MAXSTRLEN - 7) {
-					*(escape++) = '&';
-					*(escape++) = 'a';
-					*(escape++) = 'm';
-					*(escape++) = 'p';
-					*(escape++) = ';';
-					*escape = '\0';
-					htmllen += 5;
-				}
-				otext++;
-				i++;
-				break;
+static void html_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, struct rlib_line_extra_data *extra_data) {
+	GString *string = g_string_new("");
 
-			default:
-				if(htmllen < MAXSTRLEN - 2) {
-					*(escape++) = *otext;
-					htmllen++;
-					*escape = '\0';
-				}
-				otext++;
-				i++;
-		}
-	}
-	print_text(r, htmltext, backwards);
-}
+	g_string_append_printf(string, "<span data-col=\"%d\" data-width=\"%d\" style=\"font-size: %dpx; ", extra_data->col, extra_data->width, convert_font_point(extra_data->font_point));
 
+	//font_point=\"%d\" bold=\"%d\" italics=\"%d\" ", extra_data->col, extra_data->width, extra_data->font_point, extra_data->is_bold, extra_data->is_italics);
+	if(extra_data->found_bgcolor) 
+		g_string_append_printf(string, "background-color: #%02x%02x%02x; ", (gint)(extra_data->bgcolor.r*0xFF), (gint)(extra_data->bgcolor.g*0xFF), (gint)(extra_data->bgcolor.b*0xFF));
+	if(extra_data->found_color) 
+		g_string_append_printf(string, "color:#%02x%02x%02x ", (gint)(extra_data->color.r*0xFF), (gint)(extra_data->color.g*0xFF), (gint)(extra_data->color.b*0xFF));
+	if(extra_data->is_bold == TRUE)
+		g_string_append(string, "font-weight: bold;");
+	if(extra_data->is_italics == TRUE)
+		g_string_append(string, "font-style: italic;");
 
-static void html_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, struct rlib_line_extra_data *exta_data) {
-	gchar font_size[MAXSTRLEN];
-	gchar foreground_color[MAXSTRLEN];
-	gchar background_color[MAXSTRLEN];
-	gchar font_weight[MAXSTRLEN];
-	gchar font_style[MAXSTRLEN];
-	gchar buf[MAXSTRLEN];
+		
+	g_string_append(string,"\">");
+	gchar *escaped = g_markup_escape_text(text, strlen(text));
+	g_string_append(string, escaped);
+	g_string_append(string, "</span>");
+	g_free(escaped);
 
-	font_size[0] = 0;
-	foreground_color[0] = 0;
-	background_color[0] = 0;
-	font_weight[0] = 0;
-	font_style[0] = 0;
-
-	OUTPUT_PRIVATE(r)->bg_backwards = backwards;
-
-
-	if(OUTPUT_PRIVATE(r)->current_bg_color.r >= 0 && OUTPUT_PRIVATE(r)->current_bg_color.g >= 0
-	&& OUTPUT_PRIVATE(r)->current_bg_color.b >= 0 && !((OUTPUT_PRIVATE(r)->current_bg_color.r == 1.0
-	&& OUTPUT_PRIVATE(r)->current_bg_color.g == 1.0 && OUTPUT_PRIVATE(r)->current_bg_color.b == 1.0)) &&
-	OUTPUT_PRIVATE(r)->do_bg) {
-		gchar color[40];
-		get_html_color(color, &OUTPUT_PRIVATE(r)->current_bg_color);
-		sprintf(background_color, "background-color: %s;", color);
-	}
-
-	if(r->font_point != r->current_font_point) {
-		sprintf(font_size, "font-size:%dpx;", convert_font_point(r->current_font_point));
-	}
-
-	if(OUTPUT_PRIVATE(r)->current_fg_color.r >= 0 && OUTPUT_PRIVATE(r)->current_fg_color.g >= 0
-	&& OUTPUT_PRIVATE(r)->current_fg_color.b >= 0 && !(OUTPUT_PRIVATE(r)->current_fg_color.r == 0
-	&& OUTPUT_PRIVATE(r)->current_fg_color.g == 0 && OUTPUT_PRIVATE(r)->current_fg_color.b == 0)) {
-		gchar color[40];
-		get_html_color(color, &OUTPUT_PRIVATE(r)->current_fg_color);
-		sprintf(foreground_color, "color:%s;", color);
-	}
-
-	if(OUTPUT_PRIVATE(r)->is_bold == TRUE)
-		sprintf(font_weight, "font-weight: bold;");
-	if(OUTPUT_PRIVATE(r)->is_italics == TRUE)
-		sprintf(font_style, "font-style: italic;");
-
-	sprintf(buf, "<pre><span style=\"%s %s %s %s %s\">", foreground_color, background_color, font_weight, font_style, font_size);
-	if(strcmp(buf, OUTPUT_PRIVATE(r)->span_contents) != 0) {
-		if(OUTPUT_PRIVATE(r)->span_contents[0] != 0)
-			print_text(r, "</span></pre>", backwards);
-		print_text(r, buf, backwards);
-		strcpy(OUTPUT_PRIVATE(r)->span_contents, buf);
-	}
-	html_escape(r, text, backwards);
+	print_text(r, string->str, backwards);
+	g_string_free(string, TRUE);
 }
 
 
@@ -342,12 +251,6 @@ static void html_end_boxurl(rlib *r, gint backwards) {
 	print_text(r, "</a>", backwards);
 }
 
-static void html_end_line(rlib *r, int backwards) {
-	if(OUTPUT_PRIVATE(r)->span_contents[0] != 0)
-		print_text(r, "</span></pre>\n", OUTPUT_PRIVATE(r)->bg_backwards);
-	OUTPUT_PRIVATE(r)->span_contents[0] = 0;
-	OUTPUT(r)->set_bg_color(r, 1, 1, 1);
-}
 
 
 static void html_hr(rlib *r, gint backwards, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall,
@@ -564,9 +467,6 @@ static void html_spool_private(rlib *r) {
 	ENVIRONMENT(r)->rlib_write_output(OUTPUT_PRIVATE(r)->whole_report->str, OUTPUT_PRIVATE(r)->whole_report->len);
 }
 
-static void html_start_line(rlib *r, int backwards) {
-
-}
 
 static void html_end_page(rlib *r, struct rlib_part *part) {
 	r->current_line_number = 1;
@@ -610,12 +510,21 @@ static void html_end_part_td(rlib *r, struct rlib_part *part) {
 }
 
 static void html_start_report_line(rlib *r, struct rlib_part *part, struct rlib_report *report) {
-//	print_text(r, "<div style=\"display: block;\">", FALSE);
+	
 	
 }
 
 static void html_end_report_line(rlib *r, struct rlib_part *part, struct rlib_report *report) {
-//	print_text(r, "</div>", FALSE);	
+	
+}
+
+
+static void html_start_line(rlib *r, int backwards) {
+	print_text(r, "<pre>",  backwards);
+}
+
+static void html_end_line(rlib *r, int backwards) {
+	print_text(r, "</pre>\n", backwards);	
 }
 
 
