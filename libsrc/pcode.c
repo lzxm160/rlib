@@ -352,27 +352,27 @@ struct rlib_pcode_operand * rlib_new_operand(rlib *r, struct rlib_part *part, st
 		o->type = OPERAND_NUMBER;
 		*newnum = FALSE  * RLIB_DECIMAL_PRECISION;
 		o->value = newnum;
-	} else if (!g_strcasecmp(str, "left")) {
+	} else if (!g_ascii_strcasecmp(str, "left")) {
 		gint64 *newnum = g_malloc(sizeof(gint64));
 		o->type = OPERAND_NUMBER;
 		*newnum = RLIB_ALIGN_LEFT * RLIB_DECIMAL_PRECISION;
 		o->value = newnum;
-	} else if (!g_strcasecmp(str, "right")) {
+	} else if (!g_ascii_strcasecmp(str, "right")) {
 		gint64 *newnum = g_malloc(sizeof(gint64));
 		o->type = OPERAND_NUMBER;
 		*newnum = RLIB_ALIGN_RIGHT * RLIB_DECIMAL_PRECISION;
 		o->value = newnum;
-	} else if (!g_strcasecmp(str, "center")) {
+	} else if (!g_ascii_strcasecmp(str, "center")) {
 		gint64 *newnum = g_malloc(sizeof(gint64));
 		o->type = OPERAND_NUMBER;
 		*newnum = RLIB_ALIGN_CENTER * RLIB_DECIMAL_PRECISION;
 		o->value = newnum;
-	} else if (!g_strcasecmp(str, "landscape")) {
+	} else if (!g_ascii_strcasecmp(str, "landscape")) {
 		gint64 *newnum = g_malloc(sizeof(gint64));
 		o->type = OPERAND_NUMBER;
 		*newnum = RLIB_ORIENTATION_LANDSCAPE * RLIB_DECIMAL_PRECISION;
 		o->value = newnum;
-	} else if (!g_strcasecmp(str, "portrait")) {
+	} else if (!g_ascii_strcasecmp(str, "portrait")) {
 		gint64 *newnum = g_malloc(sizeof(gint64));
 		o->type = OPERAND_NUMBER;
 		*newnum = RLIB_ORIENTATION_PORTRAIT * RLIB_DECIMAL_PRECISION;
@@ -1057,7 +1057,7 @@ gint rlib_execute_as_int_inlist(rlib *r, struct rlib_pcode *pcode, gint *result,
 			gint i;
 			gchar * str = RLIB_VALUE_GET_AS_STRING((&val));
 			for (i = 0; list[i]; ++i) {
-				if (g_strcasecmp(str, list[i])) {
+				if (g_ascii_strcasecmp(str, list[i])) {
 					*result = i;
 					isok = TRUE;
 					break;

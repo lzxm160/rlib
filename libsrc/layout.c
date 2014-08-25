@@ -1196,8 +1196,11 @@ static gint rlib_layout_report_outputs_across_pages(rlib *r, struct rlib_part *p
 	for(; report_outputs != NULL; report_outputs=report_outputs->next) {
 		roa = report_outputs->data;
 		page = roa->page;
-		OUTPUT(r)->start_output_section(r, roa);
-
+		for(i=0;i<part->pages_across;i++) {
+			OUTPUT(r)->set_working_page(r, part, i);
+			OUTPUT(r)->start_output_section(r, roa);
+		}
+		
 		if(page >= 1) {
 			OUTPUT(r)->set_working_page(r, part, roa->page-1);
 			output_count += rlib_layout_report_output_array(r, part, report, roa, backwards, roa->page, page_header_layout);
@@ -1214,7 +1217,10 @@ static gint rlib_layout_report_outputs_across_pages(rlib *r, struct rlib_part *p
 				}			
 			}
 		}
-		OUTPUT(r)->end_output_section(r, roa);
+		for(i=0;i<part->pages_across;i++) {
+			OUTPUT(r)->set_working_page(r, part, i);
+			OUTPUT(r)->end_output_section(r, roa);
+		}
 	}
 	return output_count;
 }
@@ -1229,7 +1235,8 @@ gboolean page_header_layout) {
 gint rlib_layout_report_output_with_break_headers(rlib *r, struct rlib_part *part, struct rlib_report *report, gboolean page_header_layout) {
 	struct rlib_element *e;
 	gint output_count = 0;
-
+	gint i;
+	
 	if(report->breaks != NULL) {
 		for(e = report->breaks; e != NULL; e=e->next) {
 			struct rlib_report_break *rb = e->data;
@@ -1253,10 +1260,17 @@ gint rlib_layout_report_output_with_break_headers(rlib *r, struct rlib_part *par
 			}
 		}		
 	}
-	OUTPUT(r)->start_report_field_details(r, part, report);	
-	rlib_layout_report_outputs_across_pages(r, part, report, report->detail.fields, FALSE, FALSE);
-	OUTPUT(r)->end_report_field_details(r, part, report);
+	for(i=0;i<report->pages_across;i++) {
+		OUTPUT(r)->set_working_page(r, part, i);
+		OUTPUT(r)->start_report_field_details(r, part, report);	
+	}
 
+	rlib_layout_report_outputs_across_pages(r, part, report, report->detail.fields, FALSE, FALSE);
+
+	for(i=0;i<report->pages_across;i++) {
+		OUTPUT(r)->set_working_page(r, part, i);
+		OUTPUT(r)->end_report_field_details(r, part, report);
+	}
 	return output_count;
 }
 
@@ -1282,9 +1296,19 @@ void rlib_layout_report_footer(rlib *r, struct rlib_part *part, struct rlib_repo
 
 
 void rlib_layout_init_report_page(rlib *r, struct rlib_part *part, struct rlib_report *report) {
-	OUTPUT(r)->start_report_field_headers(r, part, report);
+	int i;
+	
+	for(i=0;i<report->pages_across;i++) {
+		OUTPUT(r)->set_working_page(r, part, i);
+		OUTPUT(r)->start_report_field_headers(r, part, report);
+	}
+
 	rlib_layout_report_output(r, part, report, report->detail.headers, FALSE, FALSE);
-	OUTPUT(r)->end_report_field_headers(r, part, report);
+
+	for(i=0;i<report->pages_across;i++) {
+		OUTPUT(r)->set_working_page(r, part, i);
+		OUTPUT(r)->end_report_field_headers(r, part, report);
+	}
 }
 
 gint rlib_layout_end_page(rlib *r, struct rlib_part *part, struct rlib_report *report, gboolean normal) {
@@ -1333,10 +1357,18 @@ void rlib_layout_init_part_page(rlib *r, struct rlib_part *part, gboolean first,
 	for(i=0; i<part->pages_across; i++)
 		part->position_bottom[i] -= part->bottom_size[i];
 
-	OUTPUT(r)->start_part_page_footer(r, part);
+	for(i=0; i<part->pages_across; i++) {
+		OUTPUT(r)->set_working_page(r, part, i);
+		OUTPUT(r)->start_part_page_footer(r, part);
+	}
+	
 	rlib_layout_report_output(r, part, NULL, part->page_footer, TRUE, FALSE);
-	OUTPUT(r)->end_part_page_footer(r, part);
-
+	
+	for(i=0; i<part->pages_across; i++) {
+		OUTPUT(r)->set_working_page(r, part, i);
+		OUTPUT(r)->end_part_page_footer(r, part);
+	}
+	
 	for(i=0; i<part->pages_across; i++) {
 		part->position_bottom[i] -= part->bottom_size[i];
 
@@ -1344,16 +1376,33 @@ void rlib_layout_init_part_page(rlib *r, struct rlib_part *part, gboolean first,
 
 	if(normal) {
 		if(first) {
-			OUTPUT(r)->start_part_header(r, part);
+			//bobd
+			for(i=0; i<part->pages_across; i++) {
+				OUTPUT(r)->set_working_page(r, part, i);
+				OUTPUT(r)->start_part_header(r, part);
+			}
+
 			rlib_layout_report_output(r, part, NULL, part->report_header, FALSE, TRUE);
-			OUTPUT(r)->end_part_header(r, part);
+
+			for(i=0; i<part->pages_across; i++) {
+				OUTPUT(r)->set_working_page(r, part, i);
+				OUTPUT(r)->end_part_header(r, part);
+			}
 		}
 		if(r->current_page_number == 1 && part->suppress_page_header_first_page == TRUE) {
 			// We don't print the page header in this case
 		} else {
-			OUTPUT(r)->start_part_page_header(r, part);
+			for(i=0; i<part->pages_across; i++) {
+				OUTPUT(r)->set_working_page(r, part, i);
+				OUTPUT(r)->start_part_page_header(r, part);
+			}
+
 			rlib_layout_report_output(r, part, NULL, part->page_header, FALSE, TRUE);
-			OUTPUT(r)->end_part_page_header(r, part);
+
+			for(i=0; i<part->pages_across; i++) {
+				OUTPUT(r)->set_working_page(r, part, i);
+				OUTPUT(r)->end_part_page_header(r, part);
+			}
 		}
 	}
 

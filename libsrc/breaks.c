@@ -29,7 +29,8 @@
 static void rlib_print_break_header_output(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb, struct rlib_element *e, gint backwards) {
 	gint blank = TRUE;
 	gint suppress = FALSE;
-
+	gint i;
+	
 	if(!OUTPUT(r)->do_breaks)
 		return;
 		
@@ -47,9 +48,17 @@ static void rlib_print_break_header_output(rlib *r, struct rlib_part *part, stru
 	if(!suppress || (suppress && !blank)) {
 		rb->didheader = TRUE;
 		if(e != NULL) {
-			OUTPUT(r)->start_report_break_header(r, part, report, rb);
+			for(i=0;i<report->pages_across;i++) {
+				OUTPUT(r)->set_working_page(r, part, i);
+				OUTPUT(r)->start_report_break_header(r, part, report, rb);
+			}
+
 			rlib_layout_report_output(r, part, report, e, backwards, TRUE);
-			OUTPUT(r)->end_report_break_header(r, part, report, rb);
+
+			for(i=0;i<report->pages_across;i++) {
+				OUTPUT(r)->set_working_page(r, part, i);
+				OUTPUT(r)->end_report_break_header(r, part, report, rb);
+			}
 		}
 	} else {
 		rb->didheader = FALSE;
@@ -57,12 +66,21 @@ static void rlib_print_break_header_output(rlib *r, struct rlib_part *part, stru
 }
 
 static void rlib_print_break_footer_output(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb, struct rlib_element *e, gint backwards) {
+	gint i;
+	
 	if(!OUTPUT(r)->do_breaks)
 		return;
 	if(rb->didheader) {
-		OUTPUT(r)->start_report_break_footer(r, part, report, rb);
+		for(i=0;i<report->pages_across;i++) {
+			OUTPUT(r)->set_working_page(r, part, i);
+			OUTPUT(r)->start_report_break_footer(r, part, report, rb);
+		}
 		rlib_layout_report_output(r, part, report, e, backwards, TRUE);
-		OUTPUT(r)->end_report_break_footer(r, part, report, rb);
+	
+		for(i=0;i<report->pages_across;i++) {
+			OUTPUT(r)->set_working_page(r, part, i);
+			OUTPUT(r)->end_report_break_footer(r, part, report, rb);
+		}
 	}
 }
 

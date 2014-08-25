@@ -84,7 +84,7 @@
 #define RLIB_FORMAT_HTML	2
 #define RLIB_FORMAT_TXT 	3
 #define RLIB_FORMAT_CSV 	4
-#define RLIB_FORMAT_JSON 	5
+#define RLIB_FORMAT_XML 	5
 
 #define RLIB_ORIENTATION_PORTRAIT	0
 #define RLIB_ORIENTATION_LANDSCAPE	1
@@ -1134,8 +1134,8 @@ void rlib_html_new_output_filter(rlib *r);
 /***** PROTOTYPES: txt.c ******************************************************/
 void rlib_txt_new_output_filter(rlib *r);
 
-/***** PROTOTYPES: json.c ******************************************************/
-void rlib_json_new_output_filter(rlib *r);
+/***** PROTOTYPES: xml.c ******************************************************/
+void rlib_xml_new_output_filter(rlib *r);
 
 /***** PROTOTYPES: csv.c ******************************************************/
 void rlib_csv_new_output_filter(rlib *r);

@@ -89,17 +89,11 @@ struct _graph {
 };
 
 struct _private {
-	struct rlib_rgb current_fg_color;
-	struct rlib_rgb current_bg_color;
 	GString *whole_report;
 	GSList **top;
 	GSList **bottom;
 
-	gint bg_backwards;
-	gint do_bg;
 	gint page_number;
-	gboolean is_bold;
-	gboolean is_italics;
 	struct rlib_gd *rgd;
 	struct _graph graph;
 };
@@ -181,18 +175,12 @@ static gchar *get_html_color(gchar *str, struct rlib_rgb *color) {
 	return str;
 }
 
-static gint convert_font_point(gint point) {
-	return point;
-}
-
-
 
 static void html_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, struct rlib_line_extra_data *extra_data) {
 	GString *string = g_string_new("");
 
-	g_string_append_printf(string, "<span data-col=\"%d\" data-width=\"%d\" style=\"font-size: %dpx; ", extra_data->col, extra_data->width, convert_font_point(extra_data->font_point));
+	g_string_append_printf(string, "<span data-col=\"%d\" data-width=\"%d\" style=\"font-size: %dpx; ", extra_data->col, extra_data->width, extra_data->font_point);
 
-	//font_point=\"%d\" bold=\"%d\" italics=\"%d\" ", extra_data->col, extra_data->width, extra_data->font_point, extra_data->is_bold, extra_data->is_italics);
 	if(extra_data->found_bgcolor) 
 		g_string_append_printf(string, "background-color: #%02x%02x%02x; ", (gint)(extra_data->bgcolor.r*0xFF), (gint)(extra_data->bgcolor.g*0xFF), (gint)(extra_data->bgcolor.b*0xFF));
 	if(extra_data->found_color) 
@@ -214,28 +202,13 @@ static void html_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, c
 }
 
 
-static void html_set_fg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {
-	if(OUTPUT_PRIVATE(r)->current_fg_color.r != red || OUTPUT_PRIVATE(r)->current_fg_color.g != green
-	|| OUTPUT_PRIVATE(r)->current_fg_color.b != blue) {
-		OUTPUT_PRIVATE(r)->current_fg_color.r = red;
-		OUTPUT_PRIVATE(r)->current_fg_color.g = green;
-		OUTPUT_PRIVATE(r)->current_fg_color.b = blue;
-	}
-}
+static void html_set_fg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {}
 
-static void html_set_bg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {
-	if(OUTPUT_PRIVATE(r)->current_bg_color.r != red || OUTPUT_PRIVATE(r)->current_bg_color.g != green
-	|| OUTPUT_PRIVATE(r)->current_bg_color.b != blue) {
-		OUTPUT_PRIVATE(r)->current_bg_color.r = red;
-		OUTPUT_PRIVATE(r)->current_bg_color.g = green;
-		OUTPUT_PRIVATE(r)->current_bg_color.b = blue;
-	}
-}
+static void html_set_bg_color(rlib *r, gfloat red, gfloat green, gfloat blue) {}
 
 static void html_start_draw_cell_background(rlib *r, gfloat left_origin, gfloat bottom_origin, gfloat how_long, gfloat how_tall,
 struct rlib_rgb *color) {
 	OUTPUT(r)->set_bg_color(r, color->r, color->g, color->b);
-	OUTPUT_PRIVATE(r)->do_bg = TRUE;
 }
 
 static void html_end_draw_cell_background(rlib *r) {
@@ -485,7 +458,7 @@ static void html_set_working_page(rlib *r, struct rlib_part *part, gint page) {
 }
 
 static void html_start_part_table(rlib *r, struct rlib_part *part) {
-	print_text(r, "<table><!--start from part tr-->", FALSE);
+	print_text(r, "<table><!--start from part table-->", FALSE);
 }
 
 static void html_end_part_table(rlib *r, struct rlib_part *part) {
@@ -527,23 +500,7 @@ static void html_end_line(rlib *r, int backwards) {
 	print_text(r, "</pre>\n", backwards);	
 }
 
-
-
 static void html_start_part_pages_across(rlib *r, struct rlib_part *part, gfloat left_margin, gfloat top_margin, int width, int height, int border_width, struct rlib_rgb *color) {
-/*	char buf[150];
-	char border_color[150];
-
-	if(color != NULL)
-		get_html_color(border_color, color);
-	else
-		border_color[0] = 0;
-
-	if(border_width > 0) {
-		sprintf(buf, "<td valign=\"top\" style=\"border:solid %dpx %s; width:%d%%; \">", border_width, border_color, width);
-	}
-	else
-		sprintf(buf, "<td style=\"width:%d%%;\" valign=\"top\">", width);
-	print_text(r, buf, FALSE);*/
 	print_text(r, "<!--start pages across-->", FALSE);
 
 }
@@ -555,21 +512,10 @@ static void html_end_part_pages_across(rlib *r, struct rlib_part *part) {
 }
 
 
-static void html_start_bold(rlib *r) {
-	OUTPUT_PRIVATE(r)->is_bold = TRUE;
-}
-
-static void html_end_bold(rlib *r) {
-	OUTPUT_PRIVATE(r)->is_bold = FALSE;
-}
-
-static void html_start_italics(rlib *r) {
-	OUTPUT_PRIVATE(r)->is_italics = TRUE;
-}
-
-static void html_end_italics(rlib *r) {
-	OUTPUT_PRIVATE(r)->is_italics = FALSE;
-}
+static void html_start_bold(rlib *r) {}
+static void html_end_bold(rlib *r) {}
+static void html_start_italics(rlib *r) {}
+static void html_end_italics(rlib *r) {}
 
 static void html_graph_draw_line(rlib *r, gfloat x, gfloat y, gfloat new_x, gfloat new_y, struct rlib_rgb *color) {}
 
@@ -1288,7 +1234,6 @@ void rlib_html_new_output_filter(rlib *r) {
 	r->o->private = g_malloc(sizeof(struct _private));
 	memset(OUTPUT_PRIVATE(r), 0, sizeof(struct _private));
 
-	OUTPUT_PRIVATE(r)->do_bg = FALSE;
 	OUTPUT_PRIVATE(r)->page_number = 0;
 	OUTPUT_PRIVATE(r)->whole_report = NULL;
 	OUTPUT(r)->do_align = TRUE;

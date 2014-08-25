@@ -44,7 +44,7 @@ struct _rlib_format_table {
 	{ "HTML", RLIB_FORMAT_HTML},
 	{ "TXT", RLIB_FORMAT_TXT},
 	{ "CSV", RLIB_FORMAT_CSV},
-	{ "JSON", RLIB_FORMAT_JSON},
+	{ "XML", RLIB_FORMAT_XML},
 	{ "", -1},
 };
 
@@ -285,10 +285,9 @@ static void rlib_evaulate_part_attributes(rlib *r, struct rlib_part *part) {
 	}
 }
 
-//bobd.. layout report
 static gboolean rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat left_margin_offset, gfloat top_margin_offset) {
 	gint processed_variables;
-	gint i;
+	gint query_i, i;
 	char query[MAXSTRLEN];
 	gint report_percent;
 	gfloat at_least = 0.0, origional_position_top = 0.0, report_header_advance = 0.0;
@@ -302,9 +301,9 @@ static gboolean rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_
 	r->current_result = 0;
 	if(report->query_code != NULL) {
 		rlib_execute_as_string(r, report->query_code, query, MAXSTRLEN);
-		for(i=0;i<r->queries_count;i++) {		
-			if(query != NULL && r->results[i]->name != NULL && !strcmp(r->results[i]->name, query)) {
-				r->current_result = i;		
+		for(query_i=0;query_i<r->queries_count;query_i++) {		
+			if(query != NULL && r->results[query_i]->name != NULL && !strcmp(r->results[query_i]->name, query)) {
+				r->current_result = query_i;		
 				break;
 			}
 		}
@@ -429,9 +428,17 @@ static gboolean rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_
 						}
 						
 						if(OUTPUT(r)->do_breaks) {
-							OUTPUT(r)->start_report_field_details(r, part, report);	
+							for(i=0;i<report->pages_across;i++) {
+								OUTPUT(r)->set_working_page(r, part, i);
+								OUTPUT(r)->start_report_field_details(r, part, report);	
+							}
+							
 							output_count = rlib_layout_report_output(r, part, report, report->detail.fields, FALSE, FALSE);
-							OUTPUT(r)->end_report_field_details(r, part, report);	
+
+							for(i=0;i<report->pages_across;i++) {
+								OUTPUT(r)->set_working_page(r, part, i);
+								OUTPUT(r)->end_report_field_details(r, part, report);	
+							}
 						} else {
 							output_count = rlib_layout_report_output_with_break_headers(r, part, report, TRUE);
 						}
@@ -680,8 +687,8 @@ gint rlib_make_report(rlib *r) {
 		rlib_html_new_output_filter(r);
 	} else if(r->format == RLIB_FORMAT_TXT) {
 		rlib_txt_new_output_filter(r);
-	} else if(r->format == RLIB_FORMAT_JSON) {
-		rlib_json_new_output_filter(r);
+	} else if(r->format == RLIB_FORMAT_XML) {
+		rlib_xml_new_output_filter(r);
 	} else if(r->format == RLIB_FORMAT_CSV) {
 		gchar *param;
 		rlib_csv_new_output_filter(r);
