@@ -255,7 +255,7 @@ gfloat rlib_chart(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 		OUTPUT(r)->graph_get_chart_layout(r, top_margin, bottom_margin, cell_height, rows, &chart_size, &chart_height);
 	}
 
-	OUTPUT(r)->graph_start(r, left_margin_offset, top_margin, chart_width, chart_height, FALSE);
+	OUTPUT(r)->start_graph(r, part, report, left_margin_offset, top_margin, chart_width, chart_height, FALSE);
 	OUTPUT(r)->graph_set_x_label_width(r, hint_label_x, cell_width);
 	OUTPUT(r)->graph_set_y_label_width(r, hint_label_y);
 
@@ -356,7 +356,7 @@ gfloat rlib_chart(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 				while (element != NULL) {
 					struct bar *bar = element->data;
 					if (!already_labeled[last_row + i]) {
-						OUTPUT(r)->graph_label_y(r, RLIB_SIDE_LEFT, chart_size - i, bar->row_label, FALSE);
+						OUTPUT(r)->graph_label_y(r, RLIB_SIDE_LEFT, chart_size - i, bar->row_label);
 						already_labeled[last_row + i] = TRUE;
 					}
 					//r_error(r, "We start row %d at %d and end at %d\n", bar->row, bar->start, bar->stop);
@@ -406,7 +406,7 @@ gfloat rlib_chart(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 			}
 		}
 
-		OUTPUT(r)->graph_start(r, left_margin_offset, top_margin, chart_width, chart_height, FALSE);
+		OUTPUT(r)->start_graph(r, part, report, left_margin_offset, top_margin, chart_width, chart_height, FALSE);
 		OUTPUT(r)->graph_set_minor_ticks(r, minor_tick);
 		if (title[0] != 0)
 			OUTPUT(r)->graph_set_title(r, title);
@@ -424,7 +424,7 @@ gfloat rlib_chart(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 		}
 	}
 
-	OUTPUT(r)->graph_finalize(r); // for HTML this must be called (outputs the graph and frees it)
+	OUTPUT(r)->end_graph(r, part, report); // for HTML this must be called (outputs the graph and frees it)
 
 	free_chart(row_list);
 

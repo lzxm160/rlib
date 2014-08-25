@@ -252,6 +252,63 @@ static void xml_end_report_no_data(rlib *r, struct rlib_part *part, struct rlib_
 	g_string_append(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], "</no_data>\n");
 }
 
+static void xml_start_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat left, gfloat top, gfloat width, gfloat height, gboolean x_axis_labels_are_under_tick) {
+	g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], "<graph width=\"%f\" height=\"%f\">\n", width, height);	
+}
+
+static void xml_end_graph(rlib *r, struct rlib_part *part, struct rlib_report *report) {
+	g_string_append(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], "</graph>\n");		
+}
+
+static void xml_graph_set_title(rlib *r, gchar *title) {
+	g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], "<title>%s</title>\n", title);		
+}
+
+static void xml_graph_x_axis_title(rlib *r, gchar *title) {
+	g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], "<x_axis_title>%s</x_axis_title>\n", title);		
+	
+}
+
+static void xml_graph_y_axis_title(rlib *r, gchar side, gchar *title) {
+	g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], "<y_axis_title side=\"%s\">%s</y_axis_title>\n", side == RLIB_SIDE_LEFT ? "left" : "right", title);		
+}
+
+static void xml_graph_plot_line(rlib *r, gchar side, gint iteration, gfloat p1_height, gfloat p1_last_height, gfloat p2_height, gfloat p2_last_height, struct rlib_rgb * color) {
+	g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], 
+		"<plot_line side=\"%s\" iteration=\"%d\" p1_height=\"%f\" p1_last_height=\"%f\" p2_height=\"%f\" p2_last_height=\"%f\" color=\"#%02x%02x%02x\">\n", 
+		side == RLIB_SIDE_LEFT ? "left" : "right", iteration, p1_height, p1_last_height, p2_height, p2_last_height,
+		(gint)(color->r*0xFF), (gint)(color->g*0xFF), (gint)(color->b*0xFF));			
+}
+
+static void xml_graph_set_limits(rlib *r, gchar side, gdouble min, gdouble max, gdouble origin) {
+	g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], "<limits side=\"%s\" min=\"%f\" max=\"%f\" origin=\"%f\"/>\n", 
+		side == RLIB_SIDE_LEFT ? "left" : "right", min, max, origin);		
+	
+}
+
+static void xml_graph_do_grid(rlib *r, gboolean just_a_box) {
+	g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], "<grid draw_lines=\"%s\"/>\n", just_a_box ? "false" : "true");		
+	
+}
+
+static void xml_graph_set_x_iterations(rlib *r, gint iterations) {
+	g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], "<x_iterations>%d</x_iterations>\n", iterations);		
+	
+}
+
+static void xml_graph_tick_y(rlib *r, gint iterations) {
+	g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], "<y_iterations>%d</y_iterations>\n", iterations);		
+}
+
+static void xml_graph_label_x(rlib *r, gint iteration, gchar *label) {
+	g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], "<x_iterations_label iteration=\"%d\">%s</x_iterations_label>\n", iteration, label);		
+}
+
+static void xml_graph_label_y(rlib *r, gchar side, gint iteration, gchar *label) {
+	g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], "<y_iterations_label side=\"%s\" iteration=\"%d\">%s</y_iterations_label>\n", 
+	side == RLIB_SIDE_LEFT ? "left" : "right", iteration, label);		
+}
+
 
 
 static void xml_print_text_delayed(rlib *r, struct rlib_delayed_extra_data *delayed_data, int backwards, int rval_type) {
@@ -300,27 +357,16 @@ static void xml_end_bold(rlib *r) {}
 static void xml_start_italics(rlib *r) {}
 static void xml_end_italics(rlib *r) {}
 
-static void xml_graph_start(rlib *r, gfloat left, gfloat top, gfloat width, gfloat height, gboolean x_axis_labels_are_under_tick) {}
-static void xml_graph_set_limits(rlib *r, gchar side, gdouble min, gdouble max, gdouble origin) {}
-static void xml_graph_set_title(rlib *r, gchar *title) {}
-static void xml_graph_x_axis_title(rlib *r, gchar *title) {}
-static void xml_graph_y_axis_title(rlib *r, gchar side, gchar *title) {}
-static void xml_graph_do_grid(rlib *r, gboolean just_a_box) {}
-static void xml_graph_tick_x(rlib *r) {}
-static void xml_graph_set_x_iterations(rlib *r, gint iterations) {}
 static void xml_graph_hint_label_x(rlib *r, gchar *label) {}
-static void xml_graph_label_x(rlib *r, gint iteration, gchar *label) {}
-static void xml_graph_tick_y(rlib *r, gint iterations) {}
-static void xml_graph_label_y(rlib *r, gchar side, gint iteration, gchar *label, gboolean false_x) {}
 static void xml_graph_hint_label_y(rlib *r, gchar side, gchar *label) {}
+static void xml_graph_tick_x(rlib *r) {}
+
 static void xml_graph_set_data_plot_count(rlib *r, gint count) {}
 static void xml_graph_plot_bar(rlib *r, gchar side, gint iteration, gint plot, gfloat height_percent, struct rlib_rgb *color,gfloat last_height, gboolean divide_iterations) {}
-static void xml_graph_plot_line(rlib *r, gchar side, gint iteration, gfloat p1_height, gfloat p1_last_height, gfloat p2_height, gfloat p2_last_height, struct rlib_rgb * color) {}
 static void xml_graph_plot_pie(rlib *r, gfloat start, gfloat end, gboolean offset, struct rlib_rgb *color) {}
 static void xml_graph_hint_legend(rlib *r, gchar *label) {}
 static void xml_graph_draw_legend(rlib *r) {}
 static void xml_graph_draw_legend_label(rlib *r, gint iteration, gchar *label, struct rlib_rgb *color, gboolean is_line) {}
-static void xml_graph_finalize(rlib *r) {}
 static void xml_graph_draw_line(rlib *r, gfloat x, gfloat y, gfloat new_x, gfloat new_y, struct rlib_rgb *color) {}
 static void xml_graph_set_name(rlib *r, gchar *name) {}
 static void xml_graph_set_legend_bg_color(rlib *r, struct rlib_rgb *rgb) {}
@@ -328,6 +374,7 @@ static void xml_graph_set_legend_orientation(rlib *r, gint orientation) {}
 static void xml_graph_set_draw_x_y(rlib *r, gboolean draw_x, gboolean draw_y) {}
 static void xml_graph_set_bold_titles(rlib *r, gboolean bold_titles) {}
 static void xml_graph_set_grid_color(rlib *r, struct rlib_rgb *rgb) {}
+static void xml_graph_set_minor_ticks(rlib *r, gboolean *minor_ticks) {}
 
 void rlib_xml_new_output_filter(rlib *r) {
 	OUTPUT(r) = g_malloc(sizeof(struct output_filter));
@@ -339,7 +386,7 @@ void rlib_xml_new_output_filter(rlib *r) {
 	OUTPUT(r)->do_grouptext = FALSE;	
 	OUTPUT(r)->paginate = FALSE;
 	OUTPUT(r)->trim_links = FALSE;
-	OUTPUT(r)->do_graph = FALSE;
+	OUTPUT(r)->do_graph = TRUE;
 	
 	OUTPUT(r)->get_string_width = xml_get_string_width;
 	OUTPUT(r)->print_text = xml_print_text;
@@ -412,13 +459,14 @@ void rlib_xml_new_output_filter(rlib *r) {
 	OUTPUT(r)->start_italics = xml_start_italics;
 	OUTPUT(r)->end_italics = xml_end_italics;
 
-	OUTPUT(r)->graph_start = xml_graph_start;
+	OUTPUT(r)->start_graph = xml_start_graph;
 	OUTPUT(r)->graph_set_limits = xml_graph_set_limits;
 	OUTPUT(r)->graph_set_title = xml_graph_set_title;
 	OUTPUT(r)->graph_set_name = xml_graph_set_name;
 	OUTPUT(r)->graph_set_legend_bg_color = xml_graph_set_legend_bg_color;
 	OUTPUT(r)->graph_set_legend_orientation = xml_graph_set_legend_orientation;
 	OUTPUT(r)->graph_set_draw_x_y = xml_graph_set_draw_x_y;
+	OUTPUT(r)->graph_set_minor_ticks = xml_graph_set_minor_ticks;
 	OUTPUT(r)->graph_set_bold_titles = xml_graph_set_bold_titles;
 	OUTPUT(r)->graph_set_grid_color = xml_graph_set_grid_color;
 	OUTPUT(r)->graph_x_axis_title = xml_graph_x_axis_title;
@@ -439,7 +487,7 @@ void rlib_xml_new_output_filter(rlib *r) {
 	OUTPUT(r)->graph_hint_legend = xml_graph_hint_legend;
 	OUTPUT(r)->graph_draw_legend = xml_graph_draw_legend;
 	OUTPUT(r)->graph_draw_legend_label = xml_graph_draw_legend_label;
-	OUTPUT(r)->graph_finalize = xml_graph_finalize;
+	OUTPUT(r)->end_graph = xml_end_graph;
 
 	OUTPUT(r)->free = xml_free;  
 }

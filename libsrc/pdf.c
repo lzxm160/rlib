@@ -457,7 +457,7 @@ static void pdf_graph_init(rlib *r) {
 	memset(&OUTPUT_PRIVATE(r)->graph, 0, sizeof(struct _graph));
 }
 
-static void pdf_graph_start(rlib *r, gfloat left, gfloat top, gfloat width, gfloat height, gboolean x_axis_labels_are_under_tick) {
+static void pdf_start_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat left, gfloat top, gfloat width, gfloat height, gboolean x_axis_labels_are_under_tick) {
 	memset(&OUTPUT_PRIVATE(r)->graph, 0, sizeof(struct _graph));
 	
 	width /= RLIB_PDF_DPI;
@@ -853,7 +853,7 @@ static void pdf_graph_tick_y(rlib *r, gint iterations) {
 
 }
 
-static void pdf_graph_label_y(rlib *r, gchar side, gint iteration, gchar *label, gboolean false_x) {
+static void pdf_graph_label_y(rlib *r, gchar side, gint iteration, gchar *label) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
 	gfloat white_space = graph->y_height/graph->y_iterations;
 	gfloat line_width = RLIB_GET_LINE(r->current_font_point) / 3.0;
@@ -1146,7 +1146,7 @@ static void pdf_graph_draw_legend_label(rlib *r, gint iteration, gchar *label, s
 	pdf_print_text(r, graph->legend_left + (w_width*2), graph->legend_top - offset, label, 0);
 }
 
-static void pdf_graph_finalize(rlib *r) {}
+static void pdf_end_graph(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void pdf_end_part_pages_across(rlib *r, struct rlib_part *part) {}
 static void pdf_stub_line(rlib *r, int backwards) {}
 static void pdf_end_output_section(rlib *r, struct rlib_report_output_array *roa) {}
@@ -1274,7 +1274,7 @@ void rlib_pdf_new_output_filter(rlib *r) {
 	
 	OUTPUT(r)->graph_init = pdf_graph_init;
 	OUTPUT(r)->graph_get_chart_layout = pdf_graph_get_chart_layout;
-	OUTPUT(r)->graph_start = pdf_graph_start;
+	OUTPUT(r)->start_graph = pdf_start_graph;
 	OUTPUT(r)->graph_set_limits = pdf_graph_set_limits;
 	OUTPUT(r)->graph_set_title = pdf_graph_set_title;
 	OUTPUT(r)->graph_set_name = pdf_graph_set_name;
@@ -1305,7 +1305,7 @@ void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r)->graph_hint_legend = pdf_graph_hint_legend;
 	OUTPUT(r)->graph_draw_legend = pdf_graph_draw_legend;
 	OUTPUT(r)->graph_draw_legend_label = pdf_graph_draw_legend_label;
-	OUTPUT(r)->graph_finalize = pdf_graph_finalize;
+	OUTPUT(r)->end_graph = pdf_end_graph;
 
 	OUTPUT(r)->graph_set_x_label_width = pdf_graph_set_x_label_width;
 	OUTPUT(r)->graph_get_x_label_width = pdf_graph_get_x_label_width;

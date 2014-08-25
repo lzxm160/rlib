@@ -969,7 +969,8 @@ struct output_filter {
 
 	void (*graph_init)(rlib *r);
 	void (*graph_get_chart_layout)(rlib *r, gfloat top, gfloat bottom, gint cell_height, gint rows, gint *chart_size, gint *chart_height);
-	void (*graph_start)(rlib *r, float, float, float, float, gboolean x_axis_labels_are_under_tick);
+	void (*start_graph)(rlib *r, struct rlib_part *, struct rlib_report *, float, float, float, float, gboolean x_axis_labels_are_under_tick);
+	void (*end_graph)(rlib *r, struct rlib_part *, struct rlib_report *);
 	void (*graph_set_title)(rlib *r, gchar *title);
 	void (*graph_set_name)(rlib *r, gchar *name);
 	void (*graph_set_legend_bg_color)(rlib *r, struct rlib_rgb *);
@@ -991,7 +992,7 @@ struct output_filter {
 	void (*graph_set_data_plot_count)(rlib *r, int count);
 	void (*graph_hint_label_x)(rlib *r, gchar *label);
 	void (*graph_label_x)(rlib *r, int iteration, gchar *label);
-	void (*graph_label_y)(rlib *r, gchar side, int iteration, gchar *label, gboolean false_x);
+	void (*graph_label_y)(rlib *r, gchar side, int iteration, gchar *label);
 	void (*graph_draw_bar)(rlib *r, gint row, gint start_iteration, gint end_iteration, struct rlib_rgb *color, char *label, struct rlib_rgb *label_color, gint width_pad, gint height_pad);
 	void (*graph_plot_bar)(rlib *r, gchar side, gint iteration, int plot, gfloat height, struct rlib_rgb * color,gfloat last_height, gboolean divide_iterations);
 	void (*graph_plot_pie)(rlib *r, gfloat start, gfloat end, gboolean offset, struct rlib_rgb *color);
@@ -1000,7 +1001,6 @@ struct output_filter {
 	void (*graph_hint_legend)(rlib *r, gchar *string);
 	void (*graph_draw_legend)(rlib *r);
 	void (*graph_draw_legend_label)(rlib *r, gint iteration, gchar *string, struct rlib_rgb *, gboolean);
-	void (*graph_finalize)(rlib *r);
 	int (*free)(rlib *r);
 };
 

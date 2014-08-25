@@ -179,15 +179,12 @@ static void rlib_graph_label_y_axis(rlib *r, gint side, gboolean for_real, gint 
 	sprintf(format, "%%0%d.0%df", max_slen-max, max);
 
 	for(i=0;i<y_ticks+1;i++) {
-		gboolean special = FALSE;
 		gdouble val = y_min + (((y_max-y_min)/y_ticks)*i);
 		gchar label[MAXSTRLEN];		
 		sprintf(label, format, val);
 
-		if(val == y_origin)
-			special = TRUE;
 		if(for_real) 
-			OUTPUT(r)->graph_label_y(r, side, i, label, special);	
+			OUTPUT(r)->graph_label_y(r, side, i, label);	
 		else
 			OUTPUT(r)->graph_hint_label_y(r, side, label);	
 	}
@@ -314,7 +311,7 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 
 	rlib_fetch_first_rows(r);
 	row_count = 0;
-	OUTPUT(r)->graph_start(r, left_margin_offset, rlib_layout_get_next_line_by_font_point(r, part, part->position_top[0]+(*top_margin_offset)+report->top_margin, 0), graph_width, graph_height, should_label_under_tick);
+	OUTPUT(r)->start_graph(r, part, report, left_margin_offset, rlib_layout_get_next_line_by_font_point(r, part, part->position_top[0]+(*top_margin_offset)+report->top_margin, 0), graph_width, graph_height, should_label_under_tick);
 
 	if(legend_orientation[0] != 0) {
 		gint orientation = RLIB_GRAPH_LEGEND_ORIENTATION_RIGHT;
@@ -690,6 +687,6 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	g_free(row_sum);
 	g_free(last_row_values);
 	g_free(last_row_height);
-	OUTPUT(r)->graph_finalize(r);
+	OUTPUT(r)->end_graph(r, part, report);
 	return graph_height / RLIB_PDF_DPI;
 }

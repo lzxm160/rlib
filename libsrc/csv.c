@@ -256,7 +256,7 @@ static void csv_end_bold(rlib *r) {}
 static void csv_start_italics(rlib *r) {}
 static void csv_end_italics(rlib *r) {}
 
-static void csv_graph_start(rlib *r, gfloat left, gfloat top, gfloat width, gfloat height, gboolean x_axis_labels_are_under_tick) {}
+static void csv_start_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat left, gfloat top, gfloat width, gfloat height, gboolean x_axis_labels_are_under_tick) {}
 static void csv_graph_set_limits(rlib *r, gchar side, gdouble min, gdouble max, gdouble origin) {}
 static void csv_graph_set_title(rlib *r, gchar *title) {}
 static void csv_graph_x_axis_title(rlib *r, gchar *title) {}
@@ -267,7 +267,7 @@ static void csv_graph_set_x_iterations(rlib *r, gint iterations) {}
 static void csv_graph_hint_label_x(rlib *r, gchar *label) {}
 static void csv_graph_label_x(rlib *r, gint iteration, gchar *label) {}
 static void csv_graph_tick_y(rlib *r, gint iterations) {}
-static void csv_graph_label_y(rlib *r, gchar side, gint iteration, gchar *label, gboolean false_x) {}
+static void csv_graph_label_y(rlib *r, gchar side, gint iteration, gchar *label) {}
 static void csv_graph_hint_label_y(rlib *r, gchar side, gchar *label) {}
 static void csv_graph_set_data_plot_count(rlib *r, gint count) {}
 static void csv_graph_plot_bar(rlib *r, gchar side, gint iteration, gint plot, gfloat height_percent, struct rlib_rgb *color,gfloat last_height, gboolean divide_iterations) {}
@@ -276,7 +276,7 @@ static void csv_graph_plot_pie(rlib *r, gfloat start, gfloat end, gboolean offse
 static void csv_graph_hint_legend(rlib *r, gchar *label) {}
 static void csv_graph_draw_legend(rlib *r) {}
 static void csv_graph_draw_legend_label(rlib *r, gint iteration, gchar *label, struct rlib_rgb *color, gboolean is_line) {}
-static void csv_graph_finalize(rlib *r) {}
+static void csv_end_graph(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void csv_graph_draw_line(rlib *r, gfloat x, gfloat y, gfloat new_x, gfloat new_y, struct rlib_rgb *color) {}
 
 static void csv_graph_set_name(rlib *r, gchar *name) {}
@@ -410,7 +410,7 @@ void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT(r)->start_italics = csv_start_italics;
 	OUTPUT(r)->end_italics = csv_end_italics;
 
-	OUTPUT(r)->graph_start = csv_graph_start;
+	OUTPUT(r)->start_graph = csv_start_graph;
 	OUTPUT(r)->graph_set_limits = csv_graph_set_limits;
 	OUTPUT(r)->graph_set_title = csv_graph_set_title;
 	OUTPUT(r)->graph_set_name = csv_graph_set_name;
@@ -437,7 +437,7 @@ void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT(r)->graph_hint_legend = csv_graph_hint_legend;
 	OUTPUT(r)->graph_draw_legend = csv_graph_draw_legend;
 	OUTPUT(r)->graph_draw_legend_label = csv_graph_draw_legend_label;
-	OUTPUT(r)->graph_finalize = csv_graph_finalize;
+	OUTPUT(r)->end_graph = csv_end_graph;
 
 	OUTPUT(r)->free = csv_free;
 }

@@ -1,4 +1,4 @@
-<? dl ("rlib.so");
+<?php
 	$data[0][0] = "name";
 	$data[0][1] = "ty_sales";
 	$data[0][2] = "ly_sales";
@@ -252,7 +252,7 @@
 	rlib_set_output_parameter($rlib, "html_image_directory", "/tmp");
 	rlib_set_output_parameter($rlib, "trim_links", "1");
 	rlib_add_report($rlib, "graph.xml");
-	rlib_set_output_format_from_text($rlib, "pdf");
+	rlib_set_output_format_from_text($rlib, "xml");
 	rlib_execute($rlib);
 	//header(rlib_get_content_type($rlib));
 	$ct = rlib_get_content_type($rlib);

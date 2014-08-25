@@ -345,7 +345,6 @@ static void html_start_rlib_report(rlib *r) {
 
 		g_string_append_printf(OUTPUT_PRIVATE(r)->whole_report, "pre { margin:0; padding:0; margin-top:0; margin-bottom:0; font-size:%dpt;}\n", font_size);
 		g_string_append_printf(OUTPUT_PRIVATE(r)->whole_report, "body { background-color: #ffffff;}\n");
-		g_string_append(OUTPUT_PRIVATE(r)->whole_report, "div { position: absolute; left: 0; }\n");
 		g_string_append(OUTPUT_PRIVATE(r)->whole_report, "TABLE { border: 0; border-spacing: 0; padding: 0; width:100%; }\n");
 		g_string_append(OUTPUT_PRIVATE(r)->whole_report, "</style>\n");
 		meta = g_hash_table_lookup(r->output_parameters, "meta");
@@ -493,11 +492,11 @@ static void html_end_report_line(rlib *r, struct rlib_part *part, struct rlib_re
 
 
 static void html_start_line(rlib *r, int backwards) {
-	print_text(r, "<pre>",  backwards);
+	print_text(r, "<div class=\"attila\"><pre>",  backwards);
 }
 
 static void html_end_line(rlib *r, int backwards) {
-	print_text(r, "</pre>\n", backwards);	
+	print_text(r, "</pre></div>\n", backwards);	
 }
 
 static void html_start_part_pages_across(rlib *r, struct rlib_part *part, gfloat left_margin, gfloat top_margin, int width, int height, int border_width, struct rlib_rgb *color) {
@@ -544,7 +543,7 @@ static void html_graph_get_chart_layout(rlib *r, gfloat top, gfloat bottom, gint
 	*chart_height = height_offset + rows * cell_height;
 }
 
-static void html_graph_start(rlib *r, gfloat left, gfloat top, gfloat width, gfloat height, gboolean x_axis_labels_are_under_tick) {
+static void html_start_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, gfloat left, gfloat top, gfloat width, gfloat height, gboolean x_axis_labels_are_under_tick) {
 	char buf[MAXSTRLEN];
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
 
@@ -909,7 +908,7 @@ static void html_graph_tick_y(rlib *r, gint iterations) {
 
 }
 
-static void html_graph_label_y(rlib *r, gchar side, gint iteration, gchar *label, gboolean false_x) {
+static void html_graph_label_y(rlib *r, gchar side, gint iteration, gchar *label) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
 	gfloat white_space = graph->height/graph->y_iterations;
 	gfloat line_width = rlib_gd_get_string_height(OUTPUT_PRIVATE(r)->rgd, FALSE) / 3.0;
@@ -1192,7 +1191,7 @@ static void html_graph_draw_legend_label(rlib *r, gint iteration, gchar *label, 
 	rlib_gd_text(OUTPUT_PRIVATE(r)->rgd, label,  graph->legend_left + (w_width*2), graph->legend_top + offset + textoffset, FALSE, FALSE);
 }
 
-static void html_graph_finalize(rlib *r) {
+static void html_end_graph(rlib *r, struct rlib_part *part, struct rlib_report *report) {
 	rlib_gd_spool(r, OUTPUT_PRIVATE(r)->rgd);
 	rlib_gd_free(OUTPUT_PRIVATE(r)->rgd);
 }
@@ -1316,7 +1315,7 @@ void rlib_html_new_output_filter(rlib *r) {
 
 	OUTPUT(r)->graph_init = html_graph_init;
 	OUTPUT(r)->graph_get_chart_layout = html_graph_get_chart_layout;
-	OUTPUT(r)->graph_start = html_graph_start;
+	OUTPUT(r)->start_graph = html_start_graph;
 	OUTPUT(r)->graph_set_limits = html_graph_set_limits;
 	OUTPUT(r)->graph_set_title = html_graph_set_title;
 	OUTPUT(r)->graph_set_name = html_graph_set_name;
@@ -1347,7 +1346,7 @@ void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT(r)->graph_hint_legend = html_graph_hint_legend;
 	OUTPUT(r)->graph_draw_legend = html_graph_draw_legend;
 	OUTPUT(r)->graph_draw_legend_label = html_graph_draw_legend_label;
-	OUTPUT(r)->graph_finalize = html_graph_finalize;
+	OUTPUT(r)->end_graph = html_end_graph;
 
 	OUTPUT(r)->graph_set_x_label_width = html_graph_set_x_label_width;
 	OUTPUT(r)->graph_get_x_label_width = html_graph_get_x_label_width;
