@@ -275,9 +275,15 @@ static void xml_graph_y_axis_title(rlib *r, gchar side, gchar *title) {
 
 static void xml_graph_plot_line(rlib *r, gchar side, gint iteration, gfloat p1_height, gfloat p1_last_height, gfloat p2_height, gfloat p2_last_height, struct rlib_rgb * color) {
 	g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], 
-		"<plot_line side=\"%s\" iteration=\"%d\" p1_height=\"%f\" p1_last_height=\"%f\" p2_height=\"%f\" p2_last_height=\"%f\" color=\"#%02x%02x%02x\">\n", 
+		"<plot_line side=\"%s\" iteration=\"%d\" p1_height=\"%f\" p1_last_height=\"%f\" p2_height=\"%f\" p2_last_height=\"%f\" color=\"#%02x%02x%02x\"/>\n", 
 		side == RLIB_SIDE_LEFT ? "left" : "right", iteration, p1_height, p1_last_height, p2_height, p2_last_height,
 		(gint)(color->r*0xFF), (gint)(color->g*0xFF), (gint)(color->b*0xFF));			
+}
+
+static void xml_graph_plot_pie(rlib *r, gfloat start, gfloat end, gboolean offset, struct rlib_rgb *color) {
+	g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], 
+		"<plot_pie start=\"%f\" end=\"%f\" offset=\"%s\" color=\"#%02x%02x%02x\"/>", start, end, offset ? "true" : "false", 
+		(gint)(color->r*0xFF), (gint)(color->g*0xFF), (gint)(color->b*0xFF));
 }
 
 static void xml_graph_set_limits(rlib *r, gchar side, gdouble min, gdouble max, gdouble origin) {
@@ -363,7 +369,6 @@ static void xml_graph_tick_x(rlib *r) {}
 
 static void xml_graph_set_data_plot_count(rlib *r, gint count) {}
 static void xml_graph_plot_bar(rlib *r, gchar side, gint iteration, gint plot, gfloat height_percent, struct rlib_rgb *color,gfloat last_height, gboolean divide_iterations) {}
-static void xml_graph_plot_pie(rlib *r, gfloat start, gfloat end, gboolean offset, struct rlib_rgb *color) {}
 static void xml_graph_hint_legend(rlib *r, gchar *label) {}
 static void xml_graph_draw_legend(rlib *r) {}
 static void xml_graph_draw_legend_label(rlib *r, gint iteration, gchar *label, struct rlib_rgb *color, gboolean is_line) {}
