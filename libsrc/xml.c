@@ -286,6 +286,14 @@ static void xml_graph_plot_pie(rlib *r, gfloat start, gfloat end, gboolean offse
 		(gint)(color->r*0xFF), (gint)(color->g*0xFF), (gint)(color->b*0xFF));
 }
 
+static void xml_graph_plot_bar(rlib *r, gchar side, gint iteration, gint plot, gfloat height_percent, struct rlib_rgb *color, gfloat last_height, gboolean divide_iterations) {
+	g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], 
+		"<plot_bar side=\"%s\" iteration=\"%d\" plot=\"%d\" height_percent=\"%f\" color=\"#%02x%02x%02x\" last_height=\"%f\" divide_iterations=\"%s\"/>", 
+		side == RLIB_SIDE_LEFT ? "left" : "right", iteration, plot, height_percent,
+		(gint)(color->r*0xFF), (gint)(color->g*0xFF), (gint)(color->b*0xFF), last_height, divide_iterations ? "true" : "false");
+	
+}
+
 static void xml_graph_set_limits(rlib *r, gchar side, gdouble min, gdouble max, gdouble origin) {
 	g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], "<limits side=\"%s\" min=\"%f\" max=\"%f\" origin=\"%f\"/>\n", 
 		side == RLIB_SIDE_LEFT ? "left" : "right", min, max, origin);		
@@ -368,7 +376,6 @@ static void xml_graph_hint_label_y(rlib *r, gchar side, gchar *label) {}
 static void xml_graph_tick_x(rlib *r) {}
 
 static void xml_graph_set_data_plot_count(rlib *r, gint count) {}
-static void xml_graph_plot_bar(rlib *r, gchar side, gint iteration, gint plot, gfloat height_percent, struct rlib_rgb *color,gfloat last_height, gboolean divide_iterations) {}
 static void xml_graph_hint_legend(rlib *r, gchar *label) {}
 static void xml_graph_draw_legend(rlib *r) {}
 static void xml_graph_draw_legend_label(rlib *r, gint iteration, gchar *label, struct rlib_rgb *color, gboolean is_line) {}
