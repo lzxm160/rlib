@@ -994,9 +994,9 @@ struct output_filter {
 	void (*graph_label_x)(rlib *r, int iteration, gchar *label);
 	void (*graph_label_y)(rlib *r, gchar side, int iteration, gchar *label);
 	void (*graph_draw_bar)(rlib *r, gint row, gint start_iteration, gint end_iteration, struct rlib_rgb *color, char *label, struct rlib_rgb *label_color, gint width_pad, gint height_pad);
-	void (*graph_plot_bar)(rlib *r, gchar side, gint iteration, int plot, gfloat height, struct rlib_rgb * color,gfloat last_height, gboolean divide_iterations);
-	void (*graph_plot_pie)(rlib *r, gfloat start, gfloat end, gboolean offset, struct rlib_rgb *color);
-	void (*graph_plot_line)(rlib *r, gchar side, gint iteration, gfloat p1_height, gfloat p1_last_height, gfloat p2_height, gfloat p2_last_height, struct rlib_rgb * color);
+	void (*graph_plot_bar)(rlib *r, gchar side, gint iteration, int plot, gfloat height, struct rlib_rgb * color,gfloat last_height, gboolean divide_iterations, gfloat raw_data);
+	void (*graph_plot_pie)(rlib *r, gfloat start, gfloat end, gboolean offset, struct rlib_rgb *color, gfloat raw_data);
+	void (*graph_plot_line)(rlib *r, gchar side, gint iteration, gfloat p1_height, gfloat p1_last_height, gfloat p2_height, gfloat p2_last_height, struct rlib_rgb * color, gfloat raw_data);
 	void (*graph_hint_label_y)(rlib *r, gchar side, gchar *string);
 	void (*graph_hint_legend)(rlib *r, gchar *string);
 	void (*graph_draw_legend)(rlib *r);
