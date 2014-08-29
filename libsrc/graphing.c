@@ -239,6 +239,7 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	gint left_axis_decimal_hint=-1, right_axis_decimal_hint=-1;
 	gboolean disabled, tmp_disabled;
 	gboolean minor_tick[MAX_X_TICKS];
+	gboolean executed_label_pcode = FALSE;
 
 	left_margin_offset += part->left_margin;
 
@@ -610,6 +611,9 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 									have_right_side = TRUE;
 								}
 							}
+
+							executed_label_pcode = rlib_execute_as_string(r, plot->label_code, legend_label, MAXSTRLEN);
+
 							if(!rlib_execute_as_string(r, plot->color_code, color_str, MAXSTRLEN)) {
 								plot_color = color[data_plot_count];
 							} else {
@@ -645,15 +649,15 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 									last_height = last_height_neg;
 							} 
 							if(is_row_graph(graph_type)) {
-								OUTPUT(r)->graph_plot_bar(r, side, row_count, plot_count, value, &plot_color,last_height, divide_iterations, y_value);
+								OUTPUT(r)->graph_plot_bar(r, side, row_count, plot_count, value, &plot_color,last_height, divide_iterations, y_value, legend_label);
 							} else if(is_line_graph(graph_type)) {
 								if(row_count > 0)
-									OUTPUT(r)->graph_plot_line(r, side, row_count, last_row_values[i], last_row_height[i], value, last_height, &plot_color, y_value);
+									OUTPUT(r)->graph_plot_line(r, side, row_count, last_row_values[i], last_row_height[i], value, last_height, &plot_color, y_value, legend_label);
 							} else if(is_pie_graph(graph_type) && !isnan(value)) {
 								gboolean offset = graph_type == RLIB_GRAPH_TYPE_PIE_OFFSET;
-								OUTPUT(r)->graph_plot_pie(r, running_col_sum, value+running_col_sum, offset, &color[row_count + data_plot_count], y_value);
+								OUTPUT(r)->graph_plot_pie(r, running_col_sum, value+running_col_sum, offset, &color[row_count + data_plot_count], y_value, legend_label);
 								running_col_sum += value;
-								if(rlib_execute_as_string(r, plot->label_code, legend_label, MAXSTRLEN))
+								if (executed_label_pcode)
 									OUTPUT(r)->graph_draw_legend_label(r, row_count+data_plot_count, legend_label, &color[row_count + data_plot_count], is_line_graph(graph_type));
 							}
 								

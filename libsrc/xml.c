@@ -273,24 +273,24 @@ static void xml_graph_y_axis_title(rlib *r, gchar side, gchar *title) {
 	g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], "<y_axis_title side=\"%s\">%s</y_axis_title>\n", side == RLIB_SIDE_LEFT ? "left" : "right", title);		
 }
 
-static void xml_graph_plot_line(rlib *r, gchar side, gint iteration, gfloat p1_height, gfloat p1_last_height, gfloat p2_height, gfloat p2_last_height, struct rlib_rgb * color, gfloat value) {
+static void xml_graph_plot_line(rlib *r, gchar side, gint iteration, gfloat p1_height, gfloat p1_last_height, gfloat p2_height, gfloat p2_last_height, struct rlib_rgb * color, gfloat value, char *label) {
 	g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], 
-		"<plot_line side=\"%s\" iteration=\"%d\" p1_height=\"%f\" p1_last_height=\"%f\" p2_height=\"%f\" p2_last_height=\"%f\" color=\"#%02x%02x%02x\" value=\"%f\"/>\n", 
+		"<plot_line side=\"%s\" iteration=\"%d\" p1_height=\"%f\" p1_last_height=\"%f\" p2_height=\"%f\" p2_last_height=\"%f\" color=\"#%02x%02x%02x\" value=\"%f\" label=\"%s\"/>\n", 
 		side == RLIB_SIDE_LEFT ? "left" : "right", iteration, p1_height, p1_last_height, p2_height, p2_last_height,
-		(gint)(color->r*0xFF), (gint)(color->g*0xFF), (gint)(color->b*0xFF), value);			
+		(gint)(color->r*0xFF), (gint)(color->g*0xFF), (gint)(color->b*0xFF), value, label);			
 }
 
-static void xml_graph_plot_pie(rlib *r, gfloat start, gfloat end, gboolean offset, struct rlib_rgb *color, gfloat value) {
+static void xml_graph_plot_pie(rlib *r, gfloat start, gfloat end, gboolean offset, struct rlib_rgb *color, gfloat value, char *label) {
 	g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], 
-		"<plot_pie start=\"%f\" end=\"%f\" offset=\"%s\" color=\"#%02x%02x%02x\" value=\"%f\"/>", start, end, offset ? "true" : "false", 
-		(gint)(color->r*0xFF), (gint)(color->g*0xFF), (gint)(color->b*0xFF), value);
+		"<plot_pie start=\"%f\" end=\"%f\" offset=\"%s\" color=\"#%02x%02x%02x\" value=\"%f\" label=\"%s\"/>", start, end, offset ? "true" : "false", 
+		(gint)(color->r*0xFF), (gint)(color->g*0xFF), (gint)(color->b*0xFF), value, label);
 }
 
-static void xml_graph_plot_bar(rlib *r, gchar side, gint iteration, gint plot, gfloat height_percent, struct rlib_rgb *color, gfloat last_height, gboolean divide_iterations, gfloat value) {
+static void xml_graph_plot_bar(rlib *r, gchar side, gint iteration, gint plot, gfloat height_percent, struct rlib_rgb *color, gfloat last_height, gboolean divide_iterations, gfloat value, char *label) {
 	g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], 
-		"<plot_bar side=\"%s\" iteration=\"%d\" plot=\"%d\" height_percent=\"%f\" color=\"#%02x%02x%02x\" last_height=\"%f\" divide_iterations=\"%s\" value=\"%f\"/>", 
+		"<plot_bar side=\"%s\" iteration=\"%d\" plot=\"%d\" height_percent=\"%f\" color=\"#%02x%02x%02x\" last_height=\"%f\" divide_iterations=\"%s\" value=\"%f\" label=\"%s\"/>", 
 		side == RLIB_SIDE_LEFT ? "left" : "right", iteration, plot, height_percent,
-		(gint)(color->r*0xFF), (gint)(color->g*0xFF), (gint)(color->b*0xFF), last_height, divide_iterations ? "true" : "false", value);
+		(gint)(color->r*0xFF), (gint)(color->g*0xFF), (gint)(color->b*0xFF), last_height, divide_iterations ? "true" : "false", value, label);
 	
 }
 
