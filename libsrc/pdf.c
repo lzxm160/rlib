@@ -959,13 +959,14 @@ static void pdf_graph_plot_bar(rlib *r, gchar side, gint iteration, gint plot, g
 	OUTPUT(r)->set_bg_color(r, 0, 0, 0);
 }
 
-void pdf_graph_plot_line(rlib *r, gchar side, gint iteration, gfloat p1_height, gfloat p1_last_height, gfloat p2_height, gfloat p2_last_height, struct rlib_rgb * color) {
+void pdf_graph_plot_line(rlib *r, gchar side, gint iteration, gfloat p1_height, gfloat p1_last_height, gfloat p2_height, gfloat p2_last_height, struct rlib_rgb * color, gint row_count) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
 	gfloat p1_start = graph->y_start;
 	gfloat p2_start = graph->y_start;
 	gfloat left = graph->x_start + (graph->x_tick_width * (iteration-1));
 	gfloat x_tick_width = graph->x_tick_width;
-
+	if(row_count <= 0) 
+		return;
 	p1_height += p1_last_height;
 	p2_height += p2_last_height;
 

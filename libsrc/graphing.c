@@ -581,7 +581,8 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	}
 
 	row_count = 0;
-
+	last_row_values[0] = 0;
+	last_row_height[0] = 0;
 	rlib_fetch_first_rows(r);
 	if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result]->result)) {
 		while (1) {
@@ -647,12 +648,13 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 									last_height = last_height_pos;
 								else
 									last_height = last_height_neg;
-							} 
+							}
+							
+							 
 							if(is_row_graph(graph_type)) {
 								OUTPUT(r)->graph_plot_bar(r, side, row_count, plot_count, value, &plot_color,last_height, divide_iterations, y_value, legend_label);
 							} else if(is_line_graph(graph_type)) {
-								if(row_count > 0)
-									OUTPUT(r)->graph_plot_line(r, side, row_count, last_row_values[i], last_row_height[i], value, last_height, &plot_color, y_value, legend_label);
+								OUTPUT(r)->graph_plot_line(r, side, row_count, last_row_values[i], last_row_height[i], value, last_height, &plot_color, y_value, legend_label, row_count);
 							} else if(is_pie_graph(graph_type) && !isnan(value)) {
 								gboolean offset = graph_type == RLIB_GRAPH_TYPE_PIE_OFFSET;
 								OUTPUT(r)->graph_plot_pie(r, running_col_sum, value+running_col_sum, offset, &color[row_count + data_plot_count], y_value, legend_label);
