@@ -935,7 +935,7 @@ static void pdf_graph_draw_bar(rlib *r, gint row, gint start_iteration, gint end
 	OUTPUT(r)->set_bg_color(r, 0, 0, 0);
 }
 
-static void pdf_graph_plot_bar(rlib *r, gchar side, gint iteration, gint plot, gfloat height_percent, struct rlib_rgb *color,gfloat last_height, gboolean divide_iterations) {
+static void pdf_graph_plot_bar(rlib *r, gchar side, gint iteration, gint plot, gfloat height_percent, struct rlib_rgb *color,gfloat last_height, gboolean divide_iterations, gfloat raw_data, gchar *label) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;	
 	gfloat bar_width = graph->x_tick_width *.6;
 	gfloat left = graph->x_start + (graph->x_tick_width * iteration) + (graph->x_tick_width *.2);
@@ -959,7 +959,7 @@ static void pdf_graph_plot_bar(rlib *r, gchar side, gint iteration, gint plot, g
 	OUTPUT(r)->set_bg_color(r, 0, 0, 0);
 }
 
-void pdf_graph_plot_line(rlib *r, gchar side, gint iteration, gfloat p1_height, gfloat p1_last_height, gfloat p2_height, gfloat p2_last_height, struct rlib_rgb * color, gint row_count) {
+void pdf_graph_plot_line(rlib *r, gchar side, gint iteration, gfloat p1_height, gfloat p1_last_height, gfloat p2_height, gfloat p2_last_height, struct rlib_rgb *color, gfloat raw_data, gchar *label, gint row_count) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
 	gfloat p1_start = graph->y_start;
 	gfloat p2_start = graph->y_start;
@@ -984,7 +984,7 @@ void pdf_graph_plot_line(rlib *r, gchar side, gint iteration, gfloat p1_height, 
 	OUTPUT(r)->set_bg_color(r, 0, 0, 0);
 }
 
-static void pdf_graph_plot_pie(rlib *r, gfloat start, gfloat end, gboolean offset, struct rlib_rgb *color) {
+static void pdf_graph_plot_pie(rlib *r, gfloat start, gfloat end, gboolean offset, struct rlib_rgb *color, gfloat raw_data, gchar *label) {
 	struct _graph *graph = &OUTPUT_PRIVATE(r)->graph;
 	gfloat start_angle = 360.0 * start;
 	gfloat end_angle = 360.0 * end;

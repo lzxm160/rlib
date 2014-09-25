@@ -266,7 +266,10 @@
 	rlib_set_output_parameter($rlib, "trim_links", "1");
 	rlib_add_report($rlib, "graph.xml");
 
-	rlib_set_output_format_from_text($rlib, "xml");
+	if (isset($argv[1]) && in_array($argv[1], array('pdf', 'xml', 'txt', 'csv', 'html')))
+		rlib_set_output_format_from_text($rlib, "pdf");
+	else
+		rlib_set_output_format_from_text($rlib, "xml");
 	rlib_execute($rlib);
 	//header(rlib_get_content_type($rlib));
 	$ct = rlib_get_content_type($rlib);

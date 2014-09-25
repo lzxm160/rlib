@@ -279,9 +279,9 @@ static void txt_graph_tick_y(rlib *r, gint iterations) {}
 static void txt_graph_label_y(rlib *r, gchar side, gint iteration, gchar *label) {}
 static void txt_graph_hint_label_y(rlib *r, gchar side, gchar *label) {}
 static void txt_graph_set_data_plot_count(rlib *r, gint count) {}
-static void txt_graph_plot_bar(rlib *r, gchar side, gint iteration, gint plot, gfloat height_percent, struct rlib_rgb *color,gfloat last_height, gboolean divide_iterations) {}
-static void txt_graph_plot_line(rlib *r, gchar side, gint iteration, gfloat p1_height, gfloat p1_last_height, gfloat p2_height, gfloat p2_last_height, struct rlib_rgb * color, gint row_count) {}
-static void txt_graph_plot_pie(rlib *r, gfloat start, gfloat end, gboolean offset, struct rlib_rgb *color) {}
+static void txt_graph_plot_bar(rlib *r, gchar side, gint iteration, gint plot, gfloat height_percent, struct rlib_rgb *color,gfloat last_height, gboolean divide_iterations, gfloat raw_data, gchar *label) {}
+static void txt_graph_plot_line(rlib *r, gchar side, gint iteration, gfloat p1_height, gfloat p1_last_height, gfloat p2_height, gfloat p2_last_height, struct rlib_rgb *color, gfloat raw_data, gchar *label, gint row_count) {}
+static void txt_graph_plot_pie(rlib *r, gfloat start, gfloat end, gboolean offset, struct rlib_rgb *color, gfloat raw_data, gchar *label) {}
 static void txt_graph_hint_legend(rlib *r, gchar *label) {}
 static void txt_graph_draw_legend(rlib *r) {}
 static void txt_graph_draw_legend_label(rlib *r, gint iteration, gchar *label, struct rlib_rgb *color, gboolean is_line) {}
