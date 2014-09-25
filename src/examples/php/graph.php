@@ -267,7 +267,7 @@
 	rlib_add_report($rlib, "graph.xml");
 
 	if (isset($argv[1]) && in_array($argv[1], array('pdf', 'xml', 'txt', 'csv', 'html')))
-		rlib_set_output_format_from_text($rlib, "pdf");
+		rlib_set_output_format_from_text($rlib, $argv[1]);
 	else
 		rlib_set_output_format_from_text($rlib, "xml");
 	rlib_execute($rlib);
