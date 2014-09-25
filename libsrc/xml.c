@@ -166,8 +166,8 @@ static void xml_end_part_table(rlib *r, struct rlib_part *part) {
 }
 
 
-static void xml_start_part_td(rlib *r, struct rlib_part *part) {
-	g_string_append(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], "<td>\n");
+static void xml_start_part_td(rlib *r, struct rlib_part *part, gfloat width) {
+	g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], "<td width=\"%f\">\n", width);
 }
 
 static void xml_end_part_td(rlib *r, struct rlib_part *part) {
