@@ -171,7 +171,7 @@ static void xml_start_part_td(rlib *r, struct rlib_part *part, gfloat width, gfl
 	if (width)
 		g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], "width=\"%f\" ", width);
 	if (height)
-		g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], "width=\"%f\" ", height);
+		g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], "height=\"%f\" ", height);
 	g_string_append(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], ">");
 }
 
