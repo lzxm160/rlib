@@ -215,6 +215,7 @@ static gchar *rlib_layout_get_true_text_from_extra_data(rlib *r, struct rlib_lin
 		}
 	}
 
+	extra_data->align = extra_data->report_field->align;
 	rlib_align_text(r, &align_text, text, extra_data->report_field->align, extra_data->report_field->width);
  	rlib_encode_text(r, align_text, &encoded_text);
 	g_free(align_text);
@@ -524,7 +525,7 @@ static gint rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 						buf = g_strdup(tmp_str);				
 					}
 				}
-
+				extra_data[i].align = rf->align;
 				rlib_align_text(r, &tmp_align_buf, buf, rf->align, rf->width);
 				extra_data[i].formatted_string = tmp_align_buf;
 				g_free(buf);
@@ -611,6 +612,8 @@ static gint rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 			txt_pointer = rt->value;
 			if(extra_data[i].translate)
 				txt_pointer = gettext(rt->value);
+
+			extra_data[i].align = rt->align;
 			rlib_align_text(r, &extra_data[i].formatted_string, txt_pointer, rt->align, rt->width);
 				
 			extra_data[i].width = rt->width;

@@ -43,7 +43,7 @@ static gfloat xml_get_string_width(rlib *r, const gchar *text) {
 static void xml_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, struct rlib_line_extra_data *extra_data) {
 	gchar *escaped = g_markup_escape_text(text, strlen(text));
 
-	g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number],"<data col=\"%d\" width=\"%d\" font_point=\"%d\" bold=\"%d\" italics=\"%d\" ", extra_data->col, extra_data->width, extra_data->font_point, extra_data->is_bold, extra_data->is_italics);
+	g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number],"<data col=\"%d\" width=\"%d\" font_point=\"%d\" bold=\"%d\" italics=\"%d\" align=\"%s\" ", extra_data->col, extra_data->width, extra_data->font_point, extra_data->is_bold, extra_data->is_italics, extra_data->align == RLIB_ALIGN_CENTER ? "center" : extra_data->align == RLIB_ALIGN_RIGHT ? "right" : "left");
 	if(extra_data->found_bgcolor) 
 		g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number],"bgcolor=\"#%02x%02x%02x\" ", (gint)(extra_data->bgcolor.r*0xFF), (gint)(extra_data->bgcolor.g*0xFF), (gint)(extra_data->bgcolor.b*0xFF));
 	if(extra_data->found_color) 

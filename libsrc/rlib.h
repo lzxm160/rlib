@@ -238,6 +238,7 @@ struct rlib_line_extra_data {
 	gchar *link;
 	gboolean translate;
 	gint found_link;
+	gint align;
 	struct rlib_rgb color;
 	gint found_color;
 	gfloat output_width;
