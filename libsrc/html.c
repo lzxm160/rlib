@@ -473,7 +473,7 @@ static void html_end_part_tr(rlib *r, struct rlib_part *part) {
 	print_text(r, "</tr><!--ended from part tr-->", FALSE);
 }
 
-static void html_start_part_td(rlib *r, struct rlib_part *part, gfloat width) {
+static void html_start_part_td(rlib *r, struct rlib_part *part, gfloat width, gfloat height) {
 	print_text(r, "<td><!--started from part td-->", FALSE);
 }
 

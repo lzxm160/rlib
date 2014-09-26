@@ -533,7 +533,7 @@ void rlib_layout_part_td(rlib *r, struct rlib_part *part, GSList *part_deviation
 		
 		for(i=0;i<part->pages_across;i++) {
 			OUTPUT(r)->set_working_page(r, part, i);
-			OUTPUT(r)->start_part_td(r, part, width);
+			OUTPUT(r)->start_part_td(r, part, width, height);
 			OUTPUT(r)->start_part_pages_across(r, part, running_left_margin+part->left_margin, rlib_layout_get_next_line_by_font_point(r, part, running_top_margin+position_top+part->position_top[0], 0), width,  height, border_width, border_color[0] == 0 ? NULL : &bgcolor);
 		}
 		

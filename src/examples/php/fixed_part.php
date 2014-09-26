@@ -159,7 +159,7 @@
 	rlib_add_query_as($rlib, "local_array", "inv_transfer", "inv_transfer");
 	rlib_add_query_as($rlib, "local_array", "inventory", "inventory");
 	rlib_add_report($rlib, "fixed_part.xml");
-	rlib_set_output_format_from_text($rlib, "json");
+	rlib_set_output_format_from_text($rlib, "xml");
 	rlib_signal_connect($rlib, "part_iteration", "callback");
 	rlib_execute($rlib);
 	header(rlib_get_content_type($rlib));

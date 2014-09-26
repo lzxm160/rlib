@@ -918,7 +918,7 @@ struct output_filter {
 	void (*end_part_table)(rlib *, struct rlib_part *);
 	void (*start_part_tr)(rlib *, struct rlib_part *);
 	void (*end_part_tr)(rlib *, struct rlib_part *);
-	void (*start_part_td)(rlib *, struct rlib_part *, gfloat width);
+	void (*start_part_td)(rlib *, struct rlib_part *, gfloat width, gfloat height);
 	void (*end_part_td)(rlib *, struct rlib_part *);
 
 

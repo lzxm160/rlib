@@ -1188,7 +1188,7 @@ static void pdf_start_part_table(rlib *r, struct rlib_part *part) {}
 static void pdf_end_part_table(rlib *r, struct rlib_part *part) {}
 static void pdf_start_part_tr(rlib *r, struct rlib_part *part) {}
 static void pdf_end_part_tr(rlib *r, struct rlib_part *part) {}
-static void pdf_start_part_td(rlib *r, struct rlib_part *part, gfloat width) {}
+static void pdf_start_part_td(rlib *r, struct rlib_part *part, gfloat width, gfloat height) {}
 static void pdf_end_part_td(rlib *r, struct rlib_part *part) {}
 
 void rlib_pdf_new_output_filter(rlib *r) {
