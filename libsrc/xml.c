@@ -23,6 +23,7 @@
 
 #include "config.h"
 #include "rlib.h"
+#include "pcode.h"
 
 #define TEXT 1
 #define DELAY 2
@@ -39,15 +40,30 @@ static gfloat xml_get_string_width(rlib *r, const gchar *text) {
 	return 1;
 }
 
+const gchar * rlib_xml_value_get_type_as_str(struct rlib_value *v) {
+	if(RLIB_VALUE_IS_NUMBER(v))
+		return "number";
+	if(RLIB_VALUE_IS_STRING(v))
+		return "string";
+	if(RLIB_VALUE_IS_DATE(v))
+		return "date";
+	return NULL;
+}
  
 static void xml_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, struct rlib_line_extra_data *extra_data) {
 	gchar *escaped = g_markup_escape_text(text, strlen(text));
+	const gchar *field_type = NULL;
+
+	if (extra_data->report_field && extra_data->report_field->rval) 
+		field_type = rlib_xml_value_get_type_as_str(extra_data->report_field->rval);
 
 	g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number],"<data col=\"%d\" width=\"%d\" font_point=\"%d\" bold=\"%d\" italics=\"%d\" align=\"%s\" ", extra_data->col, extra_data->width, extra_data->font_point, extra_data->is_bold, extra_data->is_italics, extra_data->align == RLIB_ALIGN_CENTER ? "center" : extra_data->align == RLIB_ALIGN_RIGHT ? "right" : "left");
 	if(extra_data->found_bgcolor) 
 		g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number],"bgcolor=\"#%02x%02x%02x\" ", (gint)(extra_data->bgcolor.r*0xFF), (gint)(extra_data->bgcolor.g*0xFF), (gint)(extra_data->bgcolor.b*0xFF));
 	if(extra_data->found_color) 
 		g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number],"color=\"#%02x%02x%02x\" ", (gint)(extra_data->color.r*0xFF), (gint)(extra_data->color.g*0xFF), (gint)(extra_data->color.b*0xFF));
+	if (field_type)
+		g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number],"type=\"%s\" ", field_type);
 		
 	g_string_append_printf(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number],">%s</data>\n", escaped);
 	g_free(escaped);
