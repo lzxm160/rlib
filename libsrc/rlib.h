@@ -84,6 +84,7 @@
 #define RLIB_FORMAT_HTML	2
 #define RLIB_FORMAT_TXT 	3
 #define RLIB_FORMAT_CSV 	4
+#define RLIB_FORMAT_XML 	5
 
 #define RLIB_ORIENTATION_PORTRAIT	0
 #define RLIB_ORIENTATION_LANDSCAPE	1
@@ -237,6 +238,7 @@ struct rlib_line_extra_data {
 	gchar *link;
 	gboolean translate;
 	gint found_link;
+	gint align;
 	struct rlib_rgb color;
 	gint found_color;
 	gfloat output_width;
@@ -886,7 +888,7 @@ struct output_filter {
 	gboolean do_graph;
 	gint paginate;
 	gfloat (*get_string_width)(rlib *, const char *);
-	void (*print_text)(rlib *, float, float, const char *, int, int, int);
+	void (*print_text)(rlib *, float, float, const char *, int, struct rlib_line_extra_data *);
 	void (*print_text_delayed)(rlib *, struct rlib_delayed_extra_data *, int, int);
 	void (*set_fg_color)(rlib *, float, float, float);
 	void (*set_bg_color)(rlib *, float, float, float);
@@ -906,24 +908,59 @@ struct output_filter {
 	void (*end_page)(rlib *, struct rlib_part *);
 	void (*end_page_again)(rlib *, struct rlib_part *, struct rlib_report *);
 	void (*init_end_page)(rlib *);
-	void (*init_output)(rlib *);
 	void (*set_working_page)(rlib *, struct rlib_part *, int);
 	void (*set_raw_page)(rlib *, struct rlib_part *, int);
-	void (*start_report)(rlib *, struct rlib_part *);
+	void (*start_rlib_report)(rlib *);
+	void (*end_rlib_report)(rlib *);
+	void (*start_part)(rlib *, struct rlib_part *);
 	void (*end_part)(rlib *, struct rlib_part *);
-	void (*end_report)(rlib *, struct rlib_report *);
+	void (*start_part_table)(rlib *, struct rlib_part *);
+	void (*end_part_table)(rlib *, struct rlib_part *);
+	void (*start_part_tr)(rlib *, struct rlib_part *);
+	void (*end_part_tr)(rlib *, struct rlib_part *);
+	void (*start_part_td)(rlib *, struct rlib_part *, gfloat width, gfloat height);
+	void (*end_part_td)(rlib *, struct rlib_part *);
+
+
+	void (*start_report)(rlib *, struct rlib_part *, struct rlib_report *);
+	void (*end_report)(rlib *, struct rlib_part *part, struct rlib_report *);
+	void (*start_report_header)(rlib *, struct rlib_part *, struct rlib_report *);
+	void (*end_report_header)(rlib *, struct rlib_part *, struct rlib_report *);
+	void (*start_report_footer)(rlib *, struct rlib_part *, struct rlib_report *);
+	void (*end_report_footer)(rlib *, struct rlib_part *, struct rlib_report *);
+	void (*start_report_field_headers)(rlib *, struct rlib_part *, struct rlib_report *);
+	void (*end_report_field_headers)(rlib *, struct rlib_part *, struct rlib_report *);
+	void (*start_report_field_details)(rlib *, struct rlib_part *, struct rlib_report *);
+	void (*end_report_field_details)(rlib *, struct rlib_part *, struct rlib_report *);
+	void (*start_report_line)(rlib *, struct rlib_part *, struct rlib_report *);
+	void (*end_report_line)(rlib *, struct rlib_part *, struct rlib_report *);
+	void (*start_part_header)(rlib *, struct rlib_part *);
+	void (*end_part_header)(rlib *, struct rlib_part *);
+	void (*start_part_page_header)(rlib *, struct rlib_part *);
+	void (*end_part_page_header)(rlib *, struct rlib_part *);
+	void (*start_part_page_footer)(rlib *, struct rlib_part *);
+	void (*end_part_page_footer)(rlib *, struct rlib_part *);
+	void (*start_report_page_footer)(rlib *, struct rlib_part *, struct rlib_report *report);
+	void (*end_report_page_footer)(rlib *, struct rlib_part *, struct rlib_report *report);
+	void (*start_report_break_header)(rlib *, struct rlib_part *, struct rlib_report *, struct rlib_report_break *);
+	void (*end_report_break_header)(rlib *, struct rlib_part *, struct rlib_report *, struct rlib_report_break *);
+	void (*start_report_break_footer)(rlib *, struct rlib_part *, struct rlib_report *, struct rlib_report_break *);
+	void (*end_report_break_footer)(rlib *, struct rlib_part *, struct rlib_report *, struct rlib_report_break *);
+	void (*start_report_no_data)(rlib *, struct rlib_part *, struct rlib_report *);
+	void (*end_report_no_data)(rlib *, struct rlib_part *, struct rlib_report *);
+
+
 	void (*finalize_private)(rlib *);
 	void (*spool_private)(rlib *);
 	void (*start_line)(rlib *, int);
 	void (*end_line)(rlib *, int);
-	void (*start_output_section)(rlib *);
-	void (*end_output_section)(rlib *);
+	void (*start_output_section)(rlib *, struct rlib_report_output_array *);
+	void (*end_output_section)(rlib *, struct rlib_report_output_array *);
 	char *(*get_output)(rlib *);
 	long (*get_output_length)(rlib *);
-	void (*start_tr)(rlib *);
-	void (*end_tr)(rlib *);
-	void (*start_td)(rlib *, struct rlib_part *part, gfloat left_margin, gfloat bottom_margin, int width, int height, gint border_width, struct rlib_rgb *color);
-	void (*end_td)(rlib *);
+
+	void (*start_part_pages_across)(rlib *, struct rlib_part *part, gfloat left_margin, gfloat bottom_margin, int width, int height, gint border_width, struct rlib_rgb *color);
+	void (*end_part_pages_across)(rlib *, struct rlib_part *part);
 
 	void (*graph_get_x_label_width)(rlib *r, gfloat *width);
 	void (*graph_get_y_label_width)(rlib *r, gfloat *width);
@@ -933,7 +970,8 @@ struct output_filter {
 
 	void (*graph_init)(rlib *r);
 	void (*graph_get_chart_layout)(rlib *r, gfloat top, gfloat bottom, gint cell_height, gint rows, gint *chart_size, gint *chart_height);
-	void (*graph_start)(rlib *r, float, float, float, float, gboolean x_axis_labels_are_under_tick);
+	void (*start_graph)(rlib *r, struct rlib_part *, struct rlib_report *, float, float, float, float, gboolean x_axis_labels_are_under_tick);
+	void (*end_graph)(rlib *r, struct rlib_part *, struct rlib_report *);
 	void (*graph_set_title)(rlib *r, gchar *title);
 	void (*graph_set_name)(rlib *r, gchar *name);
 	void (*graph_set_legend_bg_color)(rlib *r, struct rlib_rgb *);
@@ -955,16 +993,15 @@ struct output_filter {
 	void (*graph_set_data_plot_count)(rlib *r, int count);
 	void (*graph_hint_label_x)(rlib *r, gchar *label);
 	void (*graph_label_x)(rlib *r, int iteration, gchar *label);
-	void (*graph_label_y)(rlib *r, gchar side, int iteration, gchar *label, gboolean false_x);
+	void (*graph_label_y)(rlib *r, gchar side, int iteration, gchar *label);
 	void (*graph_draw_bar)(rlib *r, gint row, gint start_iteration, gint end_iteration, struct rlib_rgb *color, char *label, struct rlib_rgb *label_color, gint width_pad, gint height_pad);
-	void (*graph_plot_bar)(rlib *r, gchar side, gint iteration, int plot, gfloat height, struct rlib_rgb * color,gfloat last_height, gboolean divide_iterations);
-	void (*graph_plot_pie)(rlib *r, gfloat start, gfloat end, gboolean offset, struct rlib_rgb *color);
-	void (*graph_plot_line)(rlib *r, gchar side, gint iteration, gfloat p1_height, gfloat p1_last_height, gfloat p2_height, gfloat p2_last_height, struct rlib_rgb * color);
+	void (*graph_plot_bar)(rlib *r, gchar side, gint iteration, int plot, gfloat height, struct rlib_rgb * color,gfloat last_height, gboolean divide_iterations, gfloat raw_data, char*label);
+	void (*graph_plot_pie)(rlib *r, gfloat start, gfloat end, gboolean offset, struct rlib_rgb *color, gfloat raw_data, gchar *label);
+	void (*graph_plot_line)(rlib *r, gchar side, gint iteration, gfloat p1_height, gfloat p1_last_height, gfloat p2_height, gfloat p2_last_height, struct rlib_rgb * color, gfloat raw_data, gchar *label, gint row_count);
 	void (*graph_hint_label_y)(rlib *r, gchar side, gchar *string);
 	void (*graph_hint_legend)(rlib *r, gchar *string);
 	void (*graph_draw_legend)(rlib *r);
 	void (*graph_draw_legend_label)(rlib *r, gint iteration, gchar *string, struct rlib_rgb *, gboolean);
-	void (*graph_finalize)(rlib *r);
 	int (*free)(rlib *r);
 };
 
@@ -1098,6 +1135,9 @@ void rlib_html_new_output_filter(rlib *r);
 /***** PROTOTYPES: txt.c ******************************************************/
 void rlib_txt_new_output_filter(rlib *r);
 
+/***** PROTOTYPES: xml.c ******************************************************/
+void rlib_xml_new_output_filter(rlib *r);
+
 /***** PROTOTYPES: csv.c ******************************************************/
 void rlib_csv_new_output_filter(rlib *r);
 
@@ -1120,11 +1160,6 @@ gint rlib_add_datasource_csv(rlib *r, const gchar *input_name);
 gpointer rlib_postgres_new_input_filter(void);
 gpointer rlib_postgres_connect(gpointer input_ptr, gchar *conn);
 
-/***** PROTOTYPES: save.c *****************************************************/
-gint save_report(struct rlib_report *rep, char *filename);
-
-/***** PROTOTYPES: load.c *****************************************************/
-struct rlib_part * load_report(gchar *filename);
 
 /***** PROTOTYPES: layout.c ***************************************************/
 gfloat rlib_layout_get_page_width(rlib *r, struct rlib_part *part);

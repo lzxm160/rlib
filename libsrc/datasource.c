@@ -139,10 +139,8 @@ gint rlib_add_datasource_odbc(rlib *r, const gchar *input_name, const gchar *sou
 }
 
 gint rlib_add_datasource_xml(rlib *r, const gchar *input_name) {
-	gpointer xml;
-
 	r->inputs[r->inputs_count].input = rlib_xml_new_input_filter();
-	xml = rlib_xml_connect(r->inputs[r->inputs_count].input);
+	rlib_xml_connect(r->inputs[r->inputs_count].input);
 	r->inputs[r->inputs_count].name = g_strdup(input_name);
 	r->inputs[r->inputs_count].handle = NULL;
 	r->inputs[r->inputs_count].input->info.encoder = NULL;
@@ -151,10 +149,8 @@ gint rlib_add_datasource_xml(rlib *r, const gchar *input_name) {
 }
 
 gint rlib_add_datasource_csv(rlib *r, const gchar *input_name) {
-	gpointer csv;
-
 	r->inputs[r->inputs_count].input = rlib_csv_new_input_filter();
-	csv = rlib_csv_connect(r->inputs[r->inputs_count].input);
+	rlib_csv_connect(r->inputs[r->inputs_count].input);
 	r->inputs[r->inputs_count].name = g_strdup(input_name);
 	r->inputs[r->inputs_count].handle = NULL;
 	r->inputs[r->inputs_count].input->info.encoder = NULL;

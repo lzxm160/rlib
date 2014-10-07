@@ -1,4 +1,4 @@
-<? dl ("rlib.so");
+<?php
 	$data[0][0] = "name";
 	$data[0][1] = "ty_sales";
 	$data[0][2] = "ly_sales";
@@ -242,6 +242,18 @@
 	$sales_data[4][1] = "5000";
 	$sales_data[4][2] = "7.00";
 
+
+	$sales_data2[0] = array('company', 'region', 'district', 'store', 'sales');
+
+	$sales_data2[1] = array('Foo, Inc.', 'Region A','District X', 'Store #1', 1500.00);
+	$sales_data2[2] = array('Foo, Inc.', 'Region A','District X', 'Store #2', 1300.00);
+	$sales_data2[3] = array('Foo, Inc.', 'Region A','District Y', 'Store #3', 2000.00);
+	$sales_data2[4] = array('Foo, Inc.', 'Region A','District Y', 'Store #4', 1800.00);
+	$sales_data2[5] = array('Foo, Inc.', 'Region B','District M', 'Store #11', 2500.00);
+	$sales_data2[6] = array('Foo, Inc.', 'Region B','District M', 'Store #12', 2300.00);
+	$sales_data2[7] = array('Foo, Inc.', 'Region B','District N', 'Store #13', 3000.00);
+	$sales_data2[8] = array('Foo, Inc.', 'Region B','District N', 'Store #14', 2800.00);
+
 	$rlib =	rlib_init();
 	rlib_add_datasource_array($rlib, "local_array");
 	rlib_add_query_as($rlib, "local_array", "data", "data");
@@ -249,10 +261,19 @@
 	rlib_add_query_as($rlib, "local_array", "pie_data", "pie_data");
 	rlib_add_query_as($rlib, "local_array", "pie_data2", "pie_data2");
 	rlib_add_query_as($rlib, "local_array", "sales_data", "sales_data");
+	rlib_add_query_as($rlib, "local_array", "sales_data2", "sales_data2");
 	rlib_set_output_parameter($rlib, "html_image_directory", "/tmp");
 	rlib_set_output_parameter($rlib, "trim_links", "1");
 	rlib_add_report($rlib, "graph.xml");
-	rlib_set_output_format_from_text($rlib, "pdf");
+
+	$allowable_formats = array('pdf', 'xml', 'txt', 'csv', 'html');
+
+	if (isset($argv[1]) && in_array($argv[1], $allowable_formats))
+		rlib_set_output_format_from_text($rlib, $argv[1]);
+	else if (isset($_REQUEST['format']) && in_array($_REQUEST['format'], $allowable_formats))
+		rlib_set_output_format_from_text($rlib, $_REQUEST['format']);
+	else
+		rlib_set_output_format_from_text($rlib, "xml");
 	rlib_execute($rlib);
 	//header(rlib_get_content_type($rlib));
 	$ct = rlib_get_content_type($rlib);

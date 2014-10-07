@@ -1577,8 +1577,7 @@ gint rlib_pcode_operator_stodt(rlib *r, struct rlib_pcode *code, struct rlib_val
 		gint year=2000, month=1, day=1, hour=12, min=0, sec=0;
 		struct rlib_datetime dt;
 		gchar *str = RLIB_VALUE_GET_AS_STRING(v1);
-		gint result;
-		result = sscanf(str, "%4d%2d%2d%2d%2d%2d", &year, &month, &day, &hour, &min, &sec);
+		sscanf(str, "%4d%2d%2d%2d%2d%2d", &year, &month, &day, &hour, &min, &sec);
 		rlib_datetime_clear(&dt);
 		rlib_datetime_set_date(&dt, year, month, day);
 		rlib_datetime_set_time(&dt, hour, min, sec);
@@ -1599,8 +1598,7 @@ gint rlib_pcode_operator_stodtsql(rlib *r, struct rlib_pcode *code, struct rlib_
 		gint year=2000, month=1, day=1, hour=12, min=0, sec=0;
 		struct rlib_datetime dt;
 		gchar *str = RLIB_VALUE_GET_AS_STRING(v1);
-		gint result;
-		result = sscanf(str, "%4d-%2d-%2d %2d:%2d:%2d", &year, &month, &day, &hour, &min, &sec);
+		sscanf(str, "%4d-%2d-%2d %2d:%2d:%2d", &year, &month, &day, &hour, &min, &sec);
 		rlib_datetime_clear(&dt);
 		rlib_datetime_set_date(&dt, year, month, day);
 		rlib_datetime_set_time(&dt, hour, min, sec);

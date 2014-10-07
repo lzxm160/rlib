@@ -148,7 +148,6 @@ static void rlib_datetime_format_time(struct rlib_datetime *dt, char *buf, int m
 static gchar datechars[] = "aAbBcCdDeFgGhJmuUVwWxyY";
 static gchar timechars[] = "HIklMpPrRsSTXzZ";
 static void split_tdformat(gchar **datefmt, gchar **timefmt, gint *order, const gchar *fmtstr) {
-	gint havedate = FALSE, havetime = FALSE;
 	gchar *splitpoint = NULL;
 	gchar *s, *t = NULL;
 	gchar *pctptr;
@@ -173,11 +172,9 @@ static void split_tdformat(gchar **datefmt, gchar **timefmt, gint *order, const 
 			if ((s = r_strchr(datechars, r_strlen(datechars), r_getchr(t)))) {
 				if (mode && (mode != 1)) splitpoint = pctptr;
 				if (!mode) mode = 1; /* date first */
-				havedate = TRUE;
 			} else if ((s = r_strchr(timechars, r_strlen(timechars), r_getchr(t)))) {
 				if (mode && (mode != 2)) splitpoint = pctptr;
 				if (!mode) mode = 2; /* time first */
-				havetime = TRUE;
 			}
 			t = r_nextchr(t);
 			break;
@@ -258,9 +255,7 @@ gint rlib_datetime_daysdiff(struct rlib_datetime *dt, struct rlib_datetime *dt2)
 void rlib_datetime_addto(struct rlib_datetime *dt, gint64 amt) {
 	long ndays = amt;
 	long nsecs = 0;
-	gboolean hastime = FALSE;
 	if (rlib_datetime_valid_time(dt)) {
-		hastime = TRUE;
 		nsecs = rlib_datetime_time_as_long(dt) + amt;
 		ndays = nsecs / RLIB_DATETIME_SECSPERDAY;
 		rlib_datetime_set_time_from_long(dt, nsecs % RLIB_DATETIME_SECSPERDAY);

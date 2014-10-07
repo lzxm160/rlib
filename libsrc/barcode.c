@@ -126,7 +126,6 @@ void gdImageBarcodeChar(gdImagePtr im, int *curx, int height, char c) {
 
 int gd_barcode_png_to_file(char *filename, char *barcode, int height) {
 	gdImagePtr im;
-	int black;
 	int white;
 	char *p = barcode;
 	int curx = 0;
@@ -135,7 +134,6 @@ int gd_barcode_png_to_file(char *filename, char *barcode, int height) {
 
 	/* Setup gd */
 	im = gdImageCreate(width, height);
-	black = gdImageColorAllocate(im, 0, 0, 0);
 	white = gdImageColorAllocate(im, 255, 255, 255);
 
 	/* Make it all white */

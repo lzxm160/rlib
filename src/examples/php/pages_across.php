@@ -1,4 +1,4 @@
-<? dl ("rlib.so");
+<?php 
 	$data[0][0] = "first_name";
 	$data[0][1] = "last_name";
 	$data[0][2] = "color";
@@ -10,7 +10,7 @@
 	$data[1][3] = "1";
 
 	$data[2][0] = "Eric";
-	$data[2][1] = "Eburuschkin";
+	$data[2][1] = "E&buruschkin";
 	$data[2][2] = "green";
 	$data[2][3] = "1";
 
@@ -54,8 +54,8 @@
 	$data[10][2] = "purple";
 	$data[10][3] = "2";
 
-	$data[11][0] = "Jessie";
-	$data[11][1] = "Jessie";
+	$data[11][0] = "Jennifer";
+	$data[11][1] = "Jennifer";
 	$data[11][2] = "purple";
 	$data[11][3] = "2";
 
@@ -83,7 +83,8 @@
 	rlib_add_datasource_array($rlib, "local_array");
 	rlib_add_query_as($rlib, "local_array", "data", "data");
 	rlib_add_report($rlib, "pages_across.xml");
-	rlib_set_output_format_from_text($rlib, "pdf");
+//	rlib_add_report($rlib, "x.xml");
+	rlib_set_output_format_from_text($rlib, "html");
 	rlib_execute($rlib);
 	header(rlib_get_content_type($rlib));
 	rlib_spool($rlib);
