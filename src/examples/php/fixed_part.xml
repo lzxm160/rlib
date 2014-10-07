@@ -41,21 +41,21 @@
 							<Line bgcolor="'0xe5e5e5'">
 								<literal width="3" col="1">NUM</literal>
 								<literal width="1"/>
-								<literal width="20" col="1">NAME</literal>
+								<literal width="20" col="2">NAME</literal>
 								<literal width="1"/>
-								<literal width="10" col="1">UNIT</literal>
+								<literal width="10" col="3">UNIT</literal>
 								<literal width="1"/>
-								<literal width="10" col="1">OPEN</literal>
+								<literal width="10" col="4">OPEN</literal>
 								<literal width="1"/>
-								<literal width="10" col="1">USAGE</literal>
+								<literal width="10" col="5">USAGE</literal>
 								<literal width="1"/>
-								<literal width="10" col="1">RECEIVED</literal>
+								<literal width="10" col="6">RECEIVED</literal>
 								<literal width="1"/>
-								<literal width="10" col="1">TRANS IN</literal>
+								<literal width="10" col="7">TRANS IN</literal>
 								<literal width="1"/>
-								<literal width="10" col="1">TRANS OUT</literal>
+								<literal width="10" col="8">TRANS OUT</literal>
 								<literal width="1"/>
-								<literal width="10" col="1">WASTE</literal>
+								<literal width="10" col="9">WASTE</literal>
 								<literal width="1"/>
 							</Line>
 							<HorizontalLine size="1" bgcolor="'black'"/>
@@ -67,21 +67,21 @@
 							<Line bgcolor="iif(r.detailcnt%2,'0xe5e5e5','white')">
 								<field value="num" width="3" align="left" col="1"/>
 								<literal width="1"/>
-								<field value="name" width="20" align="left" col="1"/>
+								<field value="name" width="20" align="left" col="2"/>
 								<literal width="1"/>
-								<field value="unit" width="10" align="left" col="1"/>
+								<field value="unit" width="10" align="left" col="3"/>
 								<literal width="1"/>
-								<field value="open" width="10" align="left" col="1"/>
+								<field value="open" width="10" align="left" col="4"/>
 								<literal width="1"/>
-								<field value="usage" width="10" align="left" col="1"/>
+								<field value="usage" width="10" align="left" col="5"/>
 								<literal width="1"/>
-								<field value="received" width="10" align="left" col="1"/>
+								<field value="received" width="10" align="left" col="6"/>
 								<literal width="1"/>
-								<field value="transfer_in" width="10" align="left" col="1"/>
+								<field value="transfer_in" width="10" align="left" col="7"/>
 								<literal width="1"/>
-								<field value="transfer_out" width="10" align="left" col="1"/>
+								<field value="transfer_out" width="10" align="left" col="8"/>
 								<literal width="1"/>
-								<field value="waste" width="10" align="left" col="1"/>
+								<field value="waste" width="10" align="left" col="9"/>
 								<literal width="1"/>
 							</Line>
 						</Output>
@@ -121,7 +121,7 @@
 								<literal width="1"/>
 								<literal width="7" col="3">EQV</literal>
 								<literal width="1"/>
-								<literal width="10" col="3">REG EQUIV</literal>
+								<literal width="10" col="4">REG EQUIV</literal>
 							</Line>
 							<HorizontalLine size="1" bgcolor="'black'" length="39"/>
 							<HorizontalLine size="4" bgcolor="'white'"/>
@@ -290,7 +290,7 @@
 								<literal width="1"/>
 								<field value="manager_id" width="9" align="left" col="3"/>
 								<literal width="1"/>
-								<field value="amount" width="10" align="left" col="3"/>
+								<field value="amount" width="10" align="left" col="4"/>
 							</Line>
 						</Output>
 					</FieldDetails>
@@ -403,7 +403,7 @@
 								<literal width="1"/>
 								<field value="from" width="4" align="left" col="3"/>
 								<literal width="1"/>
-								<field value="to" width="4" align="left" col="3"/>
+								<field value="to" width="4" align="left" col="4"/>
 							</Line>
 						</Output>
 					</FieldDetails>
@@ -514,7 +514,7 @@
 								<literal width="1"/>
 								<literal width="20" col="2"> NAME   </literal>
 								<literal width="1"/>
-								<literal width="12" col="4">    AMOUNT  </literal>
+								<literal width="12" col="3">    AMOUNT  </literal>
 							</Line>
 							<HorizontalLine size="1" bgcolor="'black'" length="42"/>
 							<HorizontalLine size="4" bgcolor="'white'"/>
@@ -570,7 +570,7 @@
 								<literal width="1"/>
 								<literal width="20" col="2"> NAME   </literal>
 								<literal width="1"/>
-								<literal width="12" col="4">    AMOUNT  </literal>
+								<literal width="12" col="3">    AMOUNT  </literal>
 							</Line>
 							<HorizontalLine size="1" bgcolor="'black'" length="42"/>
 							<HorizontalLine size="4" bgcolor="'white'"/>
@@ -692,21 +692,21 @@
 							<Line bgcolor="'0xe5e5e5'">
 								<literal width="3" col="1">NUM</literal>
 								<literal width="1"/>
-								<literal width="20" col="1">NAME</literal>
+								<literal width="20" col="2">NAME</literal>
 								<literal width="1"/>
-								<literal width="10" col="1">UNIT</literal>
+								<literal width="10" col="3">UNIT</literal>
 								<literal width="1"/>
-								<literal width="10" col="1">OPEN</literal>
+								<literal width="10" col="4">OPEN</literal>
 								<literal width="1"/>
-								<literal width="10" col="1">USAGE</literal>
+								<literal width="10" col="5">USAGE</literal>
 								<literal width="1"/>
-								<literal width="10" col="1">RECEIVED</literal>
+								<literal width="10" col="6">RECEIVED</literal>
 								<literal width="1"/>
-								<literal width="10" col="1">TRANS IN</literal>
+								<literal width="10" col="7">TRANS IN</literal>
 								<literal width="1"/>
-								<literal width="10" col="1">TRANS OUT</literal>
+								<literal width="10" col="8">TRANS OUT</literal>
 								<literal width="1"/>
-								<literal width="10" col="1">WASTE</literal>
+								<literal width="10" col="9">WASTE</literal>
 								<literal width="1"/>
 							</Line>
 							<HorizontalLine size="1" bgcolor="'black'"/>
@@ -718,21 +718,21 @@
 							<Line bgcolor="iif(r.detailcnt%2,'0xe5e5e5','white')">
 								<field value="num" width="3" align="left" col="1"/>
 								<literal width="1"/>
-								<field value="name" width="20" align="left" col="1"/>
+								<field value="name" width="20" align="left" col="2"/>
 								<literal width="1"/>
-								<field value="unit" width="10" align="left" col="1"/>
+								<field value="unit" width="10" align="left" col="3"/>
 								<literal width="1"/>
-								<field value="open" width="10" align="left" col="1"/>
+								<field value="open" width="10" align="left" col="4"/>
 								<literal width="1"/>
-								<field value="usage" width="10" align="left" col="1"/>
+								<field value="usage" width="10" align="left" col="5"/>
 								<literal width="1"/>
-								<field value="received" width="10" align="left" col="1"/>
+								<field value="received" width="10" align="left" col="6"/>
 								<literal width="1"/>
-								<field value="transfer_in" width="10" align="left" col="1"/>
+								<field value="transfer_in" width="10" align="left" col="7"/>
 								<literal width="1"/>
-								<field value="transfer_out" width="10" align="left" col="1"/>
+								<field value="transfer_out" width="10" align="left" col="8"/>
 								<literal width="1"/>
-								<field value="waste" width="10" align="left" col="1"/>
+								<field value="waste" width="10" align="left" col="9"/>
 								<literal width="1"/>
 							</Line>
 						</Output>

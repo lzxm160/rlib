@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2006 SICOM Systems, INC.
+ *  Copyright (C) 2003-2014 SICOM Systems, INC.
  *
  *  Authors: Bob Doan <bdoan@sicompos.com>
  *
@@ -29,7 +29,8 @@
 static void rlib_print_break_header_output(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb, struct rlib_element *e, gint backwards) {
 	gint blank = TRUE;
 	gint suppress = FALSE;
-
+	gint i;
+	
 	if(!OUTPUT(r)->do_breaks)
 		return;
 		
@@ -46,18 +47,40 @@ static void rlib_print_break_header_output(rlib *r, struct rlib_part *part, stru
 	}
 	if(!suppress || (suppress && !blank)) {
 		rb->didheader = TRUE;
-		if(e != NULL)
+		if(e != NULL) {
+			for(i=0;i<report->pages_across;i++) {
+				OUTPUT(r)->set_working_page(r, part, i);
+				OUTPUT(r)->start_report_break_header(r, part, report, rb);
+			}
+
 			rlib_layout_report_output(r, part, report, e, backwards, TRUE);
+
+			for(i=0;i<report->pages_across;i++) {
+				OUTPUT(r)->set_working_page(r, part, i);
+				OUTPUT(r)->end_report_break_header(r, part, report, rb);
+			}
+		}
 	} else {
 		rb->didheader = FALSE;
 	}
 }
 
 static void rlib_print_break_footer_output(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_report_break *rb, struct rlib_element *e, gint backwards) {
+	gint i;
+	
 	if(!OUTPUT(r)->do_breaks)
 		return;
 	if(rb->didheader) {
+		for(i=0;i<report->pages_across;i++) {
+			OUTPUT(r)->set_working_page(r, part, i);
+			OUTPUT(r)->start_report_break_footer(r, part, report, rb);
+		}
 		rlib_layout_report_output(r, part, report, e, backwards, TRUE);
+	
+		for(i=0;i<report->pages_across;i++) {
+			OUTPUT(r)->set_working_page(r, part, i);
+			OUTPUT(r)->end_report_break_footer(r, part, report, rb);
+		}
 	}
 }
 
@@ -188,32 +211,32 @@ static void rlib_break_all_below_in_reverse_order(rlib *r, struct rlib_part *par
 	struct rlib_element *xxx, *be;
 	struct rlib_break_fields *bf = NULL;
 
-	for(xxx = e; xxx != NULL; xxx=xxx->next)
+	for (xxx = e; xxx != NULL; xxx=xxx->next)
 		count++;
 
-	for(i=count;i > 0;i--) {
+	for (i=count;i > 0;i--) {
 		xxx = e;
 		for(j=0;j<i-1;j++)
 			xxx = xxx->next;		
 		rb = xxx->data;
-		for(be = rb->fields; be != NULL; be=be->next) {
+		for (be = rb->fields; be != NULL; be=be->next) {
 			bf = be->data;
 			rlib_value_free(bf->rval);
 			bf->rval = NULL;
 		}
-		if(OUTPUT(r)->do_breaks) {
+		if (OUTPUT(r)->do_breaks) {
 			gint did_end_page = FALSE;
 			
 			
-			if(precalculate == FALSE)
+			if (precalculate == FALSE)
 				did_end_page = rlib_end_page_if_line_wont_fit(r, part, report, rb->footer);
 
-			if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result]->result))
+			if (!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result]->result))
 				rlib_navigate_previous(r, r->current_result);
 
-			if(precalculate == FALSE) {
+			if (precalculate == FALSE) {
 				rlib_process_expression_variables(r, report);
-				if(did_end_page) {
+				if (bf != NULL && did_end_page) {
 					bf->rval = rlib_execute_pcode(r, &bf->rval2, bf->code, NULL);
 					rlib_print_break_header_output(r, part, report, rb, rb->header, FALSE);
 					rlib_value_free(bf->rval);
@@ -222,7 +245,7 @@ static void rlib_break_all_below_in_reverse_order(rlib *r, struct rlib_part *par
 
 				rlib_print_break_footer_output(r, part, report, rb, rb->footer, FALSE);
 			}
-			if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result]->result))
+			if (!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result]->result))
 				rlib_navigate_next(r, r->current_result);
 		}
 

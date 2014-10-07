@@ -166,7 +166,6 @@ static gint rlib_execute_queries(rlib *r) {
 
 gint rlib_execute(rlib *r) {
 	gint i;
-	char newfile[MAXSTRLEN];
 	r->now = time(NULL);
 
 	if(r->format == RLIB_FORMAT_HTML) {
@@ -187,10 +186,7 @@ gint rlib_execute(rlib *r) {
 
 	xmlKeepBlanksDefault(0);
 	for(i=0;i<r->parts_count;i++) {
-		if(r->reportstorun[i].type == RLIB_REPORT_TYPE_FILE)
-			sprintf(newfile, "%s.rlib", r->reportstorun[i].name);
-		if(r->reportstorun[i].type == RLIB_REPORT_TYPE_BUFFER || (r->parts[i] = load_report(newfile)) == NULL)
-			r->parts[i] = parse_part_file(r, r->reportstorun[i].name, r->reportstorun[i].type);
+		r->parts[i] = parse_part_file(r, r->reportstorun[i].name, r->reportstorun[i].type);
 		xmlCleanupParser();		
 		if(r->parts[i] == NULL) {
 			r_error(r,"Failed to load a report file [%s]\n", r->reportstorun[i].name);

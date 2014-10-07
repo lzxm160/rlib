@@ -63,7 +63,7 @@ static gint rlib_do_followers(rlib *r, gint i, gint way) {
 }
 
 static gint rlib_navigate_followers(rlib *r, gint my_leader, gint way) {
-	gint i, rtn = TRUE, bacon;
+	gint i, rtn = TRUE;
 	gint found = FALSE;
 	for(i=0;i<r->resultset_followers_count;i++) {
 		found = FALSE;
@@ -85,7 +85,7 @@ static gint rlib_navigate_followers(rlib *r, gint my_leader, gint way) {
 					} 
 					if(found == FALSE) {
 						r->results[r->followers[i].follower]->navigation_failed = FALSE;
-						bacon = rlib_do_followers(r, i, RLIB_NAVIGATE_FIRST);
+						rlib_do_followers(r, i, RLIB_NAVIGATE_FIRST);
 						do {
 							rlib_execute_pcode(r, &rval_follower, r->followers[i].follower_code, NULL);
 							if(rvalcmp(&rval_leader,&rval_follower) == 0 ) {

@@ -179,15 +179,12 @@ static void rlib_graph_label_y_axis(rlib *r, gint side, gboolean for_real, gint 
 	sprintf(format, "%%0%d.0%df", max_slen-max, max);
 
 	for(i=0;i<y_ticks+1;i++) {
-		gboolean special = FALSE;
 		gdouble val = y_min + (((y_max-y_min)/y_ticks)*i);
 		gchar label[MAXSTRLEN];		
 		sprintf(label, format, val);
 
-		if(val == y_origin)
-			special = TRUE;
 		if(for_real) 
-			OUTPUT(r)->graph_label_y(r, side, i, label, special);	
+			OUTPUT(r)->graph_label_y(r, side, i, label);	
 		else
 			OUTPUT(r)->graph_hint_label_y(r, side, label);	
 	}
@@ -242,6 +239,7 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	gint left_axis_decimal_hint=-1, right_axis_decimal_hint=-1;
 	gboolean disabled, tmp_disabled;
 	gboolean minor_tick[MAX_X_TICKS];
+	gboolean executed_label_pcode = FALSE;
 
 	left_margin_offset += part->left_margin;
 
@@ -314,7 +312,7 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 
 	rlib_fetch_first_rows(r);
 	row_count = 0;
-	OUTPUT(r)->graph_start(r, left_margin_offset, rlib_layout_get_next_line_by_font_point(r, part, part->position_top[0]+(*top_margin_offset)+report->top_margin, 0), graph_width, graph_height, should_label_under_tick);
+	OUTPUT(r)->start_graph(r, part, report, left_margin_offset, rlib_layout_get_next_line_by_font_point(r, part, part->position_top[0]+(*top_margin_offset)+report->top_margin, 0), graph_width, graph_height, should_label_under_tick);
 
 	if(legend_orientation[0] != 0) {
 		gint orientation = RLIB_GRAPH_LEGEND_ORIENTATION_RIGHT;
@@ -583,7 +581,8 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	}
 
 	row_count = 0;
-
+	last_row_values[0] = 0;
+	last_row_height[0] = 0;
 	rlib_fetch_first_rows(r);
 	if(!INPUT(r, r->current_result)->isdone(INPUT(r, r->current_result), r->results[r->current_result]->result)) {
 		while (1) {
@@ -613,6 +612,9 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 									have_right_side = TRUE;
 								}
 							}
+
+							executed_label_pcode = rlib_execute_as_string(r, plot->label_code, legend_label, MAXSTRLEN);
+
 							if(!rlib_execute_as_string(r, plot->color_code, color_str, MAXSTRLEN)) {
 								plot_color = color[data_plot_count];
 							} else {
@@ -646,17 +648,18 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 									last_height = last_height_pos;
 								else
 									last_height = last_height_neg;
-							} 
+							}
+							
+							 
 							if(is_row_graph(graph_type)) {
-								OUTPUT(r)->graph_plot_bar(r, side, row_count, plot_count, value, &plot_color,last_height, divide_iterations);
+								OUTPUT(r)->graph_plot_bar(r, side, row_count, plot_count, value, &plot_color,last_height, divide_iterations, y_value, legend_label);
 							} else if(is_line_graph(graph_type)) {
-								if(row_count > 0)
-									OUTPUT(r)->graph_plot_line(r, side, row_count, last_row_values[i], last_row_height[i], value, last_height, &plot_color);
+								OUTPUT(r)->graph_plot_line(r, side, row_count, last_row_values[i], last_row_height[i], value, last_height, &plot_color, y_value, legend_label, row_count);
 							} else if(is_pie_graph(graph_type) && !isnan(value)) {
 								gboolean offset = graph_type == RLIB_GRAPH_TYPE_PIE_OFFSET;
-								OUTPUT(r)->graph_plot_pie(r, running_col_sum, value+running_col_sum, offset, &color[row_count + data_plot_count]);
+								OUTPUT(r)->graph_plot_pie(r, running_col_sum, value+running_col_sum, offset, &color[row_count + data_plot_count], y_value, legend_label);
 								running_col_sum += value;
-								if(rlib_execute_as_string(r, plot->label_code, legend_label, MAXSTRLEN))
+								if (executed_label_pcode)
 									OUTPUT(r)->graph_draw_legend_label(r, row_count+data_plot_count, legend_label, &color[row_count + data_plot_count], is_line_graph(graph_type));
 							}
 								
@@ -690,6 +693,6 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 	g_free(row_sum);
 	g_free(last_row_values);
 	g_free(last_row_height);
-	OUTPUT(r)->graph_finalize(r);
+	OUTPUT(r)->end_graph(r, part, report);
 	return graph_height / RLIB_PDF_DPI;
 }
