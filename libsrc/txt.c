@@ -251,6 +251,8 @@ static void txt_set_font_point(rlib *r, gint point) {}
 static void txt_start_line(rlib *r, gint backwards) {}
 static void txt_start_output_section(rlib *r, struct rlib_report_output_array *roa) {}
 static void txt_end_output_section(rlib *r, struct rlib_report_output_array *roa) {}
+static void txt_start_evil_csv(rlib *r) {}
+static void txt_end_evil_csv(rlib *r) {}
 static void txt_start_part_table(rlib *r, struct rlib_part *part) {}
 static void txt_end_part_table(rlib *r, struct rlib_part *part) {}
 static void txt_start_part_tr(rlib *r, struct rlib_part *part) {}
@@ -374,6 +376,8 @@ void rlib_txt_new_output_filter(rlib *r) {
 	OUTPUT(r)->end_line = txt_end_line;
 	OUTPUT(r)->start_output_section = txt_start_output_section;   
 	OUTPUT(r)->end_output_section = txt_end_output_section; 
+	OUTPUT(r)->start_evil_csv = txt_start_evil_csv;   
+	OUTPUT(r)->end_evil_csv = txt_end_evil_csv; 
 	OUTPUT(r)->get_output = txt_get_output;
 	OUTPUT(r)->get_output_length = txt_get_output_length;
 	OUTPUT(r)->set_working_page = txt_set_working_page;  

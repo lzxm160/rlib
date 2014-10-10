@@ -1231,7 +1231,9 @@ static gint rlib_layout_report_outputs_across_pages(rlib *r, struct rlib_part *p
 gint rlib_layout_report_output(rlib *r, struct rlib_part *part, struct rlib_report *report, struct rlib_element *e, gint backwards, 
 gboolean page_header_layout) {
 	gint output_count = 0;
+	OUTPUT(r)->start_evil_csv(r);
 	output_count = rlib_layout_report_outputs_across_pages(r, part, report, e, backwards, page_header_layout);
+	OUTPUT(r)->end_evil_csv(r);
 	return output_count;
 }
 
@@ -1240,6 +1242,8 @@ gint rlib_layout_report_output_with_break_headers(rlib *r, struct rlib_part *par
 	gint output_count = 0;
 	gint i;
 	
+	OUTPUT(r)->start_evil_csv(r);
+
 	if(report->breaks != NULL) {
 		for(e = report->breaks; e != NULL; e=e->next) {
 			struct rlib_report_break *rb = e->data;
@@ -1274,6 +1278,8 @@ gint rlib_layout_report_output_with_break_headers(rlib *r, struct rlib_part *par
 		OUTPUT(r)->set_working_page(r, part, i);
 		OUTPUT(r)->end_report_field_details(r, part, report);
 	}
+	OUTPUT(r)->end_evil_csv(r);
+
 	return output_count;
 }
 

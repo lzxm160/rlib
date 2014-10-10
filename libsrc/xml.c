@@ -216,6 +216,9 @@ static void xml_end_output_section(rlib *r, struct rlib_report_output_array *roa
 	g_string_append(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], "</output>\n");
 }
 
+static void xml_start_evil_csv(rlib *r) {}
+static void xml_end_evil_csv(rlib *r) {}
+
 static void xml_start_part_header(rlib *r, struct rlib_part *part) {
 	g_string_append(OUTPUT_PRIVATE(r)->top_of_page[OUTPUT_PRIVATE(r)->page_number], "<part_header>\n");
 }
@@ -486,6 +489,8 @@ void rlib_xml_new_output_filter(rlib *r) {
 	OUTPUT(r)->end_line = xml_end_line;
 	OUTPUT(r)->start_output_section = xml_start_output_section;   
 	OUTPUT(r)->end_output_section = xml_end_output_section; 
+	OUTPUT(r)->start_evil_csv = xml_start_evil_csv;   
+	OUTPUT(r)->end_evil_csv = xml_end_evil_csv; 
 	OUTPUT(r)->get_output = xml_get_output;
 	OUTPUT(r)->get_output_length = xml_get_output_length;
 	OUTPUT(r)->set_working_page = xml_set_working_page;  
