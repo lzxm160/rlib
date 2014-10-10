@@ -1150,8 +1150,10 @@ static void pdf_graph_draw_legend_label(rlib *r, gint iteration, gchar *label, s
 static void pdf_end_graph(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
 static void pdf_end_part_pages_across(rlib *r, struct rlib_part *part) {}
 static void pdf_stub_line(rlib *r, int backwards) {}
-static void pdf_end_output_section(rlib *r, struct rlib_report_output_array *roa) {}
 static void pdf_start_output_section(rlib *r, struct rlib_report_output_array *roa) {}
+static void pdf_end_output_section(rlib *r, struct rlib_report_output_array *roa) {}
+static void pdf_start_evil_csv(rlib *r) {}
+static void pdf_end_evil_csv(rlib *r) {}
 static void pdf_end_boxurl(rlib *r, gint backwards) {}
 static void pdf_end_draw_cell_background(rlib *r) {}
 static void pdf_start_report(rlib *r, struct rlib_part *part, struct rlib_report *report) {}
@@ -1258,6 +1260,8 @@ void rlib_pdf_new_output_filter(rlib *r) {
 	OUTPUT(r)->set_raw_page = pdf_set_raw_page;
 	OUTPUT(r)->start_output_section = pdf_start_output_section;
 	OUTPUT(r)->end_output_section = pdf_end_output_section;
+	OUTPUT(r)->start_evil_csv = pdf_start_evil_csv;
+	OUTPUT(r)->end_evil_csv = pdf_end_evil_csv;
 	OUTPUT(r)->get_output = pdf_get_output;
 	OUTPUT(r)->get_output_length = pdf_get_output_length;
 	OUTPUT(r)->start_part_table = pdf_start_part_table;

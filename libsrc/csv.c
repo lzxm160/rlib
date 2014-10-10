@@ -174,16 +174,18 @@ static void print_csv_line(rlib *r) {
 	}	
 }
 
-static void csv_start_output_section(rlib *r, struct rlib_report_output_array *roa) {
+static void csv_start_output_section(rlib *r, struct rlib_report_output_array *roa) {}
+
+static void csv_start_evil_csv(rlib *r) {
 	gint i;
-	if(roa == NULL || roa->page <= 1) { //TODO: Not sure if this will work for pages across reports
-		for(i=0;i<MAX_COL;i++) {
-			OUTPUT_PRIVATE(r)->col[i][0] = 0;
-		}
+	for(i=0;i<MAX_COL;i++) {
+		OUTPUT_PRIVATE(r)->col[i][0] = 0;
 	}
 }
 
-static void csv_end_output_section(rlib *r,  struct rlib_report_output_array *roa) {
+static void csv_end_output_section(rlib *r,  struct rlib_report_output_array *roa) {}
+
+static void csv_end_evil_csv(rlib *r) {
 	if(OUTPUT_PRIVATE(r)->new_line_on_end_of_line == FALSE)
 		print_csv_line(r);
 }
@@ -393,6 +395,8 @@ void rlib_csv_new_output_filter(rlib *r) {
 	OUTPUT(r)->end_line = csv_end_line;
 	OUTPUT(r)->start_output_section = csv_start_output_section;   
 	OUTPUT(r)->end_output_section = csv_end_output_section; 
+	OUTPUT(r)->start_evil_csv = csv_start_evil_csv;   
+	OUTPUT(r)->end_evil_csv = csv_end_evil_csv; 
 	OUTPUT(r)->get_output = csv_get_output;
 	OUTPUT(r)->get_output_length = csv_get_output_length;
 	OUTPUT(r)->set_working_page = csv_set_working_page;  
