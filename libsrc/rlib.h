@@ -954,8 +954,13 @@ struct output_filter {
 	void (*spool_private)(rlib *);
 	void (*start_line)(rlib *, int);
 	void (*end_line)(rlib *, int);
+
 	void (*start_output_section)(rlib *, struct rlib_report_output_array *);
 	void (*end_output_section)(rlib *, struct rlib_report_output_array *);
+
+	void (*start_evil_csv)(rlib *);
+	void (*end_evil_csv)(rlib *);
+
 	char *(*get_output)(rlib *);
 	long (*get_output_length)(rlib *);
 

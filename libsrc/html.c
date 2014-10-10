@@ -1206,6 +1206,8 @@ static void html_finalize_private(rlib *r) {
 
 static void html_start_output_section(rlib *r, struct rlib_report_output_array *roa) {}
 static void html_end_output_section(rlib *r, struct rlib_report_output_array *roa) {}
+static void html_start_evil_csv(rlib *r) {}
+static void html_end_evil_csv(rlib *r) {}
 static void html_set_raw_page(rlib *r, struct rlib_part *part, gint page) {}
 static void html_start_part_header(rlib *r, struct rlib_part *part) {}
 static void html_end_part_header(rlib *r, struct rlib_part *part) {}
@@ -1297,6 +1299,8 @@ void rlib_html_new_output_filter(rlib *r) {
 	OUTPUT(r)->end_line = html_end_line;
 	OUTPUT(r)->start_output_section = html_start_output_section;
 	OUTPUT(r)->end_output_section = html_end_output_section;
+	OUTPUT(r)->start_evil_csv = html_start_evil_csv;
+	OUTPUT(r)->end_evil_csv = html_end_evil_csv;
 	OUTPUT(r)->get_output = html_get_output;
 	OUTPUT(r)->get_output_length = html_get_output_length;
 	OUTPUT(r)->set_working_page = html_set_working_page;
