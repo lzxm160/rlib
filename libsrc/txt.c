@@ -206,7 +206,8 @@ static void txt_end_part(rlib *r, struct rlib_part *part) {
 		
 		g_slist_free(list);
 		list = NULL;
-		
+		OUTPUT_PRIVATE(r)->bottom[i] = NULL;		
+		OUTPUT_PRIVATE(r)->top[i] = NULL;		
 
 	}
 	OUTPUT_PRIVATE(r)->length = strlen(OUTPUT_PRIVATE(r)->both);

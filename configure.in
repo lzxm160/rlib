@@ -22,10 +22,10 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_INIT(libsrc/rlib.h)
 AC_CANONICAL_SYSTEM
-AM_INIT_AUTOMAKE(rlib, 2.0.1)
+AM_INIT_AUTOMAKE(rlib, 2.0.3)
 AM_MAINTAINER_MODE
 
-RLIB_VERSION=2.0.1
+RLIB_VERSION=2.0.3
 AC_SUBST(RLIB_VERSION)
 
 RLIB_LT_CURRENT=4

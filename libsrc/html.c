@@ -426,6 +426,9 @@ static void html_end_part(rlib *r, struct rlib_part *part) {
 		g_slist_free(list);
 		list = NULL;
 
+		OUTPUT_PRIVATE(r)->top[i] = NULL;
+		OUTPUT_PRIVATE(r)->bottom[i] = NULL;
+
 //		g_string_append(OUTPUT_PRIVATE(r)->whole_report, "</td><!--END PAGE ACROSS-->\n\n");
 
 
