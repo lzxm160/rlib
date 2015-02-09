@@ -49,8 +49,6 @@ AC_PROG_LN_S
 AM_PROG_AR
 LT_INIT([dlopen disable-shared win32-dll])
 
-AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
-
 dnl AC_LIBLTDL_CONVENIENCE
 AC_SUBST(INCLTDL)
 AC_SUBST(LIBLTDL)
@@ -155,7 +153,8 @@ AM_CONDITIONAL(WIN32, test x$enable_win32 = "xyes")
 AC_SUBST(EXTRA_LDFLAGS)
 
 
-AC_ARG_ENABLE(mysql,              [  --disable-mysql         disable mysql backend],,enable_mysql=yes)
+AC_ARG_ENABLE([mysql],
+	[AS_HELP_STRING([--disable-mysql],[disable mysql backend])],,enable_mysql=yes)
 if test x$enable_mysql = xyes; then
 	dnl Use the standard MySQL detection from mysql.m4
 	dnl MYSQL_CLIENT sets MYSQL_CLIENT_CFLAGS and MYSQL_CLIENT_LIBS.
@@ -170,7 +169,17 @@ if test x$enable_mysql = xyes; then
 fi
 AM_CONDITIONAL(HAVE_MYSQL, test x$enable_mysql = xyes)
 
-AC_ARG_ENABLE(postgres,              [  --disable-postgres       disable postgres backend],,enable_postgres=yes)
+AC_ARG_ENABLE([postgres],
+	[AS_HELP_STRING([--disable-postgres],[disable postgres backend])],,enable_postgres=yes)
+AC_ARG_WITH([pg-config],
+	[AS_HELP_STRING([--with-pg-config=PATH],[A PATH to pg_config script])],,
+	[AC_PATH_PROG(POSTGRES_CONFIG, $PG_CONFIG, no)
+	 if test "x$POSTGRES_CONFIG" = "xno" ; then
+		with_pg_config=no
+	 else
+		with_pg_config=$POSTGRES_CONFIG
+	 fi])
+
 POSTGRES_CFLAGS=""
 POSTGRES_LIBS=""
 case "$target" in
@@ -181,16 +190,14 @@ case "$target" in
         PG_CONFIG=pg_config
         ;;
 esac
+
 if test x$enable_postgres = xyes; then
-	AC_PATH_PROG(POSTGRES_CONFIG, $PG_CONFIG, no)
-	if test "x$POSTGRES_CONFIG" = "xno" ; then
-		echo "*** WARNING: POSTGRES NOT FOUND IN PATH.  RLIB WILL NOT BE COMPILED WITH SUPPORT FOR IT"
-		enable_postgres=no
-	else
-		AC_DEFINE(HAVE_POSTGRES,1,[Build with POSTGRES support])
-		POSTGRES_CFLAGS="-I `"$POSTGRES_CONFIG" --includedir`"
-		POSTGRES_LIBS="-L`"$POSTGRES_CONFIG" --libdir` -lpq"
+	if test "x$with_pg_config" = "xno" ; then
+		AC_MSG_ERROR([--without-pg-config were specified or pg_config is not found in PATH when --enable-postgres is specified])
 	fi
+	AC_DEFINE(HAVE_POSTGRES,1,[Build with POSTGRES support])
+	POSTGRES_CFLAGS="-I `"$POSTGRES_CONFIG" --includedir`"
+	POSTGRES_LIBS="-L`"$POSTGRES_CONFIG" --libdir` -lpq"
 fi
 AC_SUBST(POSTGRES_CFLAGS)
 AC_SUBST(POSTGRES_LIBS)
