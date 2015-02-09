@@ -154,36 +154,20 @@ esac
 AM_CONDITIONAL(WIN32, test x$enable_win32 = "xyes")
 AC_SUBST(EXTRA_LDFLAGS)
 
+
 AC_ARG_ENABLE(mysql,              [  --disable-mysql         disable mysql backend],,enable_mysql=yes)
-MYSQL_CFLAGS=""
-MYSQL_LIBS=""
 if test x$enable_mysql = xyes; then
-	AC_PATH_PROG(MYSQL_CONFIG, mysql_config, no)
-	if test "x$MYSQL_CONFIG" = "xno" ; then
-		echo "*** WARNING: MYSQL NOT FOUND IN PATH.  RLIB WILL NOT BE COMPILED WITH SUPPORT FOR IT"
-		enable_mysql=no	
-	else
-		case "$target" in
-		*-*-cygwin*|*-*-mingw*)
-			if [[ -d /mingw/include/mysql -a -f /mingw/lib/mysql/libmysql.a ]] ; then
-				AC_DEFINE(HAVE_MYSQL,1,[Build with MYSQL support])
-				MYSQL_CFLAGS="-I/mingw/include/mysql"
-				MYSQL_LIBS="-L/mingw/lib/mysql -lmysql -lm -lz"
-			else
-			echo "*** WARNING: MYSQL NOT PREPARED FOR MINGW.  RLIB WILL NOT BE COMPILED WITH SUPPORT FOR IT"
-				enable_mysql=no
-			fi
-			;;
-		*)
-			AC_DEFINE(HAVE_MYSQL,1,[Build with MYSQL support])
-			MYSQL_CFLAGS=`"$MYSQL_CONFIG" --cflags`
-			MYSQL_LIBS=`"$MYSQL_CONFIG" --libs`
-			;;
-		esac
-	fi
+	dnl Use the standard MySQL detection from mysql.m4
+	dnl MYSQL_CLIENT sets MYSQL_CLIENT_CFLAGS and MYSQL_CLIENT_LIBS.
+	dnl Lets set out own MYSQL_CFLAGS and MYSQL_LIBS too.
+	dnl It will make ./configure bail with an error if detection fails
+	dnl instead of silently ignoring it.
+	MYSQL_CLIENT()
+	MYSQL_CFLAGS=${MYSQL_CLIENT_CFLAGS}
+	AC_SUBST(MYSQL_CFLAGS)
+	MYSQL_LIBS=${MYSQL_CLIENT_LIBS}
+	AC_SUBST(MYSQL_LIBS)
 fi
-AC_SUBST(MYSQL_CFLAGS)
-AC_SUBST(MYSQL_LIBS)
 AM_CONDITIONAL(HAVE_MYSQL, test x$enable_mysql = xyes)
 
 AC_ARG_ENABLE(postgres,              [  --disable-postgres       disable postgres backend],,enable_postgres=yes)
