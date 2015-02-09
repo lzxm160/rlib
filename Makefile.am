@@ -20,6 +20,8 @@
 ##
 ## Process this file with automake to produce Makefile.in
 
+ACLOCAL_AMFLAGS = -I m4
+
 EXTRA_DIST = AUTHORS CVS HACKING install-sh README README-JPEG rlib.pc.in  rlib.spec.in
 
 if HAVE_DOC
