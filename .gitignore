@@ -2,6 +2,7 @@
 .libs
 .deps
 INSTALL
+ar-lib
 compile
 Makefile
 Makefile.in

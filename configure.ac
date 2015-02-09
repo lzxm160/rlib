@@ -41,13 +41,15 @@ AC_SUBST(RLIB_LT_AGE)
 
 dnl Checks for programs.
 AC_PROG_CC
-AC_PROG_MAKE_SET
+AM_PROG_CC_C_O
 AC_PROG_INSTALL
+AC_PROG_MAKE_SET
+AC_PROG_LN_S
+AM_PROG_AR
+LT_INIT([dlopen disable-shared win32-dll])
 
-AC_LIBTOOL_DLOPEN
-AC_DISABLE_STATIC
-AC_LIBTOOL_WIN32_DLL
-AM_PROG_LIBTOOL
+AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
+
 dnl AC_LIBLTDL_CONVENIENCE
 AC_SUBST(INCLTDL)
 AC_SUBST(LIBLTDL)
@@ -70,8 +72,6 @@ if test x$enable_compressed_pdf = xyes; then
 fi
 AC_SUBST(ZLIB_LIBS)
 
-AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
-
 PKG_CHECK_MODULES(LIBXML, libxml-2.0 >= 2.6.0)
 AC_SUBST(LIBXML_LIBS)
 AC_SUBST(LIBXML_CFLAGS)
@@ -91,7 +91,8 @@ case "$target" in
 	AC_MSG_CHECKING([whether $CC supports -mms-bitfields])
 	echo "int some_variable = 0;" > conftest.$ac_ext
 	compiler_ms_bitfields=no
-	AC_TRY_COMPILE([], [int some_variable = 0;], [dnl
+	AC_COMPILE_IFELSE(
+		[AC_LANG_PROGRAM([[]], [[int some_variable = 0;]])], [dnl
 		# The compiler can only warn and ignore the option if not recognized
 		# So say no if there are warnings
 		if test -s conftest.err; then
@@ -109,7 +110,7 @@ case "$target" in
 		AC_MSG_CHECKING([whether $CC supports -fnative-struct])
 		echo "int some_variable = 0;" > conftest.$ac_ext
 		compiler_native_struct=no
-		AC_TRY_COMPILE([], [int some_variable = 0;], [dnl
+		AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[int some_variable = 0;]])], [dnl
 			# The compiler can only warn and ignore the option if not recognized
 			# So say no if there are warnings
 			if test -s conftest.err; then
@@ -231,10 +232,10 @@ if test $enable_odbc = yes
 then
     if test x$enable_win32 = xyes ; then
 	AC_MSG_CHECKING([whether <sql.h> needs  <windows.h>])
-	AC_TRY_COMPILE([#include <sql.h>], [], sql_h_needs_windows_h=no,
-		AC_TRY_COMPILE([#define WIN32_LEAN_AND_MEAN 1
+	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sql.h>]], [[]])], sql_h_needs_windows_h=no,
+		AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#define WIN32_LEAN_AND_MEAN 1
 #include <windows.h>
-#include <sql.h>], [], sql_h_needs_windows_h=yes,
+#include <sql.h>]], [[]])], sql_h_needs_windows_h=yes,
 			AC_MSG_ERROR([don't know how to compile <sql.h>])
 		))
 	AC_MSG_RESULT([$sql_h_needs_windows_h])
@@ -245,17 +246,17 @@ then
 	AC_MSG_CHECKING([for SQLAllocHandle in -lodbc])
 	if test $sql_h_needs_windows_h = yes; then
 		AC_DEFINE([NEED_WINDOWS_H], [1], [We are compiling under Windows])
-		AC_TRY_LINK([#define WIN32_LEAN_AND_MEAN 1
+		AC_LINK_IFELSE([AC_LANG_PROGRAM([[#define WIN32_LEAN_AND_MEAN 1
 #include <windows.h>
-#include <sql.h>],
-		[SQLHENV hEnv;
-SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);],
+#include <sql.h>]],
+		[[SQLHENV hEnv;
+SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);]])],
 		[have_odbc32=yes],
 		[AC_MSG_ERROR([Can't find ODBC libs])])
 	else
-		AC_TRY_LINK([#include <sql.h>],
-		[SQLHENV hEnv;
-SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);],
+		AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <sql.h>]],
+		[[SQLHENV hEnv;
+SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);]])],
 		[have_odbc32=yes],
 		[AC_MSG_ERROR([Can't find ODBC libs])])
 	fi
@@ -551,7 +552,7 @@ if test x$enable_win32 = xyes; then
 	AC_MSG_CHECKING([whether $CC supports -mno-cygwin])
 	echo "int some_variable = 0;" > conftest.$ac_ext   
 	compiler_mnocygwin=no
-	AC_TRY_COMPILE([], [int some_variable = 0;], [dnl
+	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[int some_variable = 0;]])], [dnl
 		# The compiler can only warn and ignore the option if not recognized
 		# So say no if there are warnings
 		if test -s conftest.err; then
