@@ -1,5 +1,7 @@
 *~
 *.o
+*.la
+*.lo
 .libs
 .deps
 INSTALL
@@ -146,15 +148,19 @@ src/examples/csharp/Makefile
 src/examples/csharp/Makefile.in
 src/examples/java/Makefile
 src/examples/java/Makefile.in
+src/examples/java/*.java
+src/examples/java/*.xml
 src/examples/perl/Makefile
 src/examples/perl/Makefile.in
 src/examples/perl/products.xml
 src/examples/php/Makefile
 src/examples/php/Makefile.in
+src/examples/php/*.xml
 src/examples/php/core.12441
 src/examples/php/core.12466
 src/examples/python/Makefile
 src/examples/python/Makefile.in
+src/examples/python/*.xml
 src/rlibc
 src/rlibc.o
 stamp-h1

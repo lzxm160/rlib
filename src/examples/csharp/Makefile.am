@@ -22,9 +22,9 @@
 
 noinst_SCRIPTS = products.xml
 
-products.xml: 
-	cp ../common/products.xml .
+products.xml:
+	$(LN_S) ../common/products.xml
 
-CLEANFILES = *.xml 
+CLEANFILES = $(noinst_SCRIPTS)
 
-EXTRADIST=example.cs 
+EXTRADIST = example.cs
