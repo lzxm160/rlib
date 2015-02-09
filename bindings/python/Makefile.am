@@ -20,8 +20,7 @@
 ##
 ## Process this file with automake to produce Makefile.in
 AM_CFLAGS = -I${top_srcdir}/libsrc $(RLIB_CFLAGS) $(PYTHON_CFLAGS) -fno-strict-aliasing
-pythondir = $(PYTHON_EXTENSION_DIR)
-python_LTLIBRARIES = rlibmodule.la _rlib.la
+pkgpyexec_LTLIBRARIES = rlibmodule.la _rlib.la
 rlibmodule_la_SOURCES = rlibmodule.c 
 rlibmodule_la_LIBADD = $(top_builddir)/libsrc/libr.la $(PYTHON_LIBRARIES) $(RLIB_LIBS)
 if WIN32

@@ -171,14 +171,6 @@ AM_CONDITIONAL(HAVE_MYSQL, test x$enable_mysql = xyes)
 
 AC_ARG_ENABLE([postgres],
 	[AS_HELP_STRING([--disable-postgres],[disable postgres backend])],,enable_postgres=yes)
-AC_ARG_WITH([pg-config],
-	[AS_HELP_STRING([--with-pg-config=PATH],[A PATH to pg_config script])],,
-	[AC_PATH_PROG(POSTGRES_CONFIG, $PG_CONFIG, no)
-	 if test "x$POSTGRES_CONFIG" = "xno" ; then
-		with_pg_config=no
-	 else
-		with_pg_config=$POSTGRES_CONFIG
-	 fi])
 
 POSTGRES_CFLAGS=""
 POSTGRES_LIBS=""
@@ -190,6 +182,15 @@ case "$target" in
         PG_CONFIG=pg_config
         ;;
 esac
+
+AC_ARG_WITH([pg-config],
+	[AS_HELP_STRING([--with-pg-config=PATH],[A PATH to pg_config script])],,
+	[AC_PATH_PROG(POSTGRES_CONFIG, $PG_CONFIG, no)
+	 if test "x$POSTGRES_CONFIG" = "xno" ; then
+		with_pg_config=no
+	 else
+		with_pg_config=$POSTGRES_CONFIG
+	 fi])
 
 if test x$enable_postgres = xyes; then
 	if test "x$with_pg_config" = "xno" ; then
@@ -366,39 +367,26 @@ if test x$enable_doc = xyes; then
 fi
 AM_CONDITIONAL(HAVE_DOC, test x$enable_doc = xyes)
 
-
-python_version=2.2
-AC_ARG_WITH(pythonver,
-[  --with-pythonver	Set Python Version Number.. 2.0, 2.1, 2.2, 2.3, 2.4],[python_version=$withval])
-
-AC_ARG_ENABLE(python,              [  --disable-python      disable python binding],,enable_python=yes)
+AC_ARG_ENABLE([python],
+	[AS_HELP_STRING([--disable-python],[disable python binding])],,enable_python=yes)
 PYTHON_CFLAGS=""
-PYTHON_EXTENSION_DIR=""
 if test x$enable_python = xyes; then
-	AM_PATH_PYTHON($python_version)
-	if test x$PYTHON_VERSION = x$python_version; then
-		eval python_inc="`python  -c "from distutils import sysconfig; print sysconfig.get_python_inc(0)" | tr '\\\\' '/' `"
-		eval python_execd="`python -c "from distutils import sysconfig; print sysconfig.get_python_lib(1,0,prefix=sysconfig.get_config_var('exec_prefix'))" | tr '\\\\' '/'`"
-		eval python_lib="`python  -c "from distutils import sysconfig; print sysconfig.get_config_var('BINLIBDEST')" | tr '\\\\' '/' `"
-		AC_CHECK_HEADERS("$python_inc"/Python.h,python_header=yes,python_header=no)
-		if test x$python_header = xyes; then
-			AC_DEFINE(HAVE_PYTHON,1,[Build with PYTHON support])
-			PYTHON_CFLAGS="-I $python_inc"
-			PYTHON_LIBRARIES="-L$python_lib -lpython$PYTHON_VERSION"
-			PYTHON_EXTENSION_DIR=$python_execd
-		else
-			enable_python=no
-			echo "*** WARNING: PYTHON was found but Python.h was not!   No python bindings for you.  Perhaps you need to install the devel package or something"
-		fi
+	AM_PATH_PYTHON([2.2])
+	eval python_inc="`${PYTHON} -c "from distutils import sysconfig; print sysconfig.get_python_inc(0)" | tr '\\\\' '/' `"
+	eval python_lib="`${PYTHON} -c "from distutils import sysconfig; print sysconfig.get_config_var('BINLIBDEST')" | tr '\\\\' '/' `"
+	AC_CHECK_HEADERS(python${PYTHON_VERSION}/Python.h,python_header=yes,python_header=no)
+	if test x$python_header = xyes; then
+		AC_DEFINE(HAVE_PYTHON,1,[Build with PYTHON support])
+		PYTHON_CFLAGS="-I $python_inc"
+		PYTHON_LIBRARIES="-L$python_lib -lpython$PYTHON_VERSION"
 	else
 		enable_python=no
-		echo "*** WARNING: PYTHON ${python_version} NOT FOUND IN PATH.  RLIB WILL NOT BE COMPILED WITH SUPPORT FOR IT"
+		echo "*** WARNING: PYTHON was found but Python.h was not!   No python bindings for you.  Perhaps you need to install the devel package or something"
 	fi
 fi
 AC_SUBST(HAVE_PYTHON)
 AC_SUBST(PYTHON_CFLAGS)
 AC_SUBST(PYTHON_LIBRARIES)
-AC_SUBST(PYTHON_EXTENSION_DIR)
 AM_CONDITIONAL(HAVE_PYTHON, test x$enable_python = xyes)
 
 enable_java=no
@@ -669,8 +657,8 @@ rlib-$VERSION:
     PHP:                     ${enable_php}
      PHP entension dir:      ${PHP_EXTENSION_DIR}
     PYTHON:                  ${enable_python}
-     PYTHON version:         ${python_version}
-     PYTHON entension dir:   ${PYTHON_EXTENSION_DIR}
+     PYTHON version:         ${PYTHON_VERSION}
+     PYTHON entension dir:   ${pyexecdir}
     JAVA:                    ${enable_java}
     CSHARP:                  ${enable_csharp}
     PERL:                    ${enable_perl}

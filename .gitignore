@@ -5,6 +5,7 @@
 INSTALL
 ar-lib
 compile
+py-compile
 Makefile
 Makefile.in
 aclocal.m4
