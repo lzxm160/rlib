@@ -59,7 +59,6 @@ AC_CHECK_FUNCS([localtime_r strfmon])
 dnl Checks for libraries.
 AC_CHECK_LIB(c, exit)
 AC_CHECK_LIB(m, exp)
-AC_CHECK_HEADER
 AC_CHECK_HEADER([zlib.h],
 	[AC_CHECK_LIB(z, zlibVersion,
 		enable_compressed_pdf=yes,
@@ -601,7 +600,7 @@ fi
 
 AC_ARG_ENABLE(crash,              [  --disable-crash       disable crash detection],enable_memdebug="$enableval",enable_crash=yes)
 if test x$enable_crash = xyes; then
-    AC_HAVE_HEADERS(sys/resource.h,
+    AC_CHECK_HEADERS(sys/resource.h,
 	[AC_DEFINE(HAVE_SYS_RESOURCE_H, 1, [We have standard sys/resource.h])
 	 have_sys_res_h=yes], have_sys_res_h=no)
     if test x$have_sys_res_h = xyes; then
