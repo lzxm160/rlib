@@ -479,7 +479,7 @@ then
 	do
 		if test -f "$d/bin/mcs"
 		then
-			AC_MSG_RESULT(found C SHARP in \"$d\")
+			AC_MSG_RESULT(found C SHARP in "$d")
 			csharpdir="$d"
 			break
 		fi
