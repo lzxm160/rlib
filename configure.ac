@@ -20,9 +20,13 @@ dnl Report bugs to rlib-devel@lists.sourceforge.net
 dnl
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT(libsrc/rlib.h)
-AC_CANONICAL_SYSTEM
-AM_INIT_AUTOMAKE(rlib, 2.0.4)
+AC_INIT([rlib],[2.0.4],[http://bugzilla.sicompos.com])
+AC_CONFIG_SRCDIR(libsrc/rlib.h)
+AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_AUX_DIR(.)
+
+AM_INIT_AUTOMAKE()
+AC_CONFIG_HEADERS(config.h)
 AM_MAINTAINER_MODE
 
 RLIB_VERSION=2.0.4
@@ -615,8 +619,6 @@ AC_ARG_ENABLE(utf8,              [  --enable-utf8       enable utf8],enable_utf8
 if test x$enable_utf8 = xyes; then
 	AC_DEFINE(DISABLE_UTF8,1,[DISABLE UTF8])
 fi
-
-AM_CONFIG_HEADER(config.h)
 
 AC_OUTPUT([
 Makefile
