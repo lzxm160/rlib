@@ -620,7 +620,7 @@ if test x$enable_utf8 = xyes; then
 	AC_DEFINE(DISABLE_UTF8,1,[DISABLE UTF8])
 fi
 
-AC_OUTPUT([
+AC_CONFIG_FILES([
 Makefile
 rlib.pc
 rpdf/Makefile
@@ -651,6 +651,7 @@ doc/IMAGES/Makefile
 rlib.spec
 ])
 
+AC_OUTPUT()
 
 echo "
 rlib-$VERSION:
