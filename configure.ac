@@ -21,6 +21,7 @@ dnl
 dnl Process this file with autoconf to produce a configure script.
 
 AC_INIT([rlib],[2.0.4],[http://bugzilla.sicompos.com])
+AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR(libsrc/rlib.h)
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR(.)
@@ -545,7 +546,7 @@ fi
 AC_SUBST(RLIB_WARNINGS)
 AC_SUBST(RLIB_WERROR)
 
-dnl Windows build is decided automatically by AC_CANONICAL_SYSTEM above
+dnl Windows build is decided automatically by AC_CANONICAL_TARGET above
 if test x$enable_win32 = xyes; then
 	ac_save_CFLAGS="$CFLAGS"
 	CFLAGS="$CFLAGS -mno-cygwin -c conftest.$ac_ext"
@@ -647,7 +648,7 @@ doc/IMAGES/Makefile
 rlib.spec
 ])
 
-AC_OUTPUT()
+AC_OUTPUT
 
 echo "
 rlib-$VERSION:
