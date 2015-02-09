@@ -20,9 +20,14 @@ dnl Report bugs to rlib-devel@lists.sourceforge.net
 dnl
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT(libsrc/rlib.h)
-AC_CANONICAL_SYSTEM
-AM_INIT_AUTOMAKE(rlib, 2.0.4)
+AC_INIT([rlib],[2.0.4],[http://bugzilla.sicompos.com])
+AC_CANONICAL_TARGET
+AC_CONFIG_SRCDIR(libsrc/rlib.h)
+AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_AUX_DIR(.)
+
+AM_INIT_AUTOMAKE()
+AC_CONFIG_HEADERS(config.h)
 AM_MAINTAINER_MODE
 
 RLIB_VERSION=2.0.4
@@ -37,29 +42,24 @@ AC_SUBST(RLIB_LT_AGE)
 
 dnl Checks for programs.
 AC_PROG_CC
-AC_PROG_MAKE_SET
+AM_PROG_CC_C_O
 AC_PROG_INSTALL
+AC_PROG_MAKE_SET
+AC_PROG_LN_S
+AM_PROG_AR
+LT_INIT([dlopen disable-shared win32-dll])
 
-AC_LIBTOOL_DLOPEN
-AC_DISABLE_STATIC
-AC_LIBTOOL_WIN32_DLL
-AM_PROG_LIBTOOL
 dnl AC_LIBLTDL_CONVENIENCE
 AC_SUBST(INCLTDL)
 AC_SUBST(LIBLTDL)
 
-AC_HAVE_HEADERS(langinfo.h,
-	AC_DEFINE(HAVE_LANGINFO_H, 1, [We have standard locale langinfo]),)
-
-AC_HAVE_HEADERS(sys/time.h,
-	AC_DEFINE(HAVE_SYS_TIME_H, 1, [We have standard sys/time.h]),)
+AC_CHECK_HEADERS(langinfo.h sys/time.h)
 
 AC_CHECK_FUNCS([localtime_r strfmon])
 
 dnl Checks for libraries.
 AC_CHECK_LIB(c, exit)
 AC_CHECK_LIB(m, exp)
-AC_CHECK_HEADER
 AC_CHECK_HEADER([zlib.h],
 	[AC_CHECK_LIB(z, zlibVersion,
 		enable_compressed_pdf=yes,
@@ -70,8 +70,6 @@ if test x$enable_compressed_pdf = xyes; then
 	ZLIB_LIBS="-lz"
 fi
 AC_SUBST(ZLIB_LIBS)
-
-AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
 
 PKG_CHECK_MODULES(LIBXML, libxml-2.0 >= 2.6.0)
 AC_SUBST(LIBXML_LIBS)
@@ -92,7 +90,8 @@ case "$target" in
 	AC_MSG_CHECKING([whether $CC supports -mms-bitfields])
 	echo "int some_variable = 0;" > conftest.$ac_ext
 	compiler_ms_bitfields=no
-	AC_TRY_COMPILE([], [int some_variable = 0;], [dnl
+	AC_COMPILE_IFELSE(
+		[AC_LANG_PROGRAM([[]], [[int some_variable = 0;]])], [dnl
 		# The compiler can only warn and ignore the option if not recognized
 		# So say no if there are warnings
 		if test -s conftest.err; then
@@ -110,7 +109,7 @@ case "$target" in
 		AC_MSG_CHECKING([whether $CC supports -fnative-struct])
 		echo "int some_variable = 0;" > conftest.$ac_ext
 		compiler_native_struct=no
-		AC_TRY_COMPILE([], [int some_variable = 0;], [dnl
+		AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[int some_variable = 0;]])], [dnl
 			# The compiler can only warn and ignore the option if not recognized
 			# So say no if there are warnings
 			if test -s conftest.err; then
@@ -153,39 +152,26 @@ esac
 AM_CONDITIONAL(WIN32, test x$enable_win32 = "xyes")
 AC_SUBST(EXTRA_LDFLAGS)
 
-AC_ARG_ENABLE(mysql,              [  --disable-mysql         disable mysql backend],,enable_mysql=yes)
-MYSQL_CFLAGS=""
-MYSQL_LIBS=""
+
+AC_ARG_ENABLE([mysql],
+	[AS_HELP_STRING([--disable-mysql],[disable mysql backend])],,enable_mysql=yes)
 if test x$enable_mysql = xyes; then
-	AC_PATH_PROG(MYSQL_CONFIG, mysql_config, no)
-	if test "x$MYSQL_CONFIG" = "xno" ; then
-		echo "*** WARNING: MYSQL NOT FOUND IN PATH.  RLIB WILL NOT BE COMPILED WITH SUPPORT FOR IT"
-		enable_mysql=no	
-	else
-		case "$target" in
-		*-*-cygwin*|*-*-mingw*)
-			if [[ -d /mingw/include/mysql -a -f /mingw/lib/mysql/libmysql.a ]] ; then
-				AC_DEFINE(HAVE_MYSQL,1,[Build with MYSQL support])
-				MYSQL_CFLAGS="-I/mingw/include/mysql"
-				MYSQL_LIBS="-L/mingw/lib/mysql -lmysql -lm -lz"
-			else
-			echo "*** WARNING: MYSQL NOT PREPARED FOR MINGW.  RLIB WILL NOT BE COMPILED WITH SUPPORT FOR IT"
-				enable_mysql=no
-			fi
-			;;
-		*)
-			AC_DEFINE(HAVE_MYSQL,1,[Build with MYSQL support])
-			MYSQL_CFLAGS=`"$MYSQL_CONFIG" --cflags`
-			MYSQL_LIBS=`"$MYSQL_CONFIG" --libs`
-			;;
-		esac
-	fi
+	dnl Use the standard MySQL detection from mysql.m4
+	dnl MYSQL_CLIENT sets MYSQL_CLIENT_CFLAGS and MYSQL_CLIENT_LIBS.
+	dnl Lets set out own MYSQL_CFLAGS and MYSQL_LIBS too.
+	dnl It will make ./configure bail with an error if detection fails
+	dnl instead of silently ignoring it.
+	MYSQL_CLIENT()
+	MYSQL_CFLAGS=${MYSQL_CLIENT_CFLAGS}
+	AC_SUBST(MYSQL_CFLAGS)
+	MYSQL_LIBS=${MYSQL_CLIENT_LIBS}
+	AC_SUBST(MYSQL_LIBS)
 fi
-AC_SUBST(MYSQL_CFLAGS)
-AC_SUBST(MYSQL_LIBS)
 AM_CONDITIONAL(HAVE_MYSQL, test x$enable_mysql = xyes)
 
-AC_ARG_ENABLE(postgres,              [  --disable-postgres       disable postgres backend],,enable_postgres=yes)
+AC_ARG_ENABLE([postgres],
+	[AS_HELP_STRING([--disable-postgres],[disable postgres backend])],,enable_postgres=yes)
+
 POSTGRES_CFLAGS=""
 POSTGRES_LIBS=""
 case "$target" in
@@ -196,16 +182,23 @@ case "$target" in
         PG_CONFIG=pg_config
         ;;
 esac
+
+AC_ARG_WITH([pg-config],
+	[AS_HELP_STRING([--with-pg-config=PATH],[A PATH to pg_config script])],,
+	[AC_PATH_PROG(POSTGRES_CONFIG, $PG_CONFIG, no)
+	 if test "x$POSTGRES_CONFIG" = "xno" ; then
+		with_pg_config=no
+	 else
+		with_pg_config=$POSTGRES_CONFIG
+	 fi])
+
 if test x$enable_postgres = xyes; then
-	AC_PATH_PROG(POSTGRES_CONFIG, $PG_CONFIG, no)
-	if test "x$POSTGRES_CONFIG" = "xno" ; then
-		echo "*** WARNING: POSTGRES NOT FOUND IN PATH.  RLIB WILL NOT BE COMPILED WITH SUPPORT FOR IT"
-		enable_postgres=no
-	else
-		AC_DEFINE(HAVE_POSTGRES,1,[Build with POSTGRES support])
-		POSTGRES_CFLAGS="-I `"$POSTGRES_CONFIG" --includedir`"
-		POSTGRES_LIBS="-L`"$POSTGRES_CONFIG" --libdir` -lpq"
+	if test "x$with_pg_config" = "xno" ; then
+		AC_MSG_ERROR([--without-pg-config were specified or pg_config is not found in PATH when --enable-postgres is specified])
 	fi
+	AC_DEFINE(HAVE_POSTGRES,1,[Build with POSTGRES support])
+	POSTGRES_CFLAGS="-I `"$POSTGRES_CONFIG" --includedir`"
+	POSTGRES_LIBS="-L`"$POSTGRES_CONFIG" --libdir` -lpq"
 fi
 AC_SUBST(POSTGRES_CFLAGS)
 AC_SUBST(POSTGRES_LIBS)
@@ -232,10 +225,10 @@ if test $enable_odbc = yes
 then
     if test x$enable_win32 = xyes ; then
 	AC_MSG_CHECKING([whether <sql.h> needs  <windows.h>])
-	AC_TRY_COMPILE([#include <sql.h>], [], sql_h_needs_windows_h=no,
-		AC_TRY_COMPILE([#define WIN32_LEAN_AND_MEAN 1
+	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sql.h>]], [[]])], sql_h_needs_windows_h=no,
+		AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#define WIN32_LEAN_AND_MEAN 1
 #include <windows.h>
-#include <sql.h>], [], sql_h_needs_windows_h=yes,
+#include <sql.h>]], [[]])], sql_h_needs_windows_h=yes,
 			AC_MSG_ERROR([don't know how to compile <sql.h>])
 		))
 	AC_MSG_RESULT([$sql_h_needs_windows_h])
@@ -246,17 +239,17 @@ then
 	AC_MSG_CHECKING([for SQLAllocHandle in -lodbc])
 	if test $sql_h_needs_windows_h = yes; then
 		AC_DEFINE([NEED_WINDOWS_H], [1], [We are compiling under Windows])
-		AC_TRY_LINK([#define WIN32_LEAN_AND_MEAN 1
+		AC_LINK_IFELSE([AC_LANG_PROGRAM([[#define WIN32_LEAN_AND_MEAN 1
 #include <windows.h>
-#include <sql.h>],
-		[SQLHENV hEnv;
-SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);],
+#include <sql.h>]],
+		[[SQLHENV hEnv;
+SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);]])],
 		[have_odbc32=yes],
 		[AC_MSG_ERROR([Can't find ODBC libs])])
 	else
-		AC_TRY_LINK([#include <sql.h>],
-		[SQLHENV hEnv;
-SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);],
+		AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <sql.h>]],
+		[[SQLHENV hEnv;
+SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);]])],
 		[have_odbc32=yes],
 		[AC_MSG_ERROR([Can't find ODBC libs])])
 	fi
@@ -374,39 +367,26 @@ if test x$enable_doc = xyes; then
 fi
 AM_CONDITIONAL(HAVE_DOC, test x$enable_doc = xyes)
 
-
-python_version=2.2
-AC_ARG_WITH(pythonver,
-[  --with-pythonver	Set Python Version Number.. 2.0, 2.1, 2.2, 2.3, 2.4],[python_version=$withval])
-
-AC_ARG_ENABLE(python,              [  --disable-python      disable python binding],,enable_python=yes)
+AC_ARG_ENABLE([python],
+	[AS_HELP_STRING([--disable-python],[disable python binding])],,enable_python=yes)
 PYTHON_CFLAGS=""
-PYTHON_EXTENSION_DIR=""
 if test x$enable_python = xyes; then
-	AM_PATH_PYTHON($python_version)
-	if test x$PYTHON_VERSION = x$python_version; then
-		eval python_inc="`python  -c "from distutils import sysconfig; print sysconfig.get_python_inc(0)" | tr '\\\\' '/' `"
-		eval python_execd="`python -c "from distutils import sysconfig; print sysconfig.get_python_lib(1,0,prefix=sysconfig.get_config_var('exec_prefix'))" | tr '\\\\' '/'`"
-		eval python_lib="`python  -c "from distutils import sysconfig; print sysconfig.get_config_var('BINLIBDEST')" | tr '\\\\' '/' `"
-		AC_CHECK_HEADERS("$python_inc"/Python.h,python_header=yes,python_header=no)
-		if test x$python_header = xyes; then
-			AC_DEFINE(HAVE_PYTHON,1,[Build with PYTHON support])
-			PYTHON_CFLAGS="-I $python_inc"
-			PYTHON_LIBRARIES="-L$python_lib -lpython$PYTHON_VERSION"
-			PYTHON_EXTENSION_DIR=$python_execd
-		else
-			enable_python=no
-			echo "*** WARNING: PYTHON was found but Python.h was not!   No python bindings for you.  Perhaps you need to install the devel package or something"
-		fi
+	AM_PATH_PYTHON([2.2])
+	eval python_inc="`${PYTHON} -c "from distutils import sysconfig; print sysconfig.get_python_inc(0)" | tr '\\\\' '/' `"
+	eval python_lib="`${PYTHON} -c "from distutils import sysconfig; print sysconfig.get_config_var('BINLIBDEST')" | tr '\\\\' '/' `"
+	AC_CHECK_HEADERS(python${PYTHON_VERSION}/Python.h,python_header=yes,python_header=no)
+	if test x$python_header = xyes; then
+		AC_DEFINE(HAVE_PYTHON,1,[Build with PYTHON support])
+		PYTHON_CFLAGS="-I $python_inc"
+		PYTHON_LIBRARIES="-L$python_lib -lpython$PYTHON_VERSION"
 	else
 		enable_python=no
-		echo "*** WARNING: PYTHON ${python_version} NOT FOUND IN PATH.  RLIB WILL NOT BE COMPILED WITH SUPPORT FOR IT"
+		echo "*** WARNING: PYTHON was found but Python.h was not!   No python bindings for you.  Perhaps you need to install the devel package or something"
 	fi
 fi
 AC_SUBST(HAVE_PYTHON)
 AC_SUBST(PYTHON_CFLAGS)
 AC_SUBST(PYTHON_LIBRARIES)
-AC_SUBST(PYTHON_EXTENSION_DIR)
 AM_CONDITIONAL(HAVE_PYTHON, test x$enable_python = xyes)
 
 enable_java=no
@@ -479,7 +459,7 @@ then
 	do
 		if test -f "$d/bin/mcs"
 		then
-			AC_MSG_RESULT(found C SHARP in \"$d\")
+			AC_MSG_RESULT(found C SHARP in "$d")
 			csharpdir="$d"
 			break
 		fi
@@ -545,14 +525,14 @@ fi
 AC_SUBST(RLIB_WARNINGS)
 AC_SUBST(RLIB_WERROR)
 
-dnl Windows build is decided automatically by AC_CANONICAL_SYSTEM above
+dnl Windows build is decided automatically by AC_CANONICAL_TARGET above
 if test x$enable_win32 = xyes; then
 	ac_save_CFLAGS="$CFLAGS"
 	CFLAGS="$CFLAGS -mno-cygwin -c conftest.$ac_ext"
 	AC_MSG_CHECKING([whether $CC supports -mno-cygwin])
 	echo "int some_variable = 0;" > conftest.$ac_ext   
 	compiler_mnocygwin=no
-	AC_TRY_COMPILE([], [int some_variable = 0;], [dnl
+	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[int some_variable = 0;]])], [dnl
 		# The compiler can only warn and ignore the option if not recognized
 		# So say no if there are warnings
 		if test -s conftest.err; then
@@ -601,7 +581,7 @@ fi
 
 AC_ARG_ENABLE(crash,              [  --disable-crash       disable crash detection],enable_memdebug="$enableval",enable_crash=yes)
 if test x$enable_crash = xyes; then
-    AC_HAVE_HEADERS(sys/resource.h,
+    AC_CHECK_HEADERS(sys/resource.h,
 	[AC_DEFINE(HAVE_SYS_RESOURCE_H, 1, [We have standard sys/resource.h])
 	 have_sys_res_h=yes], have_sys_res_h=no)
     if test x$have_sys_res_h = xyes; then
@@ -616,9 +596,7 @@ if test x$enable_utf8 = xyes; then
 	AC_DEFINE(DISABLE_UTF8,1,[DISABLE UTF8])
 fi
 
-AM_CONFIG_HEADER(config.h)
-
-AC_OUTPUT([
+AC_CONFIG_FILES([
 Makefile
 rlib.pc
 rpdf/Makefile
@@ -649,6 +627,7 @@ doc/IMAGES/Makefile
 rlib.spec
 ])
 
+AC_OUTPUT
 
 echo "
 rlib-$VERSION:
@@ -678,8 +657,8 @@ rlib-$VERSION:
     PHP:                     ${enable_php}
      PHP entension dir:      ${PHP_EXTENSION_DIR}
     PYTHON:                  ${enable_python}
-     PYTHON version:         ${python_version}
-     PYTHON entension dir:   ${PYTHON_EXTENSION_DIR}
+     PYTHON version:         ${PYTHON_VERSION}
+     PYTHON entension dir:   ${pyexecdir}
     JAVA:                    ${enable_java}
     CSHARP:                  ${enable_csharp}
     PERL:                    ${enable_perl}

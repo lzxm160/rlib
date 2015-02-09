@@ -28,8 +28,7 @@ all: book.pdf
 book.pdf: $(sgml_files)
 	docbook2pdf -d docbook-utils.dsl book.sgm
 
-clean:
-	rm -f book.pdf
+CLEANFILES = book.pdf
 
 SUBDIRS = IMAGES
 
