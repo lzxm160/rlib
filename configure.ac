@@ -52,11 +52,7 @@ dnl AC_LIBLTDL_CONVENIENCE
 AC_SUBST(INCLTDL)
 AC_SUBST(LIBLTDL)
 
-AC_HAVE_HEADERS(langinfo.h,
-	AC_DEFINE(HAVE_LANGINFO_H, 1, [We have standard locale langinfo]),)
-
-AC_HAVE_HEADERS(sys/time.h,
-	AC_DEFINE(HAVE_SYS_TIME_H, 1, [We have standard sys/time.h]),)
+AC_CHECK_HEADERS(langinfo.h sys/time.h)
 
 AC_CHECK_FUNCS([localtime_r strfmon])
 
