@@ -47,7 +47,7 @@ AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_LN_S
 AM_PROG_AR
-LT_INIT([dlopen disable-shared win32-dll])
+LT_INIT([dlopen disable-static win32-dll])
 
 dnl AC_LIBLTDL_CONVENIENCE
 AC_SUBST(INCLTDL)
