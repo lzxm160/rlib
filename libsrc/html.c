@@ -34,7 +34,7 @@
 #define TEXT 1
 #define DELAY 2
 #define BOTTOM_PAD 8
-
+#define BIGGER_HTML_FONT(a) (a+2)
 struct _packet {
 	char type;
 	gpointer data;
@@ -179,7 +179,7 @@ static gchar *get_html_color(gchar *str, struct rlib_rgb *color) {
 static void html_print_text(rlib *r, gfloat left_origin, gfloat bottom_origin, const gchar *text, gint backwards, struct rlib_line_extra_data *extra_data) {
 	GString *string = g_string_new("");
 
-	g_string_append_printf(string, "<span data-col=\"%d\" data-width=\"%d\" style=\"font-size: %dpx; ", extra_data->col, extra_data->width, extra_data->font_point);
+	g_string_append_printf(string, "<span data-col=\"%d\" data-width=\"%d\" style=\"font-size: %dpx; ", extra_data->col, extra_data->width, BIGGER_HTML_FONT(extra_data->font_point));
 
 	if(extra_data->found_bgcolor) 
 		g_string_append_printf(string, "background-color: #%02x%02x%02x; ", (gint)(extra_data->bgcolor.r*0xFF), (gint)(extra_data->bgcolor.g*0xFF), (gint)(extra_data->bgcolor.b*0xFF));
@@ -242,7 +242,7 @@ struct rlib_rgb *color, gfloat indent, gfloat length) {
 		if(indent > 0) {
 			for(i=0;i<(int)indent;i++)
 				strcpy(nbsp + (i*6), "&nbsp;");
-			sprintf(td, "<td style=\"height:%dpx; line-height:%dpx;\">%s<</td>", (int)how_tall, (int)how_tall, nbsp);
+			sprintf(td, "<td style=\"height:%dpx; line-height:%dpx;\">%s</td>", (int)how_tall, (int)how_tall, nbsp);
 		}
 
 		print_text(r, "<table cellspacing=\"0\" cellpadding=\"0\" style=\"width:100%;\"><tr>", backwards);
@@ -343,7 +343,7 @@ static void html_start_rlib_report(rlib *r) {
 		g_string_append_printf(OUTPUT_PRIVATE(r)->whole_report, "<head>\n<style type=\"text/css\">\n");
 
 
-		g_string_append_printf(OUTPUT_PRIVATE(r)->whole_report, "pre { margin:0; padding:0; margin-top:0; margin-bottom:0; font-size:%dpt;}\n", font_size);
+		g_string_append_printf(OUTPUT_PRIVATE(r)->whole_report, "pre { margin:0; padding:0; margin-top:0; margin-bottom:0; font-size:%dpt;}\n", BIGGER_HTML_FONT(font_size));
 		g_string_append_printf(OUTPUT_PRIVATE(r)->whole_report, "body { background-color: #ffffff;}\n");
 		g_string_append(OUTPUT_PRIVATE(r)->whole_report, "TABLE { border: 0; border-spacing: 0; padding: 0; width:100%; }\n");
 		g_string_append(OUTPUT_PRIVATE(r)->whole_report, "</style>\n");
@@ -495,7 +495,7 @@ static void html_end_report_line(rlib *r, struct rlib_part *part, struct rlib_re
 
 
 static void html_start_line(rlib *r, int backwards) {
-	print_text(r, "<div class=\"attila\"><pre>",  backwards);
+	print_text(r, "<div><pre style=\"font-size: 1pt\">",  backwards);
 }
 
 static void html_end_line(rlib *r, int backwards) {
