@@ -193,7 +193,7 @@ static void csv_end_evil_csv(rlib *r) {
 static void csv_end_line(rlib *r, gint backwards) {
 	if(OUTPUT_PRIVATE(r)->new_line_on_end_of_line == TRUE) {
 		print_csv_line(r);
-		csv_start_output_section(r, NULL);
+		csv_start_evil_csv(r);
 	}
 }
 
