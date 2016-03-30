@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2014 SICOM Systems, INC.
+ *  Copyright (C) 2003-2016 SICOM Systems, INC.
  *
  *  Authors: Bob Doan <bdoan@sicompos.com>
  *
@@ -349,14 +349,11 @@ static void rpdf_make_page_stream(gpointer data, gpointer user_data) {
 		b0 = y + (radius * sin(t1));
 		c0 = -radius * sin(t1);
 		d0 = radius * cos(t1);
-		save_x = a0;
-		save_y = b0;
 		if(total_angle < DEGREE_2_RAD(360.0)) {  /* Pie Slices */
 			sprintf(buf, "%s%.03f %.03f m\n", extra, x, y);
 			sprintf(buf, "%s%.03f %.03f l\n", buf, a0, b0);
 		} else {
 			sprintf(buf, "%s%.03f %.03f m\n", extra, a0,b0);
-		
 		}		
 		for (i = 1; i <= nsegs; i++) {
 			t1 = ((gfloat)i * dt) + start_angle;
@@ -480,8 +477,7 @@ static void rpdf_make_page_image_obj(gpointer data, gpointer user_data) {
 		if(png->ct == 3) {
 			GString *obj = NULL;
 			obj = obj_printf(obj, "<</Length %d>>\n", png->palette->len);
-			object_number = rpdf_object_append(pdf, FALSE, obj, png->palette->str, png->palette->len);
-
+			rpdf_object_append(pdf, FALSE, obj, png->palette->str, png->palette->len);
 		}
 		g_free(image->data);	
 	}
@@ -975,52 +971,52 @@ gboolean rpdf_text_callback(struct rpdf *pdf, gdouble x, gdouble y, gdouble angl
 gboolean rpdf_text(struct rpdf *pdf, gdouble x, gdouble y, gdouble angle, const gchar *text) {
 	struct rpdf_stream_text *stream;
 	gint slen;
-	gint count = 0, spot=0, i;
+	gint count = 0, spot = 0, i;
 	static GIConv conv = NULL;
-	gboolean converted = FALSE;
 	gchar *new_text;
-	
-	if(conv == NULL) {
-		conv = g_iconv_open("ISO-8859-1", "UTF-8");	
-	}
 
-	if(conv != NULL && text != NULL) {
+	/*
+	 * FIXME:
+	 * Because of this, the generated PDF can only contain
+	 * ISO-8859-1 (Latin 1) characters. Anything outside it,
+	 * Latin 2, Chinese, etc. will be represented as garbage.
+	 */
+	if (!conv)
+		conv = g_iconv_open("ISO-8859-1", "UTF-8");
+
+	if (conv && text) {
 		gsize foo1, foo2;
 		new_text = g_convert_with_iconv(text, strlen(text), conv, &foo1, &foo1, NULL);
-		if(new_text != NULL) {
-			converted = TRUE;
-		} else {
-			new_text = (char *)text;	
-		}
-	}
-	
+		if (!new_text)
+			new_text = g_strdup(text);
+	} else
+		new_text = g_strdup(text);
+
 	stream = g_new0(struct rpdf_stream_text, 1);
 	stream->x = x;
 	stream->y = y;
 	stream->angle = angle;
 	
 	slen = strlen(new_text);
-	for(i=0;i<slen;i++) {
-		if(new_text[i] == '(' || new_text[i] == ')' || new_text[i] == '\\')
+	for (i = 0; i < slen; i++) {
+		if (new_text[i] == '(' || new_text[i] == ')' || new_text[i] == '\\')
 			count++;
 	}
-	if(count == 0)
-		stream->text = g_strdup(new_text); 
-	else {
+	if (count == 0) {
+		stream->text = new_text;
+	} else {
 		stream->text = g_malloc(slen + 1 + count);
-		for(i=0;i<slen;i++) {
-			if(new_text[i] == '(' || new_text[i] == ')' || new_text[i] == '\\') {
+		for (i = 0; i < slen; i++) {
+			if (new_text[i] == '(' || new_text[i] == ')' || new_text[i] == '\\') {
 				stream->text[spot++] = '\\';
 			}
 			stream->text[spot++] = new_text[i];
 		}
 		stream->text[spot++] = 0;
-	
-	}
-	
-	if(converted)
+
 		g_free(new_text);
-	
+	}
+
 	rpdf_stream_append(pdf, rpdf_stream_new(RPDF_TYPE_TEXT, stream));
 
 	return TRUE;
