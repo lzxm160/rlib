@@ -208,18 +208,10 @@ dnl .. ODBC checking borrowed from libgda
 ODBC_CFLAGS=""
 ODBC_LIBS=""
 enable_odbc=yes
-AC_ARG_WITH(odbc,
-[  --with-odbc=<directory>	use ODBC libraries in <directory>],[
-if test $withval = no
-then
-	enable_odbc=false
-elif test $withval = yes
-then
-	dir="/usr/local"
-else
-	dir=$withval
-fi
-])
+AC_ARG_WITH([odbc],
+	[AS_HELP_STRING([--with-odbc=<directory>],[use ODBC libraries in <directory>])],
+	[AS_IF([test x$withval = xno],[enable_odbc=false],[test x$withval = xyes],[dir="$libdir"],[dir=$withval])],
+	[])
 odbcdir=""
 if test $enable_odbc = yes
 then
@@ -265,47 +257,17 @@ SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);]])],
 	fi
         LIBS="$ac_save_LIBS"
     else
-	AC_MSG_CHECKING(for ODBC files)
-	for d in $dir $libdir /usr /usr/local
-	do
-		if test -f $d/libodbc.so -a -f $d/../include/sql.h
-		then
-			AC_MSG_RESULT(found ODBC in $d)
-			odbclib="-lodbc"
-			odbcdir=$d
-			break
-		fi
-		if test -f $d/lib/libodbc.so -a -f $d/include/sql.h
-		then
-			AC_MSG_RESULT(found ODBC in $d)
-			odbclib="-lodbc"
-			odbcdir=$d
-			break
-		fi
-		if test -f $d/libiodbc.so -a -f $d/../include/sql.h
-		then
-			AC_MSG_RESULT(found iODBC in $d)
-			odbclib="-liodbc"
-			odbcdir=$d
-			break
-		fi
-		if test -f $d/lib/libiodbc.so -a -f $d/include/sql.h
-		then
-			AC_MSG_RESULT(found iODBC in $d)
-			odbclib="-liodbc"
-			odbcdir=$d
-			break
-		fi
-	done
-	if test x$odbcdir = x
-	then
-		enable_odbc=no
-		AC_MSG_WARN(ODBC input method is not going to be used)
-	else
+	AC_CHECK_LIB([odbc],[SQLAllocHandle],
+		[odbclib="-lodbc"],
+		[AC_CHECK_LIB([iodbc],[SQLAllocHandle],
+			[odbclib="-lodbc"],
+			[enable_odbc=no
+			 AC_MSG_WARN(ODBC input method is not going to be used)])])
+	AS_IF([test x$enable_odbc = xyes],[
 		AC_DEFINE(HAVE_ODBC,1,[Build with ODBC support])
 		ODBC_CFLAGS="-I${odbcdir}/include"
 		ODBC_LIBS="-L${odbcdir}/lib ${odbclib}"
-	fi
+	])
     fi
 fi
 AM_CONDITIONAL(HAVE_ODBC, test x$enable_odbc = xyes)
