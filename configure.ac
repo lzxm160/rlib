@@ -186,59 +186,57 @@ AC_ARG_WITH([odbc],
 	[AS_HELP_STRING([--with-odbc=<directory>],[use ODBC libraries in <directory>])],
 	[AS_IF([test x$withval = xno],[enable_odbc=false],[test x$withval = xyes],[dir="$libdir"],[dir=$withval])],
 	[])
-odbcdir=""
-if test $enable_odbc = yes
-then
-    if test x$enable_win32 = xyes ; then
-	AC_MSG_CHECKING([whether <sql.h> needs  <windows.h>])
-	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sql.h>]], [[]])], sql_h_needs_windows_h=no,
-		AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#define WIN32_LEAN_AND_MEAN 1
-#include <windows.h>
-#include <sql.h>]], [[]])], sql_h_needs_windows_h=yes,
-			AC_MSG_ERROR([don't know how to compile <sql.h>])
-		))
-	AC_MSG_RESULT([$sql_h_needs_windows_h])
+AS_IF([test x$enable_odbc = xyes],
+	[AS_IF([test x$enable_win32 = xyes],
+		[AC_MSG_CHECKING([whether <sql.h> needs  <windows.h>])
+		 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sql.h>]],[[]])],
+			[sql_h_needs_windows_h=no],
+			[AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
+				[[#define WIN32_LEAN_AND_MEAN 1
+				  #include <windows.h>
+				  #include <sql.h>]],
+				[[]])],
+				[sql_h_needs_windows_h=yes],
+				[AC_MSG_ERROR([don't know how to compile <sql.h>])])])
+		 AC_MSG_RESULT([$sql_h_needs_windows_h])
 
-	ac_save_LIBS="$LIBS"
-	LIBS="$LIBS -lodbc32"
+		 ac_save_LIBS="$LIBS"
+		 LIBS="$LIBS -lodbc32"
 
-	AC_MSG_CHECKING([for SQLAllocHandle in -lodbc])
-	AS_IF([test x$sql_h_needs_windows_h = xyes],[
-		AC_DEFINE([NEED_WINDOWS_H], [1], [We are compiling under Windows])
-		AC_LINK_IFELSE([AC_LANG_PROGRAM(
-			[[#define WIN32_LEAN_AND_MEAN 1
-			  #include <windows.h>
-			  #include <sql.h>]],
-			[[SQLHENV hEnv;
-			  SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);]])],
-			[have_odbc32=yes],
-			[AC_MSG_ERROR([Can't find ODBC libs])])],
-		[AC_LINK_IFELSE([AC_LANG_PROGRAM(
-			[[#include <sql.h>]],
-			[[SQLHENV hEnv;
-			  SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);]])],
-			[have_odbc32=yes],
-			[AC_MSG_ERROR([Can't find ODBC libs])])])
+		 AC_MSG_CHECKING([for SQLAllocHandle in -lodbc])
+		 AS_IF([test x$sql_h_needs_windows_h = xyes],[
+			AC_DEFINE([NEED_WINDOWS_H], [1], [We are compiling under Windows])
+			AC_LINK_IFELSE([AC_LANG_PROGRAM(
+				[[#define WIN32_LEAN_AND_MEAN 1
+				  #include <windows.h>
+				  #include <sql.h>]],
+				[[SQLHENV hEnv;
+				  SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);]])],
+				[have_odbc32=yes],
+				[AC_MSG_ERROR([Can't find ODBC libs])])],
+			[AC_LINK_IFELSE([AC_LANG_PROGRAM(
+				[[#include <sql.h>]],
+				[[SQLHENV hEnv;
+				  SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);]])],
+				[have_odbc32=yes],
+				[AC_MSG_ERROR([Can't find ODBC libs])])])
 
-	AC_MSG_RESULT($have_odbc32)
-	AS_IF([test x$have_odbc32 = xyes],
-		[AC_DEFINE(HAVE_ODBC,1,[Build with ODBC support])
-		 ODBC_CFLAGS=""
-		 ODBC_LIBS="-lodbc32"],
-		[enable_odbc=no
-		 AC_MSG_WARN(ODBC input method is not going to be used)])
-	LIBS="$ac_save_LIBS"
-    else
-	AC_CHECK_LIB([odbc],[SQLAllocHandle],
-		[ODBC_LIBS="-lodbc"],
-		[AC_CHECK_LIB([iodbc],[SQLAllocHandle],
-			[ODBC_LIBS="-liodbc"],
+		 AC_MSG_RESULT($have_odbc32)
+		 AS_IF([test x$have_odbc32 = xyes],
+			[AC_DEFINE(HAVE_ODBC,1,[Build with ODBC support])
+			 ODBC_CFLAGS=""
+			 ODBC_LIBS="-lodbc32"],
 			[enable_odbc=no
-			 AC_MSG_WARN(ODBC input method is not going to be used)])])
-	AS_IF([test x$enable_odbc = xyes],
-		[AC_DEFINE(HAVE_ODBC,1,[Build with ODBC support])])
-    fi
-fi
+			 AC_MSG_WARN(ODBC input method is not going to be used)])
+		 LIBS="$ac_save_LIBS"],
+		[AC_CHECK_LIB([odbc],[SQLAllocHandle],
+			[ODBC_LIBS="-lodbc"],
+			[AC_CHECK_LIB([iodbc],[SQLAllocHandle],
+				[ODBC_LIBS="-liodbc"],
+				[enable_odbc=no
+				 AC_MSG_WARN(ODBC input method is not going to be used)])])
+		 AS_IF([test x$enable_odbc = xyes],
+			[AC_DEFINE(HAVE_ODBC,1,[Build with ODBC support])])])])
 AM_CONDITIONAL(HAVE_ODBC, test x$enable_odbc = xyes)
 AC_SUBST(ODBC_CFLAGS)
 AC_SUBST(ODBC_LIBS)
