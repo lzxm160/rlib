@@ -294,29 +294,23 @@ AC_SUBST(PHP_EXTENSION_DIR)
 AC_SUBST(HAVE_PHP)
 AM_CONDITIONAL(HAVE_PHP, test x$enable_php = xyes)
 
-AC_ARG_ENABLE(gd,              [  --disable-gd         disable gd graphing],,enable_gd=yes)
-GD_CFLAGS=""
-GD_LIBS=""
-GD_LINK=""
-GD_LDFLAGS=""
-if test x$enable_gd = xyes; then
-	AC_PATH_PROG(GD_CONFIG, gdlib-config, no)
-	if test "x$GD_CONFIG" = "xno" ; then
-		enable_gd=no
-		echo "*** WARNING: GD NOT FOUND IN PATH.  RLIB WILL NOT BE COMPILED WITH SUPPORT FOR IT"
-	else
-		AC_DEFINE(HAVE_GD,1,[Build with GD support])
-		GD_CFLAGS=`"$GD_CONFIG" --includes`
-		GD_LIBS=`"$GD_CONFIG" --ldflags`
-		GD_LINK="-lgd"
-		GD_LDFLAGS=`"$GD_CONFIG" --libs`
-	fi
-fi
-AC_SUBST(GD_CFLAGS)
+AC_ARG_ENABLE([gd],
+	[AS_HELP_STRING([--disable-gd],[disable gd graphing])],
+	[],
+	[enable_gd=yes])
+AS_IF([test x$enable_gd = xyes],
+	[PKG_CHECK_MODULES(GD, gdlib,
+		[AC_DEFINE(HAVE_GD,1,[Build with GD support])],
+		[AC_PATH_PROG(GD_CONFIG, gdlib-config, no)
+		 AS_IF([test x$GD_CONFIG = xno],
+			[enable_gd=no
+			 echo "*** WARNING: GD NOT FOUND IN PATH.  RLIB WILL NOT BE COMPILED WITH SUPPORT FOR IT"],
+			[AC_DEFINE(HAVE_GD,1,[Build with GD support])
+			 GD_LIBS=`"$GD_CONFIG" --libs`
+			 GD_CFLAGS=`"$GD_CONFIG" --cflags`])])],
+	[])
 AC_SUBST(GD_LIBS)
-AC_SUBST(GD_LINK)
-AC_SUBST(GD_LDFLAGS)
-AC_SUBST(HAVE_GD)
+AC_SUBST(GD_CFLAGS)
 AM_CONDITIONAL(HAVE_GD, test x$enable_gd = xyes)
 
 AC_ARG_ENABLE(doc,              [  --disable-doc         disable docs],,enable_doc=yes)
@@ -548,10 +542,10 @@ if test x$enable_crash = xyes; then
     fi
 fi
 
-AC_ARG_ENABLE(utf8,              [  --enable-utf8       enable utf8],enable_utf8=no,enable_utf8=yes)
-if test x$enable_utf8 = xyes; then
-	AC_DEFINE(DISABLE_UTF8,1,[DISABLE UTF8])
-fi
+AC_ARG_ENABLE([utf8],
+	[AS_HELP_STRING([--enable-utf8],[enable utf8])],
+	[AS_IF([test x$enable_utf8 = xno],[AC_DEFINE(DISABLE_UTF8,1,[DISABLE UTF8])])],
+	enable_utf8=yes)
 
 AC_CONFIG_FILES([
 Makefile
@@ -591,7 +585,6 @@ rlib-$VERSION:
 
    prefix:                   ${prefix}
    compiler:                 ${CC}
-   Memory debugging:         ${enable_memdebug}
    Warning Fun:              ${enable_warningfun}
    Crash detection:          ${enable_crash}
    UTF8 disabled:            ${enable_utf8}
