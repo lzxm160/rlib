@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2014 SICOM Systems, INC.
+ *  Copyright (C) 2003-2016 SICOM Systems, INC.
  *
  *  Authors: Bob Doan <bdoan@sicompos.com>
  *
@@ -230,26 +230,24 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 	gint before_len = 0, after_len = 0;
 	gboolean formatted_it = FALSE;	
 	
-	if(r->special_locale != NULL) 
+	if (r->special_locale != NULL)
 		setlocale(LC_ALL, r->special_locale);
 	if(rf->xml_format.xml == NULL) {
 		rlib_format_string_default(r, rf, rval, dest);
-		formatted_it = TRUE;
 	} else {
 		gchar *formatstring;
-		struct rlib_value rval_fmtstr2, *rval_fmtstr=&rval_fmtstr2;
+		struct rlib_value rval_fmtstr2, *rval_fmtstr;
 		rval_fmtstr = rlib_execute_pcode(r, &rval_fmtstr2, rf->format_code, rval);
 		if(!RLIB_VALUE_IS_STRING(rval_fmtstr)) {
 			*dest = g_strdup_printf("!ERR_F_F");
 			rlib_value_free(rval_fmtstr);
-			if(r->special_locale != NULL) 
+			if (r->special_locale != NULL)
 				setlocale(LC_ALL, r->current_locale);
 			return FALSE;
 		} else {
 			formatstring = RLIB_VALUE_GET_AS_STRING(rval_fmtstr);
-			if(formatstring == NULL) {
+			if (formatstring == NULL) {
 				rlib_format_string_default(r, rf, rval, dest);
-				formatted_it = TRUE;
 			} else {
 				if (*formatstring == '!') {
 					gboolean result;
@@ -259,8 +257,7 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 					case '$': /* Format as money */
 						if (RLIB_VALUE_IS_NUMBER(rval)) {
 							result = rlib_format_money(r, dest, tfmt + 1, RLIB_VALUE_GET_AS_NUMBER(rval));
-							formatted_it = TRUE;
-							if(r->special_locale != NULL) 
+							if (r->special_locale != NULL)
 								setlocale(LC_ALL, r->current_locale);
 							return result;
 						}
@@ -269,8 +266,7 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 					case '#': /* Format as number */
 						if (RLIB_VALUE_IS_NUMBER(rval)) {
 							result = rlib_format_number(r, dest, tfmt + 1, RLIB_VALUE_GET_AS_NUMBER(rval));
-							formatted_it = TRUE;
-							if(r->special_locale != NULL) 
+							if (r->special_locale != NULL)
 								setlocale(LC_ALL, r->current_locale);
 							return result;
 						}
@@ -288,14 +284,13 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 						break;
 					}
 					if (goodfmt) {
-						if(r->special_locale != NULL) 
+						if (r->special_locale != NULL)
 							setlocale(LC_ALL, r->current_locale);
 						return TRUE;
 					}
 				}
-				if(RLIB_VALUE_IS_DATE(rval)) {
+				if (RLIB_VALUE_IS_DATE(rval)) {
 					rlib_datetime_format(r, dest, &RLIB_VALUE_GET_AS_DATE(rval), formatstring);
-					formatted_it = TRUE;
 				} else {	
 					gint i=0,/*j=0,pos=0,*/fpos=0;
 					gchar fmtstr[MAX_FORMAT_STRING];
@@ -332,7 +327,7 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 								} else {
 									*dest = g_strdup_printf("!ERR_F_D");
 									rlib_value_free(rval_fmtstr);
-									if(r->special_locale != NULL) 
+									if (r->special_locale != NULL)
 										setlocale(LC_ALL, r->current_locale);
 									return FALSE;
 								}
@@ -343,7 +338,7 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 								} else {
 									*dest = g_strdup_printf("!ERR_F_S");
 									rlib_value_free(rval_fmtstr);
-									if(r->special_locale != NULL) 
+									if (r->special_locale != NULL)
 										setlocale(LC_ALL, r->current_locale);
 									return FALSE;
 								}
@@ -373,7 +368,7 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 		g_free(*dest);
 		*dest = new_str;
 	}
-	if(r->special_locale != NULL) 
+	if (r->special_locale != NULL)
 		setlocale(LC_ALL, r->current_locale);
 	return TRUE;
 }

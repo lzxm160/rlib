@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2014 SICOM Systems, INC.
+ *  Copyright (C) 2003-2016 SICOM Systems, INC.
  *
  *  Authors: Bob Doan <bdoan@sicompos.com>
  *
@@ -190,12 +190,11 @@ void rlib_variables_precalculate(rlib *r, struct rlib_part *part, struct rlib_re
 
 			r->detail_line_count++;
 
-			if(did_it == FALSE) {
-				did_it = TRUE;
+			if (did_it == FALSE) {
 				rlib_process_variables(r, report, TRUE);
 			}			
 			
-			if(rlib_navigate_next(r, r->current_result) == FALSE) {
+			if (rlib_navigate_next(r, r->current_result) == FALSE) {
 				rlib_navigate_last(r, r->current_result);
 				rlib_handle_break_footers(r, part, report, TRUE);
 				break;
@@ -207,9 +206,9 @@ void rlib_variables_precalculate(rlib *r, struct rlib_part *part, struct rlib_re
 		}
 	}
 	
-	for(e = report->variables; e != NULL; e=e->next) {
+	for (e = report->variables; e != NULL; e=e->next) {
 		struct rlib_report_variable *rv = e->data;
-		if(rv->precalculate == TRUE && (rv->xml_resetonbreak.xml == NULL || rv->xml_resetonbreak.xml[0] == '\0')) {
+		if (rv->precalculate == TRUE && (rv->xml_resetonbreak.xml == NULL || rv->xml_resetonbreak.xml[0] == '\0')) {
 			struct rlib_count_amount *copy = g_malloc(sizeof(struct rlib_count_amount));
 			memcpy(copy, &rv->data, sizeof(struct rlib_count_amount));
 			rv->precalculated_values = g_slist_append(rv->precalculated_values, copy);				
@@ -221,5 +220,4 @@ void rlib_variables_precalculate(rlib *r, struct rlib_part *part, struct rlib_re
 	rlib_emit_signal(r, RLIB_SIGNAL_PRECALCULATION_DONE);
 	rlib_value_free(&report->uniquerow);
 	RLIB_VALUE_TYPE_NONE(&report->uniquerow);
-
 }

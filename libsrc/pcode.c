@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2006 SICOM Systems, INC.
+ *  Copyright (C) 2003-2016 SICOM Systems, INC.
  *
  *  Authors: Bob Doan <bdoan@sicompos.com>
  *
@@ -739,16 +739,15 @@ struct rlib_pcode * rlib_infix_to_pcode(rlib *r, struct rlib_part *part, struct 
 		} else
 			moving_ptr++;
 	}
-	if((moving_ptr != op_pointer)) {
+	if ((moving_ptr != op_pointer)) {
 		memcpy(operand, op_pointer, moving_ptr - op_pointer);
 		operand[moving_ptr - op_pointer] = '\0';
-		if(operand[0] != ')') {
+		if (operand[0] != ')') {
 			rlib_pcode_add(pcodes, rlib_new_pcode_instruction(&rpi, PCODE_PUSH, rlib_new_operand(r, part, report, operand, infix, line_number, look_at_metadata)));
 		}
-		op_pointer += moving_ptr - op_pointer;
 	}
 	forcepopstack(r, pcodes, &os);
-	if(os.pcount != 0) {
+	if (os.pcount != 0) {
 		r_error(r, "Line: %d Compiler Error.  Parenthesis Mismatch [%s]\n", line_number, infix);
 	}
 
