@@ -155,7 +155,7 @@ AC_SUBST(EXTRA_LDFLAGS)
 
 AC_ARG_ENABLE([mysql],
 	[AS_HELP_STRING([--disable-mysql],[disable mysql backend])],,enable_mysql=yes)
-if test x$enable_mysql = xyes; then
+AS_IF([test x$enable_mysql = xyes],[
 	dnl Use the standard MySQL detection from mysql.m4
 	dnl MYSQL_CLIENT sets MYSQL_CLIENT_CFLAGS and MYSQL_CLIENT_LIBS.
 	dnl Lets set out own MYSQL_CFLAGS and MYSQL_LIBS too.
@@ -165,8 +165,7 @@ if test x$enable_mysql = xyes; then
 	MYSQL_CFLAGS=${MYSQL_CLIENT_CFLAGS}
 	AC_SUBST(MYSQL_CFLAGS)
 	MYSQL_LIBS=${MYSQL_CLIENT_LIBS}
-	AC_SUBST(MYSQL_LIBS)
-fi
+	AC_SUBST(MYSQL_LIBS)])
 AM_CONDITIONAL(HAVE_MYSQL, test x$enable_mysql = xyes)
 
 AC_ARG_ENABLE([postgres],
@@ -272,23 +271,20 @@ AC_SUBST(ODBC_CFLAGS)
 AC_SUBST(ODBC_LIBS)
 
 
-AC_ARG_ENABLE(php,              [  --disable-php         disable php frontend],,enable_php=yes)
+AC_ARG_ENABLE([php],
+	[AS_HELP_STRING([--disable-php],[disable php frontend])],
+	[],[enable_php=yes])
 PHP_CFLAGS=""
 PHP_EXTENSION_DIR=""
-if test x$enable_php = xyes; then
-	AC_PATH_PROG(PHP_CONFIG, php-config, no)
-	if test x$PHP_CONFIG = xno; then
-		enable_php=no
-		echo "*** WARNING: PHP NOT FOUND IN PATH.  RLIB WILL NOT BE COMPILED WITH SUPPORT FOR IT"
-	else
-		AC_DEFINE(HAVE_PHP,1,[Build with PHP support])
-		PHP_CFLAGS=`$PHP_CONFIG --includes`
-		PHP_EXTENSION_DIR=`$PHP_CONFIG --extension-dir`
-	fi
-fi
+AS_IF([test x$enable_php = xyes],
+	[AC_PATH_PROG(PHP_CONFIG, php-config, no)
+	 AS_IF([test x$PHP_CONFIG = xno],
+		[enable_php=no
+		 echo "*** WARNING: PHP NOT FOUND IN PATH.  RLIB WILL NOT BE COMPILED WITH SUPPORT FOR IT"],
+		[PHP_CFLAGS=`$PHP_CONFIG --includes`
+		 PHP_EXTENSION_DIR=`$PHP_CONFIG --extension-dir`])])
 AC_SUBST(PHP_CFLAGS)
 AC_SUBST(PHP_EXTENSION_DIR)
-AC_SUBST(HAVE_PHP)
 AM_CONDITIONAL(HAVE_PHP, test x$enable_php = xyes)
 
 AC_ARG_ENABLE([gd],
