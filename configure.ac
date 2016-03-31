@@ -278,6 +278,9 @@ AC_SUBST(PHP_CFLAGS)
 AC_SUBST(PHP_EXTENSION_DIR)
 AM_CONDITIONAL(HAVE_PHP, test x$enable_php = xyes)
 
+AC_ARG_VAR([GREP], [Name and path of a GNU grep binary.])
+AC_PATH_PROG([GREP], [grep], [grep])
+
 AC_ARG_ENABLE([gd],
 	[AS_HELP_STRING([--disable-gd],[disable gd graphing])],
 	[],
@@ -290,9 +293,10 @@ AS_IF([test x$enable_gd = xyes],
 			[enable_gd=no
 			 echo "*** WARNING: GD NOT FOUND IN PATH.  RLIB WILL NOT BE COMPILED WITH SUPPORT FOR IT"],
 			[AC_DEFINE(HAVE_GD,1,[Build with GD support])
-			 GD_LIBS="`"$GD_CONFIG" --libs ` -lgd"
+			 GD_LIBS=`"$GD_CONFIG" --libs`
 			 GD_CFLAGS=`"$GD_CONFIG" --cflags`])])],
 	[])
+AS_IF([echo "$GD_LIBS" | grep -- -lgd],[],[GD_LIBS="$GD_LIBS -lgd"])
 AC_SUBST(GD_LIBS)
 AC_SUBST(GD_CFLAGS)
 AM_CONDITIONAL(HAVE_GD, test x$enable_gd = xyes)
