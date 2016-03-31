@@ -190,15 +190,12 @@ AC_ARG_WITH([pg-config],
 	 else
 		with_pg_config=$POSTGRES_CONFIG
 	 fi])
-
-if test x$enable_postgres = xyes; then
-	if test "x$with_pg_config" = "xno" ; then
-		AC_MSG_ERROR([--without-pg-config were specified or pg_config is not found in PATH when --enable-postgres is specified])
-	fi
+AS_IF([test x$enable_postgres = xyes],[
+	AS_IF([test "x$with_pg_config" = "xno"],
+		[AC_MSG_ERROR([--without-pg-config were specified or pg_config is not found in PATH when --enable-postgres is specified])])
 	AC_DEFINE(HAVE_POSTGRES,1,[Build with POSTGRES support])
 	POSTGRES_CFLAGS="-I `"$POSTGRES_CONFIG" --includedir`"
-	POSTGRES_LIBS="-L`"$POSTGRES_CONFIG" --libdir` -lpq"
-fi
+	POSTGRES_LIBS="-L`"$POSTGRES_CONFIG" --libdir` -lpq"])
 AC_SUBST(POSTGRES_CFLAGS)
 AC_SUBST(POSTGRES_LIBS)
 AM_CONDITIONAL(HAVE_POSTGRES, test x$enable_postgres = xyes)
