@@ -306,7 +306,7 @@ AM_CONDITIONAL(HAVE_GD, test x$enable_gd = xyes)
 AC_ARG_ENABLE([doc],
 	[AS_HELP_STRING([--disable-doc],[disable docs])],,
 	[enable_doc=yes])
-AS_IF([x$enable_doc = xyes],
+AS_IF([test x$enable_doc = xyes],
 	[AC_PATH_PROG(DOC_CONFIG, db2pdf, no)
 	 AS_IF([test x$DOC_CONFIG = xno],
 	 	[enable_doc=no
@@ -316,21 +316,17 @@ AM_CONDITIONAL(HAVE_DOC, test x$enable_doc = xyes)
 AC_ARG_ENABLE([python],
 	[AS_HELP_STRING([--disable-python],[disable python binding])],,enable_python=yes)
 PYTHON_CFLAGS=""
-if test x$enable_python = xyes; then
-	AM_PATH_PYTHON([2.2])
-	eval python_inc="`${PYTHON} -c "from distutils import sysconfig; print sysconfig.get_python_inc(0)" | tr '\\\\' '/' `"
-	eval python_lib="`${PYTHON} -c "from distutils import sysconfig; print sysconfig.get_config_var('BINLIBDEST')" | tr '\\\\' '/' `"
-	AC_CHECK_HEADERS(python${PYTHON_VERSION}/Python.h,python_header=yes,python_header=no)
-	if test x$python_header = xyes; then
-		AC_DEFINE(HAVE_PYTHON,1,[Build with PYTHON support])
-		PYTHON_CFLAGS="-I $python_inc"
-		PYTHON_LIBRARIES="-L$python_lib -lpython$PYTHON_VERSION"
-	else
-		enable_python=no
-		echo "*** WARNING: PYTHON was found but Python.h was not!   No python bindings for you.  Perhaps you need to install the devel package or something"
-	fi
-fi
-AC_SUBST(HAVE_PYTHON)
+AS_IF([test x$enable_python = xyes],
+	[AM_PATH_PYTHON([2.2])
+	 python_inc="`${PYTHON} -c "from distutils import sysconfig; print sysconfig.get_python_inc(0)" | tr '\\\\' '/' `"
+	 python_lib="`${PYTHON} -c "from distutils import sysconfig; print sysconfig.get_config_var('BINLIBDEST')" | tr '\\\\' '/' `"
+	 AC_CHECK_HEADERS(python${PYTHON_VERSION}/Python.h,python_header=yes,python_header=no)
+	 AS_IF([test x$python_header = xyes],
+		[AC_DEFINE(HAVE_PYTHON,1,[Build with PYTHON support])
+		 PYTHON_CFLAGS="-I $python_inc"
+		 PYTHON_LIBRARIES="-L$python_lib -lpython$PYTHON_VERSION"],
+		[enable_python=no
+		 echo "*** WARNING: PYTHON was found but Python.h was not!   No python bindings for you.  Perhaps you need to install the devel package or something"])])
 AC_SUBST(PYTHON_CFLAGS)
 AC_SUBST(PYTHON_LIBRARIES)
 AM_CONDITIONAL(HAVE_PYTHON, test x$enable_python = xyes)
