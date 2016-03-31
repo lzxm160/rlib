@@ -173,3 +173,6 @@ tests/test2
 tests/test2.o
 tests/test3
 tests/test3.o
+
+src/examples/java/*.class
+src/examples/java/*.stamp

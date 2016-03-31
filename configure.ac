@@ -331,50 +331,29 @@ AC_SUBST(PYTHON_CFLAGS)
 AC_SUBST(PYTHON_LIBRARIES)
 AM_CONDITIONAL(HAVE_PYTHON, test x$enable_python = xyes)
 
-enable_java=no
-JAVA_CFLAGS=""
-AC_ARG_WITH(java,
-[  --with-java=<directory>	use JAVA in <directory>],[
-if test "$withval" = "no"
-then
-	enable_java=false
-elif test "$withval" = yes
-then
-	dir="/usr/local"
-else
-	dir="$withval"
-	enable_java=yes
-fi
-])
-javadir=""
-if test $enable_java = yes
-then
-	AC_MSG_CHECKING(for JAVA files)
-	for d in "$dir" /usr /usr/local
-	do
-		if test -f "$d/include/jni.h"
-		then
-			AC_MSG_RESULT(found JAVA in $d)
-			javadir=$d
-			break
-		fi
-	done
-	if test "x$javadir" = "x"
-	then
-		enable_java=no
-		AC_MSG_WARN(JAVA bindings are not going to be used)
-	else
-		AC_DEFINE(HAVE_JAVA,1,[Build with JAVA support])
-		case "$target" in
-                *-*-cygwin*|*-*-mingw*)
-			JAVA_CFLAGS="-I\"${javadir}/include\" -I\"${javadir}/include/win32\""
-			;;
-		*)
-			JAVA_CFLAGS="-I\"${javadir}/include\" -I\"${javadir}/include/linux\""
-			;;
-		esac
-	fi
-fi
+AC_ARG_WITH([java],
+	[AS_HELP_STRING([--with-java=<directory>],[use JAVA in <directory>])],
+	[AS_IF([test x$withval = xno],[enable_java=no],
+		[test x$withval = xyes],[enable_java=no],
+		[javadir="$withval"
+		 enable_java=yes])],
+	[enable_java=no])
+AS_IF([test x$enable_java = xyes],
+	[case "$target" in
+	 *-*-cygwin*|*-*-mingw*)
+		javatarget="win32"
+		;;
+	 *)
+		javatarget="linux"
+		;;
+	 esac
+	 saved_CPPFLAGS="$CPPFLAGS"
+	 CPPFLAGS="$CPPFLAGS -I${javadir}/include -I${javadir}/include/${javatarget}"
+	 AC_CHECK_HEADERS([jni.h],
+		[JAVA_CFLAGS="-I${javadir}/include -I${javadir}/include/${javatarget}"],
+		[enable_java=no
+		 AC_MSG_WARN(JAVA bindings are not going to be used)])
+	 CPPFLAGS="$saved_CPPFLAGS"])
 AM_CONDITIONAL(HAVE_JAVA, test x$enable_java = xyes)
 AC_SUBST(JAVA_CFLAGS)
 
