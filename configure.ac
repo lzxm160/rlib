@@ -65,10 +65,9 @@ AC_CHECK_HEADER([zlib.h],
 		enable_compressed_pdf=yes,
 		enable_compressed_pdf=no)],
 	[enable_compressed_pdf=no])
-if test x$enable_compressed_pdf = xyes; then
-	AC_DEFINE([RPDF_COMPRESS_STREAM], [], [RPDF can compress streams])
-	ZLIB_LIBS="-lz"
-fi
+AS_IF([test x$enable_compressed_pdf = xyes],
+	[AC_DEFINE([RPDF_COMPRESS_STREAM], [], [RPDF can compress streams])
+	 ZLIB_LIBS="-lz"])
 AC_SUBST(ZLIB_LIBS)
 
 PKG_CHECK_MODULES(LIBXML, libxml-2.0 >= 2.6.0)
@@ -91,43 +90,27 @@ case "$target" in
 	echo "int some_variable = 0;" > conftest.$ac_ext
 	compiler_ms_bitfields=no
 	AC_COMPILE_IFELSE(
-		[AC_LANG_PROGRAM([[]], [[int some_variable = 0;]])], [dnl
-		# The compiler can only warn and ignore the option if not recognized
-		# So say no if there are warnings
-		if test -s conftest.err; then
-			compiler_ms_bitfields=no
-		else
-			compiler_ms_bitfields=yes
-		fi
-	])
+		[AC_LANG_PROGRAM([[]], [[int some_variable = 0;]])],
+		dnl The compiler can only warn and ignore the option if not recognized
+		dnl So say no if there are warnings
+		[AS_IF([test -s conftest.err],[compiler_ms_bitfields=no],[compiler_ms_bitfields=yes])])
 	AC_MSG_RESULT($compiler_ms_bitfields)
 	CFLAGS="$ac_save_CFLAGS"
 
-	if test "$compiler_ms_bitfields" = "no"; then
+	AS_IF([test x$compiler_ms_bitfields = xno],[
 		ac_save_CFLAGS="$CFLAGS"
 		CFLAGS="$CFLAGS -fnative-struct -c conftest.$ac_ext"
 		AC_MSG_CHECKING([whether $CC supports -fnative-struct])
 		echo "int some_variable = 0;" > conftest.$ac_ext
 		compiler_native_struct=no
-		AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[int some_variable = 0;]])], [dnl
-			# The compiler can only warn and ignore the option if not recognized
-			# So say no if there are warnings
-			if test -s conftest.err; then
-				compiler_native_struct=no
-			else
-				compiler_native_struct=yes
-			fi
-		])
+		AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[int some_variable = 0;]])],
+			dnl The compiler can only warn and ignore the option if not recognized
+			dnl So say no if there are warnings
+			[AS_IF([test -s conftest.err],[compiler_native_struct=no],[compiler_native_struct=yes])])
 		AC_MSG_RESULT($compiler_native_struct)
-		CFLAGS="$ac_save_CFLAGS"
-	fi
-	if test $compiler_ms_bitfields=yes; then
-		CFLAGS="$CFLAGS -mms-bitfields"
-	else
-		if test $compiler_native_struct=yes; then
-			CFLAGS="$CFLAGS -fnative_struct"
-		fi
-	fi
+		CFLAGS="$ac_save_CFLAGS"])
+	AS_IF([test x$compiler_ms_bitfields = xyes],[CFLAGS="$CFLAGS -mms-bitfields"],
+		[AS_IF([test x$compiler_native_struct = xyes],[CFLAGS="$CFLAGS -fnative_struct"])])
 
 dnl Enable WIN32 on MingW or Cygwin in mno-cygwin mode
 	case "$target" in
@@ -170,32 +153,27 @@ AM_CONDITIONAL(HAVE_MYSQL, test x$enable_mysql = xyes)
 
 AC_ARG_ENABLE([postgres],
 	[AS_HELP_STRING([--disable-postgres],[disable postgres backend])],,enable_postgres=yes)
+PKG_CHECK_MODULES(POSTGRES, libpq, [],
+	[case "$target" in
+	 *-*-cygwin*|*-*-mingw*)
+		PG_CONFIG=pg_config.exe
+		;;
+	 *)
+		PG_CONFIG=pg_config
+		;;
+	 esac
 
-POSTGRES_CFLAGS=""
-POSTGRES_LIBS=""
-case "$target" in
-*-*-cygwin*|*-*-mingw*)
-        PG_CONFIG=pg_config.exe
-        ;;
-*)
-        PG_CONFIG=pg_config
-        ;;
-esac
-
-AC_ARG_WITH([pg-config],
-	[AS_HELP_STRING([--with-pg-config=PATH],[A PATH to pg_config script])],,
-	[AC_PATH_PROG(POSTGRES_CONFIG, $PG_CONFIG, no)
-	 if test "x$POSTGRES_CONFIG" = "xno" ; then
-		with_pg_config=no
-	 else
-		with_pg_config=$POSTGRES_CONFIG
-	 fi])
-AS_IF([test x$enable_postgres = xyes],[
-	AS_IF([test "x$with_pg_config" = "xno"],
-		[AC_MSG_ERROR([--without-pg-config were specified or pg_config is not found in PATH when --enable-postgres is specified])])
-	AC_DEFINE(HAVE_POSTGRES,1,[Build with POSTGRES support])
-	POSTGRES_CFLAGS="-I `"$POSTGRES_CONFIG" --includedir`"
-	POSTGRES_LIBS="-L`"$POSTGRES_CONFIG" --libdir` -lpq"])
+	 AC_ARG_WITH([pg-config],
+		[AS_HELP_STRING([--with-pg-config=PATH],[A PATH to pg_config script])],,
+		[AC_PATH_PROG(POSTGRES_CONFIG, $PG_CONFIG, no)
+		 AS_IF([test x$POSTGRES_CONFIG = xno],[with_pg_config=no],
+			[with_pg_config=$POSTGRES_CONFIG])])
+	 AS_IF([test x$enable_postgres = xyes],[
+		AS_IF([test "x$with_pg_config" = "xno"],
+			[AC_MSG_ERROR([--without-pg-config were specified or pg_config is not found in PATH when --enable-postgres is specified])])
+		AC_DEFINE(HAVE_POSTGRES,1,[Build with POSTGRES support])
+		POSTGRES_CFLAGS="-I `"$POSTGRES_CONFIG" --includedir`"
+		POSTGRES_LIBS="-L`"$POSTGRES_CONFIG" --libdir` -lpq"])])
 AC_SUBST(POSTGRES_CFLAGS)
 AC_SUBST(POSTGRES_LIBS)
 AM_CONDITIONAL(HAVE_POSTGRES, test x$enable_postgres = xyes)
@@ -225,33 +203,31 @@ then
 	LIBS="$LIBS -lodbc32"
 
 	AC_MSG_CHECKING([for SQLAllocHandle in -lodbc])
-	if test $sql_h_needs_windows_h = yes; then
+	AS_IF([test x$sql_h_needs_windows_h = xyes],[
 		AC_DEFINE([NEED_WINDOWS_H], [1], [We are compiling under Windows])
-		AC_LINK_IFELSE([AC_LANG_PROGRAM([[#define WIN32_LEAN_AND_MEAN 1
-#include <windows.h>
-#include <sql.h>]],
-		[[SQLHENV hEnv;
-SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);]])],
-		[have_odbc32=yes],
-		[AC_MSG_ERROR([Can't find ODBC libs])])
-	else
-		AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <sql.h>]],
-		[[SQLHENV hEnv;
-SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);]])],
-		[have_odbc32=yes],
-		[AC_MSG_ERROR([Can't find ODBC libs])])
-	fi
+		AC_LINK_IFELSE([AC_LANG_PROGRAM(
+			[[#define WIN32_LEAN_AND_MEAN 1
+			  #include <windows.h>
+			  #include <sql.h>]],
+			[[SQLHENV hEnv;
+			  SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);]])],
+			[have_odbc32=yes],
+			[AC_MSG_ERROR([Can't find ODBC libs])])],
+		[AC_LINK_IFELSE([AC_LANG_PROGRAM(
+			[[#include <sql.h>]],
+			[[SQLHENV hEnv;
+			  SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);]])],
+			[have_odbc32=yes],
+			[AC_MSG_ERROR([Can't find ODBC libs])])])
 
 	AC_MSG_RESULT($have_odbc32)
-	if test $have_odbc32=yes; then
-		AC_DEFINE(HAVE_ODBC,1,[Build with ODBC support])
-		ODBC_CFLAGS=""
-		ODBC_LIBS="-lodbc32"
-	else
-		enable_odbc=no
-		AC_MSG_WARN(ODBC input method is not going to be used)
-	fi
-        LIBS="$ac_save_LIBS"
+	AS_IF([test x$have_odbc32 = xyes],
+		[AC_DEFINE(HAVE_ODBC,1,[Build with ODBC support])
+		 ODBC_CFLAGS=""
+		 ODBC_LIBS="-lodbc32"],
+		[enable_odbc=no
+		 AC_MSG_WARN(ODBC input method is not going to be used)])
+	LIBS="$ac_save_LIBS"
     else
 	AC_CHECK_LIB([odbc],[SQLAllocHandle],
 		[ODBC_LIBS="-lodbc"],
