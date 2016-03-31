@@ -357,46 +357,22 @@ AS_IF([test x$enable_java = xyes],
 AM_CONDITIONAL(HAVE_JAVA, test x$enable_java = xyes)
 AC_SUBST(JAVA_CFLAGS)
 
-enable_csharp=no
-CSHARP_CFLAGS=""
-AC_ARG_WITH(csharp,
-[  --with-csharp=<directory>	use CSHARP in <directory>],[
-if test "$withval" = "no"
-then
-	enable_csharp=false
-elif test "$withval" = "yes"
-then
-	dir="/usr/local"
-else
-	dir="$withval"
-	enable_csharp=yes
-fi
-])
-csharpdir=""
-if test $enable_csharp = yes
-then
-	AC_MSG_CHECKING(for C SHARP files)
-	for d in "$dir" /usr /usr/local
-	do
-		if test -f "$d/bin/mcs"
-		then
-			AC_MSG_RESULT(found C SHARP in "$d")
-			csharpdir="$d"
-			break
-		fi
-	done
-	if test "x$csharpdir" = "x"
-	then
-		enable_csharp=no
-		AC_MSG_WARN(C SHARP bindings are not going to be used)
-	else
-		AC_DEFINE(HAVE_CSHARP,1,[Build with CSHARP support])
-		CSHARP_CFLAGS=""
-	fi
-fi
+AC_ARG_WITH([csharp],
+	[AS_HELP_STRING([--with-csharp@<:@=<path-to-mcs>@:>@],[use CSHARP and optionally provide the MCS compiler])],
+	[AS_IF([test x$withval = xno],[enable_csharp=no],
+		[test x$withval = xyes],
+			[mcsdir=""
+			 enable_csharp=yes],
+		[mcsdir="$withval"
+		 enable_csharp=yes])],
+	[enable_csharp=no])
+AS_IF([test x$enable_csharp = xyes],[
+	AC_PATH_PROG(MCS,[mcs],[no],[$PATH$PATH_SEPARATOR$mcsdir$PATH_SEPARATOR])
+	AS_IF([test x$MCS = xno],
+		[enable_csharp=no
+		 AC_MSG_WARN(C SHARP bindings are not going to be used)],
+		[AC_DEFINE(HAVE_CSHARP,1,[Build with CSHARP support])])])
 AM_CONDITIONAL(HAVE_CSHARP, test x$enable_csharp = xyes)
-AC_SUBST(CSHARP_CFLAGS)
-
 
 perl_where=""
 PERL_CFLAGS=""
