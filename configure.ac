@@ -495,17 +495,18 @@ AC_HEADER_STDC
 AC_CHECK_HEADERS(fcntl.h unistd.h)
 AC_C_CONST
 
-AC_ARG_ENABLE(crash,              [  --disable-crash       disable crash detection],enable_memdebug="$enableval",enable_crash=yes)
-if test x$enable_crash = xyes; then
-    AC_CHECK_HEADERS(sys/resource.h,
-	[AC_DEFINE(HAVE_SYS_RESOURCE_H, 1, [We have standard sys/resource.h])
-	 have_sys_res_h=yes], have_sys_res_h=no)
-    if test x$have_sys_res_h = xyes; then
-	AC_DEFINE(ENABLE_CRASH,1,[ENABLE CRASH DETECTION])
-    else
-	AC_MSG_WARN(Crash detection disabled because of missing sys/resource.h.)
-    fi
-fi
+AC_ARG_ENABLE([crash],
+	[AS_HELP_STRING([--disable-crash],[disable crash detection])],
+	[],[enable_crash=yes])
+AS_IF([test x$enable_crash = xyes],
+	[AC_CHECK_HEADERS(sys/resource.h,
+		[AC_DEFINE(HAVE_SYS_RESOURCE_H, 1, [We have standard sys/resource.h])
+		 have_sys_res_h=yes],
+		[have_sys_res_h=no])
+	 AS_IF([test x$have_sys_res_h = xyes],
+		[AC_DEFINE(ENABLE_CRASH,1,[ENABLE CRASH DETECTION])],
+		[AC_MSG_WARN([Crash detection disabled because of missing sys/resource.h.])])
+])
 
 AC_ARG_ENABLE([utf8],
 	[AS_HELP_STRING([--enable-utf8],[enable utf8])],
