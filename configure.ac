@@ -20,7 +20,7 @@ dnl Report bugs to rlib-devel@lists.sourceforge.net
 dnl
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([rlib],[2.0.9],[http://bugzilla.sicompos.com])
+AC_INIT([rlib],[2.0.10],[http://bugzilla.sicompos.com])
 AC_CANONICAL_TARGET
 AC_CONFIG_SRCDIR(libsrc/rlib.h)
 AC_CONFIG_MACRO_DIR([m4])
@@ -30,12 +30,12 @@ AM_INIT_AUTOMAKE()
 AC_CONFIG_HEADERS(config.h)
 AM_MAINTAINER_MODE
 
-RLIB_VERSION=2.0.9
+RLIB_VERSION=2.0.10
 AC_SUBST(RLIB_VERSION)
 
 RLIB_LT_CURRENT=4
 RLIB_LT_AGE=3
-RLIB_LT_REVISION=8
+RLIB_LT_REVISION=10
 AC_SUBST(RLIB_LT_CURRENT)
 AC_SUBST(RLIB_LT_REVISION)
 AC_SUBST(RLIB_LT_AGE)
@@ -56,6 +56,26 @@ AC_SUBST(LIBLTDL)
 AC_CHECK_HEADERS(langinfo.h sys/time.h)
 
 AC_CHECK_FUNCS([localtime_r strfmon])
+
+gl_VISIBILITY
+AS_IF([test x$gl_cv_cc_visibility = xyes],
+	[AC_DEFINE(DLL_EXPORT,[__attribute__((visibility("default")))],[Explicitly export global symbols])],
+	[AC_DEFINE(DLL_EXPORT,[],[Explicitly export global symbols])]
+)
+
+dnl These linker flags would ensure that no symbols are missing
+dnl from libraries and language bindings. However, this makes
+dnl the PHP binding fail to build. Let's carry these as inactive
+dnl for now, until the PHP binding is rewritten to use phpize and
+dnl its own config.m4
+dnl
+dnl AC_TRY_LINK_FLAG([-Wl,--no-undefined],[ac_cv_Wl_no_undefined])
+dnl AC_TRY_LINK_FLAG([-Wl,-z,defs],[ac_cv_Wl_z_defs])
+dnl AC_TRY_LINK_FLAG([-Wl,--as-needed],[ac_cv_Wl_as_needed])
+dnl AC_TRY_LINK_FLAG([-Wl,--no-allow-shlib-undefined],[ac_cv_Wl_no_allow_shlib_undefined])
+dnl AC_TRY_LINK_FLAG([-Wl,--no-copy-dt-needed-entries],[ac_cv_Wl_no_copy_dt_needed_entries])
+dnl AS_IF([test x$ac_cv_Wl_no_copy_dt_needed_entries = xno],
+dnl	[AC_TRY_LINK_FLAG([-Wl,--no-add-needed],[ac_cv_Wl_no_add_needed])])
 
 dnl Checks for libraries.
 AC_CHECK_LIB(c, exit)
