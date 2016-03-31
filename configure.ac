@@ -290,7 +290,7 @@ AS_IF([test x$enable_gd = xyes],
 			[enable_gd=no
 			 echo "*** WARNING: GD NOT FOUND IN PATH.  RLIB WILL NOT BE COMPILED WITH SUPPORT FOR IT"],
 			[AC_DEFINE(HAVE_GD,1,[Build with GD support])
-			 GD_LIBS=`"$GD_CONFIG" --libs`
+			 GD_LIBS="`"$GD_CONFIG" --libs ` -lgd"
 			 GD_CFLAGS=`"$GD_CONFIG" --cflags`])])],
 	[])
 AC_SUBST(GD_LIBS)
