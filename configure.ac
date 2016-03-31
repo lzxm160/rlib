@@ -1,6 +1,6 @@
 dnl Configure template for RLIB
 
-dnl Copyright (c) 2003-2006 SICOM Systems Inc (bdoan@sicompos.com)
+dnl Copyright (c) 2003-2016 SICOM Systems Inc (bdoan@sicompos.com)
 dnl RLIB is free software; you can redistribute it and/or modify
 dnl it under the terms of the GNU General Public License as published by
 dnl the Free Software Foundation; either version 2, or (at your option)
@@ -350,19 +350,18 @@ AM_CONDITIONAL(HAVE_CSHARP, test x$enable_csharp = xyes)
 
 perl_where=""
 PERL_CFLAGS=""
-AC_ARG_ENABLE(perl,              [  --disable-perl         disable perl],,enable_perl=yes)
-if test x$enable_perl = xyes; then
-	AC_PATH_PROG(PERL_CONFIG, perl no)
-	if test x$PERL_CONFIG = xno; then
-		enable_perl=no
-		echo "*** WARNING: PERL NOT FOUND IN PATH."
-	else
-		perl_where="`$PERL_CONFIG -e 'use Config; print $Config{archlib};' | tr '\\\\' '/'`"
-		PERL_CFLAGS="-I ${perl_where}/CORE"
-		PERL_EXTENSION_DIR="${perl_where}"
-		PERL_LIBS="-L${perl_where}/CORE -lperl"
-	fi
-fi
+AC_ARG_ENABLE([perl],
+	[AS_HELP_STRING([--disable-perl],[disable perl])],,
+	[enable_perl=yes])
+AS_IF([test x$enable_perl = xyes],
+	[AC_PATH_PROG(PERL_CONFIG, perl no)
+	 AS_IF([test x$PERL_CONFIG = xno],
+		[enable_perl=no
+		 echo "*** WARNING: PERL NOT FOUND IN PATH."],
+		[perl_where="`$PERL_CONFIG -e 'use Config; print $Config{archlib};' | tr '\\\\' '/'`"
+		 PERL_CFLAGS="-I ${perl_where}/CORE"
+		 PERL_EXTENSION_DIR="${perl_where}"
+		 PERL_LIBS="-L${perl_where}/CORE -lperl"])])
 AM_CONDITIONAL(HAVE_PERL, test x$enable_perl = xyes)
 AC_SUBST(PERL_CFLAGS)
 AC_SUBST(PERL_EXTENSION_DIR)
@@ -389,37 +388,28 @@ AC_RUN_IFELSE(
 )
 
 RLIB_WERROR=""
-AC_ARG_ENABLE(warningfun,              [  --enable-warningfun       enable more gcc warning flags],enable_warningfun="$enableval",enable_warningfun=no)
-if test x$enable_warningfun = xyes; then
-	RLIB_WERROR="-Werror "
-fi
+AC_ARG_ENABLE([warningfun],
+	[AS_HELP_STRING([--enable-warningfun],[enable more gcc warning flags])],
+	[enable_warningfun="$enableval"],[enable_warningfun=no])
+AS_IF([test x$enable_warningfun = xyes],[RLIB_WERROR="-Werror "])
 AC_SUBST(RLIB_WARNINGS)
 AC_SUBST(RLIB_WERROR)
 
 dnl Windows build is decided automatically by AC_CANONICAL_TARGET above
-if test x$enable_win32 = xyes; then
-	ac_save_CFLAGS="$CFLAGS"
-	CFLAGS="$CFLAGS -mno-cygwin -c conftest.$ac_ext"
-	AC_MSG_CHECKING([whether $CC supports -mno-cygwin])
-	echo "int some_variable = 0;" > conftest.$ac_ext   
-	compiler_mnocygwin=no
-	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[int some_variable = 0;]])], [dnl
-		# The compiler can only warn and ignore the option if not recognized
-		# So say no if there are warnings
-		if test -s conftest.err; then
-			compiler_mnocygwin=no
-		else
-			compiler_mnocygwin=yes
-		fi
-	])
-	AC_MSG_RESULT($compiler_mnocygwin)
-	CFLAGS="$ac_save_CFLAGS"
+AS_IF([test x$enable_win32 = xyes],
+	[ac_save_CFLAGS="$CFLAGS"
+	 CFLAGS="$CFLAGS -mno-cygwin -c conftest.$ac_ext"
+	 AC_MSG_CHECKING([whether $CC supports -mno-cygwin])
+	 echo "int some_variable = 0;" > conftest.$ac_ext
+	 compiler_mnocygwin=no
+	 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[int some_variable = 0;]])],
+		dnl The compiler can only warn and ignore the option if not recognized
+		dnl So say no if there are warnings
+		[AS_IF([test -s conftest.err],[compiler_mnocygwin=no],[compiler_mnocygwin=yes])])
+	 AC_MSG_RESULT($compiler_mnocygwin)
+	 CFLAGS="$ac_save_CFLAGS"
 
-	if test "$compiler_mnocygwin" = "yes"
-	then
-		NO_CYGWIN="-mno-cygwin"
-	fi
-fi
+	 AS_IF([test x$compiler_mnocygwin = xyes],[NO_CYGWIN="-mno-cygwin"])])
 AC_SUBST(NO_CYGWIN)
 
 AC_CHECK_HEADER([monetary.h],
