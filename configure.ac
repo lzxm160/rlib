@@ -303,14 +303,14 @@ AC_SUBST(GD_LIBS)
 AC_SUBST(GD_CFLAGS)
 AM_CONDITIONAL(HAVE_GD, test x$enable_gd = xyes)
 
-AC_ARG_ENABLE(doc,              [  --disable-doc         disable docs],,enable_doc=yes)
-if test x$enable_doc = xyes; then
-	AC_PATH_PROG(DOC_CONFIG, db2pdf, no)
-	if test x$DOC_CONFIG = xno; then
-		enable_doc=no
-		echo "*** WARNING: DB2PDF NOT FOUND IN PATH.  Sadly the manual won't be built"
-	fi
-fi
+AC_ARG_ENABLE([doc],
+	[AS_HELP_STRING([--disable-doc],[disable docs])],,
+	[enable_doc=yes])
+AS_IF([x$enable_doc = xyes],
+	[AC_PATH_PROG(DOC_CONFIG, db2pdf, no)
+	 AS_IF([test x$DOC_CONFIG = xno],
+	 	[enable_doc=no
+	 	 echo "*** WARNING: DB2PDF NOT FOUND IN PATH.  Sadly the manual won't be built"])])
 AM_CONDITIONAL(HAVE_DOC, test x$enable_doc = xyes)
 
 AC_ARG_ENABLE([python],
