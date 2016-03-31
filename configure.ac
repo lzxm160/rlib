@@ -536,11 +536,6 @@ AC_HEADER_STDC
 AC_CHECK_HEADERS(fcntl.h unistd.h)
 AC_C_CONST
 
-AC_ARG_ENABLE(memdebug,              [  --enable-memdebug       enable memory debugging],enable_memdebug="$enableval",enable_memdebug=no)
-if test x$enable_memdebug = xyes; then
-	AC_DEFINE(DEBUG_RLIB_MEMORY,1,[Debug RLIB memory usage])
-fi
-
 AC_ARG_ENABLE(crash,              [  --disable-crash       disable crash detection],enable_memdebug="$enableval",enable_crash=yes)
 if test x$enable_crash = xyes; then
     AC_CHECK_HEADERS(sys/resource.h,
