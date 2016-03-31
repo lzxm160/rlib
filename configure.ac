@@ -258,16 +258,13 @@ SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &hEnv);]])],
         LIBS="$ac_save_LIBS"
     else
 	AC_CHECK_LIB([odbc],[SQLAllocHandle],
-		[odbclib="-lodbc"],
+		[ODBC_LIBS="-lodbc"],
 		[AC_CHECK_LIB([iodbc],[SQLAllocHandle],
-			[odbclib="-lodbc"],
+			[ODBC_LIBS="-liodbc"],
 			[enable_odbc=no
 			 AC_MSG_WARN(ODBC input method is not going to be used)])])
-	AS_IF([test x$enable_odbc = xyes],[
-		AC_DEFINE(HAVE_ODBC,1,[Build with ODBC support])
-		ODBC_CFLAGS="-I${odbcdir}/include"
-		ODBC_LIBS="-L${odbcdir}/lib ${odbclib}"
-	])
+	AS_IF([test x$enable_odbc = xyes],
+		[AC_DEFINE(HAVE_ODBC,1,[Build with ODBC support])])
     fi
 fi
 AM_CONDITIONAL(HAVE_ODBC, test x$enable_odbc = xyes)
