@@ -146,6 +146,7 @@ src/examples/common/Makefile
 src/examples/common/Makefile.in
 src/examples/csharp/Makefile
 src/examples/csharp/Makefile.in
+src/examples/csharp/products.xml
 src/examples/java/Makefile
 src/examples/java/Makefile.in
 src/examples/java/*.java
