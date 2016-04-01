@@ -354,6 +354,7 @@ static void rpdf_make_page_stream(gpointer data, gpointer user_data) {
 			sprintf(buf, "%s%.03f %.03f l\n", buf, a0, b0);
 		} else {
 			sprintf(buf, "%s%.03f %.03f m\n", extra, a0,b0);
+		
 		}		
 		for (i = 1; i <= nsegs; i++) {
 			t1 = ((gfloat)i * dt) + start_angle;
@@ -478,6 +479,7 @@ static void rpdf_make_page_image_obj(gpointer data, gpointer user_data) {
 			GString *obj = NULL;
 			obj = obj_printf(obj, "<</Length %d>>\n", png->palette->len);
 			rpdf_object_append(pdf, FALSE, obj, png->palette->str, png->palette->len);
+
 		}
 		g_free(image->data);	
 	}
@@ -971,24 +973,27 @@ gboolean rpdf_text_callback(struct rpdf *pdf, gdouble x, gdouble y, gdouble angl
 gboolean rpdf_text(struct rpdf *pdf, gdouble x, gdouble y, gdouble angle, const gchar *text) {
 	struct rpdf_stream_text *stream;
 	gint slen;
-	gint count = 0, spot = 0, i;
+	gint count = 0, spot=0, i;
 	static GIConv conv = NULL;
 	gchar *new_text;
-
+	
 	/*
 	 * FIXME:
 	 * Because of this, the generated PDF can only contain
 	 * ISO-8859-1 (Latin 1) characters. Anything outside it,
 	 * Latin 2, Chinese, etc. will be represented as garbage.
 	 */
-	if (!conv)
-		conv = g_iconv_open("ISO-8859-1", "UTF-8");
+	if(conv == NULL) {
+		conv = g_iconv_open("ISO-8859-1", "UTF-8");	
+	}
 
-	if (conv && text) {
+	if(conv != NULL && text != NULL) {
 		gsize foo1, foo2;
 		new_text = g_convert_with_iconv(text, strlen(text), conv, &foo1, &foo1, NULL);
-		if (!new_text)
+		if(new_text != NULL) {
+		} else {
 			new_text = g_strdup(text);
+		}
 	} else
 		new_text = g_strdup(text);
 
@@ -998,16 +1003,16 @@ gboolean rpdf_text(struct rpdf *pdf, gdouble x, gdouble y, gdouble angle, const 
 	stream->angle = angle;
 	
 	slen = strlen(new_text);
-	for (i = 0; i < slen; i++) {
-		if (new_text[i] == '(' || new_text[i] == ')' || new_text[i] == '\\')
+	for(i=0;i<slen;i++) {
+		if(new_text[i] == '(' || new_text[i] == ')' || new_text[i] == '\\')
 			count++;
 	}
-	if (count == 0) {
+	if(count == 0)
 		stream->text = new_text;
-	} else {
+	else {
 		stream->text = g_malloc(slen + 1 + count);
-		for (i = 0; i < slen; i++) {
-			if (new_text[i] == '(' || new_text[i] == ')' || new_text[i] == '\\') {
+		for(i=0;i<slen;i++) {
+			if(new_text[i] == '(' || new_text[i] == ')' || new_text[i] == '\\') {
 				stream->text[spot++] = '\\';
 			}
 			stream->text[spot++] = new_text[i];

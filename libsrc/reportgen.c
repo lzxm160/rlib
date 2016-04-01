@@ -403,38 +403,38 @@ static gboolean rlib_layout_report(rlib *r, struct rlib_part *part, struct rlib_
 					while (1) {
 						gint output_count = 0;
 						gfloat position_top = report->position_top[0];
-						if (report->detail_columns > 1 && r->detail_line_count == 0) {
+						if(report->detail_columns > 1 && r->detail_line_count == 0) {
 							/*if(OUTPUT(r)->table_around_multiple_detail_columns) {
 								OUTPUT(r)->start_tr(r);
 							}*/
 						}
 						
-						if (!processed_variables) {
+						if(!processed_variables) {
 							rlib_process_variables(r, report, FALSE);
 						}
 						
 						rlib_break_evaluate_attributes(r, report);
 						rlib_handle_break_headers(r, part, report, FALSE);
 
-						if (rlib_end_page_if_line_wont_fit(r, part, report, report->detail.fields)) {
+						if(rlib_end_page_if_line_wont_fit(r, part, report, report->detail.fields)) {
 							rlib_force_break_headers(r, part, report, FALSE);
 						}
 
-						if (report->detail_columns > 1) {
+						if(report->detail_columns > 1) {
 							/*if(OUTPUT(r)->table_around_multiple_detail_columns) {
 								OUTPUT(r)->start_td(r, part, 0, 0, 0, 0, 0, NULL);
 							}*/
 						}
 						
-						if (OUTPUT(r)->do_breaks) {
-							for (i = 0; i < report->pages_across; i++) {
+						if(OUTPUT(r)->do_breaks) {
+							for(i=0;i<report->pages_across;i++) {
 								OUTPUT(r)->set_working_page(r, part, i);
 								OUTPUT(r)->start_report_field_details(r, part, report);	
 							}
 							
 							output_count = rlib_layout_report_output(r, part, report, report->detail.fields, FALSE, FALSE);
 
-							for (i = 0; i < report->pages_across; i++) {
+							for(i=0;i<report->pages_across;i++) {
 								OUTPUT(r)->set_working_page(r, part, i);
 								OUTPUT(r)->end_report_field_details(r, part, report);	
 							}

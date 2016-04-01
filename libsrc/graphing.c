@@ -600,28 +600,28 @@ gfloat rlib_graph(rlib *r, struct rlib_part *part, struct rlib_report *report, g
 								OUTPUT(r)->graph_label_x(r, row_count, x_axis_label);
 							}																
 						}
-					} else if (strcmp(axis, "y") == 0) {
+					} else if(strcmp(axis, "y") == 0) {
 						disabled = FALSE;
-						if (rlib_execute_as_boolean(r, plot->disabled_code, &tmp_disabled))
+						if(rlib_execute_as_boolean(r, plot->disabled_code, &tmp_disabled))
 							disabled = tmp_disabled;
-						if (!disabled && rlib_execute_as_float(r, plot->field_code, &y_value)) {
+						if(!disabled && rlib_execute_as_float(r, plot->field_code, &y_value)) {
 							side = RLIB_SIDE_LEFT;
-							if (rlib_execute_as_string(r, plot->side_code, side_str, MAXSTRLEN)) {
-								if (strcmp(side_str, "right") == 0) {
+							if(rlib_execute_as_string(r, plot->side_code, side_str, MAXSTRLEN)) {
+								if(strcmp(side_str, "right") == 0) {
 									side = RLIB_SIDE_RIGHT;
 								}
 							}
 
 							executed_label_pcode = rlib_execute_as_string(r, plot->label_code, legend_label, MAXSTRLEN);
 
-							if (!rlib_execute_as_string(r, plot->color_code, color_str, MAXSTRLEN)) {
+							if(!rlib_execute_as_string(r, plot->color_code, color_str, MAXSTRLEN)) {
 								plot_color = color[data_plot_count];
 							} else {
 								rlib_parsecolor(&plot_color, color_str);
 							}
-							if (is_percent_graph(graph_type) || is_pie_graph(graph_type)) {
+							if(is_percent_graph(graph_type) || is_pie_graph(graph_type)) {
 								y_value = fabs(y_value);
-								if (is_pie_graph(graph_type))
+								if(is_pie_graph(graph_type))
 									y_max[RLIB_SIDE_LEFT] = col_sum;
 								else
 									y_max[RLIB_SIDE_LEFT] = row_sum[row_count];

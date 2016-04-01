@@ -244,7 +244,7 @@ static void pdf_set_font_point_actual(rlib *r, gint point) {
 		which_font += ITALICS;
 
 	fontname = pdffontname ? pdffontname : font_names[which_font];
-
+	
 	rpdf_set_font(OUTPUT_PRIVATE(r)->pdf, fontname, "WinAnsiEncoding", point);
 }
 

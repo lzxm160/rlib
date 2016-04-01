@@ -230,7 +230,7 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 	gint before_len = 0, after_len = 0;
 	gboolean formatted_it = FALSE;	
 	
-	if (r->special_locale != NULL)
+	if(r->special_locale != NULL) 
 		setlocale(LC_ALL, r->special_locale);
 	if(rf->xml_format.xml == NULL) {
 		rlib_format_string_default(r, rf, rval, dest);
@@ -241,12 +241,12 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 		if(!RLIB_VALUE_IS_STRING(rval_fmtstr)) {
 			*dest = g_strdup_printf("!ERR_F_F");
 			rlib_value_free(rval_fmtstr);
-			if (r->special_locale != NULL)
+			if(r->special_locale != NULL) 
 				setlocale(LC_ALL, r->current_locale);
 			return FALSE;
 		} else {
 			formatstring = RLIB_VALUE_GET_AS_STRING(rval_fmtstr);
-			if (formatstring == NULL) {
+			if(formatstring == NULL) {
 				rlib_format_string_default(r, rf, rval, dest);
 			} else {
 				if (*formatstring == '!') {
@@ -257,7 +257,7 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 					case '$': /* Format as money */
 						if (RLIB_VALUE_IS_NUMBER(rval)) {
 							result = rlib_format_money(r, dest, tfmt + 1, RLIB_VALUE_GET_AS_NUMBER(rval));
-							if (r->special_locale != NULL)
+							if(r->special_locale != NULL) 
 								setlocale(LC_ALL, r->current_locale);
 							return result;
 						}
@@ -266,7 +266,7 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 					case '#': /* Format as number */
 						if (RLIB_VALUE_IS_NUMBER(rval)) {
 							result = rlib_format_number(r, dest, tfmt + 1, RLIB_VALUE_GET_AS_NUMBER(rval));
-							if (r->special_locale != NULL)
+							if(r->special_locale != NULL) 
 								setlocale(LC_ALL, r->current_locale);
 							return result;
 						}
@@ -284,12 +284,12 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 						break;
 					}
 					if (goodfmt) {
-						if (r->special_locale != NULL)
+						if(r->special_locale != NULL) 
 							setlocale(LC_ALL, r->current_locale);
 						return TRUE;
 					}
 				}
-				if (RLIB_VALUE_IS_DATE(rval)) {
+				if(RLIB_VALUE_IS_DATE(rval)) {
 					rlib_datetime_format(r, dest, &RLIB_VALUE_GET_AS_DATE(rval), formatstring);
 				} else {	
 					gint i=0,/*j=0,pos=0,*/fpos=0;
@@ -327,7 +327,7 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 								} else {
 									*dest = g_strdup_printf("!ERR_F_D");
 									rlib_value_free(rval_fmtstr);
-									if (r->special_locale != NULL)
+									if(r->special_locale != NULL) 
 										setlocale(LC_ALL, r->current_locale);
 									return FALSE;
 								}
@@ -338,7 +338,7 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 								} else {
 									*dest = g_strdup_printf("!ERR_F_S");
 									rlib_value_free(rval_fmtstr);
-									if (r->special_locale != NULL)
+									if(r->special_locale != NULL) 
 										setlocale(LC_ALL, r->current_locale);
 									return FALSE;
 								}
@@ -368,7 +368,7 @@ gint rlib_format_string(rlib *r, gchar **dest, struct rlib_report_field *rf, str
 		g_free(*dest);
 		*dest = new_str;
 	}
-	if (r->special_locale != NULL)
+	if(r->special_locale != NULL) 
 		setlocale(LC_ALL, r->current_locale);
 	return TRUE;
 }

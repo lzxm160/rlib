@@ -171,14 +171,10 @@ static gint odbc_read_first(gpointer result_ptr) {
 	gint V_OD_erg;
 	gint i;
 	SQLLEN ind;
-
-	V_OD_erg = SQLFetchScroll(results->V_OD_hstmt, SQL_FETCH_FIRST, 0);
-	if (SQL_SUCCEEDED(V_OD_erg)) {
-		for (i = 0; i < results->tot_fields; i++) {
-			V_OD_erg = SQLGetData(results->V_OD_hstmt, i + 1, SQL_C_CHAR, results->values[i].value, results->values[i].len + 1, &ind);
-			if (!SQL_SUCCEEDED(V_OD_erg) || ind == SQL_NULL_DATA)
+	if(SQL_SUCCEEDED(( V_OD_erg = SQLFetchScroll (results->V_OD_hstmt, SQL_FETCH_FIRST, 0)))) {
+		for (i=0;i<results->tot_fields;i++)
+			if (!SQL_SUCCEEDED(( V_OD_erg = SQLGetData(results->V_OD_hstmt, i + 1, SQL_C_CHAR, results->values[i].value, results->values[i].len + 1, &ind))) || ind == SQL_NULL_DATA)
 				results->values[i].value = '\0';
-		}
 		return TRUE;
 	}
 	return FALSE;
@@ -210,14 +206,10 @@ static gint odbc_read_next(gpointer result_ptr) {
 	gint V_OD_erg;
 	gint i;
 	SQLLEN ind;
-
-	V_OD_erg = SQLFetchScroll(results->V_OD_hstmt, SQL_FETCH_NEXT, 0);
-	if (SQL_SUCCEEDED(V_OD_erg)) {
-		for (i = 0; i < results->tot_fields; i++) {
-			V_OD_erg = SQLGetData(results->V_OD_hstmt, i + 1, SQL_C_CHAR, results->values[i].value, results->values[i].len + 1, &ind);
-			if (!SQL_SUCCEEDED(V_OD_erg) || ind == SQL_NULL_DATA)
+	if(SQL_SUCCEEDED(( V_OD_erg = SQLFetchScroll (results->V_OD_hstmt, SQL_FETCH_NEXT, 0)))) {
+		for (i=0;i<results->tot_fields;i++)
+			if (!SQL_SUCCEEDED(( V_OD_erg = SQLGetData(results->V_OD_hstmt, i + 1, SQL_C_CHAR, results->values[i].value, results->values[i].len + 1, &ind))) || ind == SQL_NULL_DATA)
 				results->values[i].value = '\0';
-		}
 		return TRUE;
 	}
 	return FALSE;
@@ -254,14 +246,10 @@ static gint odbc_read_prior(gpointer result_ptr) {
 	gint V_OD_erg;
 	gint i;
 	SQLLEN ind;
-
-	V_OD_erg = SQLFetchScroll (results->V_OD_hstmt, SQL_FETCH_PRIOR, 0);
-	if (SQL_SUCCEEDED(V_OD_erg)) {
-		for (i = 0; i < results->tot_fields; i++) {
-			V_OD_erg = SQLGetData (results->V_OD_hstmt, i + 1, SQL_C_CHAR, results->values[i].value, results->values[i].len + 1, &ind);
-			if (!SQL_SUCCEEDED(V_OD_erg) || ind == SQL_NULL_DATA)
+	if(SQL_SUCCEEDED(( V_OD_erg = SQLFetchScroll (results->V_OD_hstmt, SQL_FETCH_PRIOR, 0)))) {
+		for (i=0;i<results->tot_fields;i++)
+			if (!SQL_SUCCEEDED(( V_OD_erg = SQLGetData (results->V_OD_hstmt, i + 1, SQL_C_CHAR, results->values[i].value, results->values[i].len + 1, &ind))) || ind == SQL_NULL_DATA)
 				results->values[i].value = '\0';
-		}
 		return TRUE;
 	}
 	return FALSE;
@@ -292,14 +280,10 @@ static gint odbc_read_last(gpointer result_ptr) {
 	gint V_OD_erg;
 	gint i;
 	SQLLEN ind;
-
-	V_OD_erg = SQLFetchScroll(results->V_OD_hstmt, SQL_FETCH_LAST, 0);
-	if (SQL_SUCCEEDED(V_OD_erg)) {
-		for (i = 0; i < results->tot_fields; i++) {
-			V_OD_erg = SQLGetData(results->V_OD_hstmt, i + 1, SQL_C_CHAR, results->values[i].value, results->values[i].len + 1, &ind);
-			if (!SQL_SUCCEEDED(V_OD_erg) || ind == SQL_NULL_DATA)
+	if(SQL_SUCCEEDED(( V_OD_erg = SQLFetchScroll (results->V_OD_hstmt, SQL_FETCH_LAST, 0)))) {
+		for (i=0;i<results->tot_fields;i++)
+			if (!SQL_SUCCEEDED(( V_OD_erg = SQLGetData(results->V_OD_hstmt, i + 1, SQL_C_CHAR, results->values[i].value, results->values[i].len + 1, &ind))) || ind == SQL_NULL_DATA)
 				results->values[i].value = '\0';
-		}
 		return TRUE;
 	}
 	return FALSE;
@@ -380,10 +364,10 @@ gpointer odbc_new_result_from_query(gpointer input_ptr, gchar *query) {
 	results->values = g_malloc(sizeof(struct odbc_field_values) * ncols);
 
 	results->total_size = 0;
-	for (i = 0; i < ncols; i++) {
-		SQLCHAR name[256];
+	for(i=0;i<ncols;i++) {
+		SQLCHAR name[ 256 ];
 		SQLSMALLINT name_length;
-		V_OD_erg = SQLDescribeCol(V_OD_hstmt, i + 1, name, sizeof(name), &name_length, NULL, &col_size, NULL, NULL);
+		V_OD_erg = SQLDescribeCol( V_OD_hstmt, i+1,	name, sizeof( name ), &name_length, NULL, &col_size, NULL, NULL );
 		results->fields[i].col = i;
 		if (SQL_SUCCEEDED(V_OD_erg)) {
 			strcpy(results->fields[i].name, (char *)name);
@@ -392,20 +376,20 @@ gpointer odbc_new_result_from_query(gpointer input_ptr, gchar *query) {
 			col_size = 0;
 		}
 		results->values[i].len = col_size;
-		results->values[i].value = g_malloc(col_size + 1);
-		results->total_size += col_size + 1;
+		results->values[i].value = g_malloc(col_size+1);
+		results->total_size += col_size+1;
 	}
 	
 	results->tot_fields = ncols;
 	results->data = NULL;
 	
-	if (results->forward_only) {
+	if(results->forward_only) {
 		int i;
 		results->data = NULL;
-		if (SQL_SUCCEEDED(( V_OD_erg = SQLFetchScroll (results->V_OD_hstmt, SQL_FETCH_NEXT, 0)))) {
+		if(SQL_SUCCEEDED(( V_OD_erg = SQLFetchScroll (results->V_OD_hstmt, SQL_FETCH_NEXT, 0)))) {
 			do {
 				GSList *row_data = NULL;
-				for (i = 0; i < results->tot_fields; i++) {
+				for (i=0;i<results->tot_fields;i++) {
 					V_OD_erg = SQLGetData (results->V_OD_hstmt, i+1, SQL_C_CHAR, results->values[i].value, results->values[i].len+1, &ind);
 					if (SQL_SUCCEEDED(V_OD_erg) && ind != SQL_NULL_DATA)
 						row_data = g_slist_append(row_data, g_strdup(results->values[i].value));

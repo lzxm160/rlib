@@ -28,6 +28,7 @@
  
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <ctype.h>
 #include <libintl.h>
 
@@ -639,6 +640,8 @@ static gint rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 				rl->max_line_height = RLIB_GET_LINE(height);
 		} else if(e->type == RLIB_ELEMENT_BARCODE) {
 			gfloat height;
+			gchar tmpstr[128] = "RLIB_IMAGE_FILE_XXXXXX";
+			int fd;
 			gchar filename[128];
 			gchar *barcode = "";
 			struct rlib_value rval_value;
@@ -652,7 +655,14 @@ static gint rlib_layout_execute_pcodes_for_line(rlib *r, struct rlib_part *part,
 			}
 
 			rlib_execute_pcode(r, &extra_data[i].rval_image_height, rb->height_code, NULL);			
-			sprintf(filename, "%s.png", tempnam(NULL, "RLIB_IMAGE_FILE_XXXXX"));
+			fd = mkstemp(tmpstr);
+			if (fd >= 0) {
+				close(fd);
+				unlink(tmpstr);
+			} else {
+				r_error(r, "mkstemp returned error!");
+			}
+			sprintf(filename, "%s.png", tmpstr);
 
 			height = RLIB_FXP_TO_NORMAL_LONG_LONG(RLIB_VALUE_GET_AS_NUMBER(&extra_data[i].rval_image_height));
 
@@ -912,33 +922,33 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 		}	
 	}
 
-	for (j = 0; j < roa->count; j++) {
+	for(j=0;j<roa->count;j++) {
 		struct rlib_report_output *ro = roa->data[j];
 
-		if (ro->type == RLIB_REPORT_PRESENTATION_DATA_LINE) {
+		if(ro->type == RLIB_REPORT_PRESENTATION_DATA_LINE) {
 			struct rlib_report_lines *rl = ro->data;
-			gint count = 0;
+			gint count=0;
 			gint delayed = FALSE;
 			gboolean has_memo = TRUE;
 			gint max_memo_lines = 0;
 			gint i;
 			gint total_count = 0;
 			
-			if (rlib_check_is_not_suppressed(r, rl->suppress_code)) {
+			if(rlib_check_is_not_suppressed(r, rl->suppress_code)) {
 				output_count++;
 				OUTPUT(r)->start_line(r, backwards);
 
-				for (e = rl->e; e != NULL; e=e->next)
+				for(e = rl->e; e != NULL; e=e->next)
 					count++;
 
 				extra_data = g_new0(struct rlib_line_extra_data, count);
 				has_memo = rlib_layout_execute_pcodes_for_line(r, part, report, rl, extra_data, &delayed);
 				rlib_layout_find_common_properties_in_a_line(r, extra_data, count, delayed);
 				count = 0;
-				if (has_memo) {
-					for (e = rl->e; e != NULL; e=e->next) {
-						if (extra_data[count].is_memo == TRUE) {
-							if (extra_data[count].memo_line_count > max_memo_lines) {
+				if(has_memo) {
+					for(e = rl->e; e != NULL; e=e->next) {
+						if(extra_data[count].is_memo == TRUE) {
+							if(extra_data[count].memo_line_count > max_memo_lines) {
 								max_memo_lines = extra_data[count].memo_line_count;
 							}
 						}
@@ -947,14 +957,14 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 					}
 				}
 
-				if (max_memo_lines < 1)
+				if(max_memo_lines < 1)
 					max_memo_lines = 1;
-				for (i = 1; i <= max_memo_lines; i++) {
+				for(i=1; i <= max_memo_lines; i++) {				
 					margin = my_left_margin;
-
-					if (rlib_will_this_fit(r, part, report, RLIB_GET_LINE(get_font_point(r, part, report, rl)), 1) == FALSE && max_memo_lines > 1) {
-						if (page_header_layout == FALSE) {
-							if (report != NULL) {
+					
+					if(rlib_will_this_fit(r, part, report, RLIB_GET_LINE(get_font_point(r, part, report, rl)), 1) == FALSE && max_memo_lines > 1) {
+						if(page_header_layout == FALSE) {
+							if(report != NULL) {
 /* We need to let the layout engine know this has nothing to do w/ pages across and then we have a really long memo field in the report header some how */							
 								report->raw_page_number = r->current_page_number;
 							}
@@ -964,9 +974,9 @@ static gint rlib_layout_report_output_array(rlib *r, struct rlib_part *part, str
 						} else {
 							rlib_layout_end_page(r, part, report, FALSE);
 						}
-					} else if (i >= 2) {
+					} else if(i>= 2) {
 						/* Things like HTML Output need to have the lines ended..For Memo Fields that go over 1 line */
-						if (OUTPUT(r)->do_grouptext && !delayed) {
+						if(OUTPUT(r)->do_grouptext && !delayed) {
 						
 						} else {
 							OUTPUT(r)->end_line(r, backwards);	
