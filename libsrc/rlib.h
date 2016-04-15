@@ -1151,7 +1151,7 @@ void rlib_xml_new_output_filter(rlib *r);
 void rlib_csv_new_output_filter(rlib *r);
 
 /***** PROTOTYPES: mysql.c ****************************************************/
-gpointer rlib_mysql_new_input_filter(void);
+gpointer rlib_mysql_new_input_filter(rlib *r);
 gpointer rlib_mysql_real_connect(gpointer input_ptr, gchar *group, gchar *host, gchar *user, gchar *password, gchar *database);
 
 /***** PROTOTYPES: datasource.c ***********************************************/
@@ -1166,7 +1166,7 @@ gint rlib_add_datasource_xml(rlib *r, const gchar *input_name);
 gint rlib_add_datasource_csv(rlib *r, const gchar *input_name);
 
 /***** PROTOTYPES: postgres.c **************************************************/
-gpointer rlib_postgres_new_input_filter(void);
+gpointer rlib_postgres_new_input_filter(rlib *r);
 gpointer rlib_postgres_connect(gpointer input_ptr, gchar *conn);
 
 
@@ -1194,11 +1194,11 @@ int adjust_limits(gdouble  dataMin, gdouble dataMax, gint denyMinEqualsAdjMin, g
 	gint* numTms, gdouble* tmi, gdouble* adjMin, gdouble* adjMax, gint *goodIncs, gint numGoodIncs);
 
 /***** PROTOTYPES: xml_data_source.c ******************************************************/
-gpointer rlib_xml_new_input_filter(void);
+gpointer rlib_xml_new_input_filter(rlib *r);
 gpointer rlib_xml_connect(gpointer input_ptr);
 
 /***** PROTOTYPES: csv_data_source.c ******************************************************/
-gpointer rlib_csv_new_input_filter(void);
+gpointer rlib_csv_new_input_filter(rlib *r);
 gpointer rlib_csv_connect(gpointer input_ptr);
 
 /***** PROTOTYPES: util.c ******************************************************/
