@@ -24,6 +24,8 @@
  %}
  
 rlib * rlib_init();
+rlib * rlib_init_with_environment(struct environment_filter *environment);
+struct environment_filter *rlib_get_environment(rlib *r);
 int rlib_add_datasource_mysql(rlib *r, char *input_name, char *database_host, char *database_user, char *database_password, char *database_database);
 int rlib_add_datasource_postgres(rlib *r, char *input_name, char *conn);
 int rlib_add_datasource_odbc(rlib *r, char *input_name, char *source, char *user, char *password);

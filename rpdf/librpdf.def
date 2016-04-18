@@ -1,4 +1,4 @@
-LIBRARY "rpdf.dll"
+LIBRARY "librpdf.dll"
 
 EXPORTS
 rpdf_new@1

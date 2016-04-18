@@ -69,13 +69,13 @@ dnl the PHP binding fail to build. Let's carry these as inactive
 dnl for now, until the PHP binding is rewritten to use phpize and
 dnl its own config.m4
 dnl
-AC_TRY_LINK_FLAG([-Wl,--no-undefined],[ac_cv_Wl_no_undefined])
-AC_TRY_LINK_FLAG([-Wl,-z,defs],[ac_cv_Wl_z_defs])
-AC_TRY_LINK_FLAG([-Wl,--as-needed],[ac_cv_Wl_as_needed])
-AC_TRY_LINK_FLAG([-Wl,--no-allow-shlib-undefined],[ac_cv_Wl_no_allow_shlib_undefined])
-AC_TRY_LINK_FLAG([-Wl,--no-copy-dt-needed-entries],[ac_cv_Wl_no_copy_dt_needed_entries])
-AS_IF([test x$ac_cv_Wl_no_copy_dt_needed_entries = xno],
-	[AC_TRY_LINK_FLAG([-Wl,--no-add-needed],[ac_cv_Wl_no_add_needed])])
+dnl AC_TRY_LINK_FLAG([-Wl,--no-undefined],[ac_cv_Wl_no_undefined])
+dnl AC_TRY_LINK_FLAG([-Wl,-z,defs],[ac_cv_Wl_z_defs])
+dnl AC_TRY_LINK_FLAG([-Wl,--as-needed],[ac_cv_Wl_as_needed])
+dnl AC_TRY_LINK_FLAG([-Wl,--no-allow-shlib-undefined],[ac_cv_Wl_no_allow_shlib_undefined])
+dnl AC_TRY_LINK_FLAG([-Wl,--no-copy-dt-needed-entries],[ac_cv_Wl_no_copy_dt_needed_entries])
+dnl AS_IF([test x$ac_cv_Wl_no_copy_dt_needed_entries = xno],
+dnl 	[AC_TRY_LINK_FLAG([-Wl,--no-add-needed],[ac_cv_Wl_no_add_needed])])
 
 dnl Checks for libraries.
 AC_CHECK_LIB(c, exit)
