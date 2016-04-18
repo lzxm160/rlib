@@ -34,6 +34,7 @@ missing
 rlib.pc
 rlib.spec
 rpdf/test
+rpdf/test.exe
 src/examples/c/example
 src/examples/c/products.xml
 src/examples/c/relprt
