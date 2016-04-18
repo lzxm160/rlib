@@ -20,7 +20,7 @@
 ##
 ## Process this file with automake to produce Makefile.in
 
-noinst_PROGRAMS = example relpth1 relpth2 srcpth
+noinst_PROGRAMS = example relpth1 relpth2 srcpth relprt
 
 AM_CFLAGS = $(RLIB_CFLAGS) -I${top_srcdir}/libsrc
 
@@ -31,6 +31,8 @@ relpth1_LDADD = $(top_builddir)/libsrc/libr.la
 relpth2_LDADD = $(top_builddir)/libsrc/libr.la
 
 srcpth_LDADD = $(top_builddir)/libsrc/libr.la
+
+relprt_LDADD = $(top_builddir)/libsrc/libr.la
 
 noinst_SCRIPTS = products.xml
 

@@ -36,6 +36,7 @@ rlib.spec
 rpdf/test
 src/examples/c/example
 src/examples/c/products.xml
+src/examples/c/relprt
 src/examples/c/relpth1
 src/examples/c/relpth2
 src/examples/c/srcpth
