@@ -25,17 +25,17 @@ int main(int argc, char **argv) {
 	const char *hostname, *username, *password, *database;
 	rlib *r;
 
-	hostname = "localhost";
-	username = "rlib";
-	password = "rlib";
-	database = "rlib";
-
+	
+	hostname = "172.18.22.202";
+	username = "renesola";
+	password = "renes0la.xx";
+	database = "apollo_os";
 	r = rlib_init();
 	if(rlib_add_datasource_mysql(r, "local_mysql", hostname, username, password, database) < 0) {
 		fprintf(stderr, "Could not connect to XML Database\n");
 		return 1;
 	}
-	rlib_add_query_as(r, "local_mysql", "select * FROM products", "products");
+	rlib_add_query_as(r, "local_mysql", "select * FROM t_customer_credit_flow_20160317bk", "products");
 	rlib_add_report(r, "products.xml");
 	rlib_set_output_format(r, RLIB_FORMAT_PDF);
 	rlib_execute(r);
