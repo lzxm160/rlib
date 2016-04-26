@@ -31,20 +31,20 @@ int main(int argc, char **argv) {
 	char *hostname, *username, *password, *database;
 	rlib *r;
 
-	if(argc != 5) {
-		fprintf(stderr, "%s requires 4 arguments hostname username password database\n", argv[0]);
-		fprintf(stderr, "You provided %d\n", argc-1);
-		return -1;
-	}
+	// if(argc != 5) {
+	// 	fprintf(stderr, "%s requires 4 arguments hostname username password database\n", argv[0]);
+	// 	fprintf(stderr, "You provided %d\n", argc-1);
+	// 	return -1;
+	// }
 	
-	hostname = argv[1];
-	username = argv[2];
-	password = argv[3];
-	database = argv[4];
+	hostname = "172.18.22.202";
+	username = "renesola";
+	password = "renes0la.xx";
+	database = "apollo_os";
 
 	r = rlib_init();
 	rlib_add_datasource_mysql(r, "local_mysql", hostname, username, password, database);
-	rlib_add_query_as(r, "local_mysql", "select * from example", "example");
+	rlib_add_query_as(r, "local_mysql", "select * from t_customer_credit_flow_20160317bk", "t_customer_credit_flow_20160317bk");
 	rlib_add_report(r, "report.xml");
 	rlib_set_output_format(r, RLIB_FORMAT_PDF);
 	rlib_execute(r);
